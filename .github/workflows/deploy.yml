@@ -139,7 +139,7 @@ jobs:
             --network-configuration "awsvpcConfiguration={
               subnets=[${{ secrets.ECS_SUBNET_ID }}],
               securityGroups=[${{ secrets.ECS_SECURITY_GROUP_ID }}],
-              assignPublicIp=DISABLED
+              assignPublicIp=ENABLED
             }" \
             --overrides '{
               "containerOverrides": [{

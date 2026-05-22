@@ -25,7 +25,7 @@ export default function DashboardPage() {
   const recent = useMemo(
     () =>
       [...deals]
-        .sort((a, b) => (b.expected || "").localeCompare(a.expected || ""))
+        .sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""))
         .slice(0, 5),
     [deals],
   );

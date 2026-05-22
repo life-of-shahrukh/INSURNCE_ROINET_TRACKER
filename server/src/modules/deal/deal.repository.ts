@@ -1,21 +1,21 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateDealDto } from './dto/create-deal.dto';
 import { UpdateDealDto } from './dto/update-deal.dto';
-import { Deal } from '@prisma/client';
+import { Deal, Prisma } from '@prisma/client';
 
 @Injectable()
 export class DealRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   findAll(): Promise<Deal[]> {
-    return this.prisma.deal.findMany({ orderBy: { createdAt: 'asc' } });
+    return this.prisma.deal.findMany({ orderBy: { createdAt: 'desc' } });
   }
 
   findAllByPospId(pospId: string): Promise<Deal[]> {
     return this.prisma.deal.findMany({
       where: { pospId },
-      orderBy: { createdAt: 'asc' },
+      orderBy: { createdAt: 'desc' },
     });
   }
 
@@ -50,7 +50,7 @@ export class DealRepository {
         issued: dto.issued ? new Date(dto.issued) : null,
         remarks: dto.remarks ?? '',
       },
-    });
+    }).catch(this.handlePrismaError);
   }
 
   createForPosp(pospId: string, dto: CreateDealDto): Promise<Deal> {
@@ -70,7 +70,7 @@ export class DealRepository {
         issued: dto.issued ? new Date(dto.issued) : null,
         remarks: dto.remarks ?? '',
       },
-    });
+    }).catch(this.handlePrismaError);
   }
 
   async update(id: string, dto: UpdateDealDto): Promise<Deal> {
@@ -127,6 +127,18 @@ export class DealRepository {
 
   async deleteByPosp(id: string, pospId: string): Promise<void> {
     await this.prisma.deal.deleteMany({ where: { id, pospId } });
+  }
+
+  private handlePrismaError(error: unknown): never {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === 'P2003') {
+        throw new BadRequestException('Invalid POSP selected — please refresh and try again');
+      }
+      if (error.code === 'P2025') {
+        throw new NotFoundException('Record not found');
+      }
+    }
+    throw error;
   }
 
   async exportCsv(): Promise<string> {

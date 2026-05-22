@@ -23,8 +23,10 @@ export interface Deal {
   expected: string;
   proposal: string;
   policyNo: string;
-  issued: string;
+  issued: string | null;
   remarks: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CrmState {

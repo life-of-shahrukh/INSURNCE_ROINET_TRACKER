@@ -7,13 +7,11 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import { SignupPospDto } from './dto/signup-posp.dto';
-import { Role, UserStatus } from '@prisma/client';
+import { Role, UserStatus, Prisma } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { ApprovePospDto } from './dto/approve-posp.dto';
 import { JwtPayload } from '../../common/auth/jwt-payload.interface';
 import { AuthUser } from '../../common/auth/auth-user.interface';
-import { Prisma } from '@prisma/client';
-
 export interface AuthResponse {
   accessToken: string;
   user: {

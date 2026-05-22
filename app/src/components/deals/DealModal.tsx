@@ -49,10 +49,10 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
         coa: String(deal.coa ?? 0),
         margin: String(deal.margin ?? 0),
         status: deal.status,
-        expected: deal.expected ?? "",
+        expected: deal.expected ? deal.expected.slice(0, 10) : "",
         proposal: deal.proposal ?? "",
         policyNo: deal.policyNo ?? "",
-        issued: deal.issued ?? "",
+        issued: deal.issued ? deal.issued.slice(0, 10) : "",
         remarks: deal.remarks ?? "",
       });
     } else {
@@ -167,6 +167,7 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
             <input
               id="d-coa"
               type="number"
+              required
               value={form.coa}
               onChange={(e) => setForm({ ...form, coa: e.target.value })}
             />
@@ -176,6 +177,7 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
             <input
               id="d-margin"
               type="number"
+              required
               value={form.margin}
               onChange={(e) => setForm({ ...form, margin: e.target.value })}
             />
@@ -198,6 +200,7 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
             <input
               id="d-expected"
               type="date"
+              required
               value={form.expected}
               onChange={(e) => setForm({ ...form, expected: e.target.value })}
             />
@@ -206,6 +209,7 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
             <label htmlFor="d-proposal">Proposal Number</label>
             <input
               id="d-proposal"
+              required
               value={form.proposal}
               onChange={(e) => setForm({ ...form, proposal: e.target.value })}
             />
@@ -214,6 +218,7 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
             <label htmlFor="d-policyno">Policy Number</label>
             <input
               id="d-policyno"
+              required
               value={form.policyNo}
               onChange={(e) => setForm({ ...form, policyNo: e.target.value })}
             />
@@ -223,6 +228,7 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
             <input
               id="d-issued"
               type="date"
+              required
               value={form.issued}
               onChange={(e) => setForm({ ...form, issued: e.target.value })}
             />

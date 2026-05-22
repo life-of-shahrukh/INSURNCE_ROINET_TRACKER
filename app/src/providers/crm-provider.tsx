@@ -45,6 +45,10 @@ export function CrmProvider({ children }: { children: ReactNode }) {
       const state = await crmApi.getState();
       setDeals(state.deals);
       setPosp(state.posp);
+    } catch (err) {
+      console.error("[CRM] Failed to load state:", err);
+      setDeals([]);
+      setPosp([]);
     } finally {
       setLoading(false);
     }

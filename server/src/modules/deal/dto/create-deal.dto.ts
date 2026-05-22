@@ -59,15 +59,14 @@ export class CreateDealDto {
   @IsNotEmpty()
   proposal: string;
 
-  @ApiPropertyOptional({ example: 'POL-99812' })
+  @ApiProperty({ example: 'POL-99812' })
   @IsString()
-  @IsOptional()
-  policyNo?: string;
+  @IsNotEmpty()
+  policyNo: string;
 
-  @ApiPropertyOptional({ example: '2026-05-15' })
+  @ApiProperty({ example: '2026-05-15' })
   @IsDateString()
-  @IsOptional()
-  issued?: string;
+  issued: string;
 
   @ApiPropertyOptional({ example: 'Awaiting medical' })
   @IsString()

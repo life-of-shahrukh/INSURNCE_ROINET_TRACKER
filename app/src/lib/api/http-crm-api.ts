@@ -12,15 +12,32 @@ function getToken(): string | null {
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const token = getToken();
-  const res = await fetch(`${base()}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...init?.headers,
-    },
-  });
-  if (!res.ok) throw new Error(`API ${res.status}: ${path}`);
+  let res: Response;
+  try {
+    res = await fetch(`${base()}${path}`, {
+      ...init,
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...init?.headers,
+      },
+    });
+  } catch (err) {
+    throw new Error(
+      `Network error: unable to reach server at ${base()}${path}`,
+    );
+  }
+  if (!res.ok) {
+    if (res.status === 401) {
+      throw new Error(`Unauthorized: ${path} — please log in again`);
+    }
+    let detail = "";
+    try {
+      const body = (await res.json()) as { message?: string };
+      detail = body.message ? ` — ${body.message}` : "";
+    } catch {}
+    throw new Error(`API ${res.status}: ${path}${detail}`);
+  }
   if (res.status === 204) return undefined as T;
   return res.json() as Promise<T>;
 }
@@ -35,8 +52,10 @@ export const httpCrmApi: CrmApi = {
   createDeal: (input) =>
     request<Deal>("/api/deals", { method: "POST", body: JSON.stringify(input) }),
 
-  updateDeal: (id, input) =>
-    request<Deal>(`/api/deals/${id}`, { method: "PATCH", body: JSON.stringify(input) }),
+  updateDeal: (id, input) => {
+    const { id: _id, ...body } = input;
+    return request<Deal>(`/api/deals/${id}`, { method: "PATCH", body: JSON.stringify(body) });
+  },
 
   deleteDeal: (id) =>
     request<void>(`/api/deals/${id}`, { method: "DELETE" }),
@@ -44,8 +63,10 @@ export const httpCrmApi: CrmApi = {
   createPosp: (input) =>
     request<Posp>("/api/posp", { method: "POST", body: JSON.stringify(input) }),
 
-  updatePosp: (id, input) =>
-    request<Posp>(`/api/posp/${id}`, { method: "PATCH", body: JSON.stringify(input) }),
+  updatePosp: (id, input) => {
+    const { id: _id, ...body } = input;
+    return request<Posp>(`/api/posp/${id}`, { method: "PATCH", body: JSON.stringify(body) });
+  },
 
   exportDealsCsv: () =>
     fetch(`${base()}/api/deals/export`, {

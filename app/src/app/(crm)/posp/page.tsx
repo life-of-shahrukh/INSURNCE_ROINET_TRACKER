@@ -5,13 +5,16 @@ import { Button } from "@/components/ui/Button";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { fmtDate, fmtINRShort } from "@/lib/formatters";
 import { useCrm } from "@/providers/crm-provider";
+import { useAuth } from "@/providers/auth-provider";
 import type { Posp } from "@/lib/types";
 import { useState } from "react";
 
 export default function PospPage() {
+  const { user } = useAuth();
   const { deals, posp, loading } = useCrm();
   const [modalOpen, setModalOpen] = useState(false);
   const [editPosp, setEditPosp] = useState<Posp | null>(null);
+  const canCreatePosp = user?.role === "ADMIN";
 
   if (loading) return <div className="empty">Loading…</div>;
 
@@ -21,14 +24,16 @@ export default function PospPage() {
         title="POSP Roster"
         subtitle="Active and inactive Point of Sales Persons"
         actions={
-          <Button
-            onClick={() => {
-              setEditPosp(null);
-              setModalOpen(true);
-            }}
-          >
-            + Add POSP
-          </Button>
+          canCreatePosp ? (
+            <Button
+              onClick={() => {
+                setEditPosp(null);
+                setModalOpen(true);
+              }}
+            >
+              + Add POSP
+            </Button>
+          ) : null
         }
       />
 
@@ -40,14 +45,18 @@ export default function PospPage() {
             <div
               key={p.id}
               className="posp-card"
-              onClick={() => {
-                setEditPosp(p);
-                setModalOpen(true);
-              }}
+              onClick={
+                canCreatePosp
+                  ? () => {
+                      setEditPosp(p);
+                      setModalOpen(true);
+                    }
+                  : undefined
+              }
               role="button"
               tabIndex={0}
               onKeyDown={(e) => {
-                if (e.key === "Enter") {
+                if (canCreatePosp && e.key === "Enter") {
                   setEditPosp(p);
                   setModalOpen(true);
                 }

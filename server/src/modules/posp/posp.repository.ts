@@ -18,6 +18,10 @@ export class PospRepository {
     return posp;
   }
 
+  async findByEmail(email: string): Promise<Posp | null> {
+    return this.prisma.posp.findUnique({ where: { email } });
+  }
+
   create(dto: CreatePospDto): Promise<Posp> {
     return this.prisma.posp.create({
       data: {

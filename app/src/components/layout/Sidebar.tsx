@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/providers/auth-provider";
 
 const NAV = [
   { href: "/dashboard", icon: "⌂", label: "Dashboard" },
@@ -15,14 +16,20 @@ const NAV = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { user, logout } = useAuth();
+  const isAdmin = user?.role === "ADMIN";
+  const visibleNav = isAdmin
+    ? NAV
+    : NAV.filter((item) => item.href !== "/posp");
 
   return (
     <aside className="sidebar">
       <div className="logo">
         <div className="logo-title">Roinet Insurance</div>
         <div className="logo-sub">Brokers — Sales CRM</div>
+        <div className="logo-role">{isAdmin ? "Admin" : "POSP"}</div>
       </div>
-      {NAV.map((item) => (
+      {visibleNav.map((item) => (
         <Link
           key={item.href}
           href={item.href}
@@ -32,6 +39,10 @@ export function Sidebar() {
           {item.label}
         </Link>
       ))}
+      <button className="nav-item nav-logout" onClick={logout}>
+        <span className="nav-icon">↩</span>
+        Logout
+      </button>
     </aside>
   );
 }

@@ -12,6 +12,7 @@ import {
 import { crmApi } from "@/lib/api";
 import { downloadCsv } from "@/lib/crm-calculations";
 import type { Deal, DealInput, Posp, PospInput } from "@/lib/types";
+import { useAuth } from "./auth-provider";
 
 interface CrmContextValue {
   deals: Deal[];
@@ -27,11 +28,18 @@ interface CrmContextValue {
 const CrmContext = createContext<CrmContextValue | null>(null);
 
 export function CrmProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const [deals, setDeals] = useState<Deal[]>([]);
   const [posp, setPosp] = useState<Posp[]>([]);
   const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(async () => {
+    if (!user) {
+      setDeals([]);
+      setPosp([]);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
       const state = await crmApi.getState();
@@ -40,11 +48,17 @@ export function CrmProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
+    if (!user) {
+      setDeals([]);
+      setPosp([]);
+      setLoading(false);
+      return;
+    }
     refresh();
-  }, [refresh]);
+  }, [refresh, user]);
 
   const saveDeal = useCallback(
     async (input: DealInput) => {

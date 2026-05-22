@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { AuthProvider } from "@/providers/auth-provider";
+import { AuthGate } from "@/components/auth/AuthGate";
 
 export const metadata: Metadata = {
   title: "Roinet Insurance Brokers — Sales CRM",
@@ -13,7 +15,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <AuthProvider>
+          <AuthGate>{children}</AuthGate>
+        </AuthProvider>
+      </body>
     </html>
   );
 }

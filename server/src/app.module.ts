@@ -5,6 +5,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { PrismaModule } from './prisma/prisma.module';
 import { PospModule } from './modules/posp/posp.module';
 import { DealModule } from './modules/deal/deal.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { DealModule } from './modules/deal/deal.module';
     EventEmitterModule.forRoot(),
     CqrsModule.forRoot(),
     PrismaModule,
+    AuthModule,
     PospModule,
     DealModule,
   ],

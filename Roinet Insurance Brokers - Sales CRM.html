@@ -1,0 +1,2331 @@
+<!DOCTYPE html>
+<!-- saved from url=(0145)file:///C:/Users/Sameer%20Mathor/AppData/Local/Packages/CLAUDE~1/LOCALC~1/Roaming/Claude/LOCAL-~1/0F4E5A~1/3C818F~1/LO4FBE~1/outputs/INSURA~1.HTM -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roinet Insurance Brokers — Sales CRM</title>
+<script src="./Roinet Insurance Brokers — Sales CRM_files/chart.umd.min.js.download"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --primary: #0f4c75;
+    --primary-light: #3282b8;
+    --accent: #bbe1fa;
+    --bg: #f4f6fa;
+    --card: #ffffff;
+    --text: #1a2332;
+    --text-muted: #6b7785;
+    --border: #e3e8ef;
+    --hot: #e63946;
+    --warm: #f4a261;
+    --cold: #6c8bb8;
+    --success: #2a9d8f;
+    --shadow: 0 1px 3px rgba(15,76,117,0.08), 0 1px 2px rgba(15,76,117,0.05);
+    --shadow-lg: 0 4px 12px rgba(15,76,117,0.12);
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+    display: flex;
+    min-height: 100vh;
+  }
+  /* Sidebar */
+  .sidebar {
+    width: 230px;
+    background: var(--primary);
+    color: white;
+    padding: 20px 0;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .logo {
+    padding: 0 20px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 16px;
+  }
+  .logo-title { font-size: 18px; font-weight: 700; letter-spacing: 0.3px; }
+  .logo-sub { font-size: 11px; opacity: 0.7; margin-top: 2px; }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.15s;
+    border-left: 3px solid transparent;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.08); }
+  .nav-item.active {
+    background: rgba(255,255,255,0.12);
+    border-left-color: var(--accent);
+    font-weight: 600;
+  }
+  .nav-icon { width: 18px; text-align: center; opacity: 0.9; }
+
+  /* Main */
+  .main {
+    flex: 1;
+    padding: 24px 32px;
+    overflow-x: auto;
+  }
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .page-title { font-size: 22px; font-weight: 700; }
+  .page-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+  .topbar-actions { display: flex; gap: 8px; align-items: center; }
+  .btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 9px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn:hover { background: var(--primary-light); }
+  .btn-secondary { background: white; color: var(--primary); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: var(--bg); }
+  .btn-danger { background: var(--hot); }
+  .btn-danger:hover { background: #c52836; }
+
+  /* KPI cards */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .kpi-card {
+    background: var(--card);
+    padding: 18px 20px;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    border-left: 3px solid var(--primary-light);
+  }
+  .kpi-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .kpi-value { font-size: 26px; font-weight: 700; margin-top: 6px; color: var(--primary); }
+  .kpi-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+  .kpi-card.hot { border-left-color: var(--hot); }
+  .kpi-card.warm { border-left-color: var(--warm); }
+  .kpi-card.success { border-left-color: var(--success); }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .card-title { font-size: 15px; font-weight: 600; }
+
+  .row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 900px) { .row-2 { grid-template-columns: 1fr; } }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    text-align: left;
+    padding: 10px 12px;
+    background: #f8fafc;
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  td {
+    padding: 11px 12px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  tr:hover td { background: #fafbfc; }
+  .actions-cell { display: flex; gap: 6px; }
+  .icon-btn {
+    background: none;
+    border: 1px solid var(--border);
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .icon-btn:hover { background: var(--bg); color: var(--primary); }
+  .icon-btn.danger:hover { background: #fee; color: var(--hot); border-color: var(--hot); }
+
+  /* Status badges */
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .badge-hot { background: #fde2e4; color: var(--hot); }
+  .badge-warm { background: #fef3e2; color: #c97a1c; }
+  .badge-cold { background: #e0e7ef; color: var(--cold); }
+  .badge-success { background: #dcf3ef; color: var(--success); }
+  .badge-muted { background: #eef1f5; color: var(--text-muted); }
+
+  /* Filters */
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .filter-chip {
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    background: white;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .filter-chip.active { background: var(--primary); color: white; border-color: var(--primary); }
+  .search-input {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 13px;
+    min-width: 220px;
+    margin-left: auto;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,32,57,0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 640px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+  }
+  .modal-header {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .modal-title { font-size: 16px; font-weight: 600; }
+  .close-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-muted); }
+  .modal-body { padding: 20px 24px; }
+  .modal-footer {
+    padding: 14px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  /* Form */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .form-group { display: flex; flex-direction: column; }
+  .form-group.full { grid-column: span 2; }
+  label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 5px;
+  }
+  input, select, textarea {
+    padding: 9px 11px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: inherit;
+    background: white;
+  }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(50,130,184,0.1); }
+  textarea { resize: vertical; min-height: 60px; }
+
+  /* Pipeline kanban */
+  .kanban {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  @media (max-width: 900px) { .kanban { grid-template-columns: 1fr; } }
+  .kanban-col {
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 8px;
+    min-height: 200px;
+  }
+  .kanban-col-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 0 4px;
+  }
+  .kanban-count {
+    background: white;
+    padding: 1px 9px;
+    border-radius: 10px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .lead-card {
+    background: white;
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    box-shadow: var(--shadow);
+    border-left: 3px solid var(--cold);
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .lead-card.hot { border-left-color: var(--hot); }
+  .lead-card.warm { border-left-color: var(--warm); }
+  .lead-card-name { font-weight: 600; }
+  .lead-card-meta { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+  /* Page show/hide */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* Currency */
+  .num { font-variant-numeric: tabular-nums; }
+  .num-right { text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* Chart container */
+  .chart-wrap { height: 260px; position: relative; }
+
+  /* Empty state */
+  .empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+
+  /* POSP cards */
+  .posp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+  }
+  .posp-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    padding: 16px;
+    cursor: pointer;
+    transition: box-shadow 0.15s;
+  }
+  .posp-card:hover { box-shadow: var(--shadow-lg); }
+  .posp-name { font-weight: 600; font-size: 15px; }
+  .posp-code { font-size: 11px; color: var(--text-muted); }
+  .posp-stats { display: flex; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .posp-stat-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
+  .posp-stat-val { font-weight: 600; font-size: 14px; color: var(--primary); }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-title">Roinet Insurance</div>
+    <div class="logo-sub">Brokers — Sales CRM</div>
+  </div>
+  <div class="nav-item active" data-page="dashboard"><span class="nav-icon">⌂</span> Dashboard</div>
+  <div class="nav-item" data-page="leads"><span class="nav-icon">◎</span> Leads Pipeline</div>
+  <div class="nav-item" data-page="deals"><span class="nav-icon">▤</span> Deals Tracker</div>
+  <div class="nav-item" data-page="posp"><span class="nav-icon">◉</span> POSP Roster</div>
+  <div class="nav-item" data-page="renewals"><span class="nav-icon">↻</span> Renewals</div>
+  <div class="nav-item" data-page="commissions"><span class="nav-icon">₹</span> Commissions</div>
+  <div class="nav-item" data-page="reports"><span class="nav-icon">▦</span> Reports</div>
+</aside>
+
+<main class="main">
+
+  <!-- DASHBOARD -->
+  <section class="page active" id="page-dashboard">
+    <div class="topbar">
+      <div>
+        <div class="page-title">Dashboard</div>
+        <div class="page-sub">Overview of your sales performance</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-secondary" onclick="exportData()">⬇ Export Data</button>
+        <button class="btn" onclick="openDealModal()">+ New Deal</button>
+      </div>
+    </div>
+
+    <div class="kpi-grid" id="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Total Premium</div>
+      <div class="kpi-value">₹2.82 L</div>
+      <div class="kpi-sub">21 deals tracked</div>
+    </div>
+    <div class="kpi-card success">
+      <div class="kpi-label">Retained Margin</div>
+      <div class="kpi-value">₹2.82 L</div>
+      <div class="kpi-sub">After COA</div>
+    </div>
+    <div class="kpi-card hot">
+      <div class="kpi-label">Hot Deals</div>
+      <div class="kpi-value">9</div>
+      <div class="kpi-sub">Likely to close soon</div>
+    </div>
+    <div class="kpi-card warm">
+      <div class="kpi-label">Active POSPs</div>
+      <div class="kpi-value">4</div>
+      <div class="kpi-sub">Selling now</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Conversion</div>
+      <div class="kpi-value">29%</div>
+      <div class="kpi-sub">6 issued / 21</div>
+    </div>
+  </div>
+
+    <div class="row-2">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Deals by Status</div></div>
+        <div class="chart-wrap"><canvas id="chart-status" style="box-sizing: border-box; display: block; height: 260px; width: 511px;" width="1023" height="520"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Premium by Policy Type</div></div>
+        <div class="chart-wrap"><canvas id="chart-policy" style="box-sizing: border-box; display: block; height: 260px; width: 511px;" width="1023" height="520"></canvas></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Top POSPs by Premium</div>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-posp" style="box-sizing: border-box; display: block; height: 260px; width: 1083px;" width="2166" height="520"></canvas></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">Recent Deals</div></div>
+      <div class="table-wrap"><table id="recent-deals-table">
+    <thead><tr><th>Customer</th><th>POSP</th><th>Policy</th><th>Premium</th><th>Status</th><th>Expected</th></tr></thead>
+    <tbody>
+      
+        <tr>
+          <td>Bharat Industries</td>
+          <td>Vikram Singh</td>
+          <td>Business Loan</td>
+          <td class="num">₹0</td>
+          <td><span class="badge badge-cold">Cold</span></td>
+          <td>20 Aug 2026</td>
+        </tr>
+      
+        <tr>
+          <td>Deepika Joshi</td>
+          <td>Vikram Singh</td>
+          <td>ULIP</td>
+          <td class="num">₹60,000</td>
+          <td><span class="badge badge-cold">Cold</span></td>
+          <td>15 Aug 2026</td>
+        </tr>
+      
+        <tr>
+          <td>Kavita Nair</td>
+          <td>Rohit Kumar</td>
+          <td>Health</td>
+          <td class="num">₹22,000</td>
+          <td><span class="badge badge-cold">Cold</span></td>
+          <td>20 Jul 2026</td>
+        </tr>
+      
+        <tr>
+          <td>Harish Goel</td>
+          <td>Priya Iyer</td>
+          <td>Travel</td>
+          <td class="num">₹1,900</td>
+          <td><span class="badge badge-cold">Cold</span></td>
+          <td>12 Jul 2026</td>
+        </tr>
+      
+        <tr>
+          <td>Lakshmi Rao</td>
+          <td>Priya Iyer</td>
+          <td>Home Loan</td>
+          <td class="num">₹0</td>
+          <td><span class="badge badge-warm">Warm</span></td>
+          <td>10 Jul 2026</td>
+        </tr>
+      
+    </tbody>
+  </table></div>
+    </div>
+  </section>
+
+  <!-- LEADS -->
+  <section class="page" id="page-leads">
+    <div class="topbar">
+      <div>
+        <div class="page-title">Leads Pipeline</div>
+        <div class="page-sub">Drag-style view of leads by temperature (Hot / Warm / Cold)</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn" onclick="openDealModal()">+ New Lead</button>
+      </div>
+    </div>
+    <div class="kanban" id="kanban">
+      <div class="kanban-col">
+        <div class="kanban-col-header">
+          <span>Hot</span>
+          <span class="kanban-count">9</span>
+        </div>
+        
+          <div class="lead-card hot" onclick="editDeal(&#39;d2&#39;)">
+            <div class="lead-card-name">Sunita Desai</div>
+            <div class="lead-card-meta">Health • ₹18.0K</div>
+            <div class="lead-card-meta">POSP: Anjali Sharma • 28 May 2026</div>
+          </div>
+        
+          <div class="lead-card hot" onclick="editDeal(&#39;d3&#39;)">
+            <div class="lead-card-name">Aditya Kapoor</div>
+            <div class="lead-card-meta">Motor • ₹12.5K</div>
+            <div class="lead-card-meta">POSP: Rohit Kumar • 25 May 2026</div>
+          </div>
+        
+          <div class="lead-card hot" onclick="editDeal(&#39;d6&#39;)">
+            <div class="lead-card-name">Sneha Reddy</div>
+            <div class="lead-card-meta">Travel • ₹4.5K</div>
+            <div class="lead-card-meta">POSP: Priya Iyer • 22 May 2026</div>
+          </div>
+        
+          <div class="lead-card hot" onclick="editDeal(&#39;d9&#39;)">
+            <div class="lead-card-name">Karan Malhotra</div>
+            <div class="lead-card-meta">Life • ₹32.0K</div>
+            <div class="lead-card-meta">POSP: Anjali Sharma • 30 May 2026</div>
+          </div>
+        
+          <div class="lead-card hot" onclick="editDeal(&#39;d11&#39;)">
+            <div class="lead-card-name">Sanjay Verma</div>
+            <div class="lead-card-meta">Motor • ₹8.5K</div>
+            <div class="lead-card-meta">POSP: Priya Iyer • 24 May 2026</div>
+          </div>
+        
+          <div class="lead-card hot" onclick="editDeal(&#39;d13&#39;)">
+            <div class="lead-card-name">Naveen Khanna</div>
+            <div class="lead-card-meta">Travel • ₹3.8K</div>
+            <div class="lead-card-meta">POSP: Anjali Sharma • 26 May 2026</div>
+          </div>
+        
+          <div class="lead-card hot" onclick="editDeal(&#39;d16&#39;)">
+            <div class="lead-card-name">Sameer Bhatia</div>
+            <div class="lead-card-meta">Personal Loan • ₹0</div>
+            <div class="lead-card-meta">POSP: Anjali Sharma • 28 May 2026</div>
+          </div>
+        
+          <div class="lead-card hot" onclick="editDeal(&#39;d18&#39;)">
+            <div class="lead-card-name">Ashok Pandey</div>
+            <div class="lead-card-meta">Home Loan • ₹0</div>
+            <div class="lead-card-meta">POSP: Vikram Singh • 15 Jun 2026</div>
+          </div>
+        
+          <div class="lead-card hot" onclick="editDeal(&#39;d21&#39;)">
+            <div class="lead-card-name">GreenTech LLP</div>
+            <div class="lead-card-meta">Business Loan • ₹0</div>
+            <div class="lead-card-meta">POSP: Rohit Kumar • 30 May 2026</div>
+          </div>
+        
+      </div>
+    
+      <div class="kanban-col">
+        <div class="kanban-col-header">
+          <span>Warm</span>
+          <span class="kanban-count">8</span>
+        </div>
+        
+          <div class="lead-card warm" onclick="editDeal(&#39;d1&#39;)">
+            <div class="lead-card-name">Rajesh Mehta</div>
+            <div class="lead-card-meta">Life • ₹45.0K</div>
+            <div class="lead-card-meta">POSP: Anjali Sharma • 15 Jun 2026</div>
+          </div>
+        
+          <div class="lead-card warm" onclick="editDeal(&#39;d5&#39;)">
+            <div class="lead-card-name">Mohan Pillai</div>
+            <div class="lead-card-meta">Term • ₹28.0K</div>
+            <div class="lead-card-meta">POSP: Priya Iyer • 10 Jun 2026</div>
+          </div>
+        
+          <div class="lead-card warm" onclick="editDeal(&#39;d7&#39;)">
+            <div class="lead-card-name">Arjun Bhatt</div>
+            <div class="lead-card-meta">Home • ₹16.0K</div>
+            <div class="lead-card-meta">POSP: Vikram Singh • 30 Jun 2026</div>
+          </div>
+        
+          <div class="lead-card warm" onclick="editDeal(&#39;d10&#39;)">
+            <div class="lead-card-name">Meera Saxena</div>
+            <div class="lead-card-meta">Health • ₹9.5K</div>
+            <div class="lead-card-meta">POSP: Rohit Kumar • 05 Jun 2026</div>
+          </div>
+        
+          <div class="lead-card warm" onclick="editDeal(&#39;d12&#39;)">
+            <div class="lead-card-name">Ritu Agarwal</div>
+            <div class="lead-card-meta">Term • ₹18.5K</div>
+            <div class="lead-card-meta">POSP: Vikram Singh • 20 Jun 2026</div>
+          </div>
+        
+          <div class="lead-card warm" onclick="editDeal(&#39;d14&#39;)">
+            <div class="lead-card-name">Pooja Saxena</div>
+            <div class="lead-card-meta">Travel • ₹2.2K</div>
+            <div class="lead-card-meta">POSP: Rohit Kumar • 08 Jun 2026</div>
+          </div>
+        
+          <div class="lead-card warm" onclick="editDeal(&#39;d17&#39;)">
+            <div class="lead-card-name">Geeta Mishra</div>
+            <div class="lead-card-meta">Personal Loan • ₹0</div>
+            <div class="lead-card-meta">POSP: Rohit Kumar • 02 Jun 2026</div>
+          </div>
+        
+          <div class="lead-card warm" onclick="editDeal(&#39;d19&#39;)">
+            <div class="lead-card-name">Lakshmi Rao</div>
+            <div class="lead-card-meta">Home Loan • ₹0</div>
+            <div class="lead-card-meta">POSP: Priya Iyer • 10 Jul 2026</div>
+          </div>
+        
+      </div>
+    
+      <div class="kanban-col">
+        <div class="kanban-col-header">
+          <span>Cold</span>
+          <span class="kanban-count">4</span>
+        </div>
+        
+          <div class="lead-card " onclick="editDeal(&#39;d4&#39;)">
+            <div class="lead-card-name">Kavita Nair</div>
+            <div class="lead-card-meta">Health • ₹22.0K</div>
+            <div class="lead-card-meta">POSP: Rohit Kumar • 20 Jul 2026</div>
+          </div>
+        
+          <div class="lead-card " onclick="editDeal(&#39;d8&#39;)">
+            <div class="lead-card-name">Deepika Joshi</div>
+            <div class="lead-card-meta">ULIP • ₹60.0K</div>
+            <div class="lead-card-meta">POSP: Vikram Singh • 15 Aug 2026</div>
+          </div>
+        
+          <div class="lead-card " onclick="editDeal(&#39;d15&#39;)">
+            <div class="lead-card-name">Harish Goel</div>
+            <div class="lead-card-meta">Travel • ₹1.9K</div>
+            <div class="lead-card-meta">POSP: Priya Iyer • 12 Jul 2026</div>
+          </div>
+        
+          <div class="lead-card " onclick="editDeal(&#39;d20&#39;)">
+            <div class="lead-card-name">Bharat Industries</div>
+            <div class="lead-card-meta">Business Loan • ₹0</div>
+            <div class="lead-card-meta">POSP: Vikram Singh • 20 Aug 2026</div>
+          </div>
+        
+      </div>
+    </div>
+  </section>
+
+  <!-- DEALS -->
+  <section class="page" id="page-deals">
+    <div class="topbar">
+      <div>
+        <div class="page-title">Deals Tracker</div>
+        <div class="page-sub">Master list — POSP, customer, policy details, status, expected closure</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn" onclick="openDealModal()">+ New Deal</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="filter-bar">
+        <button class="filter-chip active" data-filter="all">All</button>
+        <button class="filter-chip" data-filter="H">Hot</button>
+        <button class="filter-chip" data-filter="W">Warm</button>
+        <button class="filter-chip" data-filter="C">Cold</button>
+        <input class="search-input" type="text" id="deal-search" placeholder="Search customer, POSP, policy…">
+      </div>
+      <div class="table-wrap"><table id="deals-table">
+    <thead><tr>
+      <th>POSP</th><th>Customer</th><th>Policy</th><th>Sum Assured</th><th>Premium</th>
+      <th>COA</th><th>Margin</th><th>Status</th><th>Expected</th>
+      <th>Proposal #</th><th>Policy #</th><th>Issued</th><th>Remarks</th><th></th>
+    </tr></thead>
+    <tbody>
+      
+        <tr>
+          <td>Anjali Sharma</td>
+          <td><strong>Rajesh Mehta</strong></td>
+          <td>Life</td>
+          <td class="num-right">₹50,00,000</td>
+          <td class="num-right">₹45,000</td>
+          <td class="num-right">₹6,000</td>
+          <td class="num-right">₹3,000</td>
+          <td><span class="badge badge-warm">Warm</span></td>
+          <td>15 Jun 2026</td>
+          <td>PRP-22301</td>
+          <td>–</td>
+          <td>–</td>
+          <td style="white-space:normal;max-width:200px">Awaiting medical</td>
+          <td class="actions-cell">
+            <button class="icon-btn" onclick="editDeal(&#39;d1&#39;)">Edit</button>
+            <button class="icon-btn danger" onclick="deleteDeal(&#39;d1&#39;)">Del</button>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>Anjali Sharma</td>
+          <td><strong>Sunita Desai</strong></td>
+          <td>Health</td>
+          <td class="num-right">₹10,00,000</td>
+          <td class="num-right">₹18,000</td>
+          <td class="num-right">₹2,400</td>
+          <td class="num-right">₹1,200</td>
+          <td><span class="badge badge-hot">Hot</span></td>
+          <td>28 May 2026</td>
+          <td>PRP-22302</td>
+          <td>–</td>
+          <td>–</td>
+          <td style="white-space:normal;max-width:200px">Comparing 2 quotes</td>
+          <td class="actions-cell">
+            <button class="icon-btn" onclick="editDeal(&#39;d2&#39;)">Edit</button>
+            <button class="icon-btn danger" onclick="deleteDeal(&#39;d2&#39;)">Del</button>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>Rohit Kumar</td>
+          <td><strong>Aditya Kapoor</strong></td>
+          <td>Motor</td>
+          <td class="num-right">₹8,00,000</td>
+          <td class="num-right">₹12,500</td>
+          <td class="num-right">₹1,500</td>
+          <td class="num-right">₹800</td>
+          <td><span class="badge badge-hot">Hot</span></td>
+          <td>25 May 2026</td>
+          <td>PRP-22303</td>
+          <td>–</td>
+          <td>–</td>
+          <td style="white-space:normal;max-width:200px">Documents pending</td>
+          <td class="actions-cell">
+            <button class="icon-btn" onclick="editDeal(&#39;d3&#39;)">Edit</button>
+            <button class="icon-btn danger" onclick="deleteDeal(&#39;d3&#39;)">Del</button>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>Rohit Kumar</td>
+          <td><strong>Kavita Nair</strong></td>
+          <td>Health</td>
+          <td class="num-right">₹15,00,000</td>
+          <td class="num-right">₹22,000</td>
+          <td class="num-right">₹3,000</td>
+          <td class="num-right">₹1,500</td>
+          <td><span class="badge badge-cold">Cold</span></td>
+          <td>20 Jul 2026</td>
+          <td>PRP-22304</td>
+          <td>–</td>
+          <td>–</td>
+          <td style="white-space:normal;max-width:200px">Not responsive</td>
+          <td class="actions-cell">
+            <button class="icon-btn" onclick="editDeal(&#39;d4&#39;)">Edit</button>
+            <button class="icon-btn danger" onclick="deleteDeal(&#39;d4&#39;)">Del</button>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>Priya Iyer</td>
+          <td><strong>Mohan Pillai</strong></td>
+          <td>Term</td>
+          <td class="num-right">₹1,00,00,000</td>
+          <td class="num-right">₹28,000</td>
+          <td class="num-right">₹3,500</td>
+          <td class="num-right">₹1,800</td>
+          <td><span class="badge badge-warm">Warm</span></td>
+          <td>10 Jun 2026</td>
+          <td>PRP-22305</td>
+          <td>–</td>
+          <td>–</td>
+          <td style="white-space:normal;max-width:200px">Quote sent</td>
+          <td class="actions-cell">
+            <button class="icon-btn" onclick="editDeal(&#39;d5&#39;)">Edit</button>
+            <button class="icon-btn danger" onclick="deleteDeal(&#39;d5&#39;)">Del</button>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>Priya Iyer</td>
+          <td><strong>Sneha Reddy</strong></td>
+          <td>Travel</td>
+          <td class="num-right">₹20,00,000</td>
+          <td class="num-right">₹4,500</td>
+          <td class="num-right">₹500</td>
+          <td class="num-right">₹300</td>
+          <td><span class="badge badge-hot">Hot</span></td>
+          <td>22 May 2026</td>
+          <td>PRP-22306</td>
+          <td>POL-99812</td>
+          <td>15 May 2026</td>
+          <td style="white-space:normal;max-width:200px">Issued</td>
+          <td class="actions-cell">
+            <button class="icon-btn" onclick="editDeal(&#39;d6&#39;)">Edit</button>
+            <button class="icon-btn danger" onclick="deleteDeal(&#39;d6&#39;)">Del</button>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>Vikram Singh</td>
+          <td><strong>Arjun Bhatt</strong></td>
+          <td>Home</td>
+          <td class="num-right">₹80,00,000</td>
+          <td class="num-right">₹16,000</td>
+          <td class="num-right">₹2,200</td>
+          <td class="num-right">₹1,100</td>
+          <td><span class="badge badge-warm">Warm</span></td>
+          <td>30 Jun 2026</td>
+          <td>PRP-22307</td>
+          <td>–</td>
+          <td>–</td>
+          <td style="white-space:normal;max-width:200px">Property survey done</td>
+          <td class="actions-cell">
+            <button class="icon-btn" onclick="editDeal(&#39;d7&#39;)">Edit</button>
+            <button class="icon-btn danger" onclick="deleteDeal(&#39;d7&#39;)">Del</button>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>Vikram Singh</td>
+          <td><strong>Deepika Joshi</strong></td>
+          <td>ULIP</td>
+          <td class="num-right">₹25,00,000</td>
+          <td class="num-right">₹60,000</td>
+          <td class="num-right">₹8,000</td>
+          <td class="num-right">₹4,000</td>
+          <td><span class="badge badge-cold">Cold</span></td>
+          <td>15 Aug 2026</td>
+          <td>PRP-22308</td>
+          <td>–</td>
+          <td>–</td>
+          <td style="white-space:normal;max-width:200px">Reviewing fund options</td>
+          <td class="actions-cell">
+            <button class="icon-btn" onclick="editDeal(&#39;d8&#39;)">Edit</button>
+            <button class="icon-btn danger" onclick="deleteDeal(&#39;d8&#39;)">Del</button>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>Anjali Sharma</td>
+          <td><strong>Karan Malhotra</strong></td>
+          <td>Life</td>
+          <td class="num-right">₹30,00,000</td>
+          <td class="num-right">₹32,000</td>
+          <td class="num-right">₹4,500</td>
+          <td class="num-right">₹2,200</td>
+          <td><span class="badge badge-hot">Hot</span></td>
+          <td>30 May 2026</td>
+          <td>PRP-22309</td>
+          <td>POL-99813</td>
+          <td>18 May 2026</td>
+          <td style="white-space:normal;max-width:200px">Issued, sending docs</td>
+          <td class="actions-cell">
+            <button class="icon-btn" onclick="editDeal(&#39;d9&#39;)">Edit</button>
+            <button class="icon-btn danger" onclick="deleteDeal(&#39;d9&#39;)">Del</button>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>Rohit Kumar</td>
+          <td><strong>Meera Saxena</strong></td>
+          <td>Health</td>
+          <td class="num-right">₹5,00,000</td>
+          <td class="num-right">₹9,500</td>
+          <td class="num-right">₹1,300</td>
+          <td class="num-right">₹700</td>
+          <td><span class="badge badge-warm">Warm</span></td>
+          <td>05 Jun 2026</td>
+          <td>PRP-22310</td>
+          <td>–</td>
+          <td>–</td>
+          <td style="white-space:normal;max-width:200px">KYC done</td>
+          <td class="actions-cell">
+            <button class="icon-btn" onclick="editDeal(&#39;d10&#39;)">Edit</button>
+            <button class="icon-btn danger" onclick="deleteDeal(&#39;d10&#39;)">Del</button>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>Priya Iyer</td>
+          <td><strong>Sanjay Verma</strong></td>
+          <td>Motor</td>
+          <td class="num-right">₹6,00,000</td>
+          <td class="num-right">₹8,500</td>
+          <td class="num-right">₹1,100</td>
+          <td class="num-right">₹550</td>
+          <td><span class="badge badge-hot">Hot</span></td>
+          <td>24 May 2026</td>
+          <td>PRP-22311</td>
+          <td>POL-99814</td>
+          <td>17 May 2026</td>
+          <td style="white-space:normal;max-width:200px">Issued</td>
+          <td class="actions-cell">
+            <button class="icon-btn" onclick="editDeal(&#39;d11&#39;)">Edit</button>
+            <button class="icon-btn danger" onclick="deleteDeal(&#39;d11&#39;)">Del</button>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>Vikram Singh</td>
+          <td><strong>Ritu Agarwal</strong></td>
+          <td>Term</td>
+          <td class="num-right">₹75,00,000</td>
+          <td class="num-right">₹18,500</td>
+          <td class="num-right">₹2,500</td>
+          <td class="num-right">₹1,300</td>
+          <td><span class="badge badge-warm">Warm</span></td>
+          <td>20 Jun 2026</td>
+          <td>PRP-22312</td>
+          <td>–</td>
+          <td>–</td>
+          <td style="white-space:normal;max-width:200px">Medical scheduled</td>
+          <td class="actions-cell">
+            <button class="icon-btn" onclick="editDeal(&#39;d12&#39;)">Edit</button>
+            <button class="icon-btn danger" onclick="deleteDeal(&#39;d12&#39;)">Del</button>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>Anjali Sharma</td>
+          <td><strong>Naveen Khanna</strong></td>
+          <td>Travel</td>
+          <td class="num-right">₹15,00,000</td>
+          <td class="num-right">₹3,800</td>
+          <td class="num-right">₹500</td>
+          <td class="num-right">₹280</td>
+          <td><span class="badge badge-hot">Hot</span></td>
+          <td>26 May 2026</td>
+          <td>PRP-22313</td>
+          <td>POL-99815</td>
+          <td>19 May 2026</td>
+          <td style="white-space:normal;max-width:200px">Europe trip, issued</td>
+          <td class="actions-cell">
+            <button class="icon-btn" onclick="editDeal(&#39;d13&#39;)">Edit</button>
+            <button class="icon-btn danger" onclick="deleteDeal(&#39;d13&#39;)">Del</button>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>Rohit Kumar</td>
+          <td><strong>Pooja Saxena</strong></td>
+          <td>Travel</td>
+          <td class="num-right">₹10,00,000</td>
+          <td class="num-right">₹2,200</td>
+          <td class="num-right">₹300</td>
+          <td class="num-right">₹180</td>
+          <td><span class="badge badge-warm">Warm</span></td>
+          <td>08 Jun 2026</td>
+          <td>PRP-22314</td>
+          <td>–</td>
+          <td>–</td>
+          <td style="white-space:normal;max-width:200px">Family Asia trip</td>
+          <td class="actions-cell">
+            <button class="icon-btn" onclick="editDeal(&#39;d14&#39;)">Edit</button>
+            <button class="icon-btn danger" onclick="deleteDeal(&#39;d14&#39;)">Del</button>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>Priya Iyer</td>
+          <td><strong>Harish Goel</strong></td>
+          <td>Travel</td>
+          <td class="num-right">₹8,00,000</td>
+          <td class="num-right">₹1,900</td>
+          <td class="num-right">₹250</td>
+          <td class="num-right">₹150</td>
+          <td><span class="badge badge-cold">Cold</span></td>
+          <td>12 Jul 2026</td>
+          <td>PRP-22315</td>
+          <td>–</td>
+          <td>–</td>
+          <td style="white-space:normal;max-width:200px">Solo trip, still deciding</td>
+          <td class="actions-cell">
+            <button class="icon-btn" onclick="editDeal(&#39;d15&#39;)">Edit</button>
+            <button class="icon-btn danger" onclick="deleteDeal(&#39;d15&#39;)">Del</button>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>Anjali Sharma</td>
+          <td><strong>Sameer Bhatia</strong></td>
+          <td>Personal Loan</td>
+          <td class="num-right">₹8,00,000</td>
+          <td class="num-right">₹0</td>
+          <td class="num-right">₹8,000</td>
+          <td class="num-right">₹12,000</td>
+          <td><span class="badge badge-hot">Hot</span></td>
+          <td>28 May 2026</td>
+          <td>PRP-22316</td>
+          <td>LOAN-44012</td>
+          <td>15 May 2026</td>
+          <td style="white-space:normal;max-width:200px">Disbursed, 14% APR</td>
+          <td class="actions-cell">
+            <button class="icon-btn" onclick="editDeal(&#39;d16&#39;)">Edit</button>
+            <button class="icon-btn danger" onclick="deleteDeal(&#39;d16&#39;)">Del</button>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>Rohit Kumar</td>
+          <td><strong>Geeta Mishra</strong></td>
+          <td>Personal Loan</td>
+          <td class="num-right">₹5,00,000</td>
+          <td class="num-right">₹0</td>
+          <td class="num-right">₹5,000</td>
+          <td class="num-right">₹7,500</td>
+          <td><span class="badge badge-warm">Warm</span></td>
+          <td>02 Jun 2026</td>
+          <td>PRP-22317</td>
+          <td>–</td>
+          <td>–</td>
+          <td style="white-space:normal;max-width:200px">KYC done, bank verifying</td>
+          <td class="actions-cell">
+            <button class="icon-btn" onclick="editDeal(&#39;d17&#39;)">Edit</button>
+            <button class="icon-btn danger" onclick="deleteDeal(&#39;d17&#39;)">Del</button>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>Vikram Singh</td>
+          <td><strong>Ashok Pandey</strong></td>
+          <td>Home Loan</td>
+          <td class="num-right">₹50,00,000</td>
+          <td class="num-right">₹0</td>
+          <td class="num-right">₹50,000</td>
+          <td class="num-right">₹75,000</td>
+          <td><span class="badge badge-hot">Hot</span></td>
+          <td>15 Jun 2026</td>
+          <td>PRP-22318</td>
+          <td>–</td>
+          <td>–</td>
+          <td style="white-space:normal;max-width:200px">Property docs pending</td>
+          <td class="actions-cell">
+            <button class="icon-btn" onclick="editDeal(&#39;d18&#39;)">Edit</button>
+            <button class="icon-btn danger" onclick="deleteDeal(&#39;d18&#39;)">Del</button>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>Priya Iyer</td>
+          <td><strong>Lakshmi Rao</strong></td>
+          <td>Home Loan</td>
+          <td class="num-right">₹75,00,000</td>
+          <td class="num-right">₹0</td>
+          <td class="num-right">₹75,000</td>
+          <td class="num-right">₹1,10,000</td>
+          <td><span class="badge badge-warm">Warm</span></td>
+          <td>10 Jul 2026</td>
+          <td>PRP-22319</td>
+          <td>–</td>
+          <td>–</td>
+          <td style="white-space:normal;max-width:200px">Bank shortlist made</td>
+          <td class="actions-cell">
+            <button class="icon-btn" onclick="editDeal(&#39;d19&#39;)">Edit</button>
+            <button class="icon-btn danger" onclick="deleteDeal(&#39;d19&#39;)">Del</button>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>Vikram Singh</td>
+          <td><strong>Bharat Industries</strong></td>
+          <td>Business Loan</td>
+          <td class="num-right">₹25,00,000</td>
+          <td class="num-right">₹0</td>
+          <td class="num-right">₹25,000</td>
+          <td class="num-right">₹40,000</td>
+          <td><span class="badge badge-cold">Cold</span></td>
+          <td>20 Aug 2026</td>
+          <td>PRP-22320</td>
+          <td>–</td>
+          <td>–</td>
+          <td style="white-space:normal;max-width:200px">Awaiting CA financials</td>
+          <td class="actions-cell">
+            <button class="icon-btn" onclick="editDeal(&#39;d20&#39;)">Edit</button>
+            <button class="icon-btn danger" onclick="deleteDeal(&#39;d20&#39;)">Del</button>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>Rohit Kumar</td>
+          <td><strong>GreenTech LLP</strong></td>
+          <td>Business Loan</td>
+          <td class="num-right">₹12,00,000</td>
+          <td class="num-right">₹0</td>
+          <td class="num-right">₹12,000</td>
+          <td class="num-right">₹18,000</td>
+          <td><span class="badge badge-hot">Hot</span></td>
+          <td>30 May 2026</td>
+          <td>PRP-22321</td>
+          <td>LOAN-44013</td>
+          <td>12 May 2026</td>
+          <td style="white-space:normal;max-width:200px">Disbursed</td>
+          <td class="actions-cell">
+            <button class="icon-btn" onclick="editDeal(&#39;d21&#39;)">Edit</button>
+            <button class="icon-btn danger" onclick="deleteDeal(&#39;d21&#39;)">Del</button>
+          </td>
+        </tr>
+      
+    </tbody>
+  </table></div>
+    </div>
+  </section>
+
+  <!-- POSP -->
+  <section class="page" id="page-posp">
+    <div class="topbar">
+      <div>
+        <div class="page-title">POSP Roster</div>
+        <div class="page-sub">Active and inactive Point of Sales Persons</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn" onclick="openPospModal()">+ Add POSP</button>
+      </div>
+    </div>
+    <div class="posp-grid" id="posp-grid">
+      <div class="posp-card" onclick="editPosp(&#39;p1&#39;)">
+        <div style="display:flex;justify-content:space-between;align-items:start;">
+          <div>
+            <div class="posp-name">Anjali Sharma</div>
+            <div class="posp-code">POSP-1001</div>
+          </div>
+          <span class="badge badge-success">Active</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:8px;">9876543210 • anjali@example.com</div>
+        <div class="posp-stats">
+          <div>
+            <div class="posp-stat-label">Deals</div>
+            <div class="posp-stat-val">5</div>
+          </div>
+          <div>
+            <div class="posp-stat-label">Premium</div>
+            <div class="posp-stat-val">₹98.8K</div>
+          </div>
+          <div>
+            <div class="posp-stat-label">Joined</div>
+            <div class="posp-stat-val" style="font-size:12px;">15 Mar 2024</div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="posp-card" onclick="editPosp(&#39;p2&#39;)">
+        <div style="display:flex;justify-content:space-between;align-items:start;">
+          <div>
+            <div class="posp-name">Rohit Kumar</div>
+            <div class="posp-code">POSP-1002</div>
+          </div>
+          <span class="badge badge-success">Active</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:8px;">9123456780 • rohit@example.com</div>
+        <div class="posp-stats">
+          <div>
+            <div class="posp-stat-label">Deals</div>
+            <div class="posp-stat-val">6</div>
+          </div>
+          <div>
+            <div class="posp-stat-label">Premium</div>
+            <div class="posp-stat-val">₹46.2K</div>
+          </div>
+          <div>
+            <div class="posp-stat-label">Joined</div>
+            <div class="posp-stat-val" style="font-size:12px;">02 Jun 2024</div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="posp-card" onclick="editPosp(&#39;p3&#39;)">
+        <div style="display:flex;justify-content:space-between;align-items:start;">
+          <div>
+            <div class="posp-name">Priya Iyer</div>
+            <div class="posp-code">POSP-1003</div>
+          </div>
+          <span class="badge badge-success">Active</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:8px;">9988776655 • priya@example.com</div>
+        <div class="posp-stats">
+          <div>
+            <div class="posp-stat-label">Deals</div>
+            <div class="posp-stat-val">5</div>
+          </div>
+          <div>
+            <div class="posp-stat-label">Premium</div>
+            <div class="posp-stat-val">₹42.9K</div>
+          </div>
+          <div>
+            <div class="posp-stat-label">Joined</div>
+            <div class="posp-stat-val" style="font-size:12px;">20 Jan 2025</div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="posp-card" onclick="editPosp(&#39;p4&#39;)">
+        <div style="display:flex;justify-content:space-between;align-items:start;">
+          <div>
+            <div class="posp-name">Vikram Singh</div>
+            <div class="posp-code">POSP-1004</div>
+          </div>
+          <span class="badge badge-success">Active</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:8px;">9000111222 • vikram@example.com</div>
+        <div class="posp-stats">
+          <div>
+            <div class="posp-stat-label">Deals</div>
+            <div class="posp-stat-val">5</div>
+          </div>
+          <div>
+            <div class="posp-stat-label">Premium</div>
+            <div class="posp-stat-val">₹94.5K</div>
+          </div>
+          <div>
+            <div class="posp-stat-label">Joined</div>
+            <div class="posp-stat-val" style="font-size:12px;">10 Nov 2023</div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="posp-card" onclick="editPosp(&#39;p5&#39;)">
+        <div style="display:flex;justify-content:space-between;align-items:start;">
+          <div>
+            <div class="posp-name">Neha Patel</div>
+            <div class="posp-code">POSP-1005</div>
+          </div>
+          <span class="badge badge-muted">Inactive</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:8px;">9888777666 • neha@example.com</div>
+        <div class="posp-stats">
+          <div>
+            <div class="posp-stat-label">Deals</div>
+            <div class="posp-stat-val">0</div>
+          </div>
+          <div>
+            <div class="posp-stat-label">Premium</div>
+            <div class="posp-stat-val">₹0</div>
+          </div>
+          <div>
+            <div class="posp-stat-label">Joined</div>
+            <div class="posp-stat-val" style="font-size:12px;">01 Apr 2025</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RENEWALS -->
+  <section class="page" id="page-renewals">
+    <div class="topbar">
+      <div>
+        <div class="page-title">Renewals</div>
+        <div class="page-sub">Policies due within next 90 days (auto-calculated from issuance date)</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="table-wrap"><table id="renewals-table">
+    <thead><tr>
+      <th>Customer</th><th>Policy #</th><th>Type</th><th>Premium</th><th>POSP</th><th>Issued</th><th>Renewal Due</th><th>Days Left</th>
+    </tr></thead>
+    <tbody>
+      <tr><td colspan="8" class="empty">No renewals in the next 90 days. Mark a deal as issued (with a policy number + issuance date) to see it here.</td></tr>
+    </tbody>
+  </table></div>
+    </div>
+  </section>
+
+  <!-- COMMISSIONS -->
+  <section class="page" id="page-commissions">
+    <div class="topbar">
+      <div>
+        <div class="page-title">Commissions</div>
+        <div class="page-sub">Cost of Acquisition (COA) and Retained Margin by POSP</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="table-wrap"><table id="commissions-table">
+    <thead><tr>
+      <th>POSP</th><th>Code</th><th>Deals</th><th>Issued</th>
+      <th>Total Premium</th><th>Total COA</th><th>Retained Margin</th><th>Margin %</th>
+    </tr></thead>
+    <tbody>
+      
+        <tr>
+          <td><strong>Anjali Sharma</strong></td>
+          <td>POSP-1001</td>
+          <td>5</td>
+          <td>3</td>
+          <td class="num-right">₹98,800</td>
+          <td class="num-right">₹21,400</td>
+          <td class="num-right">₹18,680</td>
+          <td class="num-right">18.9%</td>
+        </tr>
+      
+        <tr>
+          <td><strong>Vikram Singh</strong></td>
+          <td>POSP-1004</td>
+          <td>5</td>
+          <td>0</td>
+          <td class="num-right">₹94,500</td>
+          <td class="num-right">₹87,700</td>
+          <td class="num-right">₹1,21,400</td>
+          <td class="num-right">128.5%</td>
+        </tr>
+      
+        <tr>
+          <td><strong>Rohit Kumar</strong></td>
+          <td>POSP-1002</td>
+          <td>6</td>
+          <td>1</td>
+          <td class="num-right">₹46,200</td>
+          <td class="num-right">₹23,100</td>
+          <td class="num-right">₹28,680</td>
+          <td class="num-right">62.1%</td>
+        </tr>
+      
+        <tr>
+          <td><strong>Priya Iyer</strong></td>
+          <td>POSP-1003</td>
+          <td>5</td>
+          <td>2</td>
+          <td class="num-right">₹42,900</td>
+          <td class="num-right">₹80,350</td>
+          <td class="num-right">₹1,12,800</td>
+          <td class="num-right">262.9%</td>
+        </tr>
+      
+        <tr>
+          <td><strong>Neha Patel</strong></td>
+          <td>POSP-1005</td>
+          <td>0</td>
+          <td>0</td>
+          <td class="num-right">₹0</td>
+          <td class="num-right">₹0</td>
+          <td class="num-right">₹0</td>
+          <td class="num-right">–</td>
+        </tr>
+      
+      <tr style="background:#f8fafc;font-weight:700;">
+        <td colspan="2">Total</td>
+        <td>21</td>
+        <td>6</td>
+        <td class="num-right">₹2,82,400</td>
+        <td class="num-right">₹2,12,550</td>
+        <td class="num-right">₹2,81,560</td>
+        <td class="num-right">99.7%</td>
+      </tr>
+    </tbody>
+  </table></div>
+    </div>
+  </section>
+
+  <!-- REPORTS -->
+  <section class="page" id="page-reports">
+    <div class="topbar">
+      <div>
+        <div class="page-title">Reports</div>
+        <div class="page-sub">Cuts of your data for review and export</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-secondary" onclick="exportData()">⬇ Export CSV</button>
+      </div>
+    </div>
+    <div class="row-2">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Monthly Premium Trend</div></div>
+        <div class="chart-wrap"><canvas id="chart-trend" style="box-sizing: border-box; display: block; height: 260px; width: 511px;" width="1023" height="520"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Conversion Funnel</div></div>
+        <div class="chart-wrap"><canvas id="chart-funnel" style="box-sizing: border-box; display: block; height: 260px; width: 511px;" width="1023" height="520"></canvas></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">Funnel by Product (Leads → Warm+ → Hot → Issued)</div></div>
+      <div class="chart-wrap" style="height:320px;"><canvas id="chart-product-funnel" style="box-sizing: border-box; display: block; height: 320px; width: 1083px;" width="2166" height="640"></canvas></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">Summary by Policy Type</div></div>
+      <div class="table-wrap"><table id="policy-summary-table">
+    <thead><tr><th>Policy Type</th><th>Deals</th><th>Premium</th><th>COA</th><th>Margin</th><th>Margin %</th></tr></thead>
+    <tbody>
+      
+        <tr>
+          <td><strong>Life</strong></td>
+          <td>2</td>
+          <td class="num-right">₹77,000</td>
+          <td class="num-right">₹10,500</td>
+          <td class="num-right">₹5,200</td>
+          <td class="num-right">6.8%</td>
+        </tr>
+      
+        <tr>
+          <td><strong>ULIP</strong></td>
+          <td>1</td>
+          <td class="num-right">₹60,000</td>
+          <td class="num-right">₹8,000</td>
+          <td class="num-right">₹4,000</td>
+          <td class="num-right">6.7%</td>
+        </tr>
+      
+        <tr>
+          <td><strong>Health</strong></td>
+          <td>3</td>
+          <td class="num-right">₹49,500</td>
+          <td class="num-right">₹6,700</td>
+          <td class="num-right">₹3,400</td>
+          <td class="num-right">6.9%</td>
+        </tr>
+      
+        <tr>
+          <td><strong>Term</strong></td>
+          <td>2</td>
+          <td class="num-right">₹46,500</td>
+          <td class="num-right">₹6,000</td>
+          <td class="num-right">₹3,100</td>
+          <td class="num-right">6.7%</td>
+        </tr>
+      
+        <tr>
+          <td><strong>Motor</strong></td>
+          <td>2</td>
+          <td class="num-right">₹21,000</td>
+          <td class="num-right">₹2,600</td>
+          <td class="num-right">₹1,350</td>
+          <td class="num-right">6.4%</td>
+        </tr>
+      
+        <tr>
+          <td><strong>Home</strong></td>
+          <td>1</td>
+          <td class="num-right">₹16,000</td>
+          <td class="num-right">₹2,200</td>
+          <td class="num-right">₹1,100</td>
+          <td class="num-right">6.9%</td>
+        </tr>
+      
+        <tr>
+          <td><strong>Travel</strong></td>
+          <td>4</td>
+          <td class="num-right">₹12,400</td>
+          <td class="num-right">₹1,550</td>
+          <td class="num-right">₹910</td>
+          <td class="num-right">7.3%</td>
+        </tr>
+      
+        <tr>
+          <td><strong>Personal Loan</strong></td>
+          <td>2</td>
+          <td class="num-right">₹0</td>
+          <td class="num-right">₹13,000</td>
+          <td class="num-right">₹19,500</td>
+          <td class="num-right">–</td>
+        </tr>
+      
+        <tr>
+          <td><strong>Home Loan</strong></td>
+          <td>2</td>
+          <td class="num-right">₹0</td>
+          <td class="num-right">₹1,25,000</td>
+          <td class="num-right">₹1,85,000</td>
+          <td class="num-right">–</td>
+        </tr>
+      
+        <tr>
+          <td><strong>Business Loan</strong></td>
+          <td>2</td>
+          <td class="num-right">₹0</td>
+          <td class="num-right">₹37,000</td>
+          <td class="num-right">₹58,000</td>
+          <td class="num-right">–</td>
+        </tr>
+      
+    </tbody>
+  </table></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- DEAL MODAL -->
+<div class="modal-overlay" id="deal-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="deal-modal-title">New Deal</div>
+      <button class="close-btn" onclick="closeModal(&#39;deal-modal&#39;)">×</button>
+    </div>
+    <div class="modal-body">
+      <form id="deal-form" onsubmit="saveDeal(event)">
+        <input type="hidden" id="d-id" value="">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>POSP Name</label>
+            <select id="d-posp" required=""><option value="p1">Anjali Sharma (POSP-1001)</option><option value="p2">Rohit Kumar (POSP-1002)</option><option value="p3">Priya Iyer (POSP-1003)</option><option value="p4">Vikram Singh (POSP-1004)</option></select>
+          </div>
+          <div class="form-group">
+            <label>Customer Name</label>
+            <input id="d-customer" required="">
+          </div>
+          <div class="form-group">
+            <label>Policy Type</label>
+            <select id="d-policy" required="">
+              <option value="Life">Life</option>
+              <option value="Health">Health</option>
+              <option value="Motor">Motor</option>
+              <option value="Travel">Travel</option>
+              <option value="Home">Home</option>
+              <option value="Marine">Marine</option>
+              <option value="Term">Term</option>
+              <option value="ULIP">ULIP</option>
+              <option value="Personal Loan">Personal Loan</option>
+              <option value="Home Loan">Home Loan</option>
+              <option value="Business Loan">Business Loan</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Sum Assured (₹)</label>
+            <input type="number" id="d-sum" required="">
+          </div>
+          <div class="form-group">
+            <label>Premium Amount (₹)</label>
+            <input type="number" id="d-premium" required="">
+          </div>
+          <div class="form-group">
+            <label>COA (₹)</label>
+            <input type="number" id="d-coa" value="0">
+          </div>
+          <div class="form-group">
+            <label>Retained Margin (₹)</label>
+            <input type="number" id="d-margin" value="0">
+          </div>
+          <div class="form-group">
+            <label>Deal Status</label>
+            <select id="d-status" required="">
+              <option value="H">Hot</option>
+              <option value="W">Warm</option>
+              <option value="C">Cold</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Expected Closure Date</label>
+            <input type="date" id="d-expected">
+          </div>
+          <div class="form-group">
+            <label>Proposal Number</label>
+            <input id="d-proposal">
+          </div>
+          <div class="form-group">
+            <label>Policy Number</label>
+            <input id="d-policyno">
+          </div>
+          <div class="form-group">
+            <label>Issuance Date</label>
+            <input type="date" id="d-issued">
+          </div>
+          <div class="form-group full">
+            <label>Remarks</label>
+            <textarea id="d-remarks"></textarea>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal(&#39;deal-modal&#39;)">Cancel</button>
+      <button class="btn" type="submit" form="deal-form">Save Deal</button>
+    </div>
+  </div>
+</div>
+
+<!-- POSP MODAL -->
+<div class="modal-overlay" id="posp-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="posp-modal-title">New POSP</div>
+      <button class="close-btn" onclick="closeModal(&#39;posp-modal&#39;)">×</button>
+    </div>
+    <div class="modal-body">
+      <form id="posp-form" onsubmit="savePosp(event)">
+        <input type="hidden" id="p-id">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input id="p-name" required="">
+          </div>
+          <div class="form-group">
+            <label>POSP Code</label>
+            <input id="p-code" required="">
+          </div>
+          <div class="form-group">
+            <label>Mobile</label>
+            <input id="p-mobile">
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="p-email">
+          </div>
+          <div class="form-group">
+            <label>Joined Date</label>
+            <input type="date" id="p-joined">
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="p-active">
+              <option value="true">Active</option>
+              <option value="false">Inactive</option>
+            </select>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal(&#39;posp-modal&#39;)">Cancel</button>
+      <button class="btn" type="submit" form="posp-form">Save POSP</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA LAYER (localStorage-backed)
+// ============================================================
+const STORAGE_KEY = 'roinet_crm_v2';
+
+const SEED = {
+  posp: [
+    { id: 'p1', name: 'Anjali Sharma',   code: 'POSP-1001', mobile: '9876543210', email: 'anjali@example.com', joined: '2024-03-15', active: true  },
+    { id: 'p2', name: 'Rohit Kumar',     code: 'POSP-1002', mobile: '9123456780', email: 'rohit@example.com',  joined: '2024-06-02', active: true  },
+    { id: 'p3', name: 'Priya Iyer',      code: 'POSP-1003', mobile: '9988776655', email: 'priya@example.com',  joined: '2025-01-20', active: true  },
+    { id: 'p4', name: 'Vikram Singh',    code: 'POSP-1004', mobile: '9000111222', email: 'vikram@example.com', joined: '2023-11-10', active: true  },
+    { id: 'p5', name: 'Neha Patel',      code: 'POSP-1005', mobile: '9888777666', email: 'neha@example.com',   joined: '2025-04-01', active: false }
+  ],
+  deals: [
+    { id: 'd1', pospId: 'p1', customer: 'Rajesh Mehta',    policy: 'Life',   sum: 5000000, premium: 45000, coa: 6000, margin: 3000,  status: 'W', expected: '2026-06-15', proposal: 'PRP-22301', policyNo: '',           issued: '',           remarks: 'Awaiting medical' },
+    { id: 'd2', pospId: 'p1', customer: 'Sunita Desai',    policy: 'Health', sum: 1000000, premium: 18000, coa: 2400, margin: 1200,  status: 'H', expected: '2026-05-28', proposal: 'PRP-22302', policyNo: '',           issued: '',           remarks: 'Comparing 2 quotes' },
+    { id: 'd3', pospId: 'p2', customer: 'Aditya Kapoor',   policy: 'Motor',  sum: 800000,  premium: 12500, coa: 1500, margin: 800,   status: 'H', expected: '2026-05-25', proposal: 'PRP-22303', policyNo: '',           issued: '',           remarks: 'Documents pending' },
+    { id: 'd4', pospId: 'p2', customer: 'Kavita Nair',     policy: 'Health', sum: 1500000, premium: 22000, coa: 3000, margin: 1500,  status: 'C', expected: '2026-07-20', proposal: 'PRP-22304', policyNo: '',           issued: '',           remarks: 'Not responsive' },
+    { id: 'd5', pospId: 'p3', customer: 'Mohan Pillai',    policy: 'Term',   sum: 10000000,premium: 28000, coa: 3500, margin: 1800,  status: 'W', expected: '2026-06-10', proposal: 'PRP-22305', policyNo: '',           issued: '',           remarks: 'Quote sent' },
+    { id: 'd6', pospId: 'p3', customer: 'Sneha Reddy',     policy: 'Travel', sum: 2000000, premium: 4500,  coa: 500,  margin: 300,   status: 'H', expected: '2026-05-22', proposal: 'PRP-22306', policyNo: 'POL-99812', issued: '2026-05-15', remarks: 'Issued' },
+    { id: 'd7', pospId: 'p4', customer: 'Arjun Bhatt',     policy: 'Home',   sum: 8000000, premium: 16000, coa: 2200, margin: 1100,  status: 'W', expected: '2026-06-30', proposal: 'PRP-22307', policyNo: '',           issued: '',           remarks: 'Property survey done' },
+    { id: 'd8', pospId: 'p4', customer: 'Deepika Joshi',   policy: 'ULIP',   sum: 2500000, premium: 60000, coa: 8000, margin: 4000,  status: 'C', expected: '2026-08-15', proposal: 'PRP-22308', policyNo: '',           issued: '',           remarks: 'Reviewing fund options' },
+    { id: 'd9', pospId: 'p1', customer: 'Karan Malhotra',  policy: 'Life',   sum: 3000000, premium: 32000, coa: 4500, margin: 2200,  status: 'H', expected: '2026-05-30', proposal: 'PRP-22309', policyNo: 'POL-99813', issued: '2026-05-18', remarks: 'Issued, sending docs' },
+    { id: 'd10',pospId: 'p2', customer: 'Meera Saxena',    policy: 'Health', sum: 500000,  premium: 9500,  coa: 1300, margin: 700,   status: 'W', expected: '2026-06-05', proposal: 'PRP-22310', policyNo: '',           issued: '',           remarks: 'KYC done' },
+    { id: 'd11',pospId: 'p3', customer: 'Sanjay Verma',    policy: 'Motor',  sum: 600000,  premium: 8500,  coa: 1100, margin: 550,   status: 'H', expected: '2026-05-24', proposal: 'PRP-22311', policyNo: 'POL-99814', issued: '2026-05-17', remarks: 'Issued' },
+    { id: 'd12',pospId: 'p4', customer: 'Ritu Agarwal',    policy: 'Term',   sum: 7500000, premium: 18500, coa: 2500, margin: 1300,  status: 'W', expected: '2026-06-20', proposal: 'PRP-22312', policyNo: '',           issued: '',           remarks: 'Medical scheduled' },
+    { id: 'd13',pospId: 'p1', customer: 'Naveen Khanna',   policy: 'Travel', sum: 1500000, premium: 3800,  coa: 500,  margin: 280,   status: 'H', expected: '2026-05-26', proposal: 'PRP-22313', policyNo: 'POL-99815', issued: '2026-05-19', remarks: 'Europe trip, issued' },
+    { id: 'd14',pospId: 'p2', customer: 'Pooja Saxena',    policy: 'Travel', sum: 1000000, premium: 2200,  coa: 300,  margin: 180,   status: 'W', expected: '2026-06-08', proposal: 'PRP-22314', policyNo: '',           issued: '',           remarks: 'Family Asia trip' },
+    { id: 'd15',pospId: 'p3', customer: 'Harish Goel',     policy: 'Travel', sum: 800000,  premium: 1900,  coa: 250,  margin: 150,   status: 'C', expected: '2026-07-12', proposal: 'PRP-22315', policyNo: '',           issued: '',           remarks: 'Solo trip, still deciding' },
+    { id: 'd16',pospId: 'p1', customer: 'Sameer Bhatia',   policy: 'Personal Loan',sum: 800000,  premium: 0, coa: 8000, margin: 12000, status: 'H', expected: '2026-05-28', proposal: 'PRP-22316', policyNo: 'LOAN-44012', issued: '2026-05-15', remarks: 'Disbursed, 14% APR' },
+    { id: 'd17',pospId: 'p2', customer: 'Geeta Mishra',    policy: 'Personal Loan',sum: 500000,  premium: 0, coa: 5000, margin: 7500,  status: 'W', expected: '2026-06-02', proposal: 'PRP-22317', policyNo: '',           issued: '',           remarks: 'KYC done, bank verifying' },
+    { id: 'd18',pospId: 'p4', customer: 'Ashok Pandey',    policy: 'Home Loan',    sum: 5000000, premium: 0, coa: 50000,margin: 75000, status: 'H', expected: '2026-06-15', proposal: 'PRP-22318', policyNo: '',           issued: '',           remarks: 'Property docs pending' },
+    { id: 'd19',pospId: 'p3', customer: 'Lakshmi Rao',     policy: 'Home Loan',    sum: 7500000, premium: 0, coa: 75000,margin: 110000,status: 'W', expected: '2026-07-10', proposal: 'PRP-22319', policyNo: '',           issued: '',           remarks: 'Bank shortlist made' },
+    { id: 'd20',pospId: 'p4', customer: 'Bharat Industries',policy:'Business Loan',sum: 2500000, premium: 0, coa: 25000,margin: 40000, status: 'C', expected: '2026-08-20', proposal: 'PRP-22320', policyNo: '',           issued: '',           remarks: 'Awaiting CA financials' },
+    { id: 'd21',pospId: 'p2', customer: 'GreenTech LLP',   policy:'Business Loan', sum: 1200000, premium: 0, coa: 12000,margin: 18000, status: 'H', expected: '2026-05-30', proposal: 'PRP-22321', policyNo: 'LOAN-44013', issued: '2026-05-12', remarks: 'Disbursed' }
+  ]
+};
+
+let state = loadState();
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(SEED));
+}
+function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function resetData() {
+  if (confirm('Reset to sample data?')) {
+    state = JSON.parse(JSON.stringify(SEED));
+    saveState();
+    renderAll();
+  }
+}
+function uid() { return 'id_' + Date.now() + '_' + Math.floor(Math.random()*1000); }
+
+// ============================================================
+// FORMATTERS
+// ============================================================
+function fmtINR(n) {
+  if (n == null || isNaN(n)) return '–';
+  return '₹' + Number(n).toLocaleString('en-IN');
+}
+function fmtINRShort(n) {
+  if (!n) return '₹0';
+  const abs = Math.abs(n);
+  if (abs >= 10000000) return '₹' + (n/10000000).toFixed(2) + ' Cr';
+  if (abs >= 100000)   return '₹' + (n/100000).toFixed(2) + ' L';
+  if (abs >= 1000)     return '₹' + (n/1000).toFixed(1) + 'K';
+  return '₹' + n;
+}
+function fmtDate(d) {
+  if (!d) return '–';
+  return new Date(d).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+}
+function pospName(id) {
+  const p = state.posp.find(x => x.id === id);
+  return p ? p.name : '–';
+}
+function statusBadge(s) {
+  const map = { H: ['Hot','badge-hot'], W: ['Warm','badge-warm'], C: ['Cold','badge-cold'] };
+  const [label, cls] = map[s] || ['–','badge-muted'];
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+function escapeHtml(s) {
+  return String(s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+document.querySelectorAll('.nav-item').forEach(el => {
+  el.addEventListener('click', () => navigate(el.dataset.page));
+});
+function navigate(page) {
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.page === page));
+  document.querySelectorAll('.page').forEach(el => el.classList.toggle('active', el.id === 'page-' + page));
+  if (page === 'dashboard') renderDashboard();
+  if (page === 'leads') renderLeads();
+  if (page === 'deals') renderDeals();
+  if (page === 'posp') renderPosp();
+  if (page === 'renewals') renderRenewals();
+  if (page === 'commissions') renderCommissions();
+  if (page === 'reports') renderReports();
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+let charts = {};
+function destroyChart(key) { if (charts[key]) { charts[key].destroy(); delete charts[key]; } }
+
+function renderDashboard() {
+  const deals = state.deals;
+  const totalPremium = deals.reduce((a,d) => a + (+d.premium || 0), 0);
+  const totalMargin  = deals.reduce((a,d) => a + (+d.margin  || 0), 0);
+  const activePosps  = state.posp.filter(p => p.active).length;
+  const hotDeals     = deals.filter(d => d.status === 'H').length;
+  const issued       = deals.filter(d => d.policyNo).length;
+  const conv         = deals.length ? Math.round((issued/deals.length)*100) : 0;
+
+  document.getElementById('kpi-grid').innerHTML = `
+    <div class="kpi-card">
+      <div class="kpi-label">Total Premium</div>
+      <div class="kpi-value">${fmtINRShort(totalPremium)}</div>
+      <div class="kpi-sub">${deals.length} deals tracked</div>
+    </div>
+    <div class="kpi-card success">
+      <div class="kpi-label">Retained Margin</div>
+      <div class="kpi-value">${fmtINRShort(totalMargin)}</div>
+      <div class="kpi-sub">After COA</div>
+    </div>
+    <div class="kpi-card hot">
+      <div class="kpi-label">Hot Deals</div>
+      <div class="kpi-value">${hotDeals}</div>
+      <div class="kpi-sub">Likely to close soon</div>
+    </div>
+    <div class="kpi-card warm">
+      <div class="kpi-label">Active POSPs</div>
+      <div class="kpi-value">${activePosps}</div>
+      <div class="kpi-sub">Selling now</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Conversion</div>
+      <div class="kpi-value">${conv}%</div>
+      <div class="kpi-sub">${issued} issued / ${deals.length}</div>
+    </div>
+  `;
+
+  // Status chart
+  destroyChart('status');
+  const sCounts = { Hot: 0, Warm: 0, Cold: 0 };
+  deals.forEach(d => { sCounts[{H:'Hot',W:'Warm',C:'Cold'}[d.status]]++; });
+  charts.status = new Chart(document.getElementById('chart-status'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(sCounts),
+      datasets: [{ data: Object.values(sCounts), backgroundColor: ['#e63946','#f4a261','#6c8bb8'], borderWidth: 0 }]
+    },
+    options: { plugins: { legend: { position: 'bottom' } }, maintainAspectRatio: false }
+  });
+
+  // Policy chart
+  destroyChart('policy');
+  const pSums = {};
+  deals.forEach(d => { pSums[d.policy] = (pSums[d.policy] || 0) + (+d.premium || 0); });
+  charts.policy = new Chart(document.getElementById('chart-policy'), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(pSums),
+      datasets: [{ label: 'Premium', data: Object.values(pSums), backgroundColor: '#3282b8' }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      maintainAspectRatio: false,
+      scales: { y: { ticks: { callback: v => fmtINRShort(v) } } }
+    }
+  });
+
+  // POSP chart
+  destroyChart('posp');
+  const pospTotals = state.posp.map(p => ({
+    name: p.name,
+    total: deals.filter(d => d.pospId === p.id).reduce((a,d) => a + (+d.premium || 0), 0)
+  })).sort((a,b) => b.total - a.total).slice(0,5);
+  charts.posp = new Chart(document.getElementById('chart-posp'), {
+    type: 'bar',
+    data: {
+      labels: pospTotals.map(p => p.name),
+      datasets: [{ label: 'Premium', data: pospTotals.map(p => p.total), backgroundColor: '#0f4c75' }]
+    },
+    options: {
+      indexAxis: 'y',
+      plugins: { legend: { display: false } },
+      maintainAspectRatio: false,
+      scales: { x: { ticks: { callback: v => fmtINRShort(v) } } }
+    }
+  });
+
+  // Recent deals
+  const recent = [...deals].sort((a,b) => (b.expected||'').localeCompare(a.expected||'')).slice(0,5);
+  document.getElementById('recent-deals-table').innerHTML = `
+    <thead><tr><th>Customer</th><th>POSP</th><th>Policy</th><th>Premium</th><th>Status</th><th>Expected</th></tr></thead>
+    <tbody>
+      ${recent.map(d => `
+        <tr>
+          <td>${escapeHtml(d.customer)}</td>
+          <td>${pospName(d.pospId)}</td>
+          <td>${escapeHtml(d.policy)}</td>
+          <td class="num">${fmtINR(d.premium)}</td>
+          <td>${statusBadge(d.status)}</td>
+          <td>${fmtDate(d.expected)}</td>
+        </tr>
+      `).join('')}
+    </tbody>
+  `;
+}
+
+// ============================================================
+// LEADS KANBAN
+// ============================================================
+function renderLeads() {
+  const cols = [
+    { key: 'H', label: 'Hot', cls: 'hot' },
+    { key: 'W', label: 'Warm', cls: 'warm' },
+    { key: 'C', label: 'Cold', cls: '' }
+  ];
+  const wrap = document.getElementById('kanban');
+  wrap.innerHTML = cols.map(c => {
+    const items = state.deals.filter(d => d.status === c.key);
+    return `
+      <div class="kanban-col">
+        <div class="kanban-col-header">
+          <span>${c.label}</span>
+          <span class="kanban-count">${items.length}</span>
+        </div>
+        ${items.map(d => `
+          <div class="lead-card ${c.cls}" onclick="editDeal('${d.id}')">
+            <div class="lead-card-name">${escapeHtml(d.customer)}</div>
+            <div class="lead-card-meta">${escapeHtml(d.policy)} • ${fmtINRShort(d.premium)}</div>
+            <div class="lead-card-meta">POSP: ${pospName(d.pospId)} • ${fmtDate(d.expected)}</div>
+          </div>
+        `).join('') || '<div class="empty" style="padding:20px">No leads</div>'}
+      </div>
+    `;
+  }).join('');
+}
+
+// ============================================================
+// DEALS TABLE
+// ============================================================
+let currentFilter = 'all';
+let searchTerm = '';
+
+document.querySelectorAll('.filter-chip').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    currentFilter = el.dataset.filter;
+    renderDeals();
+  });
+});
+document.getElementById('deal-search').addEventListener('input', e => {
+  searchTerm = e.target.value.toLowerCase();
+  renderDeals();
+});
+
+function renderDeals() {
+  let rows = state.deals;
+  if (currentFilter !== 'all') rows = rows.filter(d => d.status === currentFilter);
+  if (searchTerm) {
+    rows = rows.filter(d =>
+      (d.customer || '').toLowerCase().includes(searchTerm) ||
+      pospName(d.pospId).toLowerCase().includes(searchTerm) ||
+      (d.policy || '').toLowerCase().includes(searchTerm) ||
+      (d.proposal || '').toLowerCase().includes(searchTerm)
+    );
+  }
+  document.getElementById('deals-table').innerHTML = `
+    <thead><tr>
+      <th>POSP</th><th>Customer</th><th>Policy</th><th>Sum Assured</th><th>Premium</th>
+      <th>COA</th><th>Margin</th><th>Status</th><th>Expected</th>
+      <th>Proposal #</th><th>Policy #</th><th>Issued</th><th>Remarks</th><th></th>
+    </tr></thead>
+    <tbody>
+      ${rows.length ? rows.map(d => `
+        <tr>
+          <td>${pospName(d.pospId)}</td>
+          <td><strong>${escapeHtml(d.customer)}</strong></td>
+          <td>${escapeHtml(d.policy)}</td>
+          <td class="num-right">${fmtINR(d.sum)}</td>
+          <td class="num-right">${fmtINR(d.premium)}</td>
+          <td class="num-right">${fmtINR(d.coa)}</td>
+          <td class="num-right">${fmtINR(d.margin)}</td>
+          <td>${statusBadge(d.status)}</td>
+          <td>${fmtDate(d.expected)}</td>
+          <td>${escapeHtml(d.proposal) || '–'}</td>
+          <td>${escapeHtml(d.policyNo) || '–'}</td>
+          <td>${fmtDate(d.issued)}</td>
+          <td style="white-space:normal;max-width:200px">${escapeHtml(d.remarks) || '–'}</td>
+          <td class="actions-cell">
+            <button class="icon-btn" onclick="editDeal('${d.id}')">Edit</button>
+            <button class="icon-btn danger" onclick="deleteDeal('${d.id}')">Del</button>
+          </td>
+        </tr>
+      `).join('') : '<tr><td colspan="14" class="empty">No deals match these filters.</td></tr>'}
+    </tbody>
+  `;
+}
+
+// ============================================================
+// DEAL MODAL
+// ============================================================
+function openDealModal() {
+  document.getElementById('deal-modal-title').textContent = 'New Deal';
+  document.getElementById('deal-form').reset();
+  document.getElementById('d-id').value = '';
+  populatePospSelect();
+  document.getElementById('deal-modal').classList.add('show');
+}
+function editDeal(id) {
+  const d = state.deals.find(x => x.id === id);
+  if (!d) return;
+  document.getElementById('deal-modal-title').textContent = 'Edit Deal';
+  populatePospSelect();
+  document.getElementById('d-id').value = d.id;
+  document.getElementById('d-posp').value = d.pospId;
+  document.getElementById('d-customer').value = d.customer || '';
+  document.getElementById('d-policy').value = d.policy || 'Life';
+  document.getElementById('d-sum').value = d.sum || '';
+  document.getElementById('d-premium').value = d.premium || '';
+  document.getElementById('d-coa').value = d.coa || 0;
+  document.getElementById('d-margin').value = d.margin || 0;
+  document.getElementById('d-status').value = d.status || 'W';
+  document.getElementById('d-expected').value = d.expected || '';
+  document.getElementById('d-proposal').value = d.proposal || '';
+  document.getElementById('d-policyno').value = d.policyNo || '';
+  document.getElementById('d-issued').value = d.issued || '';
+  document.getElementById('d-remarks').value = d.remarks || '';
+  document.getElementById('deal-modal').classList.add('show');
+}
+function populatePospSelect() {
+  const sel = document.getElementById('d-posp');
+  sel.innerHTML = state.posp.filter(p => p.active).map(p => `<option value="${p.id}">${escapeHtml(p.name)} (${p.code})</option>`).join('');
+}
+function saveDeal(e) {
+  e.preventDefault();
+  const id = document.getElementById('d-id').value || uid();
+  const deal = {
+    id,
+    pospId: document.getElementById('d-posp').value,
+    customer: document.getElementById('d-customer').value.trim(),
+    policy: document.getElementById('d-policy').value,
+    sum: +document.getElementById('d-sum').value || 0,
+    premium: +document.getElementById('d-premium').value || 0,
+    coa: +document.getElementById('d-coa').value || 0,
+    margin: +document.getElementById('d-margin').value || 0,
+    status: document.getElementById('d-status').value,
+    expected: document.getElementById('d-expected').value,
+    proposal: document.getElementById('d-proposal').value.trim(),
+    policyNo: document.getElementById('d-policyno').value.trim(),
+    issued: document.getElementById('d-issued').value,
+    remarks: document.getElementById('d-remarks').value.trim()
+  };
+  const idx = state.deals.findIndex(x => x.id === id);
+  if (idx >= 0) state.deals[idx] = deal; else state.deals.push(deal);
+  saveState();
+  closeModal('deal-modal');
+  renderAll();
+}
+function deleteDeal(id) {
+  if (!confirm('Delete this deal?')) return;
+  state.deals = state.deals.filter(d => d.id !== id);
+  saveState();
+  renderAll();
+}
+
+// ============================================================
+// POSP
+// ============================================================
+function renderPosp() {
+  const wrap = document.getElementById('posp-grid');
+  wrap.innerHTML = state.posp.map(p => {
+    const myDeals = state.deals.filter(d => d.pospId === p.id);
+    const total = myDeals.reduce((a,d) => a + (+d.premium || 0), 0);
+    return `
+      <div class="posp-card" onclick="editPosp('${p.id}')">
+        <div style="display:flex;justify-content:space-between;align-items:start;">
+          <div>
+            <div class="posp-name">${escapeHtml(p.name)}</div>
+            <div class="posp-code">${escapeHtml(p.code)}</div>
+          </div>
+          <span class="badge ${p.active ? 'badge-success' : 'badge-muted'}">${p.active ? 'Active' : 'Inactive'}</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:8px;">${escapeHtml(p.mobile)||''} ${p.email ? '• ' + escapeHtml(p.email) : ''}</div>
+        <div class="posp-stats">
+          <div>
+            <div class="posp-stat-label">Deals</div>
+            <div class="posp-stat-val">${myDeals.length}</div>
+          </div>
+          <div>
+            <div class="posp-stat-label">Premium</div>
+            <div class="posp-stat-val">${fmtINRShort(total)}</div>
+          </div>
+          <div>
+            <div class="posp-stat-label">Joined</div>
+            <div class="posp-stat-val" style="font-size:12px;">${fmtDate(p.joined)}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+function openPospModal() {
+  document.getElementById('posp-modal-title').textContent = 'New POSP';
+  document.getElementById('posp-form').reset();
+  document.getElementById('p-id').value = '';
+  document.getElementById('posp-modal').classList.add('show');
+}
+function editPosp(id) {
+  const p = state.posp.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('posp-modal-title').textContent = 'Edit POSP';
+  document.getElementById('p-id').value = p.id;
+  document.getElementById('p-name').value = p.name || '';
+  document.getElementById('p-code').value = p.code || '';
+  document.getElementById('p-mobile').value = p.mobile || '';
+  document.getElementById('p-email').value = p.email || '';
+  document.getElementById('p-joined').value = p.joined || '';
+  document.getElementById('p-active').value = String(!!p.active);
+  document.getElementById('posp-modal').classList.add('show');
+}
+function savePosp(e) {
+  e.preventDefault();
+  const id = document.getElementById('p-id').value || uid();
+  const posp = {
+    id,
+    name: document.getElementById('p-name').value.trim(),
+    code: document.getElementById('p-code').value.trim(),
+    mobile: document.getElementById('p-mobile').value.trim(),
+    email: document.getElementById('p-email').value.trim(),
+    joined: document.getElementById('p-joined').value,
+    active: document.getElementById('p-active').value === 'true'
+  };
+  const idx = state.posp.findIndex(x => x.id === id);
+  if (idx >= 0) state.posp[idx] = posp; else state.posp.push(posp);
+  saveState();
+  closeModal('posp-modal');
+  renderAll();
+}
+
+// ============================================================
+// RENEWALS
+// ============================================================
+function renderRenewals() {
+  const today = new Date('2026-05-20'); // session date
+  const upcoming = state.deals
+    .filter(d => d.issued)
+    .map(d => {
+      const renew = new Date(d.issued);
+      renew.setFullYear(renew.getFullYear() + 1);
+      const daysLeft = Math.ceil((renew - today) / (1000*60*60*24));
+      return { ...d, renew, daysLeft };
+    })
+    .filter(d => d.daysLeft <= 90 && d.daysLeft >= -30)
+    .sort((a,b) => a.daysLeft - b.daysLeft);
+
+  document.getElementById('renewals-table').innerHTML = `
+    <thead><tr>
+      <th>Customer</th><th>Policy #</th><th>Type</th><th>Premium</th><th>POSP</th><th>Issued</th><th>Renewal Due</th><th>Days Left</th>
+    </tr></thead>
+    <tbody>
+      ${upcoming.length ? upcoming.map(d => `
+        <tr>
+          <td><strong>${escapeHtml(d.customer)}</strong></td>
+          <td>${escapeHtml(d.policyNo)}</td>
+          <td>${escapeHtml(d.policy)}</td>
+          <td class="num-right">${fmtINR(d.premium)}</td>
+          <td>${pospName(d.pospId)}</td>
+          <td>${fmtDate(d.issued)}</td>
+          <td>${fmtDate(d.renew)}</td>
+          <td><span class="badge ${d.daysLeft < 0 ? 'badge-hot' : d.daysLeft < 30 ? 'badge-warm' : 'badge-cold'}">${d.daysLeft < 0 ? 'Overdue ' + Math.abs(d.daysLeft) + 'd' : d.daysLeft + ' days'}</span></td>
+        </tr>
+      `).join('') : '<tr><td colspan="8" class="empty">No renewals in the next 90 days. Mark a deal as issued (with a policy number + issuance date) to see it here.</td></tr>'}
+    </tbody>
+  `;
+}
+
+// ============================================================
+// COMMISSIONS
+// ============================================================
+function renderCommissions() {
+  const rows = state.posp.map(p => {
+    const myDeals = state.deals.filter(d => d.pospId === p.id);
+    const premium = myDeals.reduce((a,d) => a + (+d.premium || 0), 0);
+    const coa     = myDeals.reduce((a,d) => a + (+d.coa     || 0), 0);
+    const margin  = myDeals.reduce((a,d) => a + (+d.margin  || 0), 0);
+    const issued  = myDeals.filter(d => d.policyNo).length;
+    return { posp: p, premium, coa, margin, dealCount: myDeals.length, issued };
+  }).sort((a,b) => b.premium - a.premium);
+
+  const totals = rows.reduce((a,r) => ({
+    premium: a.premium + r.premium, coa: a.coa + r.coa, margin: a.margin + r.margin,
+    dealCount: a.dealCount + r.dealCount, issued: a.issued + r.issued
+  }), { premium:0, coa:0, margin:0, dealCount:0, issued:0 });
+
+  document.getElementById('commissions-table').innerHTML = `
+    <thead><tr>
+      <th>POSP</th><th>Code</th><th>Deals</th><th>Issued</th>
+      <th>Total Premium</th><th>Total COA</th><th>Retained Margin</th><th>Margin %</th>
+    </tr></thead>
+    <tbody>
+      ${rows.map(r => `
+        <tr>
+          <td><strong>${escapeHtml(r.posp.name)}</strong></td>
+          <td>${escapeHtml(r.posp.code)}</td>
+          <td>${r.dealCount}</td>
+          <td>${r.issued}</td>
+          <td class="num-right">${fmtINR(r.premium)}</td>
+          <td class="num-right">${fmtINR(r.coa)}</td>
+          <td class="num-right">${fmtINR(r.margin)}</td>
+          <td class="num-right">${r.premium ? ((r.margin / r.premium)*100).toFixed(1) + '%' : '–'}</td>
+        </tr>
+      `).join('')}
+      <tr style="background:#f8fafc;font-weight:700;">
+        <td colspan="2">Total</td>
+        <td>${totals.dealCount}</td>
+        <td>${totals.issued}</td>
+        <td class="num-right">${fmtINR(totals.premium)}</td>
+        <td class="num-right">${fmtINR(totals.coa)}</td>
+        <td class="num-right">${fmtINR(totals.margin)}</td>
+        <td class="num-right">${totals.premium ? ((totals.margin/totals.premium)*100).toFixed(1) + '%' : '–'}</td>
+      </tr>
+    </tbody>
+  `;
+}
+
+// ============================================================
+// REPORTS
+// ============================================================
+function renderReports() {
+  // Monthly trend (by expected closure month)
+  destroyChart('trend');
+  const monthly = {};
+  state.deals.forEach(d => {
+    if (!d.expected) return;
+    const m = d.expected.slice(0,7);
+    monthly[m] = (monthly[m] || 0) + (+d.premium || 0);
+  });
+  const months = Object.keys(monthly).sort();
+  charts.trend = new Chart(document.getElementById('chart-trend'), {
+    type: 'line',
+    data: {
+      labels: months,
+      datasets: [{
+        label: 'Expected Premium',
+        data: months.map(m => monthly[m]),
+        borderColor: '#0f4c75',
+        backgroundColor: 'rgba(50,130,184,0.15)',
+        fill: true, tension: 0.3, pointBackgroundColor: '#0f4c75'
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      maintainAspectRatio: false,
+      scales: { y: { ticks: { callback: v => fmtINRShort(v) } } }
+    }
+  });
+
+  // Funnel
+  destroyChart('funnel');
+  const total = state.deals.length;
+  const hot = state.deals.filter(d => d.status === 'H').length;
+  const warm = state.deals.filter(d => d.status === 'W').length;
+  const issued = state.deals.filter(d => d.policyNo).length;
+  charts.funnel = new Chart(document.getElementById('chart-funnel'), {
+    type: 'bar',
+    data: {
+      labels: ['All Deals','Warm+','Hot','Issued'],
+      datasets: [{ data: [total, warm+hot, hot, issued], backgroundColor: ['#6c8bb8','#f4a261','#e63946','#2a9d8f'] }]
+    },
+    options: {
+      indexAxis: 'y',
+      plugins: { legend: { display: false } },
+      maintainAspectRatio: false
+    }
+  });
+
+  // Per-product funnel (Leads -> Warm+ -> Hot -> Issued) per product type
+  destroyChart('productFunnel');
+  const products = [...new Set(state.deals.map(d => d.policy))];
+  const stageColors = {
+    'Leads':  '#bbe1fa',
+    'Warm+':  '#f4a261',
+    'Hot':    '#e63946',
+    'Issued': '#2a9d8f'
+  };
+  const stageData = (stage) => products.map(prod => {
+    const items = state.deals.filter(d => d.policy === prod);
+    if (stage === 'Leads')  return items.length;
+    if (stage === 'Warm+')  return items.filter(d => d.status === 'W' || d.status === 'H').length;
+    if (stage === 'Hot')    return items.filter(d => d.status === 'H').length;
+    if (stage === 'Issued') return items.filter(d => d.policyNo).length;
+    return 0;
+  });
+  charts.productFunnel = new Chart(document.getElementById('chart-product-funnel'), {
+    type: 'bar',
+    data: {
+      labels: products,
+      datasets: Object.keys(stageColors).map(stage => ({
+        label: stage,
+        data: stageData(stage),
+        backgroundColor: stageColors[stage],
+        borderWidth: 0
+      }))
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom' },
+        tooltip: { mode: 'index', intersect: false }
+      },
+      scales: {
+        x: { stacked: false, ticks: { autoSkip: false } },
+        y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 } }
+      }
+    }
+  });
+
+  // Policy summary
+  const policySums = {};
+  state.deals.forEach(d => {
+    if (!policySums[d.policy]) policySums[d.policy] = { count: 0, premium: 0, coa: 0, margin: 0 };
+    policySums[d.policy].count++;
+    policySums[d.policy].premium += +d.premium || 0;
+    policySums[d.policy].coa += +d.coa || 0;
+    policySums[d.policy].margin += +d.margin || 0;
+  });
+  document.getElementById('policy-summary-table').innerHTML = `
+    <thead><tr><th>Policy Type</th><th>Deals</th><th>Premium</th><th>COA</th><th>Margin</th><th>Margin %</th></tr></thead>
+    <tbody>
+      ${Object.entries(policySums).sort((a,b) => b[1].premium - a[1].premium).map(([k,v]) => `
+        <tr>
+          <td><strong>${escapeHtml(k)}</strong></td>
+          <td>${v.count}</td>
+          <td class="num-right">${fmtINR(v.premium)}</td>
+          <td class="num-right">${fmtINR(v.coa)}</td>
+          <td class="num-right">${fmtINR(v.margin)}</td>
+          <td class="num-right">${v.premium ? ((v.margin/v.premium)*100).toFixed(1) + '%' : '–'}</td>
+        </tr>
+      `).join('')}
+    </tbody>
+  `;
+}
+
+// ============================================================
+// EXPORT
+// ============================================================
+function exportData() {
+  const headers = ['POSP Name','Customer','Policy Type','Sum Assured','Premium','COA','Retained Margin','Status','Expected Closure','Proposal #','Policy #','Issuance Date','Remarks'];
+  const rows = state.deals.map(d => [
+    pospName(d.pospId), d.customer, d.policy, d.sum, d.premium, d.coa, d.margin,
+    {H:'Hot',W:'Warm',C:'Cold'}[d.status] || '', d.expected, d.proposal, d.policyNo, d.issued, d.remarks
+  ]);
+  const csv = [headers, ...rows].map(r => r.map(c => `"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'deals-export.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ============================================================
+// MODALS
+// ============================================================
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('show'); });
+});
+
+// ============================================================
+// INIT
+// ============================================================
+function renderAll() {
+  const activePage = document.querySelector('.nav-item.active').dataset.page;
+  navigate(activePage);
+}
+renderDashboard();
+
+// Expose for console debugging
+window.crm = { state, saveState, resetData };
+</script>
+
+
+</body></html>

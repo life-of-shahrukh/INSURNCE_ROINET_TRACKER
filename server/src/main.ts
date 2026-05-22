@@ -29,6 +29,8 @@ async function bootstrap() {
     .setTitle('Roinet CRM API')
     .setDescription('REST API for POSP and Deals management — Roinet Insurance CRM')
     .setVersion('1.0')
+    .addBearerAuth()
+    .addTag('Auth', 'Authentication endpoints')
     .addTag('POSP', 'Point of Sales Person endpoints')
     .addTag('Deals', 'Deal management endpoints')
     .build();

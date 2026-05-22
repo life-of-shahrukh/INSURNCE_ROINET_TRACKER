@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { POLICY_TYPES } from "@/lib/constants";
 import { useCrm } from "@/providers/crm-provider";
+import { useAuth } from "@/providers/auth-provider";
 import type { Deal, DealStatus } from "@/lib/types";
 
 interface DealModalProps {
@@ -30,9 +31,11 @@ const emptyForm = {
 };
 
 export function DealModal({ open, deal, onClose }: DealModalProps) {
+  const { user } = useAuth();
   const { posp, saveDeal } = useCrm();
   const [form, setForm] = useState(emptyForm);
   const activePosp = posp.filter((p) => p.active);
+  const canSelectPosp = user?.role === "ADMIN";
 
   useEffect(() => {
     if (!open) return;
@@ -105,6 +108,7 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
               id="d-posp"
               required
               value={form.pospId}
+              disabled={!canSelectPosp}
               onChange={(e) => setForm({ ...form, pospId: e.target.value })}
             >
               {activePosp.map((p) => (

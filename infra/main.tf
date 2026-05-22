@@ -54,6 +54,11 @@ module "iam" {
   project     = var.project
   env         = var.env
   github_repo = var.github_repo
+
+  # Pass the state bucket/lock table names so the GitHub Actions role gets
+  # S3 + DynamoDB permissions scoped to these exact resources
+  tf_state_bucket = "roinet-crm-tf-state"
+  tf_lock_table   = "roinet-crm-tf-lock"
 }
 
 # ── Database ──────────────────────────────────────────────────────────────────

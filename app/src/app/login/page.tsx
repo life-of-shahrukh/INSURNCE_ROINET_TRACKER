@@ -30,7 +30,7 @@ export default function LoginPage() {
 
   function fillAdminDemoCredentials() {
     setEmail("admin@roinet.com");
-    setPassword("admin123");
+    setPassword("Admin@1234");
   }
 
   return (

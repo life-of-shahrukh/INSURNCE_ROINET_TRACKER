@@ -8,8 +8,7 @@ concurrency:
   group: deploy-prod
   cancel-in-progress: false
 
-# id-token:write is REQUIRED for GitHub OIDC → AWS role assumption.
-# Without this the JWT is never issued and configure-aws-credentials fails.
+# id-token:write is required for GitHub OIDC → AWS role assumption (no static keys)
 permissions:
   id-token: write
   contents: read
@@ -21,56 +20,13 @@ env:
   ECS_SERVICE_SERVER: roinet-crm-prod-server
 
 jobs:
-  # ── 1. Terraform apply ──────────────────────────────────────────────────────
-  terraform:
-    name: Terraform apply
-    runs-on: ubuntu-latest
-    outputs:
-      app_ecr_url:    ${{ steps.tf_output.outputs.app_ecr_url }}
-      server_ecr_url: ${{ steps.tf_output.outputs.server_ecr_url }}
-    defaults:
-      run:
-        working-directory: infra
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Configure AWS credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          role-session-name: GitHubActions-TF-${{ github.run_id }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: "~1.7"
-          terraform_wrapper: false
-
-      - name: Terraform init
-        run: terraform init
-
-      - name: Terraform plan
-        run: |
-          terraform plan \
-            -var="db_username=${{ secrets.DB_USERNAME }}" \
-            -var="db_password=${{ secrets.DB_PASSWORD }}" \
-            -var="image_tag=${{ github.sha }}" \
-            -out=tfplan
-
-      - name: Terraform apply
-        run: terraform apply -auto-approve tfplan
-
-      - name: Capture ECR URLs
-        id: tf_output
-        run: |
-          echo "app_ecr_url=$(terraform output -raw app_ecr_url)"       >> $GITHUB_OUTPUT
-          echo "server_ecr_url=$(terraform output -raw server_ecr_url)" >> $GITHUB_OUTPUT
-
-  # ── 2. Build & push Docker images ──────────────────────────────────────────
+  # ── 1. Build & push Docker images ──────────────────────────────────────────
   build-and-push:
     name: Build & push images
     runs-on: ubuntu-latest
-    needs: terraform
+    outputs:
+      app_ecr_url:    ${{ steps.ecr_urls.outputs.app_ecr_url }}
+      server_ecr_url: ${{ steps.ecr_urls.outputs.server_ecr_url }}
     steps:
       - uses: actions/checkout@v4
 
@@ -82,7 +38,16 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
+        id: ecr_login
         uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Resolve ECR URLs
+        id: ecr_urls
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          REGION=${{ env.AWS_REGION }}
+          echo "app_ecr_url=${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/roinet-crm-app"       >> $GITHUB_OUTPUT
+          echo "server_ecr_url=${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/roinet-crm-server" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -94,8 +59,8 @@ jobs:
           file: ./app/Dockerfile
           push: true
           tags: |
-            ${{ needs.terraform.outputs.app_ecr_url }}:${{ github.sha }}
-            ${{ needs.terraform.outputs.app_ecr_url }}:latest
+            ${{ steps.ecr_urls.outputs.app_ecr_url }}:${{ github.sha }}
+            ${{ steps.ecr_urls.outputs.app_ecr_url }}:latest
           cache-from: type=gha
           cache-to:   type=gha,mode=max
 
@@ -106,19 +71,17 @@ jobs:
           file: ./server/Dockerfile
           push: true
           tags: |
-            ${{ needs.terraform.outputs.server_ecr_url }}:${{ github.sha }}
-            ${{ needs.terraform.outputs.server_ecr_url }}:latest
+            ${{ steps.ecr_urls.outputs.server_ecr_url }}:${{ github.sha }}
+            ${{ steps.ecr_urls.outputs.server_ecr_url }}:latest
           cache-from: type=gha
           cache-to:   type=gha,mode=max
 
-  # ── 3. Run Prisma migrations ────────────────────────────────────────────────
+  # ── 2. Run Prisma migrations (before rolling out new tasks) ────────────────
   migrate:
     name: Prisma migrate deploy
     runs-on: ubuntu-latest
-    needs: [terraform, build-and-push]
+    needs: build-and-push
     steps:
-      - uses: actions/checkout@v4
-
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -126,10 +89,9 @@ jobs:
           role-session-name: GitHubActions-Migrate-${{ github.run_id }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # Run prisma migrate deploy as a one-off ECS task using the freshly built
-      # server image. The task exits after migrations complete (exit 0) or fails
-      # (exit non-zero), which we detect below before allowing the deploy to proceed.
-      - name: Run migration task
+      # Run prisma migrate deploy as a one-off ECS task using the new server image.
+      # The task exits with code 0 on success, non-zero on failure.
+      - name: Launch migration task
         id: run_migration
         run: |
           TASK_ARN=$(aws ecs run-task \
@@ -153,48 +115,38 @@ jobs:
             --query 'tasks[0].taskArn' \
             --output text)
 
-          echo "Migration task ARN: $TASK_ARN"
           echo "task_arn=$TASK_ARN" >> $GITHUB_OUTPUT
+          echo "Migration task launched: $TASK_ARN"
 
-      - name: Wait for migration task to complete
+      - name: Wait for migration task to stop
         run: |
-          echo "Waiting for task ${{ steps.run_migration.outputs.task_arn }} to stop..."
           aws ecs wait tasks-stopped \
             --cluster "${{ env.ECS_CLUSTER }}" \
             --tasks "${{ steps.run_migration.outputs.task_arn }}"
-          echo "Task stopped."
 
-      - name: Assert migration succeeded
+      - name: Assert migration exit code is 0
         run: |
-          TASK_ARN="${{ steps.run_migration.outputs.task_arn }}"
-          RESULT=$(aws ecs describe-tasks \
+          EXIT_CODE=$(aws ecs describe-tasks \
             --cluster "${{ env.ECS_CLUSTER }}" \
-            --tasks "$TASK_ARN" \
+            --tasks "${{ steps.run_migration.outputs.task_arn }}" \
             --query 'tasks[0].containers[0].exitCode' \
             --output text)
 
-          echo "Migration container exit code: $RESULT"
+          echo "Migration exit code: $EXIT_CODE"
 
-          if [ "$RESULT" != "0" ]; then
-            echo "❌ Prisma migration failed with exit code $RESULT"
-            echo "--- CloudWatch Logs for task ---"
-            # Print last 50 log lines to help diagnose the failure
-            LOG_STREAM=$(aws ecs describe-tasks \
-              --cluster "${{ env.ECS_CLUSTER }}" \
-              --tasks "$TASK_ARN" \
-              --query 'tasks[0].containers[0].logStreamPrefix' \
-              --output text 2>/dev/null || true)
-            echo "Log stream hint: /ecs/roinet-crm-prod/server/$LOG_STREAM"
+          if [ "$EXIT_CODE" != "0" ]; then
+            echo "❌ Prisma migration failed (exit $EXIT_CODE)"
+            echo "Check CloudWatch: /ecs/roinet-crm-prod/server"
             exit 1
           fi
 
-          echo "✅ Prisma migrations applied successfully."
+          echo "✅ Migrations applied successfully"
 
-  # ── 4. Deploy to ECS ────────────────────────────────────────────────────────
+  # ── 3. Deploy new images to ECS ────────────────────────────────────────────
   deploy:
     name: Deploy to ECS
     runs-on: ubuntu-latest
-    needs: [migrate]
+    needs: migrate
     steps:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
@@ -219,20 +171,18 @@ jobs:
             --force-new-deployment \
             --no-cli-pager
 
-      - name: Wait for server service to stabilise
+      - name: Wait for server to stabilise
         run: |
           aws ecs wait services-stable \
             --cluster "${{ env.ECS_CLUSTER }}" \
             --services "${{ env.ECS_SERVICE_SERVER }}"
 
-      - name: Wait for app service to stabilise
+      - name: Wait for app to stabilise
         run: |
           aws ecs wait services-stable \
             --cluster "${{ env.ECS_CLUSTER }}" \
             --services "${{ env.ECS_SERVICE_APP }}"
 
-      - name: Deployment summary
+      - name: Summary
         run: |
-          echo "✅ Deployed commit ${{ github.sha }} to cluster ${{ env.ECS_CLUSTER }}"
-          echo "   Server service: ${{ env.ECS_SERVICE_SERVER }}"
-          echo "   App service:    ${{ env.ECS_SERVICE_APP }}"
+          echo "✅ Deployed ${{ github.sha }} to ${{ env.ECS_CLUSTER }}"

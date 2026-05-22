@@ -1,0 +1,61 @@
+name: Terraform — Infrastructure
+
+# Only runs when manually triggered or when infra files actually change.
+# NOT triggered on every push — infra rarely changes.
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "terraform plan or apply"
+        required: true
+        default: plan
+        type: choice
+        options: [plan, apply]
+  push:
+    branches: [main]
+    paths:
+      - "infra/**"
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ap-south-1
+
+jobs:
+  terraform:
+    name: Terraform ${{ github.event.inputs.action || 'plan' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-session-name: GitHubActions-TF-${{ github.run_id }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~1.7"
+          terraform_wrapper: false
+
+      - name: Terraform init
+        run: terraform init
+
+      - name: Terraform plan
+        run: |
+          terraform plan \
+            -var="db_username=${{ secrets.DB_USERNAME }}" \
+            -var="db_password=${{ secrets.DB_PASSWORD }}" \
+            -out=tfplan
+
+      - name: Terraform apply
+        if: ${{ github.event.inputs.action == 'apply' || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
+        run: terraform apply -auto-approve tfplan

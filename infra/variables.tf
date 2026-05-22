@@ -16,6 +16,12 @@ variable "aws_region" {
   default     = "ap-south-1"
 }
 
+variable "vpc_id" {
+  type        = string
+  description = "Existing VPC ID to deploy into (account is at VPC limit)"
+  default     = "vpc-09ae030fcfb1d5031"
+}
+
 variable "github_repo" {
   type        = string
   description = "GitHub repository in owner/repo format"

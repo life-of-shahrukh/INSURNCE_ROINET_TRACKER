@@ -30,11 +30,32 @@ variable "database_url" {
   sensitive = true
 }
 
-variable "app_cpu"    { type = number; default = 256 }
-variable "app_memory" { type = number; default = 512 }
+variable "app_cpu" {
+  type    = number
+  default = 256
+}
 
-variable "server_cpu"    { type = number; default = 256 }
-variable "server_memory" { type = number; default = 512 }
+variable "app_memory" {
+  type    = number
+  default = 512
+}
 
-variable "app_desired_count"    { type = number; default = 1 }
-variable "server_desired_count" { type = number; default = 1 }
+variable "server_cpu" {
+  type    = number
+  default = 256
+}
+
+variable "server_memory" {
+  type    = number
+  default = 512
+}
+
+variable "app_desired_count" {
+  type    = number
+  default = 1
+}
+
+variable "server_desired_count" {
+  type    = number
+  default = 1
+}

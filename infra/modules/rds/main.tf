@@ -43,16 +43,16 @@ resource "aws_db_instance" "main" {
   vpc_security_group_ids = [var.security_group_id]
   parameter_group_name   = aws_db_parameter_group.postgres.name
 
-  backup_retention_period = var.backup_retention_days
-  backup_window           = "03:00-04:00"
-  maintenance_window      = "Mon:04:00-Mon:05:00"
-  deletion_protection     = var.env == "prod"
-  skip_final_snapshot     = var.env != "prod"
+  backup_retention_period   = var.backup_retention_days
+  backup_window             = "03:00-04:00"
+  maintenance_window        = "Mon:04:00-Mon:05:00"
+  deletion_protection       = var.env == "prod"
+  skip_final_snapshot       = var.env != "prod"
   final_snapshot_identifier = var.env == "prod" ? "${var.project}-${var.env}-final-snapshot" : null
 
-  multi_az               = var.env == "prod"
-  publicly_accessible    = false
-  apply_immediately      = var.env != "prod"
+  multi_az            = var.env == "prod"
+  publicly_accessible = false
+  apply_immediately   = var.env != "prod"
 
   tags = {
     Name        = "${var.project}-${var.env}-postgres"

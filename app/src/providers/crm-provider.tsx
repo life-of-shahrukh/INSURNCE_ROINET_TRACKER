@@ -43,7 +43,10 @@ export function CrmProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    void refresh();
+  // refresh is stable (useCallback with no deps) — calling it on mount is intentional
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   }, [refresh]);
 
   const saveDeal = useCallback(

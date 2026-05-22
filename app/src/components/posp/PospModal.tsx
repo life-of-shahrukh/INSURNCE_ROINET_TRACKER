@@ -27,6 +27,7 @@ export function PospModal({ open, pospItem, onClose }: PospModalProps) {
 
   useEffect(() => {
     if (!open) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (pospItem) {
       setForm({
         name: pospItem.name,

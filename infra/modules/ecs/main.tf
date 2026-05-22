@@ -67,8 +67,8 @@ resource "aws_ecs_task_definition" "app" {
     }]
 
     environment = [
-      { name = "NODE_ENV",               value = var.env },
-      { name = "NEXT_PUBLIC_API_URL",    value = var.api_url }
+      { name = "NODE_ENV", value = var.env },
+      { name = "NEXT_PUBLIC_API_URL", value = var.api_url }
     ]
 
     logConfiguration = {
@@ -107,9 +107,9 @@ resource "aws_ecs_task_definition" "server" {
     }]
 
     environment = [
-      { name = "NODE_ENV",      value = var.env },
-      { name = "PORT",          value = "3001" },
-      { name = "DATABASE_URL",  value = var.database_url }
+      { name = "NODE_ENV", value = var.env },
+      { name = "PORT", value = "3001" },
+      { name = "DATABASE_URL", value = var.database_url }
     ]
 
     logConfiguration = {

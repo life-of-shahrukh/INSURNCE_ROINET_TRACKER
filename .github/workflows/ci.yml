@@ -55,6 +55,10 @@ jobs:
       # types without a generated client, causing false-positive type errors.
       - name: Generate Prisma client
         run: npx prisma generate
+        env:
+          # prisma.config.ts loads DATABASE_URL at generate time via dotenv.
+          # A dummy value is sufficient — generate only reads the schema, not the DB.
+          DATABASE_URL: "postgresql://ci:ci@localhost:5432/ci"
 
       - name: Lint
         run: npm run lint
@@ -102,6 +106,10 @@ jobs:
 
       - name: Generate Prisma client
         run: npx prisma generate
+        env:
+          # prisma.config.ts loads DATABASE_URL at generate time via dotenv.
+          # A dummy value is sufficient — generate only reads the schema, not the DB.
+          DATABASE_URL: "postgresql://ci:ci@localhost:5432/ci"
 
       - name: Build
         run: npm run build

@@ -40,7 +40,7 @@ data "aws_subnet" "public_b" { id = "subnet-0b1a690ff88c9c277" }
 data "aws_subnet" "public_c" { id = "subnet-0e92bd16cd26f25e5" }
 
 locals {
-  public_subnet_ids  = [
+  public_subnet_ids = [
     data.aws_subnet.public_a.id,
     data.aws_subnet.public_b.id,
     data.aws_subnet.public_c.id,

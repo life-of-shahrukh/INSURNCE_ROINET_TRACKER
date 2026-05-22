@@ -1,0 +1,76 @@
+---
+description: Atomic Design pattern and reusable component rules for the Next.js app
+globs: app/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Frontend: Atomic Design Pattern
+
+## Directory Structure
+
+Always organise components under `app/src/components/` following the Atomic Design hierarchy:
+
+```
+src/
+  components/
+    atoms/        # Smallest building blocks (Button, Input, Badge, Icon, Label)
+    molecules/    # Combinations of atoms (SearchBar, FormField, CardHeader)
+    organisms/    # Complex UI sections (Navbar, Sidebar, DataTable, Modal)
+    templates/    # Page-level layouts (DashboardLayout, AuthLayout)
+  hooks/          # Custom React hooks
+  lib/            # Utilities, API clients, constants
+  store/          # State management (Zustand / React Context)
+  types/          # Shared TypeScript types/interfaces
+```
+
+## Rules
+
+### No Duplicate Components
+- Before creating any component, search the entire `components/` tree.
+- If a similar component exists, **extend it via props** — never copy-paste and rename.
+- Shared logic must live in a custom hook inside `src/hooks/`, never duplicated inline.
+
+### Component Authoring
+- Every component must be a **named export** (not default export) for tree-shaking.
+- Accept and forward `className` via `cn()` (use `clsx` + `tailwind-merge`) for style composition.
+- Never hard-code colours or spacing that already exists in the Tailwind config.
+- All props must have explicit TypeScript interfaces — no `any`.
+
+```tsx
+// ✅ GOOD – atom
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  isLoading?: boolean;
+}
+
+export function Button({ variant = 'primary', size = 'md', isLoading, className, ...props }: ButtonProps) {
+  return (
+    <button
+      className={cn(buttonVariants({ variant, size }), className)}
+      disabled={isLoading || props.disabled}
+      {...props}
+    />
+  );
+}
+```
+
+```tsx
+// ❌ BAD – duplicating a Button just to change colour inline
+export function RedButton(props) {
+  return <button style={{ color: 'red' }} {...props} />;
+}
+```
+
+### Placement Rules
+
+| Level | Contains | Example |
+|-------|----------|---------|
+| Atom | Single HTML element or tiny wrapper | `Button`, `Input`, `Avatar`, `Spinner` |
+| Molecule | 2–5 atoms with shared behaviour | `FormField`, `SearchInput`, `UserCard` |
+| Organism | Multiple molecules, domain logic | `Header`, `DataTable`, `UserForm` |
+| Template | Layout scaffolding, slot-based | `DashboardLayout`, `AuthLayout` |
+
+### Hook Extraction
+- Any stateful logic shared across ≥ 2 components must be extracted to `src/hooks/use<Name>.ts`.
+- Hooks must return a typed object, never a positional tuple (except `useState`-style pairs).

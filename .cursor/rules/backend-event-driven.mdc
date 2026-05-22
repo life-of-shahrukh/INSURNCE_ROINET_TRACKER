@@ -1,0 +1,100 @@
+---
+description: NestJS event-driven architecture – EventEmitter2, CQRS, async workers
+globs: server/src/**/*.{ts}
+alwaysApply: false
+---
+
+# Backend: Event-Driven Architecture
+
+## Core Principle
+Every side-effect (email, notification, audit log, cache invalidation) **must be triggered through an event**, never called directly from the business logic layer.
+
+## Module Structure
+
+```
+src/
+  modules/
+    <domain>/
+      commands/         # CQRS Commands + Handlers
+      queries/          # CQRS Queries + Handlers
+      events/           # Domain events (plain TS classes)
+      listeners/        # EventEmitter2 / CQRS event handlers
+      dto/              # Data Transfer Objects
+      <domain>.module.ts
+      <domain>.service.ts
+      <domain>.controller.ts
+      <domain>.repository.ts
+  common/
+    events/             # Shared event base classes
+    filters/            # Exception filters
+    guards/             # Auth guards
+    interceptors/       # Logging, transform interceptors
+    decorators/         # Custom decorators
+  prisma/               # PrismaService singleton
+  workers/              # Bull queue processors (CPU-bound / async work)
+```
+
+## Event Naming Convention
+
+```typescript
+// ✅ Domain event class — past tense, PascalCase
+export class UserCreatedEvent {
+  constructor(
+    public readonly userId: string,
+    public readonly email: string,
+    public readonly occurredAt: Date = new Date(),
+  ) {}
+}
+```
+
+## Emitting Events
+
+```typescript
+// ✅ GOOD — emit after persisting
+import { EventEmitter2 } from '@nestjs/event-emitter';
+
+@Injectable()
+export class UserService {
+  constructor(
+    private readonly userRepo: UserRepository,
+    private readonly events: EventEmitter2,
+  ) {}
+
+  async createUser(dto: CreateUserDto) {
+    const user = await this.userRepo.create(dto);
+    this.events.emit('user.created', new UserCreatedEvent(user.id, user.email));
+    return user;
+  }
+}
+```
+
+## Listening to Events
+
+```typescript
+// ✅ Listener — decoupled side-effect
+@Injectable()
+export class UserNotificationListener {
+  @OnEvent('user.created', { async: true })
+  async handleUserCreated(event: UserCreatedEvent) {
+    // send welcome email — fully decoupled from UserService
+  }
+}
+```
+
+## Async / CPU-bound Work → Bull Queue
+
+Any task > 50 ms or likely to fail/retry must go through a Bull queue processor in `src/workers/`:
+
+```typescript
+@Processor('email')
+export class EmailProcessor {
+  @Process('send-welcome')
+  async sendWelcome(job: Job<{ userId: string }>) { ... }
+}
+```
+
+## CQRS for Complex Domains
+
+Use `@nestjs/cqrs` for domains with complex read/write separation:
+- Commands mutate state — one handler per command, never query inside a command handler.
+- Queries read state — never emit events or mutate inside a query handler.

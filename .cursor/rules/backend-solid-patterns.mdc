@@ -1,0 +1,66 @@
+---
+description: SOLID principles and design patterns for the NestJS server
+globs: server/src/**/*.ts
+alwaysApply: false
+---
+
+# Backend: SOLID Principles & Design Patterns
+
+## SOLID
+
+### S — Single Responsibility
+Each class does **one thing**. A `UserService` handles user business logic only — it does not send emails, manage tokens, or write audit logs.
+
+### O — Open/Closed
+Extend behaviour via interfaces and injection, not `if/else` chains.
+
+```typescript
+// ✅ Strategy pattern — extend without modifying
+interface NotificationChannel {
+  send(message: string, recipient: string): Promise<void>;
+}
+
+@Injectable() export class EmailChannel implements NotificationChannel { ... }
+@Injectable() export class SmsChannel implements NotificationChannel { ... }
+```
+
+### L — Liskov Substitution
+Any concrete class injected via its interface/abstract token must honour the contract fully.
+
+### I — Interface Segregation
+Define narrow interfaces. A `UserRepository` should not be forced to implement search methods it does not own.
+
+### D — Dependency Inversion
+Depend on abstractions, not concretions. Use NestJS DI tokens:
+
+```typescript
+export const USER_REPO = Symbol('USER_REPO');
+
+// Module
+{ provide: USER_REPO, useClass: PrismaUserRepository }
+
+// Consumer
+constructor(@Inject(USER_REPO) private readonly repo: UserRepository) {}
+```
+
+## Mandatory Design Patterns
+
+### Repository Pattern
+- All database access through repository classes — **never** call `PrismaService` directly from a service or controller.
+- Repository lives in `<domain>/<domain>.repository.ts`.
+
+### Factory Pattern
+Use a `<Entity>Factory` for constructing complex domain objects or when construction logic is non-trivial.
+
+### Decorator Pattern
+Use NestJS custom decorators (`@CurrentUser()`, `@Roles()`, `@Transactional()`) to add cross-cutting concerns without polluting method signatures.
+
+### Singleton via NestJS DI
+All services and repositories are singletons (default NestJS scope). Use `REQUEST` scope only when explicitly needed for per-request state.
+
+## Guard Against Duplication
+
+- Shared validation logic → `common/validators/`
+- Shared DTOs → `common/dto/`
+- Shared interfaces → `common/interfaces/`
+- Never copy-paste a service method — extract to `common/` or a shared module.

@@ -1,0 +1,26 @@
+# Copy this file to terraform.tfvars and fill in the values.
+# NEVER commit terraform.tfvars — it contains secrets.
+
+project    = "roinet-crm"
+env        = "prod"
+aws_region = "ap-south-1"
+
+github_repo = "life-of-shahrukh/INSURNCE_ROINET_TRACKER"
+
+# Networking (defaults are fine for most setups)
+# vpc_cidr              = "10.0.0.0/16"
+# availability_zones    = ["ap-south-1a", "ap-south-1b"]
+
+# RDS — change these to strong, unique values
+db_name     = "roinet"
+db_username = "roinet_admin"
+db_password = "CHANGE_ME_USE_A_STRONG_PASSWORD"
+
+# ECS sizing (256 CPU = 0.25 vCPU)
+# app_cpu    = 256
+# app_memory = 512
+# server_cpu    = 256
+# server_memory = 512
+
+# Optional: ACM certificate ARN for HTTPS
+# certificate_arn = "arn:aws:acm:ap-south-1:123456789012:certificate/..."

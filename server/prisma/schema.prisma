@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum DealStatus {
+  H
+  W
+  C
+}
+
+model Posp {
+  id        String   @id @default(cuid())
+  name      String
+  code      String   @unique
+  mobile    String
+  email     String   @unique
+  joined    DateTime
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deals     Deal[]
+}
+
+model Deal {
+  id        String     @id @default(cuid())
+  pospId    String
+  posp      Posp       @relation(fields: [pospId], references: [id])
+  customer  String
+  policy    String
+  sum       Float
+  premium   Float
+  coa       Float
+  margin    Float
+  status    DealStatus
+  expected  DateTime
+  proposal  String
+  policyNo  String     @default("")
+  issued    DateTime?
+  remarks   String     @default("")
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}

@@ -1,0 +1,52 @@
+---
+description: Project-wide TypeScript, naming, and code quality conventions for app and server
+alwaysApply: true
+---
+
+# Project-Wide Conventions
+
+## TypeScript
+
+- **Strict mode** is on in both `app` and `server` — no implicit `any`, no `as any`.
+- Prefer `interface` for object shapes, `type` for unions/intersections/aliases.
+- Always type function return values explicitly on public/exported functions.
+- Never use non-null assertion (`!`) — use optional chaining or explicit guards.
+
+## Naming
+
+| Artefact | Convention | Example |
+|----------|-----------|---------|
+| Files | `kebab-case` | `user-repository.ts` |
+| Classes | `PascalCase` | `UserRepository` |
+| Interfaces | `PascalCase`, no `I` prefix | `UserRepository` |
+| Constants | `SCREAMING_SNAKE_CASE` | `MAX_RETRY_COUNT` |
+| Env vars | `SCREAMING_SNAKE_CASE` | `DATABASE_URL` |
+| React components | `PascalCase` file + export | `UserCard.tsx` |
+| Hooks | `camelCase` prefixed `use` | `useCurrentUser.ts` |
+
+## No Duplicate Code Policy
+
+- Search before creating. If similar code exists, generalise it.
+- Shared utilities between `app` and `server` → create a shared `packages/shared` workspace package.
+- Duplicated logic across 2+ files is a blocker — refactor to a shared location first.
+
+## Error Handling
+
+- Backend: always use NestJS exception filters; throw typed `HttpException` subclasses.
+- Frontend: errors from server actions/fetches must be caught and surfaced via `toast` or error boundary.
+- Never silently swallow errors with empty `catch {}`.
+
+## Git Commit Convention
+
+Follow Conventional Commits: `feat`, `fix`, `chore`, `refactor`, `docs`, `test`, `perf`.
+
+```
+feat(user): add role-based access control
+fix(auth): handle expired JWT refresh tokens
+```
+
+## Environment Variables
+
+- `app/` uses `.env.local` — prefix public vars with `NEXT_PUBLIC_`.
+- `server/` uses `.env` — load via `@nestjs/config`.
+- Never commit `.env` files — keep `.env.example` up to date.

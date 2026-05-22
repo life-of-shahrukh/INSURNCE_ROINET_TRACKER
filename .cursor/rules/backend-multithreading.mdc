@@ -1,0 +1,81 @@
+---
+description: Multi-threading and concurrency patterns in NestJS (worker threads, Bull, async)
+globs: server/src/**/*.ts
+altml:Apply: false
+alwaysApply: false
+---
+
+# Backend: Multi-Threading & Concurrency
+
+## When to Use Worker Threads
+
+Use Node.js `worker_threads` for **CPU-bound** tasks that would block the event loop:
+- PDF generation, image processing, CSV parsing, heavy computation, report generation.
+
+**Never** use worker threads for I/O-bound tasks — use async/await + Bull queues instead.
+
+## Worker Thread Pattern
+
+```typescript
+// src/workers/threads/pdf.worker.ts
+import { workerData, parentPort } from 'worker_threads';
+
+// CPU-bound work runs in isolated thread
+const result = generatePdf(workerData.payload);
+parentPort?.postMessage(result);
+```
+
+```typescript
+// src/workers/pdf.service.ts
+import { Worker } from 'worker_threads';
+import { join } from 'path';
+
+@Injectable()
+export class PdfWorkerService {
+  runInThread<T>(payload: unknown): Promise<T> {
+    return new Promise((resolve, reject) => {
+      const worker = new Worker(join(__dirname, 'threads/pdf.worker.js'), {
+        workerData: { payload },
+      });
+      worker.on('message', resolve);
+      worker.on('error', reject);
+      worker.on('exit', (code) => {
+        if (code !== 0) reject(new Error(`Worker exited with code ${code}`));
+      });
+    });
+  }
+}
+```
+
+## Bull Queue for Async / Distributed Work
+
+- Jobs that need **retry**, **scheduling**, or **distributed execution** → Bull queue.
+- Each processor must be idempotent (safe to re-run on failure).
+- Always set `attempts` and `backoff` options:
+
+```typescript
+this.queue.add('send-email', payload, {
+  attempts: 3,
+  backoff: { type: 'exponential', delay: 2000 },
+  removeOnComplete: true,
+});
+```
+
+## Concurrency Rules
+
+- `async/await` is the default — never use callbacks in new code.
+- Use `Promise.all()` for independent parallel I/O, not sequential awaits.
+- Never use `Promise.all()` for writes that must be atomic — use a Prisma transaction.
+- Rate-limit outbound calls with a semaphore (`p-limit`) when fan-out could overwhelm downstream APIs.
+
+```typescript
+// ✅ Parallel reads
+const [user, orders] = await Promise.all([
+  this.userRepo.findById(id),
+  this.orderRepo.findByUserId(id),
+]);
+```
+
+## Thread Safety
+- NestJS services are singletons sharing the same V8 thread — no shared mutable state outside the request scope.
+- Worker threads receive data via `workerData` (structured clone) — pass plain objects, never class instances.

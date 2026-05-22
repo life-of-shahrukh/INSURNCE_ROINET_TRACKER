@@ -1,0 +1,89 @@
+---
+description: Prisma 6.x conventions for the NestJS server — schema, migrations, service
+globs: server/**/*.{ts,prisma}
+alwaysApply: false
+---
+
+# Prisma 6.x Conventions
+
+## PrismaService Singleton
+
+Always use a shared `PrismaService` — never instantiate `PrismaClient` directly in a module.
+
+```typescript
+// src/prisma/prisma.service.ts
+import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { PrismaClient } from '../generated/prisma';
+
+@Injectable()
+export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
+  async onModuleInit() {
+    await this.$connect();
+  }
+  async onModuleDestroy() {
+    await this.$disconnect();
+  }
+}
+```
+
+## Schema Conventions
+
+- Model names: `PascalCase` singular (`User`, `Order`, `Product`)
+- Field names: `camelCase`
+- Every model must have `id String @id @default(cuid())`, `createdAt DateTime @default(now())`, `updatedAt DateTime @updatedAt`
+- Enum names: `PascalCase` (`UserRole`, `OrderStatus`)
+
+```prisma
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  role      UserRole @default(MEMBER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum UserRole {
+  ADMIN
+  MEMBER
+}
+```
+
+## Migration Rules (Prisma 6)
+
+- `npx prisma migrate dev --name <descriptive-name>` for every schema change in development.
+- `npx prisma migrate deploy` in CI/production — **never** `db push` in production.
+- Never edit a migration file after it has been committed to git.
+- Destructive changes (drop column/table) must have a separate migration with a backup step.
+
+## Repository Access Pattern
+
+Access Prisma **only through repository classes**, not directly from services:
+
+```typescript
+// ✅ GOOD
+@Injectable()
+export class UserRepository {
+  constructor(private readonly prisma: PrismaService) {}
+
+  findById(id: string) {
+    return this.prisma.user.findUniqueOrThrow({ where: { id } });
+  }
+}
+
+// ❌ BAD — direct Prisma access in a service
+@Injectable()
+export class UserService {
+  constructor(private readonly prisma: PrismaService) {} // wrong layer
+}
+```
+
+## Transactions
+
+Use `prisma.$transaction()` for multi-step writes that must be atomic:
+
+```typescript
+await this.prisma.$transaction(async (tx) => {
+  const user = await tx.user.create({ data: createDto });
+  await tx.auditLog.create({ data: { userId: user.id, action: 'USER_CREATED' } });
+});
+```

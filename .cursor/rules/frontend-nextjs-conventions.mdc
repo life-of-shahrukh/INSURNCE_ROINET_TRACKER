@@ -1,0 +1,35 @@
+---
+description: Next.js App Router conventions – routing, data-fetching, no-duplication guard
+globs: app/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Next.js App Router Conventions
+
+## File & Folder Naming
+
+- Route segments use **kebab-case** directories: `app/(dashboard)/user-management/page.tsx`
+- Route groups use parentheses for layout isolation: `(auth)`, `(dashboard)`
+- Colocation: keep `loading.tsx`, `error.tsx`, and `not-found.tsx` next to each `page.tsx`
+
+## Server vs Client Components
+
+```
+// ✅ Default to Server Components — no 'use client' unless needed
+// Add 'use client' only when you need: useState, useEffect, event handlers, browser APIs
+```
+
+- Never fetch data inside a Client Component — lift fetches to the nearest Server Component and pass data as props.
+- Data fetching functions live in `src/lib/api/` and are **never duplicated**.
+
+## No Duplication Policy
+
+- Shared fetch wrappers live in `src/lib/api/<resource>.ts` — one file per domain entity.
+- Shared types live in `src/types/<resource>.ts` — imported everywhere, never re-declared.
+- Any repeated UI pattern (≥ 2 occurrences) must be extracted to the appropriate atomic level.
+
+## State Management
+
+- Server state → use React Server Components + `fetch` (with Next.js cache).
+- Client/UI state → `useState` or `useReducer` inside hooks.
+- Global client state → Zustand store in `src/store/<name>.store.ts`.

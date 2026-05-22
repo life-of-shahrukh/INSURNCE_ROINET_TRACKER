@@ -1,0 +1,76 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsDateString,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
+import { DealStatus } from '@prisma/client';
+
+export class CreateDealDto {
+  @ApiProperty({ example: 'clxxxxxxxxxxxxxx' })
+  @IsString()
+  @IsNotEmpty()
+  pospId: string;
+
+  @ApiProperty({ example: 'Rajesh Mehta' })
+  @IsString()
+  @IsNotEmpty()
+  customer: string;
+
+  @ApiProperty({ example: 'Life' })
+  @IsString()
+  @IsNotEmpty()
+  policy: string;
+
+  @ApiProperty({ example: 5000000 })
+  @IsNumber()
+  @Min(0)
+  sum: number;
+
+  @ApiProperty({ example: 45000 })
+  @IsNumber()
+  @Min(0)
+  premium: number;
+
+  @ApiProperty({ example: 6000 })
+  @IsNumber()
+  @Min(0)
+  coa: number;
+
+  @ApiProperty({ example: 3000 })
+  @IsNumber()
+  @Min(0)
+  margin: number;
+
+  @ApiProperty({ enum: DealStatus, example: 'W' })
+  @IsEnum(DealStatus)
+  status: DealStatus;
+
+  @ApiProperty({ example: '2026-06-15' })
+  @IsDateString()
+  expected: string;
+
+  @ApiProperty({ example: 'PRP-22301' })
+  @IsString()
+  @IsNotEmpty()
+  proposal: string;
+
+  @ApiPropertyOptional({ example: 'POL-99812' })
+  @IsString()
+  @IsOptional()
+  policyNo?: string;
+
+  @ApiPropertyOptional({ example: '2026-05-15' })
+  @IsDateString()
+  @IsOptional()
+  issued?: string;
+
+  @ApiPropertyOptional({ example: 'Awaiting medical' })
+  @IsString()
+  @IsOptional()
+  remarks?: string;
+}

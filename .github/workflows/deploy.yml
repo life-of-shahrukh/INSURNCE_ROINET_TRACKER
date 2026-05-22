@@ -1,0 +1,171 @@
+name: Deploy to AWS
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+permissions:
+  id-token: write   # required for OIDC → AWS role assumption
+  contents: read
+
+env:
+  AWS_REGION: ap-south-1
+  ECR_APP_REPO: roinet-crm-app
+  ECR_SERVER_REPO: roinet-crm-server
+  ECS_CLUSTER: roinet-crm-prod
+  ECS_SERVICE_APP: roinet-crm-prod-app
+  ECS_SERVICE_SERVER: roinet-crm-prod-server
+
+jobs:
+  # ── 1. Terraform apply ──────────────────────────────────────────────────────
+  terraform:
+    name: Terraform apply
+    runs-on: ubuntu-latest
+    outputs:
+      app_ecr_url:    ${{ steps.tf_output.outputs.app_ecr_url }}
+      server_ecr_url: ${{ steps.tf_output.outputs.server_ecr_url }}
+    defaults:
+      run:
+        working-directory: infra
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~1.7"
+          terraform_wrapper: false
+
+      - name: Terraform init
+        run: terraform init
+
+      - name: Terraform plan
+        run: |
+          terraform plan \
+            -var="db_username=${{ secrets.DB_USERNAME }}" \
+            -var="db_password=${{ secrets.DB_PASSWORD }}" \
+            -out=tfplan
+        env:
+          TF_VAR_image_tag: ${{ github.sha }}
+
+      - name: Terraform apply
+        run: terraform apply -auto-approve tfplan
+
+      - name: Capture outputs
+        id: tf_output
+        run: |
+          echo "app_ecr_url=$(terraform output -raw app_ecr_url)"    >> $GITHUB_OUTPUT
+          echo "server_ecr_url=$(terraform output -raw server_ecr_url)" >> $GITHUB_OUTPUT
+
+  # ── 2. Build & push Docker images ──────────────────────────────────────────
+  build-and-push:
+    name: Build & push images
+    runs-on: ubuntu-latest
+    needs: terraform
+    outputs:
+      image_tag: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: ecr_login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build & push app image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./app
+          file: ./app/Dockerfile
+          push: true
+          tags: |
+            ${{ needs.terraform.outputs.app_ecr_url }}:${{ github.sha }}
+            ${{ needs.terraform.outputs.app_ecr_url }}:latest
+          cache-from: type=gha
+          cache-to:   type=gha,mode=max
+
+      - name: Build & push server image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./server
+          file: ./server/Dockerfile
+          push: true
+          tags: |
+            ${{ needs.terraform.outputs.server_ecr_url }}:${{ github.sha }}
+            ${{ needs.terraform.outputs.server_ecr_url }}:latest
+          cache-from: type=gha
+          cache-to:   type=gha,mode=max
+
+  # ── 3. Deploy to ECS ────────────────────────────────────────────────────────
+  deploy:
+    name: Deploy to ECS
+    runs-on: ubuntu-latest
+    needs: [terraform, build-and-push]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # ── Run Prisma migrations before rolling out new tasks ────────────────
+      - name: Run DB migrations
+        run: |
+          aws ecs run-task \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --task-definition roinet-crm-prod-server \
+            --launch-type FARGATE \
+            --network-configuration "awsvpcConfiguration={subnets=[${{ secrets.ECS_SUBNET_ID }}],securityGroups=[${{ secrets.ECS_SECURITY_GROUP_ID }}],assignPublicIp=DISABLED}" \
+            --overrides '{"containerOverrides":[{"name":"server","command":["npx","prisma","migrate","deploy"]}]}' \
+            --query 'tasks[0].taskArn' \
+            --output text
+
+      # ── Force new ECS deployment with the new image tag ───────────────────
+      - name: Update server service
+        run: |
+          aws ecs update-service \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --service ${{ env.ECS_SERVICE_SERVER }} \
+            --force-new-deployment
+
+      - name: Update app service
+        run: |
+          aws ecs update-service \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --service ${{ env.ECS_SERVICE_APP }} \
+            --force-new-deployment
+
+      - name: Wait for server service stability
+        run: |
+          aws ecs wait services-stable \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --services ${{ env.ECS_SERVICE_SERVER }}
+
+      - name: Wait for app service stability
+        run: |
+          aws ecs wait services-stable \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --services ${{ env.ECS_SERVICE_APP }}
+
+      - name: Deployment complete
+        run: |
+          echo "✅ Deployed commit ${{ github.sha }} to ${{ env.ECS_CLUSTER }}"

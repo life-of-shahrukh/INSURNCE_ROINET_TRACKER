@@ -12,6 +12,7 @@ export default function LoginPage() {
   const { login } = useAuth();
   const router = useRouter();
   const [role, setRole] = useState<LoginRole>("admin");
+  const isAdmin = role === "admin";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);

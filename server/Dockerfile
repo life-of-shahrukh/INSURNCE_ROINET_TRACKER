@@ -1,10 +1,17 @@
 # ── Stage 1: builder ──────────────────────────────────────────────────────────
 FROM node:20-alpine AS builder
 WORKDIR /app
+
 COPY package.json package-lock.json ./
 RUN npm ci
+
 COPY . .
-# Generate Prisma client BEFORE nest build so TypeScript can resolve @prisma/client types
+
+# prisma.config.ts reads DATABASE_URL at load time via dotenv.
+# A dummy value satisfies the env check — generate never connects to a DB.
+ENV DATABASE_URL=postgresql://prisma:prisma@localhost:5432/prisma
+
+# Generate Prisma client BEFORE nest build so TypeScript resolves @prisma/client types
 RUN npx prisma generate
 RUN npm run build
 
@@ -22,10 +29,14 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/package-lock.json ./package-lock.json
 RUN npm ci --omit=dev
 
-# Re-generate Prisma client in the runner stage against the prod node_modules
-# (the builder's generated client is tied to that layer's node_modules path)
+# Copy schema so we can regenerate the client against prod node_modules.
+# The builder client embeds absolute paths tied to the builder layer.
 COPY --from=builder /app/prisma ./prisma
+
+ENV DATABASE_URL=postgresql://prisma:prisma@localhost:5432/prisma
 RUN npx prisma generate
+# Remove the dummy — real DATABASE_URL is injected at runtime by ECS task definition
+ENV DATABASE_URL=""
 
 COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
 

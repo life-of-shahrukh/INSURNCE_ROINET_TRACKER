@@ -8,10 +8,26 @@ concurrency:
   group: deploy-prod
   cancel-in-progress: false
 
-# id-token:write is required for GitHub OIDC → AWS role assumption (no static keys)
 permissions:
   id-token: write
   contents: read
+
+# ┌──────────────────────────────────────────────────────────────┐
+# │  Pipeline shape                                              │
+# │                                                              │
+# │  PARALLEL                                                    │
+# │  ├── build-app-image    ──┐                                  │
+# │  └── build-server-image ─┤                                  │
+# │                           ▼  (both images pushed to ECR)    │
+# │  SERIAL                                                      │
+# │  └── migrate  (prisma migrate deploy — one-off ECS task)    │
+# │           │                                                  │
+# │           ▼  (migrations verified exit 0)                   │
+# │  PARALLEL                                                    │
+# │  ├── deploy-server ──┐                                       │
+# │  └── deploy-app   ──┤                                        │
+# │                      ▼  (both services stable)               │
+# └──────────────────────────────────────────────────────────────┘
 
 env:
   AWS_REGION: ap-south-1
@@ -20,13 +36,12 @@ env:
   ECS_SERVICE_SERVER: roinet-crm-prod-server
 
 jobs:
-  # ── 1. Build & push Docker images ──────────────────────────────────────────
-  build-and-push:
-    name: Build & push images
+  # ── STAGE 1a — build app image (parallel) ─────────────────────────────────
+  build-app-image:
+    name: "[1] Build app image"
     runs-on: ubuntu-latest
     outputs:
-      app_ecr_url:    ${{ steps.ecr_urls.outputs.app_ecr_url }}
-      server_ecr_url: ${{ steps.ecr_urls.outputs.server_ecr_url }}
+      ecr_url: ${{ steps.ecr_url.outputs.url }}
     steps:
       - uses: actions/checkout@v4
 
@@ -34,53 +49,78 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          role-session-name: GitHubActions-Build-${{ github.run_id }}
+          role-session-name: GitHubActions-BuildApp-${{ github.run_id }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
-        id: ecr_login
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Resolve ECR URLs
-        id: ecr_urls
+      - name: Resolve ECR URL
+        id: ecr_url
         run: |
           ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-          REGION=${{ env.AWS_REGION }}
-          echo "app_ecr_url=${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/roinet-crm-app"       >> $GITHUB_OUTPUT
-          echo "server_ecr_url=${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/roinet-crm-server" >> $GITHUB_OUTPUT
+          echo "url=${ACCOUNT_ID}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/roinet-crm-app" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build & push app image
+      - name: Build & push
         uses: docker/build-push-action@v6
         with:
           context: ./app
           file: ./app/Dockerfile
           push: true
           tags: |
-            ${{ steps.ecr_urls.outputs.app_ecr_url }}:${{ github.sha }}
-            ${{ steps.ecr_urls.outputs.app_ecr_url }}:latest
-          cache-from: type=gha
-          cache-to:   type=gha,mode=max
+            ${{ steps.ecr_url.outputs.url }}:${{ github.sha }}
+            ${{ steps.ecr_url.outputs.url }}:latest
+          cache-from: type=gha,scope=app
+          cache-to:   type=gha,scope=app,mode=max
 
-      - name: Build & push server image
+  # ── STAGE 1b — build server image (parallel) ──────────────────────────────
+  build-server-image:
+    name: "[1] Build server image"
+    runs-on: ubuntu-latest
+    outputs:
+      ecr_url: ${{ steps.ecr_url.outputs.url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-session-name: GitHubActions-BuildServer-${{ github.run_id }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Resolve ECR URL
+        id: ecr_url
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          echo "url=${ACCOUNT_ID}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/roinet-crm-server" >> $GITHUB_OUTPUT
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build & push
         uses: docker/build-push-action@v6
         with:
           context: ./server
           file: ./server/Dockerfile
           push: true
           tags: |
-            ${{ steps.ecr_urls.outputs.server_ecr_url }}:${{ github.sha }}
-            ${{ steps.ecr_urls.outputs.server_ecr_url }}:latest
-          cache-from: type=gha
-          cache-to:   type=gha,mode=max
+            ${{ steps.ecr_url.outputs.url }}:${{ github.sha }}
+            ${{ steps.ecr_url.outputs.url }}:latest
+          cache-from: type=gha,scope=server
+          cache-to:   type=gha,scope=server,mode=max
 
-  # ── 2. Run Prisma migrations (before rolling out new tasks) ────────────────
+  # ── STAGE 2 — run migrations (serial — must complete before deploy) ────────
   migrate:
-    name: Prisma migrate deploy
+    name: "[2] Prisma migrate deploy"
     runs-on: ubuntu-latest
-    needs: build-and-push
+    needs: [build-app-image, build-server-image]
     steps:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
@@ -89,10 +129,8 @@ jobs:
           role-session-name: GitHubActions-Migrate-${{ github.run_id }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # Run prisma migrate deploy as a one-off ECS task using the new server image.
-      # The task exits with code 0 on success, non-zero on failure.
       - name: Launch migration task
-        id: run_migration
+        id: migration
         run: |
           TASK_ARN=$(aws ecs run-task \
             --cluster "${{ env.ECS_CLUSTER }}" \
@@ -116,35 +154,31 @@ jobs:
             --output text)
 
           echo "task_arn=$TASK_ARN" >> $GITHUB_OUTPUT
-          echo "Migration task launched: $TASK_ARN"
+          echo "Migration task: $TASK_ARN"
 
-      - name: Wait for migration task to stop
+      - name: Wait for migration to finish
         run: |
           aws ecs wait tasks-stopped \
             --cluster "${{ env.ECS_CLUSTER }}" \
-            --tasks "${{ steps.run_migration.outputs.task_arn }}"
+            --tasks "${{ steps.migration.outputs.task_arn }}"
 
-      - name: Assert migration exit code is 0
+      - name: Assert exit code 0
         run: |
-          EXIT_CODE=$(aws ecs describe-tasks \
+          CODE=$(aws ecs describe-tasks \
             --cluster "${{ env.ECS_CLUSTER }}" \
-            --tasks "${{ steps.run_migration.outputs.task_arn }}" \
+            --tasks "${{ steps.migration.outputs.task_arn }}" \
             --query 'tasks[0].containers[0].exitCode' \
             --output text)
-
-          echo "Migration exit code: $EXIT_CODE"
-
-          if [ "$EXIT_CODE" != "0" ]; then
-            echo "❌ Prisma migration failed (exit $EXIT_CODE)"
-            echo "Check CloudWatch: /ecs/roinet-crm-prod/server"
+          echo "Exit code: $CODE"
+          if [ "$CODE" != "0" ]; then
+            echo "❌ Migration failed — check CloudWatch: /ecs/roinet-crm-prod/server"
             exit 1
           fi
+          echo "✅ Migrations applied"
 
-          echo "✅ Migrations applied successfully"
-
-  # ── 3. Deploy new images to ECS ────────────────────────────────────────────
-  deploy:
-    name: Deploy to ECS
+  # ── STAGE 3a — deploy server service (parallel) ───────────────────────────
+  deploy-server:
+    name: "[3] Deploy server"
     runs-on: ubuntu-latest
     needs: migrate
     steps:
@@ -152,10 +186,10 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          role-session-name: GitHubActions-Deploy-${{ github.run_id }}
+          role-session-name: GitHubActions-DeployServer-${{ github.run_id }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Force new server deployment
+      - name: Force new deployment
         run: |
           aws ecs update-service \
             --cluster "${{ env.ECS_CLUSTER }}" \
@@ -163,7 +197,27 @@ jobs:
             --force-new-deployment \
             --no-cli-pager
 
-      - name: Force new app deployment
+      - name: Wait for stability
+        run: |
+          aws ecs wait services-stable \
+            --cluster "${{ env.ECS_CLUSTER }}" \
+            --services "${{ env.ECS_SERVICE_SERVER }}"
+          echo "✅ Server stable"
+
+  # ── STAGE 3b — deploy app service (parallel) ──────────────────────────────
+  deploy-app:
+    name: "[3] Deploy app"
+    runs-on: ubuntu-latest
+    needs: migrate
+    steps:
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-session-name: GitHubActions-DeployApp-${{ github.run_id }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Force new deployment
         run: |
           aws ecs update-service \
             --cluster "${{ env.ECS_CLUSTER }}" \
@@ -171,18 +225,9 @@ jobs:
             --force-new-deployment \
             --no-cli-pager
 
-      - name: Wait for server to stabilise
-        run: |
-          aws ecs wait services-stable \
-            --cluster "${{ env.ECS_CLUSTER }}" \
-            --services "${{ env.ECS_SERVICE_SERVER }}"
-
-      - name: Wait for app to stabilise
+      - name: Wait for stability
         run: |
           aws ecs wait services-stable \
             --cluster "${{ env.ECS_CLUSTER }}" \
             --services "${{ env.ECS_SERVICE_APP }}"
-
-      - name: Summary
-        run: |
-          echo "✅ Deployed ${{ github.sha }} to ${{ env.ECS_CLUSTER }}"
+          echo "✅ App stable"

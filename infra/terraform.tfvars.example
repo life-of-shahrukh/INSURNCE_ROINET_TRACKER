@@ -16,6 +16,15 @@ db_name     = "roinet"
 db_username = "roinet_admin"
 db_password = "CHANGE_ME_USE_A_STRONG_PASSWORD"
 
+# NOTE: After first `terraform apply`, set these GitHub Actions secrets:
+#   AWS_ROLE_TO_ASSUME  → from `terraform output github_actions_role_arn`
+#   DB_USERNAME         → same as db_username above
+#   DB_PASSWORD         → same as db_password above
+#   DATABASE_URL        → postgresql://<user>:<pass>@<rds-endpoint>:5432/<db_name>
+#                         (used by the Prisma migration ECS task)
+#   ECS_SUBNET_ID       → a private subnet ID (from `terraform output`)
+#   ECS_SECURITY_GROUP_ID → the ECS security group ID (from `terraform output`)
+
 # ECS sizing (256 CPU = 0.25 vCPU)
 # app_cpu    = 256
 # app_memory = 512

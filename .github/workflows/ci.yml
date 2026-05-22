@@ -10,6 +10,12 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# id-token:write is needed only for the terraform-validate job that uses OIDC.
+# Scoped to the workflow level so all jobs inherit it.
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   lint-app:
     name: Lint — Next.js

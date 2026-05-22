@@ -1,4 +1,21 @@
 data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
+
+# ── GitHub OIDC Provider ──────────────────────────────────────────────────────
+# Declared first so the role's trust policy can reference its ARN directly.
+# If the provider already exists in your account, import it:
+#   terraform import aws_iam_openid_connect_provider.github \
+#     arn:aws:iam::<account>:oidc-provider/token.actions.githubusercontent.com
+resource "aws_iam_openid_connect_provider" "github" {
+  url            = "https://token.actions.githubusercontent.com"
+  client_id_list = ["sts.amazonaws.com"]
+
+  # GitHub's current OIDC CA thumbprints
+  thumbprint_list = [
+    "6938fd4d98bab03faadb97b34396831e3780aea1",
+    "1c58a3a8518e8759bf075b76b750d4f2df264fcd"
+  ]
+}
 
 # ── ECS Task Execution Role ───────────────────────────────────────────────────
 resource "aws_iam_role" "ecs_execution" {
@@ -24,7 +41,6 @@ resource "aws_iam_role_policy_attachment" "ecs_execution_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-# Allow pulling from ECR (already in the managed policy above, but being explicit)
 resource "aws_iam_role_policy" "ecs_execution_ecr" {
   name = "${var.project}-${var.env}-ecs-ecr-policy"
   role = aws_iam_role.ecs_execution.id
@@ -33,14 +49,21 @@ resource "aws_iam_role_policy" "ecs_execution_ecr" {
     Version = "2012-10-17"
     Statement = [
       {
+        Effect   = "Allow"
+        Action   = ["ecr:GetAuthorizationToken"]
+        Resource = "*"
+      },
+      {
         Effect = "Allow"
         Action = [
-          "ecr:GetAuthorizationToken",
           "ecr:BatchCheckLayerAvailability",
           "ecr:GetDownloadUrlForLayer",
           "ecr:BatchGetImage"
         ]
-        Resource = "*"
+        Resource = [
+          "arn:aws:ecr:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:repository/${var.project}-app",
+          "arn:aws:ecr:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:repository/${var.project}-server"
+        ]
       },
       {
         Effect   = "Allow"
@@ -51,7 +74,7 @@ resource "aws_iam_role_policy" "ecs_execution_ecr" {
   })
 }
 
-# ── ECS Task Role (runtime permissions) ───────────────────────────────────────
+# ── ECS Task Role (runtime permissions for running containers) ────────────────
 resource "aws_iam_role" "ecs_task" {
   name = "${var.project}-${var.env}-ecs-task-role"
 
@@ -70,20 +93,23 @@ resource "aws_iam_role" "ecs_task" {
   }
 }
 
-# ── GitHub Actions deploy role ─────────────────────────────────────────────────
+# ── GitHub Actions deploy role (OIDC) ─────────────────────────────────────────
 resource "aws_iam_role" "github_actions" {
   name = "${var.project}-${var.env}-github-actions-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Effect    = "Allow"
-      Action    = "sts:AssumeRoleWithWebIdentity"
-      Principal = { Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/token.actions.githubusercontent.com" }
+      Effect = "Allow"
+      Action = "sts:AssumeRoleWithWebIdentity"
+      # Reference the OIDC provider ARN directly — no hardcoded account ID string
+      Principal = { Federated = aws_iam_openid_connect_provider.github.arn }
       Condition = {
+        # StringLike scopes to this repo across all branches/events
         StringLike = {
           "token.actions.githubusercontent.com:sub" = "repo:${var.github_repo}:*"
         }
+        # aud must equal sts.amazonaws.com (GitHub sets this automatically)
         StringEquals = {
           "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
         }
@@ -105,9 +131,15 @@ resource "aws_iam_role_policy" "github_actions_deploy" {
     Version = "2012-10-17"
     Statement = [
       {
+        Sid      = "ECRAuth"
+        Effect   = "Allow"
+        Action   = ["ecr:GetAuthorizationToken"]
+        Resource = "*"
+      },
+      {
+        Sid    = "ECRPushPull"
         Effect = "Allow"
         Action = [
-          "ecr:GetAuthorizationToken",
           "ecr:BatchCheckLayerAvailability",
           "ecr:GetDownloadUrlForLayer",
           "ecr:BatchGetImage",
@@ -116,22 +148,55 @@ resource "aws_iam_role_policy" "github_actions_deploy" {
           "ecr:UploadLayerPart",
           "ecr:CompleteLayerUpload"
         ]
-        Resource = "*"
+        Resource = [
+          "arn:aws:ecr:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:repository/${var.project}-app",
+          "arn:aws:ecr:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:repository/${var.project}-server"
+        ]
       },
       {
+        Sid    = "ECSDeployAndMigrate"
         Effect = "Allow"
         Action = [
           "ecs:UpdateService",
           "ecs:DescribeServices",
           "ecs:RegisterTaskDefinition",
           "ecs:DescribeTaskDefinition",
-          "ecs:ListTaskDefinitions"
+          "ecs:ListTaskDefinitions",
+          # Required for running the one-off migration task
+          "ecs:RunTask",
+          "ecs:DescribeTasks",
+          "ecs:StopTask"
         ]
         Resource = "*"
       },
       {
-        Effect   = "Allow"
-        Action   = "iam:PassRole"
+        Sid    = "TerraformS3State"
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ]
+        Resource = [
+          "arn:aws:s3:::${var.tf_state_bucket}",
+          "arn:aws:s3:::${var.tf_state_bucket}/*"
+        ]
+      },
+      {
+        Sid    = "TerraformDynamoLock"
+        Effect = "Allow"
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:DeleteItem"
+        ]
+        Resource = "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${var.tf_lock_table}"
+      },
+      {
+        Sid    = "PassRoleToECS"
+        Effect = "Allow"
+        Action = "iam:PassRole"
         Resource = [
           aws_iam_role.ecs_execution.arn,
           aws_iam_role.ecs_task.arn
@@ -139,16 +204,4 @@ resource "aws_iam_role_policy" "github_actions_deploy" {
       }
     ]
   })
-}
-
-# ── GitHub OIDC Provider ──────────────────────────────────────────────────────
-resource "aws_iam_openid_connect_provider" "github" {
-  url = "https://token.actions.githubusercontent.com"
-
-  client_id_list = ["sts.amazonaws.com"]
-
-  thumbprint_list = [
-    "6938fd4d98bab03faadb97b34396831e3780aea1",
-    "1c58a3a8518e8759bf075b76b750d4f2df264fcd"
-  ]
 }

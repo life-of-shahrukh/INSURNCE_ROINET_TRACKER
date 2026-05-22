@@ -2,19 +2,11 @@ data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
 # ── GitHub OIDC Provider ──────────────────────────────────────────────────────
-# Declared first so the role's trust policy can reference its ARN directly.
-# If the provider already exists in your account, import it:
-#   terraform import aws_iam_openid_connect_provider.github \
-#     arn:aws:iam::<account>:oidc-provider/token.actions.githubusercontent.com
-resource "aws_iam_openid_connect_provider" "github" {
-  url            = "https://token.actions.githubusercontent.com"
-  client_id_list = ["sts.amazonaws.com"]
-
-  # GitHub's current OIDC CA thumbprints
-  thumbprint_list = [
-    "6938fd4d98bab03faadb97b34396831e3780aea1",
-    "1c58a3a8518e8759bf075b76b750d4f2df264fcd"
-  ]
+# The provider already exists in this account (created by the swirl project).
+# We reference it with a data source instead of creating a duplicate — Terraform
+# would error on create if the provider ARN already exists.
+data "aws_iam_openid_connect_provider" "github" {
+  url = "https://token.actions.githubusercontent.com"
 }
 
 # ── ECS Task Execution Role ───────────────────────────────────────────────────
@@ -102,14 +94,12 @@ resource "aws_iam_role" "github_actions" {
     Statement = [{
       Effect = "Allow"
       Action = "sts:AssumeRoleWithWebIdentity"
-      # Reference the OIDC provider ARN directly — no hardcoded account ID string
-      Principal = { Federated = aws_iam_openid_connect_provider.github.arn }
+      # Reference the existing OIDC provider via data source
+      Principal = { Federated = data.aws_iam_openid_connect_provider.github.arn }
       Condition = {
-        # StringLike scopes to this repo across all branches/events
         StringLike = {
           "token.actions.githubusercontent.com:sub" = "repo:${var.github_repo}:*"
         }
-        # aud must equal sts.amazonaws.com (GitHub sets this automatically)
         StringEquals = {
           "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
         }
@@ -162,7 +152,6 @@ resource "aws_iam_role_policy" "github_actions_deploy" {
           "ecs:RegisterTaskDefinition",
           "ecs:DescribeTaskDefinition",
           "ecs:ListTaskDefinitions",
-          # Required for running the one-off migration task
           "ecs:RunTask",
           "ecs:DescribeTasks",
           "ecs:StopTask"

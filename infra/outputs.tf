@@ -27,3 +27,13 @@ output "github_actions_role_arn" {
   value       = module.iam.github_actions_role_arn
   description = "Add this as AWS_ROLE_TO_ASSUME secret in GitHub"
 }
+
+output "ecs_subnet_id" {
+  value       = data.aws_subnet.public_a.id
+  description = "Add this as ECS_SUBNET_ID secret in GitHub"
+}
+
+output "ecs_security_group_id" {
+  value       = aws_security_group.ecs.id
+  description = "Add this as ECS_SECURITY_GROUP_ID secret in GitHub"
+}

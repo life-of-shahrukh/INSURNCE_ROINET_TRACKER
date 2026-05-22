@@ -51,14 +51,8 @@ export function CrmProvider({ children }: { children: ReactNode }) {
   }, [user]);
 
   useEffect(() => {
-    if (!user) {
-      setDeals([]);
-      setPosp([]);
-      setLoading(false);
-      return;
-    }
-    refresh();
-  }, [refresh, user]);
+    void refresh();
+  }, [refresh]);
 
   const saveDeal = useCallback(
     async (input: DealInput) => {

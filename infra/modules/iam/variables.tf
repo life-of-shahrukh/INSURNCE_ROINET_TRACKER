@@ -1,5 +1,5 @@
-variable "project"     { type = string }
-variable "env"         { type = string }
+variable "project" { type = string }
+variable "env" { type = string }
 
 variable "github_repo" {
   type        = string

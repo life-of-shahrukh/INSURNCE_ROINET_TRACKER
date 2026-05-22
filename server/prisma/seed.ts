@@ -1,11 +1,27 @@
 import 'dotenv/config';
-import { PrismaClient, DealStatus, Prisma } from '@prisma/client';
+import { PrismaClient, DealStatus, Prisma, Role, UserStatus } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('Seeding database...');
 
+  // ── Admin user ───────────────────────────────────────────────────────────────
+  const adminPassword = await bcrypt.hash('Admin@1234', 10);
+  await prisma.user.upsert({
+    where: { email: 'admin@roinet.com' },
+    update: {},
+    create: {
+      email: 'admin@roinet.com',
+      passwordHash: adminPassword,
+      role: Role.ADMIN,
+      status: UserStatus.ACTIVE,
+    },
+  });
+  console.log('Admin user seeded: admin@roinet.com / Admin@1234');
+
+  // ── POSP & Deals ─────────────────────────────────────────────────────────────
   await prisma.deal.deleteMany();
   await prisma.posp.deleteMany();
 

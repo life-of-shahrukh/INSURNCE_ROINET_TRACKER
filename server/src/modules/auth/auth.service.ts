@@ -33,17 +33,6 @@ export class AuthService {
   ) {}
 
   async login(dto: LoginDto): Promise<AuthResponse> {
-    const demoAnyAdmin = process.env.AUTH_DEMO_ANY_EMAIL_ADMIN === 'true';
-    if (demoAnyAdmin) {
-      return this.createResponse({
-        id: `demo-${dto.email}`,
-        email: dto.email,
-        role: Role.ADMIN,
-        status: UserStatus.ACTIVE,
-        pospId: null,
-      });
-    }
-
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email.toLowerCase() },
     });

@@ -8,6 +8,8 @@ interface AuthGateProps {
   children: React.ReactNode;
 }
 
+const POSP_ALLOWED_PATHS = new Set(["/dashboard", "/renewals"]);
+
 export function AuthGate({ children }: AuthGateProps) {
   const { user, initializing } = useAuth();
   const pathname = usePathname();
@@ -24,6 +26,11 @@ export function AuthGate({ children }: AuthGateProps) {
       return;
     }
     if (user && isPublic) {
+      router.replace("/dashboard");
+      return;
+    }
+
+    if (user?.role === "POSP" && !isPublic && !POSP_ALLOWED_PATHS.has(pathname)) {
       router.replace("/dashboard");
     }
   }, [initializing, pathname, router, user]);
@@ -54,6 +61,10 @@ export function AuthGate({ children }: AuthGateProps) {
         </div>
       </div>
     );
+  }
+
+  if (user?.role === "POSP" && !POSP_ALLOWED_PATHS.has(pathname)) {
+    return <div className="empty">Redirecting to dashboard...</div>;
   }
 
   return <>{children}</>;

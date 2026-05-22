@@ -14,13 +14,15 @@ const NAV = [
   { href: "/reports", icon: "▦", label: "Reports" },
 ] as const;
 
+const POSP_NAV = new Set(["/dashboard", "/renewals"]);
+
 export function Sidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const isAdmin = user?.role === "ADMIN";
   const visibleNav = isAdmin
     ? NAV
-    : NAV.filter((item) => item.href !== "/posp");
+    : NAV.filter((item) => POSP_NAV.has(item.href));
 
   return (
     <aside className="sidebar">

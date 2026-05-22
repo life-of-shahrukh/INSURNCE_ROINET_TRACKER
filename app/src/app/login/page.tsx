@@ -6,13 +6,22 @@ import { FormEvent, useState } from "react";
 import { useAuth } from "@/providers/auth-provider";
 import { getFriendlyAuthErrorMessage } from "@/lib/auth-errors";
 
+type LoginRole = "admin" | "posp";
+
 export default function LoginPage() {
   const { login } = useAuth();
   const router = useRouter();
+  const [role, setRole] = useState<LoginRole>("admin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  function switchRole(next: LoginRole) {
+    if (next === role) return;
+    setRole(next);
+    setError(null);
+  }
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -36,8 +45,33 @@ export default function LoginPage() {
   return (
     <div className="auth-shell">
       <form className="auth-card" onSubmit={onSubmit}>
+        <div className="auth-role-toggle" role="tablist" aria-label="Login role">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={isAdmin}
+            className={`auth-role-toggle-btn${isAdmin ? " is-active" : ""}`}
+            onClick={() => switchRole("admin")}
+          >
+            Admin
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={!isAdmin}
+            className={`auth-role-toggle-btn${!isAdmin ? " is-active" : ""}`}
+            onClick={() => switchRole("posp")}
+          >
+            POSP
+          </button>
+        </div>
+
         <h1 className="auth-title">Login</h1>
-        <p className="auth-subtitle">Sign in as Admin or POSP to access the CRM portal.</p>
+        <p className="auth-subtitle">
+          {isAdmin
+            ? "Sign in with your admin credentials to manage the CRM."
+            : "Sign in with your POSP credentials to access your deals and leads."}
+        </p>
 
         <div className="form-group">
           <label>Email</label>
@@ -48,7 +82,7 @@ export default function LoginPage() {
               setEmail(e.target.value);
               if (error) setError(null);
             }}
-            placeholder="you@example.com"
+            placeholder={isAdmin ? "admin@roinet.com" : "you@example.com"}
             required
             className={error ? "auth-input-error" : ""}
           />
@@ -76,16 +110,19 @@ export default function LoginPage() {
         ) : null}
 
         <button className="btn" type="submit" disabled={busy}>
-          {busy ? "Signing in..." : "Login"}
+          {busy ? "Signing in..." : isAdmin ? "Login as Admin" : "Login as POSP"}
         </button>
 
-        <button className="btn btn-secondary" type="button" onClick={fillAdminDemoCredentials}>
-          Use Admin Login (Demo)
-        </button>
-
-        <p className="auth-footnote">
-          POSP user? <Link href="/signup">Create an account</Link> | Admin can login directly here.
-        </p>
+        <div className="auth-create-account">
+          {isAdmin ? (
+            <p className="auth-footnote">Admin accounts are provisioned by your organization.</p>
+          ) : (
+            <p className="auth-footnote">
+              Don&apos;t have a POSP account?{" "}
+              <Link href="/signup">Create an account</Link>
+            </p>
+          )}
+        </div>
       </form>
     </div>
   );

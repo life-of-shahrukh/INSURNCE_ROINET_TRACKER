@@ -54,15 +54,34 @@ a {
   width: var(--sidebar-width);
   background: var(--primary);
   color: white;
-  padding: 20px 0;
   flex-shrink: 0;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 100;
   height: 100dvh;
-  overflow-x: hidden;
+  overflow: hidden;
+}
+
+.sidebar-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 20px 0 0;
+}
+
+.sidebar-nav {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.sidebar-footer {
+  flex-shrink: 0;
+  margin-top: auto;
+  padding: 12px 0 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .logo {
@@ -119,14 +138,25 @@ a {
   border: none;
   background: transparent;
   color: inherit;
-  margin-top: 12px;
+  font: inherit;
   text-align: left;
 }
 
+.nav-logout:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
 .nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 18px;
-  text-align: center;
+  flex-shrink: 0;
   opacity: 0.9;
+}
+
+.nav-icon-svg {
+  display: block;
 }
 
 .main {

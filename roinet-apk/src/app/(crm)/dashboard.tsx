@@ -3,7 +3,10 @@ import { useMemo, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { StatusBreakdown } from '@/features/dashboard/components/StatusBreakdown';
+import { DealsByStatusChart } from '@/features/dashboard/components/deals-by-status-chart';
+import { PremiumByPolicyChart } from '@/features/dashboard/components/premium-by-policy-chart';
+import { RenewalsWidget } from '@/features/dashboard/components/renewals-widget';
+import { TopPospChart } from '@/features/dashboard/components/top-posp-chart';
 import { DealFormModal } from '@/features/deals/components/deal-form-modal';
 import { DealListItem } from '@/features/deals/components/DealListItem';
 import { useAuth } from '@/core/providers/AuthProvider';
@@ -15,9 +18,9 @@ import { EmptyState } from '@/shared/components/EmptyState';
 import { KpiCard } from '@/shared/components/KpiCard';
 import { LoadingState } from '@/shared/components/LoadingState';
 import { PageHeader } from '@/shared/components/PageHeader';
-import { computeCommissions, computeDashboardKpis, computePolicySummary, pospName } from '@/shared/utils/crm-calculations';
+import { computeDashboardKpis, pospName } from '@/shared/utils/crm-calculations';
 import { shareCsvContent } from '@/shared/utils/export-csv';
-import { fmtINR, fmtINRShort } from '@/shared/utils/formatters';
+import { fmtINRShort } from '@/shared/utils/formatters';
 import type { Deal } from '@/shared/types/crm.types';
 import { Colors } from '@/theme/colors';
 import { Spacing } from '@/theme/spacing';
@@ -31,8 +34,6 @@ export default function DashboardScreen() {
   const [editDeal, setEditDeal] = useState<Deal | null>(null);
 
   const kpis = useMemo(() => computeDashboardKpis(deals, posp), [deals, posp]);
-  const policySummary = useMemo(() => computePolicySummary(deals).slice(0, 5), [deals]);
-  const topPosps = useMemo(() => computeCommissions(deals, posp).slice(0, 5), [deals, posp]);
 
   const recent = useMemo(
     () =>
@@ -103,41 +104,35 @@ export default function DashboardScreen() {
             {isAdmin ? (
               <KpiCard label="Active POSPs" value={String(kpis.activePosps)} sub="Selling now" variant="warm" />
             ) : (
-              <KpiCard label="Conversion" value={`${kpis.conv}%`} sub={`${kpis.issued} issued / ${kpis.dealCount}`} />
+              <KpiCard label="My Deals" value={String(kpis.dealCount)} sub="In your pipeline" />
             )}
           </View>
-          {isAdmin ? (
-            <View style={styles.kpiRow}>
-              <KpiCard label="Conversion" value={`${kpis.conv}%`} sub={`${kpis.issued} issued / ${kpis.dealCount}`} />
-            </View>
-          ) : null}
+          <View style={styles.kpiRow}>
+            <KpiCard
+              label="Conversion"
+              value={`${kpis.conv}%`}
+              sub={`${kpis.issued} issued / ${kpis.dealCount}`}
+            />
+          </View>
         </View>
 
         <Card title="Deals by Status">
-          <StatusBreakdown deals={deals} />
+          <DealsByStatusChart deals={deals} />
         </Card>
 
-        {isAdmin && policySummary.length > 0 ? (
-          <Card title="Premium by Policy Type">
-            {policySummary.map((row) => (
-              <View key={row.policy} style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>{row.policy}</Text>
-                <Text style={styles.summaryValue}>{fmtINR(row.premium)}</Text>
-              </View>
-            ))}
+        <Card title="Premium by Policy Type">
+          <PremiumByPolicyChart deals={deals} />
+        </Card>
+
+        {isAdmin ? (
+          <Card title="Top POSPs by Premium">
+            <TopPospChart deals={deals} posp={posp} />
           </Card>
         ) : null}
 
-        {isAdmin && topPosps.length > 0 ? (
-          <Card title="Top POSPs by Premium">
-            {topPosps.map((row) => (
-              <View key={row.posp.id} style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>{row.posp.name}</Text>
-                <Text style={styles.summaryValue}>{fmtINRShort(row.premium)}</Text>
-              </View>
-            ))}
-          </Card>
-        ) : null}
+        <Card title="Renewals Snapshot">
+          <RenewalsWidget deals={deals} />
+        </Card>
 
         <Card title="Recent Deals">
           {recent.length === 0 ? (
@@ -192,24 +187,6 @@ const styles = StyleSheet.create({
   kpiRow: {
     flexDirection: 'row',
     gap: Spacing.lg,
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: Spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  summaryLabel: {
-    fontSize: 13,
-    color: Colors.text,
-    fontWeight: '500',
-  },
-  summaryValue: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: Colors.primary,
   },
   errorText: {
     fontSize: 13,

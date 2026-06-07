@@ -11,6 +11,9 @@ import { Radius, Spacing } from '@/theme/spacing';
 
 const MENU_ITEMS = [
   { href: '/(crm)/more/posp' as const, icon: '◉', label: 'POSP Roster', sub: 'View and manage POSP agents' },
+  { href: '/(crm)/more/quotes' as const, icon: '✎', label: 'Quote Requests', sub: 'Underwriting quote pipeline' },
+  { href: '/(crm)/more/visits' as const, icon: '◎', label: 'Field Visits', sub: 'Partner meetings and GPS logs' },
+  { href: '/(crm)/more/targets' as const, icon: '◎', label: 'Sourcing Targets', sub: 'ASM recruitment targets' },
   { href: '/(crm)/more/commissions' as const, icon: '₹', label: 'Commissions', sub: 'Premium, COA and margin by POSP' },
   { href: '/(crm)/more/reports' as const, icon: '▦', label: 'Reports', sub: 'Policy-level analytics' },
 ] as const;

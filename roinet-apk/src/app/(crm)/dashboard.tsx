@@ -3,9 +3,17 @@ import { useMemo, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { BulletinWidget } from '@/features/dashboard/components/bulletin-widget';
 import { DealsByStatusChart } from '@/features/dashboard/components/deals-by-status-chart';
+import { OpenPipelineChart } from '@/features/dashboard/components/open-pipeline-chart';
+import { PgmTable } from '@/features/dashboard/components/pgm-table';
+import { PospCoverageWidget } from '@/features/dashboard/components/posp-coverage-widget';
+import { PremiumBandChart } from '@/features/dashboard/components/premium-band-chart';
+import { PremiumBrokerageChart } from '@/features/dashboard/components/premium-brokerage-chart';
 import { PremiumByPolicyChart } from '@/features/dashboard/components/premium-by-policy-chart';
 import { RenewalsWidget } from '@/features/dashboard/components/renewals-widget';
+import { StrategicAccountsWidget } from '@/features/dashboard/components/strategic-accounts-widget';
+import { TimeBandChart } from '@/features/dashboard/components/time-band-chart';
 import { TopPospChart } from '@/features/dashboard/components/top-posp-chart';
 import { DealFormModal } from '@/features/deals/components/deal-form-modal';
 import { DealListItem } from '@/features/deals/components/DealListItem';
@@ -28,7 +36,7 @@ import { Spacing } from '@/theme/spacing';
 export default function DashboardScreen() {
   const router = useRouter();
   const { user, isAdmin, logout } = useAuth();
-  const { deals, posp, loading, error, refresh, exportCsv } = useCrm();
+  const { deals, allDeals, posp, managers, strategic, bulletin, loading, error, refresh, exportCsv } = useCrm();
   const [refreshing, setRefreshing] = useState(false);
   const [dealModalOpen, setDealModalOpen] = useState(false);
   const [editDeal, setEditDeal] = useState<Deal | null>(null);
@@ -94,20 +102,44 @@ export default function DashboardScreen() {
           </Card>
         ) : null}
 
+        <Card title="Leadership Bulletin">
+          <BulletinWidget posts={bulletin} />
+        </Card>
+
         <View style={styles.kpiGrid}>
           <View style={styles.kpiRow}>
-            <KpiCard label="Total Premium" value={fmtINRShort(kpis.totalPremium)} sub={`${kpis.dealCount} deals tracked`} />
-            <KpiCard label="Retained Margin" value={fmtINRShort(kpis.totalMargin)} sub="After COA" variant="success" />
+            <KpiCard
+              label="Total Premium"
+              value={fmtINRShort(kpis.monthPremium)}
+              sub={`Issued in ${kpis.monthName}`}
+            />
+            <KpiCard
+              label="Total Brokerage"
+              value={fmtINRShort(kpis.totalBrokerage)}
+              sub="Earned across all deals"
+              variant="warm"
+            />
           </View>
           <View style={styles.kpiRow}>
-            <KpiCard label="Hot Deals" value={String(kpis.hotDeals)} sub="Likely to close soon" variant="hot" />
+            <KpiCard label="Retained Margin" value={fmtINRShort(kpis.totalMargin)} sub="After reward points" variant="success" />
+            <KpiCard
+              label="Weighted Pipeline"
+              value={fmtINRShort(kpis.weightedPipeline)}
+              sub={`${kpis.openDealCount} open deals, probability-adjusted`}
+              variant="hot"
+            />
+          </View>
+          <View style={styles.kpiRow}>
             {isAdmin ? (
-              <KpiCard label="Active POSPs" value={String(kpis.activePosps)} sub="Selling now" variant="warm" />
+              <KpiCard
+                label="POSPs (Active / Total)"
+                value={`${kpis.activePosps} / ${kpis.totalPosps}`}
+                sub={`${kpis.totalPosps - kpis.activePosps} inactive`}
+                variant="warm"
+              />
             ) : (
               <KpiCard label="My Deals" value={String(kpis.dealCount)} sub="In your pipeline" />
             )}
-          </View>
-          <View style={styles.kpiRow}>
             <KpiCard
               label="Conversion"
               value={`${kpis.conv}%`}
@@ -116,18 +148,50 @@ export default function DashboardScreen() {
           </View>
         </View>
 
+        {isAdmin ? (
+          <Card title="Power Deals — Strategic Accounts">
+            <StrategicAccountsWidget accounts={strategic} />
+          </Card>
+        ) : null}
+
         <Card title="Deals by Status">
           <DealsByStatusChart deals={deals} />
+        </Card>
+
+        <Card title="Premium vs Brokerage by Policy Type">
+          <PremiumBrokerageChart deals={deals} />
         </Card>
 
         <Card title="Premium by Policy Type">
           <PremiumByPolicyChart deals={deals} />
         </Card>
 
+        <Card title="Deal Distribution by Premium Band">
+          <PremiumBandChart deals={deals} />
+        </Card>
+
+        <Card title="Open Pipeline by Time Band">
+          <TimeBandChart deals={deals} />
+        </Card>
+
+        <Card title="Open Pipeline by Policy Type">
+          <OpenPipelineChart deals={deals} />
+        </Card>
+
         {isAdmin ? (
-          <Card title="Top POSPs by Premium">
-            <TopPospChart deals={deals} posp={posp} />
-          </Card>
+          <>
+            <Card title="POSP Coverage — Total vs Active">
+              <PospCoverageWidget deals={allDeals} posp={posp} />
+            </Card>
+
+            <Card title="Premium vs Brokerage vs Retained GM">
+              <PgmTable deals={allDeals} posp={posp} managers={managers} />
+            </Card>
+
+            <Card title="Top POSPs by Premium">
+              <TopPospChart deals={allDeals} posp={posp} />
+            </Card>
+          </>
         ) : null}
 
         <Card title="Renewals Snapshot">

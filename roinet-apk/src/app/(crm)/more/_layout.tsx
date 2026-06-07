@@ -13,6 +13,9 @@ export default function MoreStackLayout() {
       }}>
       <Stack.Screen name="index" options={{ title: 'More' }} />
       <Stack.Screen name="posp" options={{ title: 'POSP Roster' }} />
+      <Stack.Screen name="quotes" options={{ title: 'Quote Requests' }} />
+      <Stack.Screen name="visits" options={{ title: 'Field Visits' }} />
+      <Stack.Screen name="targets" options={{ title: 'Sourcing Targets' }} />
       <Stack.Screen name="commissions" options={{ title: 'Commissions' }} />
       <Stack.Screen name="reports" options={{ title: 'Reports' }} />
     </Stack>

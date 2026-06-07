@@ -7,7 +7,16 @@ export async function getCrmState(): Promise<CrmState> {
     request<Posp[]>('/api/posp'),
     request<Deal[]>('/api/deals'),
   ]);
-  return { posp, deals };
+  return {
+    posp,
+    deals,
+    managers: [],
+    targets: { asm: {} },
+    visits: [],
+    strategic: [],
+    quotes: [],
+    bulletin: [],
+  };
 }
 
 export async function createDeal(input: DealInput): Promise<Deal> {

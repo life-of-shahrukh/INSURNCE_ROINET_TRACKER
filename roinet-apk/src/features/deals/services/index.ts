@@ -11,3 +11,15 @@ export const deleteDeal = svc.deleteDeal;
 export const createPosp = svc.createPosp;
 export const updatePosp = svc.updatePosp;
 export const exportDealsCsv = svc.exportDealsCsv;
+
+export const addBulletinPost = USE_MOCK
+  ? mock.addBulletinPost
+  : async () => {
+      throw new Error('Bulletin posts are only available in mock mode');
+    };
+
+export const deleteBulletinPost = USE_MOCK
+  ? mock.deleteBulletinPost
+  : async () => {
+      throw new Error('Bulletin posts are only available in mock mode');
+    };

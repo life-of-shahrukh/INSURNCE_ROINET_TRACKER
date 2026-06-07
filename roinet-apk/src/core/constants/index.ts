@@ -20,4 +20,4 @@ export const USE_MOCK = process.env.EXPO_PUBLIC_USE_MOCK === 'true';
 
 export const TOKEN_KEY = 'roinet_access_token';
 export const USER_KEY = 'roinet_user';
-export const CRM_STATE_KEY = 'roinet_crm_mock_state';
+export const CRM_STATE_KEY = 'roinet_crm_mock_state_v16';

@@ -4,11 +4,12 @@ import { Alert, StyleSheet, View } from 'react-native';
 import { useAuth } from '@/core/providers/AuthProvider';
 import { useCrm } from '@/core/providers/CrmProvider';
 import { POLICY_TYPES } from '@/core/constants';
+import { INSURERS } from '@/core/constants/crm-config';
 import { AppModal } from '@/shared/components/app-modal';
 import { Button } from '@/shared/components/Button';
 import { Input } from '@/shared/components/Input';
 import { SelectField } from '@/shared/components/select-field';
-import type { Deal, DealStatus } from '@/shared/types/crm.types';
+import type { Deal, DealStage, DealStatus } from '@/shared/types/crm.types';
 import { Spacing } from '@/theme/spacing';
 
 interface DealFormModalProps {
@@ -25,11 +26,14 @@ interface DealFormState {
   premium: string;
   coa: string;
   margin: string;
+  brokerage: string;
   status: DealStatus;
+  stage: DealStage;
   expected: string;
   proposal: string;
   policyNo: string;
   issued: string;
+  insurer: string;
   remarks: string;
 }
 
@@ -41,11 +45,14 @@ const emptyForm: DealFormState = {
   premium: '',
   coa: '0',
   margin: '0',
+  brokerage: '0',
   status: 'W',
+  stage: 'open',
   expected: '',
   proposal: '',
   policyNo: '',
   issued: '',
+  insurer: '',
   remarks: '',
 };
 
@@ -72,11 +79,14 @@ export function DealFormModal({ visible, deal, onClose }: DealFormModalProps) {
         premium: String(deal.premium ?? ''),
         coa: String(deal.coa ?? 0),
         margin: String(deal.margin ?? 0),
+        brokerage: String(deal.brokerage ?? 0),
         status: deal.status,
+        stage: deal.stage ?? (deal.policyNo ? 'issued' : 'open'),
         expected: deal.expected ? deal.expected.slice(0, 10) : '',
         proposal: deal.proposal ?? '',
         policyNo: deal.policyNo ?? '',
         issued: deal.issued ? deal.issued.slice(0, 10) : '',
+        insurer: deal.insurer ?? '',
         remarks: deal.remarks ?? '',
       });
     } else {
@@ -93,6 +103,7 @@ export function DealFormModal({ visible, deal, onClose }: DealFormModalProps) {
     try {
       await saveDeal({
         id: deal?.id,
+        leadNo: deal?.leadNo ?? '',
         pospId: form.pospId,
         customer: form.customer.trim(),
         policy: form.policy,
@@ -100,11 +111,15 @@ export function DealFormModal({ visible, deal, onClose }: DealFormModalProps) {
         premium: +form.premium || 0,
         coa: +form.coa || 0,
         margin: +form.margin || 0,
+        brokerage: +form.brokerage || 0,
         status: form.status,
+        stage: form.stage,
+        lastUpdated: new Date().toISOString().slice(0, 10),
         expected: form.expected,
         proposal: form.proposal.trim(),
         policyNo: form.policyNo.trim(),
         issued: form.issued || null,
+        insurer: form.insurer.trim(),
         remarks: form.remarks.trim(),
       });
       onClose();
@@ -204,6 +219,13 @@ export function DealFormModal({ visible, deal, onClose }: DealFormModalProps) {
         keyboardType="numeric"
         placeholder="0"
       />
+      <Input
+        label="Brokerage (₹)"
+        value={form.brokerage}
+        onChangeText={(brokerage) => setForm((f) => ({ ...f, brokerage }))}
+        keyboardType="numeric"
+        placeholder="0"
+      />
 
       <SelectField
         label="Deal Status"
@@ -214,6 +236,17 @@ export function DealFormModal({ visible, deal, onClose }: DealFormModalProps) {
           { value: 'C', label: 'Cold' },
         ]}
         onChange={(status) => setForm((f) => ({ ...f, status: status as DealStatus }))}
+      />
+
+      <SelectField
+        label="Stage"
+        value={form.stage}
+        options={[
+          { value: 'open', label: 'Open' },
+          { value: 'issued', label: 'Issued' },
+          { value: 'lost', label: 'Lost' },
+        ]}
+        onChange={(stage) => setForm((f) => ({ ...f, stage: stage as DealStage }))}
       />
 
       <Input
@@ -239,6 +272,12 @@ export function DealFormModal({ visible, deal, onClose }: DealFormModalProps) {
         value={form.issued}
         onChangeText={(issued) => setForm((f) => ({ ...f, issued }))}
         placeholder="2026-05-15"
+      />
+      <SelectField
+        label="Insurer"
+        value={form.insurer}
+        options={[{ value: '', label: '— Select —' }, ...INSURERS.map((i) => ({ value: i, label: i }))]}
+        onChange={(insurer) => setForm((f) => ({ ...f, insurer }))}
       />
       <Input
         label="Remarks"

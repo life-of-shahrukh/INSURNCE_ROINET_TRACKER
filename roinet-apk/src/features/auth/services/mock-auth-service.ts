@@ -48,6 +48,10 @@ export async function signupPospRequest(payload: SignupPospPayload): Promise<Log
     email: payload.email,
     joined: payload.joined,
     active: false,
+    region: '',
+    area: '',
+    asm: '',
+    rm: '',
   });
 
   return {

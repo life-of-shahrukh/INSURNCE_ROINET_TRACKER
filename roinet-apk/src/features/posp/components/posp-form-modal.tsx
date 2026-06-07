@@ -22,6 +22,10 @@ interface PospFormState {
   email: string;
   joined: string;
   active: string;
+  region: string;
+  area: string;
+  asm: string;
+  rm: string;
 }
 
 const emptyForm: PospFormState = {
@@ -31,6 +35,10 @@ const emptyForm: PospFormState = {
   email: '',
   joined: '',
   active: 'true',
+  region: '',
+  area: '',
+  asm: '',
+  rm: '',
 };
 
 export function PospFormModal({ visible, pospItem, onClose }: PospFormModalProps) {
@@ -50,6 +58,10 @@ export function PospFormModal({ visible, pospItem, onClose }: PospFormModalProps
         email: pospItem.email ?? '',
         joined: pospItem.joined ?? '',
         active: pospItem.active ? 'true' : 'false',
+        region: pospItem.region ?? '',
+        area: pospItem.area ?? '',
+        asm: pospItem.asm ?? '',
+        rm: pospItem.rm ?? '',
       });
     } else {
       setForm({ ...emptyForm, joined: new Date().toISOString().slice(0, 10) });
@@ -70,6 +82,10 @@ export function PospFormModal({ visible, pospItem, onClose }: PospFormModalProps
         email: form.email.trim(),
         joined: form.joined,
         active: form.active === 'true',
+        region: form.region.trim(),
+        area: form.area.trim(),
+        asm: form.asm.trim(),
+        rm: form.rm.trim(),
       });
       onClose();
     } finally {
@@ -113,6 +129,10 @@ export function PospFormModal({ visible, pospItem, onClose }: PospFormModalProps
         ]}
         onChange={(active) => setForm((f) => ({ ...f, active }))}
       />
+      <Input label="Region" value={form.region} onChangeText={(region) => setForm((f) => ({ ...f, region }))} placeholder="North" />
+      <Input label="Area" value={form.area} onChangeText={(area) => setForm((f) => ({ ...f, area }))} placeholder="Gurugram" />
+      <Input label="ASM" value={form.asm} onChangeText={(asm) => setForm((f) => ({ ...f, asm }))} placeholder="Area Sales Manager" />
+      <Input label="RM" value={form.rm} onChangeText={(rm) => setForm((f) => ({ ...f, rm }))} placeholder="Relationship Manager" />
     </AppModal>
   );
 }

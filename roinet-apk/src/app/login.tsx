@@ -28,6 +28,12 @@ export default function LoginScreen() {
     setError(null);
   }
 
+  function fillAdminDemoCredentials() {
+    setEmail('admin@roinet.com');
+    setPassword('Admin@1234');
+    setError(null);
+  }
+
   async function onSubmit() {
     setBusy(true);
     setError(null);
@@ -106,7 +112,12 @@ export default function LoginScreen() {
 
       <View style={styles.footnote}>
         {isAdmin ? (
-          <Text style={styles.footnoteText}>Admin accounts are provisioned by your organization.</Text>
+          <>
+            <Text style={styles.footnoteText}>Admin accounts are provisioned by your organization.</Text>
+            <Pressable onPress={fillAdminDemoCredentials} style={styles.demoLink}>
+              <Text style={styles.link}>Use demo credentials</Text>
+            </Pressable>
+          </>
         ) : (
           <Text style={styles.footnoteText}>
             Don&apos;t have a POSP account?{' '}
@@ -182,5 +193,9 @@ const styles = StyleSheet.create({
   link: {
     color: Colors.primary,
     fontWeight: '600',
+  },
+  demoLink: {
+    marginTop: Spacing.sm,
+    alignSelf: 'flex-start',
   },
 });

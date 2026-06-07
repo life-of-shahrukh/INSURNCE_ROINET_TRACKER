@@ -95,3 +95,10 @@ export function computePolicySummary(deals: Deal[]): PolicySummaryRow[] {
   });
   return Object.values(policySums).sort((a, b) => b.premium - a.premium);
 }
+
+export function marginPercent(margin: number, premium: number): string {
+  if (!premium) {
+    return '–';
+  }
+  return `${((margin / premium) * 100).toFixed(1)}%`;
+}

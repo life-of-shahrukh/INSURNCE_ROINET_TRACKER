@@ -1,6 +1,14 @@
 import { Redirect, Tabs } from 'expo-router';
 
+import { PendingApprovalScreen } from '@/features/auth/components/pending-approval-screen';
 import { LoadingState } from '@/shared/components/LoadingState';
+import {
+  dashboardTabIcon,
+  dealsTabIcon,
+  leadsTabIcon,
+  moreTabIcon,
+  renewalsTabIcon,
+} from '@/shared/components/tab-bar-icon';
 import { useAuth } from '@/core/providers/AuthProvider';
 import { Colors } from '@/theme/colors';
 
@@ -13,6 +21,10 @@ export default function CrmTabLayout() {
 
   if (!user) {
     return <Redirect href="/login" />;
+  }
+
+  if (user.status === 'PENDING') {
+    return <PendingApprovalScreen />;
   }
 
   return (
@@ -36,6 +48,16 @@ export default function CrmTabLayout() {
           tabBarLabel: 'Dashboard',
           headerTitle: 'Roinet Insurance',
           headerRight: () => null,
+          tabBarIcon: dashboardTabIcon,
+        }}
+      />
+      <Tabs.Screen
+        name="leads"
+        options={{
+          title: 'Leads',
+          tabBarLabel: 'Leads',
+          href: isAdmin ? undefined : null,
+          tabBarIcon: leadsTabIcon,
         }}
       />
       <Tabs.Screen
@@ -44,6 +66,7 @@ export default function CrmTabLayout() {
           title: 'Deals',
           tabBarLabel: 'Deals',
           href: isAdmin ? undefined : null,
+          tabBarIcon: dealsTabIcon,
         }}
       />
       <Tabs.Screen
@@ -51,6 +74,7 @@ export default function CrmTabLayout() {
         options={{
           title: 'Renewals',
           tabBarLabel: 'Renewals',
+          tabBarIcon: renewalsTabIcon,
         }}
       />
       <Tabs.Screen
@@ -60,6 +84,7 @@ export default function CrmTabLayout() {
           tabBarLabel: 'More',
           headerShown: false,
           href: isAdmin ? undefined : null,
+          tabBarIcon: moreTabIcon,
         }}
       />
     </Tabs>

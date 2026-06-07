@@ -6,15 +6,31 @@ import { useCrm } from '@/core/providers/CrmProvider';
 import { Card } from '@/shared/components/Card';
 import { EmptyState } from '@/shared/components/EmptyState';
 import { LoadingState } from '@/shared/components/LoadingState';
-import { computeCommissions } from '@/shared/utils/crm-calculations';
+import { PageHeader } from '@/shared/components/PageHeader';
+import { computeCommissions, marginPercent } from '@/shared/utils/crm-calculations';
 import { fmtINR } from '@/shared/utils/formatters';
 import { Colors } from '@/theme/colors';
 import { Radius, Spacing } from '@/theme/spacing';
 
 export default function CommissionsScreen() {
-  const { deals, posp, loading, refresh } = useCrm();
+  const { allDeals, posp, loading, refresh } = useCrm();
   const [refreshing, setRefreshing] = useState(false);
-  const rows = useMemo(() => computeCommissions(deals, posp), [deals, posp]);
+  const rows = useMemo(() => computeCommissions(allDeals, posp), [allDeals, posp]);
+
+  const totals = useMemo(
+    () =>
+      rows.reduce(
+        (acc, row) => ({
+          premium: acc.premium + row.premium,
+          coa: acc.coa + row.coa,
+          margin: acc.margin + row.margin,
+          dealCount: acc.dealCount + row.dealCount,
+          issued: acc.issued + row.issued,
+        }),
+        { premium: 0, coa: 0, margin: 0, dealCount: 0, issued: 0 },
+      ),
+    [rows],
+  );
 
   async function onRefresh() {
     setRefreshing(true);
@@ -31,35 +47,45 @@ export default function CommissionsScreen() {
       <ScrollView
         contentContainerStyle={styles.content}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />}>
+        <PageHeader title="Commissions" subtitle="COA and retained margin by POSP" />
+
         <Card>
           {rows.length === 0 ? (
             <EmptyState message="No commission data available." />
           ) : (
-            rows.map((row) => (
-              <View key={row.posp.id} style={styles.row}>
-                <View style={styles.header}>
-                  <Text style={styles.name}>{row.posp.name}</Text>
-                  <Text style={styles.code}>{row.posp.code}</Text>
+            <>
+              {rows.map((row) => (
+                <View key={row.posp.id} style={styles.row}>
+                  <View style={styles.header}>
+                    <Text style={styles.name}>{row.posp.name}</Text>
+                    <Text style={styles.code}>{row.posp.code}</Text>
+                  </View>
+                  <View style={styles.stats}>
+                    <View style={styles.stat}>
+                      <Text style={styles.statLabel}>Premium</Text>
+                      <Text style={styles.statValue}>{fmtINR(row.premium)}</Text>
+                    </View>
+                    <View style={styles.stat}>
+                      <Text style={styles.statLabel}>COA</Text>
+                      <Text style={styles.statValue}>{fmtINR(row.coa)}</Text>
+                    </View>
+                    <View style={styles.stat}>
+                      <Text style={styles.statLabel}>Margin</Text>
+                      <Text style={styles.statValue}>{fmtINR(row.margin)}</Text>
+                    </View>
+                  </View>
+                  <Text style={styles.footer}>
+                    {row.dealCount} deals · {row.issued} issued · Margin {marginPercent(row.margin, row.premium)}
+                  </Text>
                 </View>
-                <View style={styles.stats}>
-                  <View style={styles.stat}>
-                    <Text style={styles.statLabel}>Premium</Text>
-                    <Text style={styles.statValue}>{fmtINR(row.premium)}</Text>
-                  </View>
-                  <View style={styles.stat}>
-                    <Text style={styles.statLabel}>COA</Text>
-                    <Text style={styles.statValue}>{fmtINR(row.coa)}</Text>
-                  </View>
-                  <View style={styles.stat}>
-                    <Text style={styles.statLabel}>Margin</Text>
-                    <Text style={styles.statValue}>{fmtINR(row.margin)}</Text>
-                  </View>
-                </View>
-                <Text style={styles.footer}>
-                  {row.dealCount} deals · {row.issued} issued
+              ))}
+              <View style={styles.totalRow}>
+                <Text style={styles.totalLabel}>Total</Text>
+                <Text style={styles.totalValue}>
+                  {fmtINR(totals.premium)} · Margin {marginPercent(totals.margin, totals.premium)}
                 </Text>
               </View>
-            ))
+            </>
           )}
         </Card>
       </ScrollView>
@@ -123,5 +149,24 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.sm,
     borderTopWidth: 1,
     borderTopColor: Colors.border,
+  },
+  totalRow: {
+    marginTop: Spacing.sm,
+    paddingTop: Spacing.lg,
+    borderTopWidth: 2,
+    borderTopColor: Colors.border,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  totalLabel: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: Colors.text,
+  },
+  totalValue: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: Colors.primary,
   },
 });

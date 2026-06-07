@@ -3,18 +3,31 @@ import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useCrm } from '@/core/providers/CrmProvider';
+import { Button } from '@/shared/components/Button';
 import { Card } from '@/shared/components/Card';
 import { EmptyState } from '@/shared/components/EmptyState';
 import { LoadingState } from '@/shared/components/LoadingState';
-import { computePolicySummary } from '@/shared/utils/crm-calculations';
+import { PageHeader } from '@/shared/components/PageHeader';
+import { computePolicySummary, marginPercent } from '@/shared/utils/crm-calculations';
+import { shareCsvContent } from '@/shared/utils/export-csv';
 import { fmtINR } from '@/shared/utils/formatters';
 import { Colors } from '@/theme/colors';
 import { Radius, Spacing } from '@/theme/spacing';
 
 export default function ReportsScreen() {
-  const { deals, loading, refresh } = useCrm();
+  const { allDeals, loading, refresh, exportCsv } = useCrm();
   const [refreshing, setRefreshing] = useState(false);
-  const rows = useMemo(() => computePolicySummary(deals), [deals]);
+  const rows = useMemo(() => computePolicySummary(allDeals), [allDeals]);
+
+  const totals = rows.reduce(
+    (acc, r) => ({
+      count: acc.count + r.count,
+      premium: acc.premium + r.premium,
+      coa: acc.coa + r.coa,
+      margin: acc.margin + r.margin,
+    }),
+    { count: 0, premium: 0, coa: 0, margin: 0 },
+  );
 
   async function onRefresh() {
     setRefreshing(true);
@@ -22,25 +35,44 @@ export default function ReportsScreen() {
     setRefreshing(false);
   }
 
+  async function handleExport() {
+    const csv = await exportCsv();
+    await shareCsvContent('roinet-report.csv', csv);
+  }
+
   if (loading && !refreshing) {
     return <LoadingState />;
   }
-
-  const totals = rows.reduce(
-    (acc, r) => ({
-      count: acc.count + r.count,
-      premium: acc.premium + r.premium,
-      margin: acc.margin + r.margin,
-    }),
-    { count: 0, premium: 0, margin: 0 },
-  );
 
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
       <ScrollView
         contentContainerStyle={styles.content}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />}>
-        <Card title="Policy Summary">
+        <PageHeader
+          title="Reports"
+          subtitle="Policy-level analytics and export"
+          actions={<Button title="Export CSV" variant="secondary" onPress={() => void handleExport()} />}
+        />
+
+        <Card title="Conversion Snapshot">
+          <View style={styles.snapshotRow}>
+            <View style={styles.snapshotItem}>
+              <Text style={styles.snapshotLabel}>Total Deals</Text>
+              <Text style={styles.snapshotValue}>{totals.count}</Text>
+            </View>
+            <View style={styles.snapshotItem}>
+              <Text style={styles.snapshotLabel}>Total Premium</Text>
+              <Text style={styles.snapshotValue}>{fmtINR(totals.premium)}</Text>
+            </View>
+            <View style={styles.snapshotItem}>
+              <Text style={styles.snapshotLabel}>Margin %</Text>
+              <Text style={styles.snapshotValue}>{marginPercent(totals.margin, totals.premium)}</Text>
+            </View>
+          </View>
+        </Card>
+
+        <Card title="Summary by Policy Type">
           {rows.length === 0 ? (
             <EmptyState message="No policy data to report on." />
           ) : (
@@ -57,8 +89,16 @@ export default function ReportsScreen() {
                       <Text style={styles.statValue}>{fmtINR(row.premium)}</Text>
                     </View>
                     <View>
+                      <Text style={styles.statLabel}>COA</Text>
+                      <Text style={styles.statValue}>{fmtINR(row.coa)}</Text>
+                    </View>
+                    <View>
                       <Text style={styles.statLabel}>Margin</Text>
                       <Text style={styles.statValue}>{fmtINR(row.margin)}</Text>
+                    </View>
+                    <View>
+                      <Text style={styles.statLabel}>Margin %</Text>
+                      <Text style={styles.statValue}>{marginPercent(row.margin, row.premium)}</Text>
                     </View>
                   </View>
                 </View>
@@ -84,6 +124,27 @@ const styles = StyleSheet.create({
     padding: Spacing.xxl,
     paddingBottom: Spacing.xxxl,
   },
+  snapshotRow: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+  },
+  snapshotItem: {
+    flex: 1,
+    backgroundColor: Colors.mutedBg,
+    borderRadius: Radius.sm,
+    padding: Spacing.md,
+  },
+  snapshotLabel: {
+    fontSize: 10,
+    color: Colors.textMuted,
+    textTransform: 'uppercase',
+  },
+  snapshotValue: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: Colors.primary,
+    marginTop: 4,
+  },
   row: {
     paddingVertical: Spacing.md,
     borderBottomWidth: 1,
@@ -105,7 +166,8 @@ const styles = StyleSheet.create({
   },
   stats: {
     flexDirection: 'row',
-    gap: Spacing.xxxl,
+    flexWrap: 'wrap',
+    gap: Spacing.lg,
     marginTop: Spacing.sm,
   },
   statLabel: {

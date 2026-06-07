@@ -22,6 +22,7 @@ import type { Deal, DealInput, Posp, PospInput } from '@/shared/types/crm.types'
 
 interface CrmContextValue {
   deals: Deal[];
+  allDeals: Deal[];
   posp: Posp[];
   loading: boolean;
   error: string | null;
@@ -104,9 +105,17 @@ export function CrmProvider({ children }: { children: ReactNode }) {
 
   const exportCsv = useCallback(async () => exportDealsCsv(), []);
 
-  const value = useMemo(
-    () => ({
-      deals,
+  const value = useMemo(() => {
+    const scopedDeals =
+      !user || user.role === 'ADMIN'
+        ? deals
+        : user.pospId
+          ? deals.filter((d) => d.pospId === user.pospId)
+          : [];
+
+    return {
+      deals: scopedDeals,
+      allDeals: deals,
       posp,
       loading,
       error,
@@ -115,9 +124,8 @@ export function CrmProvider({ children }: { children: ReactNode }) {
       deleteDealById,
       savePosp,
       exportCsv,
-    }),
-    [deals, posp, loading, error, refresh, saveDeal, deleteDealById, savePosp, exportCsv],
-  );
+    };
+  }, [deals, posp, loading, error, refresh, saveDeal, deleteDealById, savePosp, exportCsv, user]);
 
   return <CrmContext.Provider value={value}>{children}</CrmContext.Provider>;
 }

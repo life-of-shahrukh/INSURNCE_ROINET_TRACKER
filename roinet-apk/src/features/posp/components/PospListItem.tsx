@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Badge } from '@/shared/components/Badge';
 import type { Posp } from '@/shared/types/crm.types';
@@ -9,11 +9,15 @@ interface PospListItemProps {
   posp: Posp;
   dealCount: number;
   premium: number;
+  onPress?: () => void;
 }
 
-export function PospListItem({ posp, dealCount, premium }: PospListItemProps) {
+export function PospListItem({ posp, dealCount, premium, onPress }: PospListItemProps) {
   return (
-    <View style={styles.card}>
+    <Pressable
+      onPress={onPress}
+      disabled={!onPress}
+      style={({ pressed }) => [styles.card, onPress && pressed && styles.pressed]}>
       <View style={styles.header}>
         <View>
           <Text style={styles.name}>{posp.name}</Text>
@@ -34,11 +38,14 @@ export function PospListItem({ posp, dealCount, premium }: PospListItemProps) {
           <Text style={styles.statValue}>₹{premium.toLocaleString('en-IN')}</Text>
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
+  pressed: {
+    opacity: 0.9,
+  },
   card: {
     backgroundColor: Colors.card,
     borderRadius: Radius.md,

@@ -4,6 +4,7 @@ import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { StatusBreakdown } from '@/features/dashboard/components/StatusBreakdown';
+import { DealFormModal } from '@/features/deals/components/deal-form-modal';
 import { DealListItem } from '@/features/deals/components/DealListItem';
 import { useAuth } from '@/core/providers/AuthProvider';
 import { useCrm } from '@/core/providers/CrmProvider';
@@ -14,18 +15,24 @@ import { EmptyState } from '@/shared/components/EmptyState';
 import { KpiCard } from '@/shared/components/KpiCard';
 import { LoadingState } from '@/shared/components/LoadingState';
 import { PageHeader } from '@/shared/components/PageHeader';
-import { computeDashboardKpis, pospName } from '@/shared/utils/crm-calculations';
-import { fmtDate, fmtINR, fmtINRShort } from '@/shared/utils/formatters';
+import { computeCommissions, computeDashboardKpis, computePolicySummary, pospName } from '@/shared/utils/crm-calculations';
+import { shareCsvContent } from '@/shared/utils/export-csv';
+import { fmtINR, fmtINRShort } from '@/shared/utils/formatters';
+import type { Deal } from '@/shared/types/crm.types';
 import { Colors } from '@/theme/colors';
 import { Spacing } from '@/theme/spacing';
 
 export default function DashboardScreen() {
   const router = useRouter();
   const { user, isAdmin, logout } = useAuth();
-  const { deals, posp, loading, error, refresh } = useCrm();
+  const { deals, posp, loading, error, refresh, exportCsv } = useCrm();
   const [refreshing, setRefreshing] = useState(false);
+  const [dealModalOpen, setDealModalOpen] = useState(false);
+  const [editDeal, setEditDeal] = useState<Deal | null>(null);
 
   const kpis = useMemo(() => computeDashboardKpis(deals, posp), [deals, posp]);
+  const policySummary = useMemo(() => computePolicySummary(deals).slice(0, 5), [deals]);
+  const topPosps = useMemo(() => computeCommissions(deals, posp).slice(0, 5), [deals, posp]);
 
   const recent = useMemo(
     () =>
@@ -41,6 +48,21 @@ export default function DashboardScreen() {
     setRefreshing(false);
   }
 
+  async function handleExport() {
+    const csv = await exportCsv();
+    await shareCsvContent('roinet-deals.csv', csv);
+  }
+
+  function openNewDeal() {
+    setEditDeal(null);
+    setDealModalOpen(true);
+  }
+
+  function openDeal(deal: Deal) {
+    setEditDeal(deal);
+    setDealModalOpen(true);
+  }
+
   if (loading && !refreshing) {
     return <LoadingState />;
   }
@@ -53,7 +75,15 @@ export default function DashboardScreen() {
         <PageHeader
           title="Dashboard"
           subtitle="Overview of your sales performance"
-          actions={<Badge label={isAdmin ? 'Admin' : 'POSP'} variant="muted" />}
+          actions={
+            <View style={styles.headerActions}>
+              {isAdmin ? (
+                <Button title="Export" variant="secondary" onPress={() => void handleExport()} />
+              ) : null}
+              <Button title="+ New Deal" onPress={openNewDeal} />
+              <Badge label={isAdmin ? 'Admin' : 'POSP'} variant="muted" />
+            </View>
+          }
         />
 
         {error ? (
@@ -87,12 +117,34 @@ export default function DashboardScreen() {
           <StatusBreakdown deals={deals} />
         </Card>
 
+        {isAdmin && policySummary.length > 0 ? (
+          <Card title="Premium by Policy Type">
+            {policySummary.map((row) => (
+              <View key={row.policy} style={styles.summaryRow}>
+                <Text style={styles.summaryLabel}>{row.policy}</Text>
+                <Text style={styles.summaryValue}>{fmtINR(row.premium)}</Text>
+              </View>
+            ))}
+          </Card>
+        ) : null}
+
+        {isAdmin && topPosps.length > 0 ? (
+          <Card title="Top POSPs by Premium">
+            {topPosps.map((row) => (
+              <View key={row.posp.id} style={styles.summaryRow}>
+                <Text style={styles.summaryLabel}>{row.posp.name}</Text>
+                <Text style={styles.summaryValue}>{fmtINRShort(row.premium)}</Text>
+              </View>
+            ))}
+          </Card>
+        ) : null}
+
         <Card title="Recent Deals">
           {recent.length === 0 ? (
-            <EmptyState message="No deals yet. Add your first deal from the Deals tab." />
+            <EmptyState message="No deals yet. Tap + New Deal to add your first deal." />
           ) : (
             recent.map((d) => (
-              <DealListItem key={d.id} deal={d} pospLabel={pospName(posp, d.pospId)} />
+              <DealListItem key={d.id} deal={d} pospLabel={pospName(posp, d.pospId)} onPress={() => openDeal(d)} />
             ))
           )}
         </Card>
@@ -112,6 +164,8 @@ export default function DashboardScreen() {
           ) : null}
         </View>
       </ScrollView>
+
+      <DealFormModal visible={dealModalOpen} deal={editDeal} onClose={() => setDealModalOpen(false)} />
     </SafeAreaView>
   );
 }
@@ -125,6 +179,12 @@ const styles = StyleSheet.create({
     padding: Spacing.xxl,
     paddingBottom: Spacing.xxxl,
   },
+  headerActions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.sm,
+    alignItems: 'center',
+  },
   kpiGrid: {
     gap: Spacing.lg,
     marginBottom: Spacing.lg,
@@ -132,6 +192,24 @@ const styles = StyleSheet.create({
   kpiRow: {
     flexDirection: 'row',
     gap: Spacing.lg,
+  },
+  summaryRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: Spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  summaryLabel: {
+    fontSize: 13,
+    color: Colors.text,
+    fontWeight: '500',
+  },
+  summaryValue: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: Colors.primary,
   },
   errorText: {
     fontSize: 13,

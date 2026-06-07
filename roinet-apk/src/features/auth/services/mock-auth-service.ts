@@ -1,3 +1,4 @@
+import { createPosp } from '@/features/deals/services/mock-deal-service';
 import type { LoginPayload, LoginResponse, SignupPospPayload } from '@/features/auth/types/auth.types';
 import { AuthApiError } from '@/features/auth/services/auth-errors';
 
@@ -37,14 +38,26 @@ export async function loginRequest(payload: LoginPayload): Promise<LoginResponse
 }
 
 export async function signupPospRequest(payload: SignupPospPayload): Promise<LoginResponse> {
+  const pospId = `p_${Date.now()}`;
+
+  await createPosp({
+    id: pospId,
+    name: payload.name,
+    code: payload.code,
+    mobile: payload.mobile,
+    email: payload.email,
+    joined: payload.joined,
+    active: false,
+  });
+
   return {
     accessToken: 'mock-posp-token',
     user: {
-      id: 'posp-user-new',
+      id: `posp-user-${pospId}`,
       email: payload.email,
       role: 'POSP',
       status: 'PENDING',
-      pospId: 'p-new',
+      pospId,
     },
   };
 }

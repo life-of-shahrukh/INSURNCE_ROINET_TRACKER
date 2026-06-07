@@ -1,0 +1,164 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+		"name": "RoiNet Cognitensor API",
+		"description": "Collection for RoiNet Cognitensor API endpoints (State, District, City, Hierarchy User Data)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12345678"
+	},
+	"item": [
+		{
+			"name": "Location APIs",
+			"item": [
+				{
+					"name": "List States",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/Cognitensor/ListState",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"Cognitensor",
+								"ListState"
+							]
+						},
+						"description": "Retrieves list of all states"
+					},
+					"response": []
+				},
+				{
+					"name": "List Districts",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"stateid\": \"2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/Cognitensor/ListDistrict",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"Cognitensor",
+								"ListDistrict"
+							]
+						},
+						"description": "Retrieves list of districts for a given state ID"
+					},
+					"response": []
+				},
+				{
+					"name": "List Cities",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"districtid\": \"387\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/Cognitensor/ListCity",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"Cognitensor",
+								"ListCity"
+							]
+						},
+						"description": "Retrieves list of cities for a given district ID"
+					},
+					"response": []
+				}
+			],
+			"description": "APIs for fetching location data (States, Districts, Cities)"
+		},
+		{
+			"name": "User APIs",
+			"item": [
+				{
+					"name": "List Hierarchy User Data",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/Cognitensor/ListHierarchyUserData",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"Cognitensor",
+								"ListHierarchyUserData"
+							]
+						},
+						"description": "Retrieves hierarchical user data"
+					},
+					"response": []
+				}
+			],
+			"description": "APIs for fetching user hierarchy data"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://uatserviceapi.roinet.in",
+			"type": "string"
+		}
+	]
+}

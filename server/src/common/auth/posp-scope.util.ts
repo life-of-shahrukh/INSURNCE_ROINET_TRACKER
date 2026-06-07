@@ -1,5 +1,5 @@
 import { ForbiddenException } from '@nestjs/common';
-import { Role } from '@prisma/client';
+import { Role } from '../constants';
 import { AuthUser } from './auth-user.interface';
 
 export function resolvePospScope(

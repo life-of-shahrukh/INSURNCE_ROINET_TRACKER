@@ -9,14 +9,19 @@ import {
   HttpStatus,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { PospService } from './posp.service';
 import { CreatePospDto } from './dto/create-posp.dto';
 import { UpdatePospDto } from './dto/update-posp.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
-import { Role } from '@prisma/client';
+import { Role } from '../../common/constants';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { AuthUser } from '../../common/auth/auth-user.interface';
 
@@ -47,7 +52,11 @@ export class PospController {
   @Patch(':id')
   @ApiOperation({ summary: 'Update a POSP' })
   @ApiResponse({ status: 200, description: 'Updated POSP record' })
-  update(@Param('id') id: string, @Body() dto: UpdatePospDto, @CurrentUser() user: AuthUser) {
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdatePospDto,
+    @CurrentUser() user: AuthUser,
+  ) {
     return this.pospService.update(id, dto, user);
   }
 }

@@ -7,7 +7,10 @@ import { Deal } from '@prisma/client';
 export class GetAllDealsHandler implements IQueryHandler<GetAllDealsQuery> {
   constructor(private readonly dealRepo: DealRepository) {}
 
-  async execute(): Promise<Deal[]> {
+  async execute(query: GetAllDealsQuery): Promise<Deal[]> {
+    if (query.pospId) {
+      return this.dealRepo.findAllByPospId(query.pospId);
+    }
     return this.dealRepo.findAll();
   }
 }

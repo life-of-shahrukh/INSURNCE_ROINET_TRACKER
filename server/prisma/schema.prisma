@@ -3,33 +3,16 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlserver"
   url      = env("DATABASE_URL")
 }
 
-enum DealStatus {
-  H
-  W
-  C
-}
-
-enum Role {
-  ADMIN
-  POSP
-}
-
-enum UserStatus {
-  PENDING
-  ACTIVE
-  INACTIVE
-}
-
 model Posp {
-  id        String   @id @default(cuid())
-  name      String
-  code      String   @unique
-  mobile    String
-  email     String   @unique
+  id        String   @id @default(cuid()) @db.NVarChar(36)
+  name      String   @db.NVarChar(200)
+  code      String   @unique @db.NVarChar(50)
+  mobile    String   @db.NVarChar(20)
+  email     String   @unique @db.NVarChar(200)
   joined    DateTime
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -39,33 +22,36 @@ model Posp {
 }
 
 model Deal {
-  id        String     @id @default(cuid())
-  pospId    String
-  posp      Posp       @relation(fields: [pospId], references: [id])
-  customer  String
-  policy    String
+  id        String   @id @default(cuid()) @db.NVarChar(36)
+  pospId    String   @db.NVarChar(36)
+  posp      Posp     @relation(fields: [pospId], references: [id])
+  customer  String   @db.NVarChar(200)
+  policy    String   @db.NVarChar(100)
   sum       Float
   premium   Float
   coa       Float
   margin    Float
-  status    DealStatus
+  /// H = Hot, W = Warm, C = Cold
+  status    String   @db.NVarChar(1)
   expected  DateTime
-  proposal  String
-  policyNo  String     @default("")
+  proposal  String   @db.NVarChar(100)
+  policyNo  String   @default("") @db.NVarChar(100)
   issued    DateTime?
-  remarks   String     @default("")
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  remarks   String   @default("") @db.NVarChar(500)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model User {
-  id           String     @id @default(cuid())
-  email        String     @unique
-  passwordHash String
-  role         Role
-  status       UserStatus @default(PENDING)
-  pospId       String?    @unique
-  posp         Posp?      @relation(fields: [pospId], references: [id])
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  id           String   @id @default(cuid()) @db.NVarChar(36)
+  email        String   @unique @db.NVarChar(200)
+  passwordHash String   @db.NVarChar(255)
+  /// ADMIN | POSP
+  role         String   @db.NVarChar(20)
+  /// PENDING | ACTIVE | INACTIVE
+  status       String   @default("PENDING") @db.NVarChar(20)
+  pospId       String?  @unique @db.NVarChar(36)
+  posp         Posp?    @relation(fields: [pospId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }

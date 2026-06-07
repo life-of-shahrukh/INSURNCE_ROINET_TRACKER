@@ -33,9 +33,10 @@ const NAV = [
   { href: "/renewals", icon: "↻", label: "Renewals" },
   { href: "/commissions", icon: "₹", label: "Commissions" },
   { href: "/reports", icon: "▦", label: "Reports" },
+  { href: "/api-reference", icon: "⊞", label: "API Reference" },
 ] as const;
 
-const POSP_NAV = new Set(["/dashboard", "/renewals"]);
+const POSP_NAV = new Set(["/dashboard", "/renewals", "/api-reference"]);
 
 export function Sidebar() {
   const pathname = usePathname();

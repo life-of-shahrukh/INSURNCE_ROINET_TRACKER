@@ -1,0 +1,322 @@
+---
+description: Event-Driven Architecture and CQRS patterns for NestJS backend
+globs: server/src/**/*.ts
+alwaysApply: false
+---
+
+# Event-Driven Architecture & CQRS Patterns
+
+## CQRS Command-Query Separation
+
+**Commands** (writes) and **Queries** (reads) are strictly separated.
+
+### Command Pattern
+
+Commands **mutate** state and return the created/updated entity or ID. Place in `<module>/commands/`.
+
+```typescript
+// create-deal.command.ts
+export class CreateDealCommand {
+  constructor(public readonly dto: CreateDealDto) {}
+}
+
+// create-deal.handler.ts
+import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
+
+@CommandHandler(CreateDealCommand)
+export class CreateDealHandler implements ICommandHandler<CreateDealCommand> {
+  constructor(
+    private readonly dealRepo: DealRepository,
+    private readonly eventBus: EventBus,
+  ) {}
+
+  async execute(command: CreateDealCommand): Promise<Deal> {
+    const deal = await this.dealRepo.create(command.dto);
+    
+    // ✅ Publish event after mutation
+    this.eventBus.publish(new DealCreatedEvent(deal.id, deal.pospId, deal.status));
+    
+    return deal;
+  }
+}
+```
+
+### Query Pattern
+
+Queries **read** state and return DTOs. Place in `<module>/queries/`.
+
+```typescript
+// get-all-deals.query.ts
+export class GetAllDealsQuery {
+  constructor(
+    public readonly pospId?: string,
+    public readonly status?: DealStatus,
+  ) {}
+}
+
+// get-all-deals.handler.ts
+import { QueryHandler, IQueryHandler } from '@nestjs/cqrs';
+
+@QueryHandler(GetAllDealsQuery)
+export class GetAllDealsHandler implements IQueryHandler<GetAllDealsQuery> {
+  constructor(private readonly dealRepo: DealRepository) {}
+
+  async execute(query: GetAllDealsQuery): Promise<Deal[]> {
+    return this.dealRepo.findAll({
+      pospId: query.pospId,
+      status: query.status,
+    });
+  }
+}
+```
+
+### Service Layer Integration
+
+Services orchestrate commands/queries via `CommandBus` and `QueryBus`.
+
+```typescript
+@Injectable()
+export class DealService {
+  constructor(
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
+  ) {}
+
+  async createDeal(dto: CreateDealDto): Promise<Deal> {
+    return this.commandBus.execute(new CreateDealCommand(dto));
+  }
+
+  async findAll(filters: DealFilters): Promise<Deal[]> {
+    return this.queryBus.execute(new GetAllDealsQuery(filters.pospId, filters.status));
+  }
+}
+```
+
+## Event-Driven Architecture
+
+### Event Structure
+
+Events are **immutable** facts that occurred. Place in `<module>/events/`.
+
+```typescript
+// deal-created.event.ts
+export class DealCreatedEvent {
+  constructor(
+    public readonly dealId: string,
+    public readonly pospId: string,
+    public readonly status: DealStatus,
+    public readonly occurredAt: Date = new Date(),
+  ) {}
+}
+```
+
+**Rules**:
+- Use past tense: `DealCreatedEvent`, `UserRegisteredEvent`
+- Include all data needed by listeners (avoid requiring DB lookups)
+- Include `occurredAt` timestamp
+- Make all properties `readonly`
+
+### Event Publishing
+
+Publish events **after** successful mutation, **before** returning.
+
+```typescript
+@CommandHandler(UpdateDealCommand)
+export class UpdateDealHandler implements ICommandHandler<UpdateDealCommand> {
+  constructor(
+    private readonly dealRepo: DealRepository,
+    private readonly eventBus: EventBus,
+  ) {}
+
+  async execute(command: UpdateDealCommand): Promise<Deal> {
+    const existing = await this.dealRepo.findById(command.id);
+    const updated = await this.dealRepo.update(command.id, command.dto);
+
+    // ✅ Publish event if status changed
+    if (existing.status !== updated.status) {
+      this.eventBus.publish(
+        new DealStatusChangedEvent(
+          updated.id,
+          existing.status,
+          updated.status,
+        ),
+      );
+    }
+
+    return updated;
+  }
+}
+```
+
+### Event Listeners
+
+Listeners react to events. Place in `<module>/listeners/`.
+
+```typescript
+// deal-events.listener.ts
+import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
+
+@EventsHandler(DealCreatedEvent)
+export class DealCreatedListener implements IEventHandler<DealCreatedEvent> {
+  private readonly logger = new Logger(DealCreatedListener.name);
+
+  constructor(
+    private readonly notificationService: NotificationService,
+  ) {}
+
+  async handle(event: DealCreatedEvent): Promise<void> {
+    this.logger.log(`Deal created: ${event.dealId}`);
+    
+    // Side effects: notifications, analytics, etc.
+    await this.notificationService.notifyPospOfNewDeal(event.pospId, event.dealId);
+  }
+}
+```
+
+**Rules**:
+- Listeners are **side effects** — logging, notifications, analytics, cache invalidation
+- Listeners **must not** throw errors that break the main flow
+- Wrap listener logic in try-catch and log errors
+- Keep listeners **idempotent** (safe to replay)
+
+### Multiple Listeners
+
+Multiple listeners can subscribe to the same event:
+
+```typescript
+@EventsHandler(DealCreatedEvent)
+export class DealAnalyticsListener implements IEventHandler<DealCreatedEvent> {
+  async handle(event: DealCreatedEvent): Promise<void> {
+    // Track deal creation in analytics
+  }
+}
+
+@EventsHandler(DealCreatedEvent)
+export class DealNotificationListener implements IEventHandler<DealCreatedEvent> {
+  async handle(event: DealCreatedEvent): Promise<void> {
+    // Send notification
+  }
+}
+```
+
+## Module Registration
+
+Register all commands, queries, and listeners in the module:
+
+```typescript
+@Module({
+  imports: [CqrsModule],
+  controllers: [DealController],
+  providers: [
+    DealService,
+    DealRepository,
+    // Commands
+    CreateDealHandler,
+    UpdateDealHandler,
+    DeleteDealHandler,
+    // Queries
+    GetAllDealsHandler,
+    GetDealByIdHandler,
+    // Listeners
+    DealCreatedListener,
+    DealStatusChangedListener,
+    DealAnalyticsListener,
+  ],
+})
+export class DealModule {}
+```
+
+## Controller Pattern
+
+Controllers delegate to service, which uses CommandBus/QueryBus:
+
+```typescript
+@Controller('api/deals')
+export class DealController {
+  constructor(private readonly dealService: DealService) {}
+
+  @Post()
+  async create(@Body() dto: CreateDealDto): Promise<Deal> {
+    return this.dealService.createDeal(dto);
+  }
+
+  @Get()
+  async findAll(@Query() filters: DealFiltersDto): Promise<Deal[]> {
+    return this.dealService.findAll(filters);
+  }
+}
+```
+
+## Anti-Patterns
+
+### ❌ BAD: Direct repository calls in service
+```typescript
+@Injectable()
+export class DealService {
+  constructor(private readonly dealRepo: DealRepository) {}
+
+  async createDeal(dto: CreateDealDto) {
+    return this.dealRepo.create(dto); // ❌ No CQRS, no events
+  }
+}
+```
+
+### ✅ GOOD: Use CommandBus
+```typescript
+@Injectable()
+export class DealService {
+  constructor(private readonly commandBus: CommandBus) {}
+
+  async createDeal(dto: CreateDealDto) {
+    return this.commandBus.execute(new CreateDealCommand(dto));
+  }
+}
+```
+
+### ❌ BAD: Mixing queries and commands
+```typescript
+// ❌ Don't put queries in command handlers
+@CommandHandler(CreateDealCommand)
+export class CreateDealHandler {
+  async execute(command: CreateDealCommand) {
+    const deals = await this.dealRepo.findAll(); // ❌ Query in command
+    // ...
+  }
+}
+```
+
+### ❌ BAD: Event listeners mutating primary state
+```typescript
+// ❌ Don't use listeners for critical state mutations
+@EventsHandler(DealCreatedEvent)
+export class DealCreatedListener {
+  async handle(event: DealCreatedEvent) {
+    await this.dealRepo.update(event.dealId, { processed: true }); // ❌
+  }
+}
+```
+
+### ✅ GOOD: Use commands for mutations
+```typescript
+// ✅ Create a separate command for critical mutations
+@CommandHandler(CreateDealCommand)
+export class CreateDealHandler {
+  async execute(command: CreateDealCommand) {
+    const deal = await this.dealRepo.create(command.dto);
+    
+    // If processing is critical, do it in the command
+    await this.dealRepo.update(deal.id, { processed: true });
+    
+    this.eventBus.publish(new DealCreatedEvent(deal.id));
+    return deal;
+  }
+}
+```
+
+## Benefits
+
+- **Separation of Concerns**: Clear boundaries between reads and writes
+- **Scalability**: Queries can be optimized independently (caching, read replicas)
+- **Auditability**: Events provide audit trail of all changes
+- **Extensibility**: Add new listeners without modifying existing code
+- **Testability**: Commands, queries, and listeners are isolated and easy to test

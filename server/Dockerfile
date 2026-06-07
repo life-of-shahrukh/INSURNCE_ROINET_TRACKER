@@ -9,7 +9,7 @@ COPY . .
 
 # prisma.config.ts reads DATABASE_URL at load time via dotenv.
 # A dummy value satisfies the env check — generate never connects to a DB.
-ENV DATABASE_URL=postgresql://prisma:prisma@localhost:5432/prisma
+ENV DATABASE_URL="sqlserver://localhost:1433;database=roinet_crm;user=sa;password=x;trustServerCertificate=true"
 
 # Generate Prisma client BEFORE nest build so TypeScript resolves @prisma/client types
 RUN npx prisma generate
@@ -33,9 +33,9 @@ RUN npm ci --omit=dev
 # The builder client embeds absolute paths tied to the builder layer.
 COPY --from=builder /app/prisma ./prisma
 
-ENV DATABASE_URL=postgresql://prisma:prisma@localhost:5432/prisma
+ENV DATABASE_URL="sqlserver://localhost:1433;database=roinet_crm;user=sa;password=x;trustServerCertificate=true"
 RUN npx prisma generate
-# Remove the dummy — real DATABASE_URL is injected at runtime by ECS task definition
+# Remove the dummy — real DATABASE_URL is injected at runtime
 ENV DATABASE_URL=""
 
 COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist

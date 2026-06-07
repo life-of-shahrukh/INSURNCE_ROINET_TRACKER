@@ -9,15 +9,20 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { SignupPospDto } from './dto/signup-posp.dto';
 import { ApprovePospDto } from './dto/approve-posp.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
-import { Roles } from '../../common/decorators/roles.decorator';
-import { Role } from '@prisma/client';
+import { Roles, Public } from '../../common/decorators/roles.decorator';
+import { Role } from '../../common/constants';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { AuthUser } from '../../common/auth/auth-user.interface';
 
@@ -27,17 +32,25 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
+  @Public()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login with email and password' })
-  @ApiResponse({ status: 200, description: 'Returns access token and user profile' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns access token and user profile',
+  })
   login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
   }
 
   @Post('signup-posp')
+  @Public()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Signup a POSP account with direct access' })
-  @ApiResponse({ status: 201, description: 'POSP signup successful with access token' })
+  @ApiResponse({
+    status: 201,
+    description: 'POSP signup successful with access token',
+  })
   signupPosp(@Body() dto: SignupPospDto) {
     return this.authService.signupPosp(dto);
   }

@@ -7,10 +7,21 @@ import { DealStatusChangedEvent } from '../events/deal-status-changed.event';
 export class DealCreatedListener implements IEventHandler<DealCreatedEvent> {
   private readonly logger = new Logger(DealCreatedListener.name);
 
-  handle(event: DealCreatedEvent) {
-    this.logger.log(
-      `Deal created [id=${event.dealId}] [pospId=${event.pospId}] [status=${event.status}]`,
-    );
+  async handle(event: DealCreatedEvent): Promise<void> {
+    try {
+      this.logger.log(
+        `Deal created [id=${event.dealId}] [pospId=${event.pospId}] [status=${event.status}]`,
+      );
+      
+      // Future: Add side effects like notifications, analytics, etc.
+      // await this.notificationService.notifyPospOfNewDeal(event.pospId, event.dealId);
+    } catch (error) {
+      this.logger.error(
+        `Failed to handle DealCreatedEvent for deal ${event.dealId}`,
+        error,
+      );
+      // Don't throw - listeners should not break the main flow
+    }
   }
 }
 
@@ -20,9 +31,20 @@ export class DealStatusChangedListener
 {
   private readonly logger = new Logger(DealStatusChangedListener.name);
 
-  handle(event: DealStatusChangedEvent) {
-    this.logger.log(
-      `Deal status changed [id=${event.dealId}] [${event.previousStatus} → ${event.newStatus}]`,
-    );
+  async handle(event: DealStatusChangedEvent): Promise<void> {
+    try {
+      this.logger.log(
+        `Deal status changed [id=${event.dealId}] [${event.previousStatus} → ${event.newStatus}]`,
+      );
+      
+      // Future: Add side effects like notifications, analytics, etc.
+      // await this.analyticsService.trackStatusChange(event);
+    } catch (error) {
+      this.logger.error(
+        `Failed to handle DealStatusChangedEvent for deal ${event.dealId}`,
+        error,
+      );
+      // Don't throw - listeners should not break the main flow
+    }
   }
 }

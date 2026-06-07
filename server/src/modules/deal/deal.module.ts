@@ -7,13 +7,18 @@ import { CreateDealHandler } from './commands/create-deal.handler';
 import { UpdateDealHandler } from './commands/update-deal.handler';
 import { DeleteDealHandler } from './commands/delete-deal.handler';
 import { GetAllDealsHandler } from './queries/get-all-deals.handler';
+import { ExportDealsCsvHandler } from './queries/export-deals-csv.handler';
 import {
   DealCreatedListener,
   DealStatusChangedListener,
 } from './listeners/deal-events.listener';
 
-const CommandHandlers = [CreateDealHandler, UpdateDealHandler, DeleteDealHandler];
-const QueryHandlers = [GetAllDealsHandler];
+const CommandHandlers = [
+  CreateDealHandler,
+  UpdateDealHandler,
+  DeleteDealHandler,
+];
+const QueryHandlers = [GetAllDealsHandler, ExportDealsCsvHandler];
 const EventListeners = [DealCreatedListener, DealStatusChangedListener];
 
 @Module({

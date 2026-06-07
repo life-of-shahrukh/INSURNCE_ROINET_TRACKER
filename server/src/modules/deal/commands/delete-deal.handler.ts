@@ -7,6 +7,10 @@ export class DeleteDealHandler implements ICommandHandler<DeleteDealCommand> {
   constructor(private readonly dealRepo: DealRepository) {}
 
   async execute(command: DeleteDealCommand): Promise<void> {
-    await this.dealRepo.delete(command.id);
+    if (command.pospId) {
+      await this.dealRepo.deleteByPosp(command.id, command.pospId);
+    } else {
+      await this.dealRepo.delete(command.id);
+    }
   }
 }

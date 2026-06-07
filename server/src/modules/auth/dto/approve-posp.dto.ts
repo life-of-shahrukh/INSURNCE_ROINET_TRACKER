@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum } from 'class-validator';
-import { UserStatus } from '@prisma/client';
 
 export enum ApprovePospStatus {
   ACTIVE = 'ACTIVE',

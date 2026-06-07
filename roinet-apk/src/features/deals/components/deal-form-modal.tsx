@@ -10,6 +10,7 @@ import { Button } from '@/shared/components/Button';
 import { Input } from '@/shared/components/Input';
 import { SelectField } from '@/shared/components/select-field';
 import type { Deal, DealStage, DealStatus } from '@/shared/types/crm.types';
+import { formatNumericFieldValue, sanitizeIntegerInput } from '@/shared/utils/numeric-input';
 import { Spacing } from '@/theme/spacing';
 
 interface DealFormModalProps {
@@ -43,9 +44,9 @@ const emptyForm: DealFormState = {
   policy: 'Life',
   sum: '',
   premium: '',
-  coa: '0',
-  margin: '0',
-  brokerage: '0',
+  coa: '',
+  margin: '',
+  brokerage: '',
   status: 'W',
   stage: 'open',
   expected: '',
@@ -75,11 +76,11 @@ export function DealFormModal({ visible, deal, onClose }: DealFormModalProps) {
         pospId: deal.pospId,
         customer: deal.customer,
         policy: deal.policy,
-        sum: String(deal.sum ?? ''),
-        premium: String(deal.premium ?? ''),
-        coa: String(deal.coa ?? 0),
-        margin: String(deal.margin ?? 0),
-        brokerage: String(deal.brokerage ?? 0),
+        sum: formatNumericFieldValue(deal.sum),
+        premium: formatNumericFieldValue(deal.premium),
+        coa: formatNumericFieldValue(deal.coa),
+        margin: formatNumericFieldValue(deal.margin),
+        brokerage: formatNumericFieldValue(deal.brokerage),
         status: deal.status,
         stage: deal.stage ?? (deal.policyNo ? 'issued' : 'open'),
         expected: deal.expected ? deal.expected.slice(0, 10) : '',
@@ -194,35 +195,35 @@ export function DealFormModal({ visible, deal, onClose }: DealFormModalProps) {
       <Input
         label="Sum Assured (₹)"
         value={form.sum}
-        onChangeText={(sum) => setForm((f) => ({ ...f, sum }))}
+        onChangeText={(sum) => setForm((f) => ({ ...f, sum: sanitizeIntegerInput(sum) }))}
         keyboardType="numeric"
         placeholder="0"
       />
       <Input
         label="Premium (₹)"
         value={form.premium}
-        onChangeText={(premium) => setForm((f) => ({ ...f, premium }))}
+        onChangeText={(premium) => setForm((f) => ({ ...f, premium: sanitizeIntegerInput(premium) }))}
         keyboardType="numeric"
         placeholder="0"
       />
       <Input
         label="COA (₹)"
         value={form.coa}
-        onChangeText={(coa) => setForm((f) => ({ ...f, coa }))}
+        onChangeText={(coa) => setForm((f) => ({ ...f, coa: sanitizeIntegerInput(coa) }))}
         keyboardType="numeric"
         placeholder="0"
       />
       <Input
         label="Retained Margin (₹)"
         value={form.margin}
-        onChangeText={(margin) => setForm((f) => ({ ...f, margin }))}
+        onChangeText={(margin) => setForm((f) => ({ ...f, margin: sanitizeIntegerInput(margin) }))}
         keyboardType="numeric"
         placeholder="0"
       />
       <Input
         label="Brokerage (₹)"
         value={form.brokerage}
-        onChangeText={(brokerage) => setForm((f) => ({ ...f, brokerage }))}
+        onChangeText={(brokerage) => setForm((f) => ({ ...f, brokerage: sanitizeIntegerInput(brokerage) }))}
         keyboardType="numeric"
         placeholder="0"
       />

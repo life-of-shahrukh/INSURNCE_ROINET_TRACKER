@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import type { Deal } from '@/shared/types/crm.types';
 import { fmtINRShort } from '@/shared/utils/formatters';
@@ -9,9 +9,12 @@ interface PremiumBrokerageChartProps {
   deals: Deal[];
 }
 
-const CHART_HEIGHT = 140;
+const CHART_HEIGHT = 130;
+const MIN_COLUMN_WIDTH = 64;
+const VALUE_ROW_HEIGHT = 16;
+const LABEL_ROW_HEIGHT = 34;
 
-export function PremiumBrokerageChart({ deals }: PremiumBrokerageChartProps) {
+export function PremiumBrokerageChart({ deals }: PremiumBrokerageChartProps): React.ReactElement {
   const policySums: Record<string, { premium: number; brokerage: number }> = {};
   deals.forEach((d) => {
     if (!policySums[d.policy]) {
@@ -31,6 +34,47 @@ export function PremiumBrokerageChart({ deals }: PremiumBrokerageChartProps) {
     return <Text style={styles.empty}>No premium data yet.</Text>;
   }
 
+  const screenWidth = Dimensions.get('window').width;
+  const availableWidth = screenWidth - Spacing.xxl * 2 - Spacing.xl * 2;
+  const neededWidth = items.length * MIN_COLUMN_WIDTH;
+  const shouldScroll = neededWidth > availableWidth;
+  const columnWidth = shouldScroll ? MIN_COLUMN_WIDTH : Math.floor(availableWidth / items.length);
+  const contentWidth = shouldScroll ? neededWidth : availableWidth;
+
+  const chartBody = (
+    <View style={[styles.row, { width: contentWidth }]}>
+      {items.map((item) => {
+        const premiumHeight = Math.max(6, (item.premium / max) * CHART_HEIGHT);
+        const brokerageHeight = Math.max(6, (item.brokerage / max) * CHART_HEIGHT);
+
+        return (
+          <View key={item.label} style={[styles.column, { width: columnWidth }]}>
+            <View style={[styles.valueRow, { height: VALUE_ROW_HEIGHT }]}>
+              <Text style={styles.valueText} numberOfLines={1}>
+                {fmtINRShort(item.premium)}
+              </Text>
+            </View>
+
+            <View style={[styles.barPair, { height: CHART_HEIGHT }]}>
+              <View style={styles.barTrack}>
+                <View style={[styles.barFill, styles.premiumBar, { height: premiumHeight }]} />
+              </View>
+              <View style={styles.barTrack}>
+                <View style={[styles.barFill, styles.brokerageBar, { height: brokerageHeight }]} />
+              </View>
+            </View>
+
+            <View style={[styles.labelRow, { minHeight: LABEL_ROW_HEIGHT }]}>
+              <Text style={styles.labelText} numberOfLines={2}>
+                {item.label}
+              </Text>
+            </View>
+          </View>
+        );
+      })}
+    </View>
+  );
+
   return (
     <View style={styles.wrap}>
       <View style={styles.legend}>
@@ -43,35 +87,21 @@ export function PremiumBrokerageChart({ deals }: PremiumBrokerageChartProps) {
           <Text style={styles.legendText}>Brokerage</Text>
         </View>
       </View>
-      <View style={[styles.chart, { height: CHART_HEIGHT }]}>
-        {items.map((item) => {
-          const premiumHeight = Math.max(6, (item.premium / max) * CHART_HEIGHT);
-          const brokerageHeight = Math.max(6, (item.brokerage / max) * CHART_HEIGHT);
-          return (
-            <View key={item.label} style={styles.column}>
-              <View style={styles.barPair}>
-                <View style={[styles.barTrack, { height: CHART_HEIGHT }]}>
-                  <View style={[styles.barFill, styles.premiumBar, { height: premiumHeight }]} />
-                </View>
-                <View style={[styles.barTrack, { height: CHART_HEIGHT }]}>
-                  <View style={[styles.barFill, styles.brokerageBar, { height: brokerageHeight }]} />
-                </View>
-              </View>
-              <Text style={styles.barLabel} numberOfLines={2}>
-                {item.label}
-              </Text>
-              <Text style={styles.barValue}>{fmtINRShort(item.premium)}</Text>
-            </View>
-          );
-        })}
-      </View>
+
+      {shouldScroll ? (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} bounces={false}>
+          {chartBody}
+        </ScrollView>
+      ) : (
+        chartBody
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   wrap: {
-    gap: Spacing.sm,
+    gap: Spacing.md,
   },
   empty: {
     fontSize: 13,
@@ -98,23 +128,35 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: Colors.textMuted,
   },
-  chart: {
+  row: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
-    gap: Spacing.sm,
+    alignItems: 'flex-start',
   },
   column: {
-    flex: 1,
     alignItems: 'center',
-    minWidth: 52,
+    paddingHorizontal: 2,
+  },
+  valueRow: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    marginBottom: 4,
+  },
+  valueText: {
+    fontSize: 9,
+    fontWeight: '600',
+    color: Colors.textMuted,
+    textAlign: 'center',
   },
   barPair: {
     flexDirection: 'row',
     gap: 4,
     alignItems: 'flex-end',
+    justifyContent: 'center',
   },
   barTrack: {
     width: 14,
+    height: '100%',
     justifyContent: 'flex-end',
   },
   barFill: {
@@ -129,17 +171,15 @@ const styles = StyleSheet.create({
   brokerageBar: {
     backgroundColor: '#7b5ea7',
   },
-  barLabel: {
+  labelRow: {
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 6,
+  },
+  labelText: {
     fontSize: 10,
     color: Colors.text,
-    marginTop: 6,
     textAlign: 'center',
     lineHeight: 13,
-  },
-  barValue: {
-    fontSize: 9,
-    color: Colors.textMuted,
-    marginTop: 2,
-    textAlign: 'center',
   },
 });

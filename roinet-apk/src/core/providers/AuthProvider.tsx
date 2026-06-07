@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   createContext,
   useCallback,
@@ -13,6 +12,11 @@ import { TOKEN_KEY, USER_KEY } from '@/core/constants';
 import { getFriendlyAuthErrorMessage } from '@/features/auth/services/auth-errors';
 import { loginRequest, signupPospRequest } from '@/features/auth/services';
 import type { AuthUser, LoginPayload, SignupPospPayload } from '@/features/auth/types/auth.types';
+import {
+  getSessionItem,
+  removeSessionItem,
+  setSessionItem,
+} from '@/shared/services/session-storage';
 
 interface AuthContextValue {
   user: AuthUser | null;
@@ -27,8 +31,8 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 async function persistSession(accessToken: string, authUser: AuthUser): Promise<void> {
-  await AsyncStorage.setItem(TOKEN_KEY, accessToken);
-  await AsyncStorage.setItem(USER_KEY, JSON.stringify(authUser));
+  await setSessionItem(TOKEN_KEY, accessToken);
+  await setSessionItem(USER_KEY, JSON.stringify(authUser));
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -39,8 +43,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     async function restore() {
       try {
-        const savedToken = await AsyncStorage.getItem(TOKEN_KEY);
-        const savedUser = await AsyncStorage.getItem(USER_KEY);
+        const savedToken = await getSessionItem(TOKEN_KEY);
+        const savedUser = await getSessionItem(USER_KEY);
         if (savedToken && savedUser) {
           setToken(savedToken);
           setUser(JSON.parse(savedUser) as AuthUser);
@@ -79,8 +83,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     setToken(null);
     setUser(null);
-    await AsyncStorage.removeItem(TOKEN_KEY);
-    await AsyncStorage.removeItem(USER_KEY);
+    await removeSessionItem(TOKEN_KEY);
+    await removeSessionItem(USER_KEY);
   }, []);
 
   const value = useMemo(

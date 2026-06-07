@@ -1,7 +1,9 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import { CRM_STATE_KEY } from '@/core/constants';
 import { SEED } from '@/shared/data/seed';
+import {
+  getSessionItem,
+  setSessionItem,
+} from '@/shared/services/session-storage';
 import type {
   BulletinInput,
   BulletinPost,
@@ -27,7 +29,7 @@ async function ensureHydrated(): Promise<void> {
   if (!hydratePromise) {
     hydratePromise = (async () => {
       try {
-        const raw = await AsyncStorage.getItem(CRM_STATE_KEY);
+        const raw = await getSessionItem(CRM_STATE_KEY);
         state = raw ? migrateCrmState(JSON.parse(raw) as Partial<CrmState>) : cloneSeed();
       } catch {
         state = cloneSeed();
@@ -41,7 +43,7 @@ async function persist(): Promise<void> {
   if (!state) {
     return;
   }
-  await AsyncStorage.setItem(CRM_STATE_KEY, JSON.stringify(state));
+  await setSessionItem(CRM_STATE_KEY, JSON.stringify(state));
 }
 
 function uid(): string {

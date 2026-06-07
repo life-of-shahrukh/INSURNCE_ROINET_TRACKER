@@ -1,9 +1,8 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import { API_BASE_URL, TOKEN_KEY } from '@/core/constants';
+import { getSessionItem } from '@/shared/services/session-storage';
 
 export async function getToken(): Promise<string | null> {
-  return AsyncStorage.getItem(TOKEN_KEY);
+  return getSessionItem(TOKEN_KEY);
 }
 
 export async function request<T>(path: string, init?: RequestInit): Promise<T> {

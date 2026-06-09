@@ -43,7 +43,7 @@ export function computeRenewals(deals: Deal[], today = CRM_SESSION_DATE): Renewa
   return deals
     .filter((d) => d.issued)
     .map((d) => {
-      const renew = new Date(d.issued);
+      const renew = new Date(d.issued!);
       renew.setFullYear(renew.getFullYear() + 1);
       const daysLeft = Math.ceil((renew.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
       return { ...d, renew, daysLeft };

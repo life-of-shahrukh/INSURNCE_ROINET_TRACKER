@@ -4,6 +4,8 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { useCrm } from "@/providers/crm-provider";
+import { ControlledLocationSelector } from "@/components/location/ControlledLocationSelector";
+import type { LocationValue } from "@/components/location/ControlledLocationSelector";
 import type { Posp } from "@/lib/types";
 
 interface PospModalProps {
@@ -11,6 +13,12 @@ interface PospModalProps {
   pospItem: Posp | null;
   onClose: () => void;
 }
+
+const emptyLocation: LocationValue = {
+  stateId: null, stateName: null,
+  districtId: null, districtName: null,
+  cityId: null, cityName: null,
+};
 
 const emptyForm = {
   name: "",
@@ -24,6 +32,7 @@ const emptyForm = {
 export function PospModal({ open, pospItem, onClose }: PospModalProps) {
   const { savePosp } = useCrm();
   const [form, setForm] = useState(emptyForm);
+  const [location, setLocation] = useState<LocationValue>(emptyLocation);
 
   useEffect(() => {
     if (!open) return;
@@ -33,11 +42,20 @@ export function PospModal({ open, pospItem, onClose }: PospModalProps) {
         code: pospItem.code,
         mobile: pospItem.mobile ?? "",
         email: pospItem.email ?? "",
-        joined: pospItem.joined ?? "",
+        joined: pospItem.joined ? new Date(pospItem.joined).toISOString().slice(0, 10) : "",
         active: String(!!pospItem.active),
+      });
+      setLocation({
+        stateId: (pospItem as unknown as Record<string, unknown>).stateId as string | null ?? null,
+        stateName: (pospItem as unknown as Record<string, unknown>).stateName as string | null ?? null,
+        districtId: (pospItem as unknown as Record<string, unknown>).districtId as string | null ?? null,
+        districtName: (pospItem as unknown as Record<string, unknown>).districtName as string | null ?? null,
+        cityId: (pospItem as unknown as Record<string, unknown>).cityId as string | null ?? null,
+        cityName: (pospItem as unknown as Record<string, unknown>).cityName as string | null ?? null,
       });
     } else {
       setForm(emptyForm);
+      setLocation(emptyLocation);
     }
   }, [open, pospItem]);
 
@@ -49,8 +67,9 @@ export function PospModal({ open, pospItem, onClose }: PospModalProps) {
       code: form.code.trim(),
       mobile: form.mobile.trim(),
       email: form.email.trim(),
-      joined: form.joined,
+      joined: new Date(form.joined),
       active: form.active === "true",
+      ...location,
     });
     onClose();
   };
@@ -128,6 +147,9 @@ export function PospModal({ open, pospItem, onClose }: PospModalProps) {
               <option value="false">Inactive</option>
             </select>
           </div>
+
+          {/* Location */}
+          <ControlledLocationSelector value={location} onChange={setLocation} />
         </div>
       </form>
     </Modal>

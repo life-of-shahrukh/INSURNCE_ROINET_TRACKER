@@ -1,43 +1,64 @@
 import type { CrmApi } from "./crm-api";
-import type { CrmState, Deal, DealInput, Posp, PospInput } from "../types";
+import type { Deal, Posp } from "../types";
 
 const base = () => process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
-function getToken(): string | null {
-  if (typeof window === "undefined") {
-    return null;
+/**
+ * Clear the HttpOnly cookie via the logout endpoint, then navigate to /login.
+ * Uses Next.js router when available so RSC cache is preserved; falls back to
+ * window.location for non-React contexts.
+ */
+async function clearSessionAndRedirect() {
+  try {
+    await fetch(`${base()}/api/auth/logout`, { method: "POST", credentials: "include" });
+  } catch { /* best-effort */ }
+
+  if (typeof window !== "undefined") {
+    // Use Next.js client router to avoid RSC 404 on hard reload
+    const { default: Router } = await import("next/router").catch(() => ({ default: null }));
+    if (Router?.replace) {
+      void Router.replace("/login");
+    } else {
+      window.location.replace("/login");
+    }
   }
-  return window.localStorage.getItem("roinet_access_token");
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const token = getToken();
   let res: Response;
   try {
     res = await fetch(`${base()}${path}`, {
       ...init,
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...init?.headers,
       },
     });
-  } catch (err) {
-    throw new Error(
-      `Network error: unable to reach server at ${base()}${path}`,
-    );
+  } catch {
+    throw new Error(`Network error: unable to reach server at ${base()}${path}`);
   }
+
   if (!res.ok) {
+    // 401 = expired / missing token  |  403 with "role" in message = stale role in old JWT
     if (res.status === 401) {
-      throw new Error(`Unauthorized: ${path} — please log in again`);
+      void clearSessionAndRedirect();
+      throw new Error("Session expired — please log in again");
     }
+
     let detail = "";
-    try {
-      const body = (await res.json()) as { message?: string };
-      detail = body.message ? ` — ${body.message}` : "";
-    } catch {}
+    let body: { message?: string; statusCode?: number } = {};
+    try { body = (await res.json()) as typeof body; } catch { /* empty */ }
+    detail = body.message ? ` — ${body.message}` : "";
+
+    if (res.status === 403 && body.message?.toLowerCase().includes("role:")) {
+      void clearSessionAndRedirect();
+      throw new Error("Session outdated — please log in again");
+    }
+
     throw new Error(`API ${res.status}: ${path}${detail}`);
   }
+
   if (res.status === 204) return undefined as T;
   return res.json() as Promise<T>;
 }
@@ -53,27 +74,24 @@ export const httpCrmApi: CrmApi = {
     request<Deal>("/api/deals", { method: "POST", body: JSON.stringify(input) }),
 
   updateDeal: (id, input) => {
-    const { id: _id, ...body } = input;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id: _dealId, ...body } = input;
     return request<Deal>(`/api/deals/${id}`, { method: "PATCH", body: JSON.stringify(body) });
   },
 
-  deleteDeal: (id) =>
-    request<void>(`/api/deals/${id}`, { method: "DELETE" }),
+  deleteDeal: (id) => request<void>(`/api/deals/${id}`, { method: "DELETE" }),
 
   createPosp: (input) =>
     request<Posp>("/api/posp", { method: "POST", body: JSON.stringify(input) }),
 
   updatePosp: (id, input) => {
-    const { id: _id, ...body } = input;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id: _pospId, ...body } = input;
     return request<Posp>(`/api/posp/${id}`, { method: "PATCH", body: JSON.stringify(body) });
   },
 
   exportDealsCsv: () =>
-    fetch(`${base()}/api/deals/export`, {
-      headers: {
-        ...(getToken() ? { Authorization: `Bearer ${getToken()}` } : {}),
-      },
-    }).then((r) => {
+    fetch(`${base()}/api/deals/export`, { credentials: "include" }).then((r) => {
       if (!r.ok) throw new Error("Export failed");
       return r.text();
     }),

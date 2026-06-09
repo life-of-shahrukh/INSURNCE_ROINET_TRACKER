@@ -3,32 +3,72 @@
  * 
  * These types represent the location and hierarchy data
  * from the external RoiNet Cognitensor service.
+ * 
+ * IMPORTANT: All responses from the API are wrapped in:
+ * { description: string, Data: T[] }
  */
 
+/**
+ * Response wrapper for all Cognitensor API calls
+ */
+export interface CognitensorResponse<T> {
+  description: string;
+  Data: T[];
+}
+
+/**
+ * State data from ListState endpoint
+ */
 export interface State {
-  id: string;
-  name: string;
-  code?: string;
+  StateId: string;
+  StateName: string;
+  StateCode: string;
 }
 
+/**
+ * District data from ListDistrict endpoint
+ */
 export interface District {
-  id: string;
-  name: string;
-  stateId: string;
+  StateId: string;
+  DistrictId: string;
+  DistrictName: string;
 }
 
+/**
+ * City data from ListCity endpoint
+ */
 export interface City {
-  id: string;
-  name: string;
-  districtId: string;
+  StateId: string;
+  DistrictId: string;
+  CityId: string;
+  CityName: string;
 }
 
+/**
+ * Hierarchy user data from ListHierarchyUserData endpoint
+ * Contains district manager and up to 5 levels of reporting hierarchy
+ */
 export interface HierarchyUser {
-  userId: string;
-  name: string;
-  role: string;
-  level: number;
-  parentId: string | null;
+  DistrictId: string;
+  DistrictName: string;
+  DistrictManagerId: string;
+  DistrictManagerCode: string;
+  DistrictManagerName: string;
+  R1_UserId: string;
+  R1_UserCode: string;
+  R1_UserName: string;
+  R2_UserId: string;
+  R2_UserCode: string;
+  R2_UserName: string;
+  R3_UserId: string;
+  R3_UserCode: string;
+  R3_UserName: string;
+  R4_UserId: string;
+  R4_UserCode: string;
+  R4_UserName: string;
+  R5_UserId: string;
+  R5_UserCode: string;
+  R5_UserName: string;
 }
 
 /**

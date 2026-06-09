@@ -12,6 +12,7 @@ import type {
   HierarchyUser,
   ListDistrictRequest,
   ListCityRequest,
+  CognitensorResponse,
 } from '../external-api-types';
 
 const EXTERNAL_API_BASE = 'https://uatserviceapi.roinet.in';
@@ -29,16 +30,15 @@ class ExternalApiError extends Error {
 
 async function externalApiRequest<T>(
   endpoint: string,
-  options?: RequestInit,
-): Promise<T> {
+  body?: object | string,
+): Promise<T[]> {
   try {
     const response = await fetch(`${EXTERNAL_API_BASE}${endpoint}`, {
       method: 'POST',
-      ...options,
       headers: {
         'Content-Type': 'application/json',
-        ...options?.headers,
       },
+      body: typeof body === 'string' ? body : JSON.stringify(body || {}),
     });
 
     if (!response.ok) {
@@ -55,7 +55,19 @@ async function externalApiRequest<T>(
       );
     }
 
-    return await response.json();
+    const wrapper: CognitensorResponse<T> = await response.json();
+    
+    // Check if API returned an error in the description
+    if (wrapper.description !== 'success') {
+      throw new ExternalApiError(
+        `API Error: ${wrapper.description}`,
+        response.status,
+        wrapper,
+      );
+    }
+
+    // Return the unwrapped Data array
+    return wrapper.Data;
   } catch (error) {
     if (error instanceof ExternalApiError) {
       throw error;
@@ -74,9 +86,7 @@ export const externalApi = {
    * Get list of all states
    */
   async getStates(): Promise<State[]> {
-    return externalApiRequest<State[]>('/Cognitensor/ListState', {
-      body: '',
-    });
+    return externalApiRequest<State>('/Cognitensor/ListState', '');
   },
 
   /**
@@ -84,9 +94,7 @@ export const externalApi = {
    */
   async getDistricts(stateId: string): Promise<District[]> {
     const request: ListDistrictRequest = { stateid: stateId };
-    return externalApiRequest<District[]>('/Cognitensor/ListDistrict', {
-      body: JSON.stringify(request),
-    });
+    return externalApiRequest<District>('/Cognitensor/ListDistrict', request);
   },
 
   /**
@@ -94,20 +102,16 @@ export const externalApi = {
    */
   async getCities(districtId: string): Promise<City[]> {
     const request: ListCityRequest = { districtid: districtId };
-    return externalApiRequest<City[]>('/Cognitensor/ListCity', {
-      body: JSON.stringify(request),
-    });
+    return externalApiRequest<City>('/Cognitensor/ListCity', request);
   },
 
   /**
    * Get hierarchy user data
    */
   async getHierarchyUserData(): Promise<HierarchyUser[]> {
-    return externalApiRequest<HierarchyUser[]>(
+    return externalApiRequest<HierarchyUser>(
       '/Cognitensor/ListHierarchyUserData',
-      {
-        body: '',
-      },
+      '',
     );
   },
 };

@@ -2,6 +2,7 @@
 
 import { Sidebar } from "@/components/layout/Sidebar";
 import { CrmProvider } from "@/providers/crm-provider";
+import { ReactQueryProvider } from "@/providers/react-query-provider";
 import { useAuth } from "@/providers/auth-provider";
 
 export default function CrmLayout({
@@ -15,11 +16,13 @@ export default function CrmLayout({
   }
 
   return (
-    <CrmProvider>
-      <div className="crm-shell">
-        <Sidebar />
-        <main className="main">{children}</main>
-      </div>
-    </CrmProvider>
+    <ReactQueryProvider>
+      <CrmProvider>
+        <div className="crm-shell">
+          <Sidebar />
+          <main className="main">{children}</main>
+        </div>
+      </CrmProvider>
+    </ReactQueryProvider>
   );
 }

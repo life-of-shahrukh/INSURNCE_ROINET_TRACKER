@@ -14,7 +14,7 @@ export default function PospPage() {
   const { deals, posp, loading } = useCrm();
   const [modalOpen, setModalOpen] = useState(false);
   const [editPosp, setEditPosp] = useState<Posp | null>(null);
-  const canCreatePosp = user?.role === "ADMIN";
+  const canCreatePosp = user?.role === "SUPER_ADMIN";
 
   if (loading) return <div className="empty">Loading…</div>;
 

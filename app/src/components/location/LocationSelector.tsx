@@ -13,8 +13,11 @@ import { useUIStore } from '@/store/ui-store';
 interface LocationSelectorProps {
   onLocationChange?: (location: {
     stateId: string | null;
+    stateName: string | null;
     districtId: string | null;
+    districtName: string | null;
     cityId: string | null;
+    cityName: string | null;
   }) => void;
   className?: string;
 }
@@ -41,30 +44,45 @@ export function LocationSelector({
   const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value || null;
     setSelectedState(value);
+    const state = states.data.find((s) => s.StateId === value);
     onLocationChange?.({
       stateId: value,
+      stateName: state?.StateName ?? null,
       districtId: null,
+      districtName: null,
       cityId: null,
+      cityName: null,
     });
   };
 
   const handleDistrictChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value || null;
     setSelectedDistrict(value);
+    const district = districts.data.find((d) => d.DistrictId === value);
+    const state = states.data.find((s) => s.StateId === selectedState);
     onLocationChange?.({
       stateId: selectedState,
+      stateName: state?.StateName ?? null,
       districtId: value,
+      districtName: district?.DistrictName ?? null,
       cityId: null,
+      cityName: null,
     });
   };
 
   const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value || null;
     setSelectedCity(value);
+    const city = cities.data.find((c) => c.CityId === value);
+    const district = districts.data.find((d) => d.DistrictId === selectedDistrict);
+    const state = states.data.find((s) => s.StateId === selectedState);
     onLocationChange?.({
       stateId: selectedState,
+      stateName: state?.StateName ?? null,
       districtId: selectedDistrict,
+      districtName: district?.DistrictName ?? null,
       cityId: value,
+      cityName: city?.CityName ?? null,
     });
   };
 
@@ -72,8 +90,11 @@ export function LocationSelector({
     resetLocationSelection();
     onLocationChange?.({
       stateId: null,
+      stateName: null,
       districtId: null,
+      districtName: null,
       cityId: null,
+      cityName: null,
     });
   };
 
@@ -98,8 +119,8 @@ export function LocationSelector({
             {states.isLoading ? 'Loading states...' : 'Select a state'}
           </option>
           {states.data.map((state) => (
-            <option key={state.id} value={state.id}>
-              {state.name}
+            <option key={state.StateId} value={state.StateId}>
+              {state.StateName}
             </option>
           ))}
         </select>
@@ -133,8 +154,8 @@ export function LocationSelector({
                 : 'Select a district'}
           </option>
           {districts.data.map((district) => (
-            <option key={district.id} value={district.id}>
-              {district.name}
+            <option key={district.DistrictId} value={district.DistrictId}>
+              {district.DistrictName}
             </option>
           ))}
         </select>
@@ -168,8 +189,8 @@ export function LocationSelector({
                 : 'Select a city'}
           </option>
           {cities.data.map((city) => (
-            <option key={city.id} value={city.id}>
-              {city.name}
+            <option key={city.CityId} value={city.CityId}>
+              {city.CityName}
             </option>
           ))}
         </select>

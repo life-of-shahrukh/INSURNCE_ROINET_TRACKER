@@ -1,12 +1,12 @@
 // Role-based access control decorators
 export {
   Roles,
-  RequireAllRoles,
+  MinRole,
   AdminOnly,
   PospOnly,
   Public,
   ROLES_KEY,
-  REQUIRE_ALL_ROLES_KEY,
+  MIN_ROLE_KEY,
   PUBLIC_KEY,
 } from './roles.decorator';
 

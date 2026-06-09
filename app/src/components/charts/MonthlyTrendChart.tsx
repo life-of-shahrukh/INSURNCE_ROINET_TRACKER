@@ -15,7 +15,7 @@ export function MonthlyTrendChart({ deals }: Props) {
   const monthly: Record<string, number> = {};
   deals.forEach((d) => {
     if (!d.expected) return;
-    const m = d.expected.slice(0, 7);
+    const m = new Date(d.expected).toISOString().slice(0, 7);
     monthly[m] = (monthly[m] || 0) + (+d.premium || 0);
   });
   const months = Object.keys(monthly).sort();

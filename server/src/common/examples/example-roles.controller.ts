@@ -31,9 +31,9 @@ export class ExampleRolesController {
    * Route accessible by ADMIN or POSP (OR logic - needs at least one role)
    */
   @Get('admin-or-posp')
-  @Roles(Role.ADMIN, Role.POSP)
+  @Roles(Role.SUPER_ADMIN, Role.POSP)
   async adminOrPosp(@CurrentUser() user: AuthUser) {
-    return { message: 'Admin or POSP can access', role: user.role };
+    return { message: 'Super Admin or POSP can access', role: user.role };
   }
 
   /**

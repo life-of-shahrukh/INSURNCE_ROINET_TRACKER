@@ -2,7 +2,7 @@ import { buildDealsCsv } from "../crm-calculations";
 import { uid } from "../formatters";
 import { SEED } from "../seed";
 import type { CrmApi } from "./crm-api";
-import type { CrmState, Deal, DealInput, Posp, PospInput } from "../types";
+import type { CrmState, Deal, Posp } from "../types";
 
 function cloneState(): CrmState {
   return JSON.parse(JSON.stringify(SEED)) as CrmState;
@@ -26,11 +26,13 @@ export const mockCrmApi: CrmApi = {
       coa: input.coa ?? 0,
       margin: input.margin ?? 0,
       status: input.status,
-      expected: input.expected ?? "",
+      expected: new Date(input.expected),
       proposal: input.proposal ?? "",
       policyNo: input.policyNo ?? "",
-      issued: input.issued ?? "",
+      issued: input.issued ? new Date(input.issued) : undefined,
       remarks: input.remarks ?? "",
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
     state.deals.push(deal);
     return { ...deal };
@@ -49,11 +51,13 @@ export const mockCrmApi: CrmApi = {
       coa: input.coa ?? 0,
       margin: input.margin ?? 0,
       status: input.status,
-      expected: input.expected ?? "",
+      expected: new Date(input.expected),
       proposal: input.proposal ?? "",
       policyNo: input.policyNo ?? "",
-      issued: input.issued ?? "",
+      issued: input.issued ? new Date(input.issued) : undefined,
       remarks: input.remarks ?? "",
+      createdAt: state.deals[idx]?.createdAt ?? new Date(),
+      updatedAt: new Date(),
     };
     state.deals[idx] = deal;
     return { ...deal };
@@ -70,8 +74,10 @@ export const mockCrmApi: CrmApi = {
       code: input.code,
       mobile: input.mobile ?? "",
       email: input.email ?? "",
-      joined: input.joined ?? "",
+      joined: new Date(input.joined),
       active: input.active ?? true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
     state.posp.push(posp);
     return { ...posp };
@@ -86,8 +92,10 @@ export const mockCrmApi: CrmApi = {
       code: input.code,
       mobile: input.mobile ?? "",
       email: input.email ?? "",
-      joined: input.joined ?? "",
+      joined: new Date(input.joined),
       active: input.active ?? true,
+      createdAt: state.posp[idx]?.createdAt ?? new Date(),
+      updatedAt: new Date(),
     };
     state.posp[idx] = posp;
     return { ...posp };

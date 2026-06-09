@@ -1,28 +1,17 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { useAuth } from "@/providers/auth-provider";
 import { getFriendlyAuthErrorMessage } from "@/lib/auth-errors";
 
-type LoginRole = "admin" | "posp";
-
 export default function LoginPage() {
   const { login } = useAuth();
   const router = useRouter();
-  const [role, setRole] = useState<LoginRole>("admin");
-  const isAdmin = role === "admin";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-
-  function switchRole(next: LoginRole) {
-    if (next === role) return;
-    setRole(next);
-    setError(null);
-  }
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -38,40 +27,19 @@ export default function LoginPage() {
     }
   }
 
-  function fillAdminDemoCredentials() {
-    setEmail("admin@roinet.com");
-    setPassword("Admin@1234");
-  }
-
   return (
     <div className="auth-shell">
       <form className="auth-card" onSubmit={onSubmit}>
-        <div className="auth-role-toggle" role="tablist" aria-label="Login role">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={isAdmin}
-            className={`auth-role-toggle-btn${isAdmin ? " is-active" : ""}`}
-            onClick={() => switchRole("admin")}
-          >
-            Admin
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={!isAdmin}
-            className={`auth-role-toggle-btn${!isAdmin ? " is-active" : ""}`}
-            onClick={() => switchRole("posp")}
-          >
-            POSP
-          </button>
+        <div className="logo" style={{ marginBottom: 20 }}>
+          <div className="logo-title" style={{ color: "var(--primary)", fontSize: 20 }}>
+            Roinet Insurance
+          </div>
+          <div className="logo-sub">Brokers — Sales CRM</div>
         </div>
 
-        <h1 className="auth-title">Login</h1>
+        <h1 className="auth-title">Sign In</h1>
         <p className="auth-subtitle">
-          {isAdmin
-            ? "Sign in with your admin credentials to manage the CRM."
-            : "Sign in with your POSP credentials to access your deals and leads."}
+          Enter your credentials to access the CRM portal.
         </p>
 
         <div className="form-group">
@@ -79,13 +47,11 @@ export default function LoginPage() {
           <input
             type="email"
             value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              if (error) setError(null);
-            }}
-            placeholder={isAdmin ? "admin@roinet.com" : "you@example.com"}
+            onChange={(e) => { setEmail(e.target.value); setError(null); }}
+            placeholder="you@roinet.com"
             required
             className={error ? "auth-input-error" : ""}
+            autoComplete="username"
           />
         </div>
 
@@ -94,36 +60,27 @@ export default function LoginPage() {
           <input
             type="password"
             value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              if (error) setError(null);
-            }}
+            onChange={(e) => { setPassword(e.target.value); setError(null); }}
             placeholder="••••••••"
             required
             className={error ? "auth-input-error" : ""}
+            autoComplete="current-password"
           />
         </div>
 
-        {error ? (
+        {error && (
           <div className="auth-error" role="alert" aria-live="polite">
             {error}
           </div>
-        ) : null}
+        )}
 
         <button className="btn" type="submit" disabled={busy}>
-          {busy ? "Signing in..." : isAdmin ? "Login as Admin" : "Login as POSP"}
+          {busy ? "Signing in…" : "Sign In"}
         </button>
 
-        <div className="auth-create-account">
-          {isAdmin ? (
-            <p className="auth-footnote">Admin accounts are provisioned by your organization.</p>
-          ) : (
-            <p className="auth-footnote">
-              Don&apos;t have a POSP account?{" "}
-              <Link href="/signup">Create an account</Link>
-            </p>
-          )}
-        </div>
+        <p className="auth-footnote" style={{ marginTop: 16 }}>
+          Accounts are provisioned by your organisation administrator.
+        </p>
       </form>
     </div>
   );

@@ -3,68 +3,90 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAuth } from "@/providers/auth-provider";
+import { hasMinRole } from "@/lib/auth-types";
 
-interface AuthGateProps {
-  children: React.ReactNode;
-}
+const PUBLIC_PATHS = new Set(["/login", "/signup"]);
 
-const POSP_ALLOWED_PATHS = new Set(["/dashboard", "/renewals"]);
+/**
+ * Minimum role required to access each path prefix.
+ * Routes not listed here are accessible by any authenticated user.
+ */
+const PATH_MIN_ROLE: Array<{ prefix: string; minRole: Parameters<typeof hasMinRole>[1] }> = [
+  { prefix: "/sales-team",  minRole: "RH" },
+  { prefix: "/commissions", minRole: "ASM" },
+  { prefix: "/reports",     minRole: "ASM" },
+  { prefix: "/leads",       minRole: "DM" },
+  { prefix: "/deals",       minRole: "DM" },
+  { prefix: "/customers",   minRole: "DM" },
+  { prefix: "/posp",        minRole: "DM" },
+];
 
-export function AuthGate({ children }: AuthGateProps) {
+export function AuthGate({ children }: { children: React.ReactNode }) {
   const { user, initializing } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
 
   useEffect(() => {
-    if (initializing) {
-      return;
-    }
+    if (initializing) return;
 
-    const isPublic = pathname === "/login" || pathname === "/signup";
+    const isPublic = PUBLIC_PATHS.has(pathname);
+
+    // Not logged in → login page
     if (!user && !isPublic) {
       router.replace("/login");
       return;
     }
+    // Already logged in → dashboard
     if (user && isPublic) {
       router.replace("/dashboard");
       return;
     }
 
-    if (user?.role === "POSP" && !isPublic && !POSP_ALLOWED_PATHS.has(pathname)) {
-      router.replace("/dashboard");
+    if (!user) return;
+
+    // Role-based path guard
+    for (const { prefix, minRole } of PATH_MIN_ROLE) {
+      if (pathname.startsWith(prefix) && !hasMinRole(user.role, minRole)) {
+        router.replace("/dashboard");
+        return;
+      }
     }
   }, [initializing, pathname, router, user]);
 
   if (initializing) {
-    return <div className="empty">Checking session...</div>;
-  }
-
-  if (!user && pathname !== "/login" && pathname !== "/signup") {
-    return <div className="empty">Redirecting to login...</div>;
-  }
-
-  if (
-    user &&
-    user.role === "POSP" &&
-    user.status !== "ACTIVE" &&
-    pathname !== "/login" &&
-    pathname !== "/signup"
-  ) {
     return (
       <div className="auth-shell">
-        <div className="auth-card">
-          <h1 className="auth-title">Account Pending Approval</h1>
-          <p className="auth-subtitle">
-            Your POSP signup is complete. Please wait for admin approval before accessing the
-            portal.
-          </p>
+        <div className="auth-card" style={{ textAlign: "center" }}>
+          <div style={{ fontSize: 24, marginBottom: 12 }}>⟳</div>
+          <p>Checking session…</p>
         </div>
       </div>
     );
   }
 
-  if (user?.role === "POSP" && !POSP_ALLOWED_PATHS.has(pathname)) {
-    return <div className="empty">Redirecting to dashboard...</div>;
+  if (!user && !PUBLIC_PATHS.has(pathname)) {
+    return (
+      <div className="auth-shell">
+        <div className="auth-card" style={{ textAlign: "center" }}>
+          <p>Redirecting to login…</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Inactive account notice
+  if (user && user.status !== "ACTIVE") {
+    return (
+      <div className="auth-shell">
+        <div className="auth-card">
+          <h1 className="auth-title">Account Not Active</h1>
+          <p className="auth-subtitle">
+            Your account is <strong>{user.status.toLowerCase()}</strong>. Please contact your
+            administrator to activate it.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return <>{children}</>;

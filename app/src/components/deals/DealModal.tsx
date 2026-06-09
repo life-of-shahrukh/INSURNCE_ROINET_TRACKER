@@ -6,6 +6,7 @@ import { Modal } from "@/components/ui/Modal";
 import { POLICY_TYPES } from "@/lib/constants";
 import { useCrm } from "@/providers/crm-provider";
 import { useAuth } from "@/providers/auth-provider";
+import { CustomerSearchSelect } from "@/components/customer/CustomerSearchSelect";
 import type { Deal, DealStatus } from "@/lib/types";
 
 interface DealModalProps {
@@ -16,6 +17,7 @@ interface DealModalProps {
 
 const emptyForm = {
   pospId: "",
+  customerId: "",
   customer: "",
   policy: "Life",
   sum: "",
@@ -35,13 +37,14 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
   const { posp, saveDeal } = useCrm();
   const [form, setForm] = useState(emptyForm);
   const activePosp = posp.filter((p) => p.active);
-  const canSelectPosp = user?.role === "ADMIN";
+  const canSelectPosp = user?.role === "SUPER_ADMIN";
 
   useEffect(() => {
     if (!open) return;
     if (deal) {
       setForm({
         pospId: deal.pospId,
+        customerId: (deal as unknown as Record<string, unknown>).customerId as string ?? "",
         customer: deal.customer,
         policy: deal.policy,
         sum: String(deal.sum ?? ""),
@@ -49,10 +52,10 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
         coa: String(deal.coa ?? 0),
         margin: String(deal.margin ?? 0),
         status: deal.status,
-        expected: deal.expected ? deal.expected.slice(0, 10) : "",
+        expected: deal.expected ? new Date(deal.expected).toISOString().slice(0, 10) : "",
         proposal: deal.proposal ?? "",
         policyNo: deal.policyNo ?? "",
-        issued: deal.issued ? deal.issued.slice(0, 10) : "",
+        issued: deal.issued ? new Date(deal.issued).toISOString().slice(0, 10) : "",
         remarks: deal.remarks ?? "",
       });
     } else {
@@ -61,7 +64,7 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
         pospId: activePosp[0]?.id ?? "",
       });
     }
-  }, [open, deal, posp]);
+  }, [open, deal, activePosp]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -75,11 +78,12 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
       coa: +form.coa || 0,
       margin: +form.margin || 0,
       status: form.status,
-      expected: form.expected,
+      expected: new Date(form.expected),
       proposal: form.proposal.trim(),
       policyNo: form.policyNo.trim(),
-      issued: form.issued,
+      issued: new Date(form.issued),
       remarks: form.remarks.trim(),
+      ...(form.customerId ? { customerId: form.customerId } : {}),
     });
     onClose();
   };
@@ -118,15 +122,11 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
               ))}
             </select>
           </div>
-          <div className="form-group">
-            <label htmlFor="d-customer">Customer Name</label>
-            <input
-              id="d-customer"
-              required
-              value={form.customer}
-              onChange={(e) => setForm({ ...form, customer: e.target.value })}
-            />
-          </div>
+          <CustomerSearchSelect
+            value={form.customerId || null}
+            onChange={(id, name) => setForm({ ...form, customerId: id ?? "", customer: name ?? "" })}
+            label="Customer"
+          />
           <div className="form-group">
             <label htmlFor="d-policy">Policy Type</label>
             <select

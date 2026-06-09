@@ -1,0 +1,86 @@
+{
+	"info": {
+		"_postman_id": "388e7c8c-2d24-437a-94e6-ccfc6d67258d",
+		"name": "Insurance CRM",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "38876755"
+	},
+	"item": [
+		{
+			"name": "UATserviceapi.roinet.in/Cognitensor/ListState",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"url": "UATserviceapi.roinet.in/Cognitensor/ListState"
+			},
+			"response": []
+		},
+		{
+			"name": "uatserviceapi.roinet.in/Cognitensor/ListDistrict",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"stateid\":\"2\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "uatserviceapi.roinet.in/Cognitensor/ListDistrict"
+			},
+			"response": []
+		},
+		{
+			"name": "uatserviceapi.roinet.in/Cognitensor/ListCity",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"districtid\":\"387\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "uatserviceapi.roinet.in/Cognitensor/ListCity"
+			},
+			"response": []
+		},
+		{
+			"name": "uatserviceapi.roinet.in/Cognitensor/ListHierarchyUserData",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"url": "uatserviceapi.roinet.in/Cognitensor/ListHierarchyUserData"
+			},
+			"response": []
+		}
+	]
+}

@@ -23,7 +23,7 @@ This phase implements Command-Query Responsibility Segregation (CQRS) pattern an
 ```
 ┌─────────────┐
 │ Controller  │
-└──────┬──────┘
+└──────┬──────┘ 
        │
        ▼
 ┌─────────────┐

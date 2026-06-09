@@ -37,7 +37,7 @@ export class DealRepository {
     return this.prisma.deal.create({
       data: {
         pospId: dto.pospId,
-        customer: dto.customer,
+        customerName: dto.customer,
         policy: dto.policy,
         sum: dto.sum,
         premium: dto.premium,
@@ -57,7 +57,7 @@ export class DealRepository {
     return this.prisma.deal.create({
       data: {
         pospId,
-        customer: dto.customer,
+        customerName: dto.customer,
         policy: dto.policy,
         sum: dto.sum,
         premium: dto.premium,
@@ -79,7 +79,7 @@ export class DealRepository {
       where: { id },
       data: {
         ...(dto.pospId !== undefined && { pospId: dto.pospId }),
-        ...(dto.customer !== undefined && { customer: dto.customer }),
+        ...(dto.customer !== undefined && { customerName: dto.customer }),
         ...(dto.policy !== undefined && { policy: dto.policy }),
         ...(dto.sum !== undefined && { sum: dto.sum }),
         ...(dto.premium !== undefined && { premium: dto.premium }),
@@ -93,7 +93,7 @@ export class DealRepository {
           issued: dto.issued ? new Date(dto.issued) : null,
         }),
         ...(dto.remarks !== undefined && { remarks: dto.remarks }),
-      },
+      } as Prisma.DealUncheckedUpdateInput,
     });
   }
 
@@ -102,7 +102,7 @@ export class DealRepository {
     return this.prisma.deal.update({
       where: { id },
       data: {
-        ...(dto.customer !== undefined && { customer: dto.customer }),
+        ...(dto.customer !== undefined && { customerName: dto.customer }),
         ...(dto.policy !== undefined && { policy: dto.policy }),
         ...(dto.sum !== undefined && { sum: dto.sum }),
         ...(dto.premium !== undefined && { premium: dto.premium }),
@@ -116,7 +116,7 @@ export class DealRepository {
           issued: dto.issued ? new Date(dto.issued) : null,
         }),
         ...(dto.remarks !== undefined && { remarks: dto.remarks }),
-      },
+      } as Prisma.DealUncheckedUpdateInput,
     });
   }
 
@@ -149,7 +149,7 @@ export class DealRepository {
       [
         d.id,
         d.pospId,
-        `"${d.customer}"`,
+        `"${d.customerName}"`,
         d.policy,
         d.sum,
         d.premium,
@@ -174,7 +174,7 @@ export class DealRepository {
       [
         d.id,
         d.pospId,
-        `"${d.customer}"`,
+        `"${d.customerName}"`,
         d.policy,
         d.sum,
         d.premium,

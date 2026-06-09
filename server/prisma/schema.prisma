@@ -7,51 +7,175 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Customer {
+  id              String    @id @default(cuid()) @db.NVarChar(36)
+  name            String    @db.NVarChar(200)
+  email           String?   @db.NVarChar(200)
+  mobile          String    @db.NVarChar(20)
+  alternateMobile String?   @db.NVarChar(20)
+  dateOfBirth     DateTime?
+  panNumber       String?   @db.NVarChar(20)
+  aadharNumber    String?   @db.NVarChar(20)
+  
+  stateId         String?   @db.NVarChar(20)
+  stateName       String?   @db.NVarChar(100)
+  districtId      String?   @db.NVarChar(20)
+  districtName    String?   @db.NVarChar(100)
+  cityId          String?   @db.NVarChar(20)
+  cityName        String?   @db.NVarChar(100)
+  address         String?   @db.NVarChar(500)
+  pincode         String?   @db.NVarChar(10)
+  
+  /// PENDING | VERIFIED | REJECTED
+  kycStatus       String    @default("PENDING") @db.NVarChar(20)
+  source          String?   @db.NVarChar(50)
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  leads           Lead[]
+  deals           Deal[]
+  policies        Policy[]
+}
+
+model Lead {
+  id                String    @id @default(cuid()) @db.NVarChar(36)
+  customerId        String    @db.NVarChar(36)
+  customer          Customer  @relation(fields: [customerId], references: [id])
+  
+  assignedToId      String?   @db.NVarChar(36)
+  assignedTo        SalesTeam? @relation(fields: [assignedToId], references: [id])
+  
+  /// LIFE | HEALTH | MOTOR
+  product           String    @db.NVarChar(100)
+  estimatedPremium  Float
+  estimatedSum      Float?
+  
+  /// THIS_MONTH | T_PLUS_1 | T_PLUS_2 | LATER
+  closureTimeline   String    @db.NVarChar(20)
+  expectedCloseDate DateTime?
+  
+  /// NEW | CONTACTED | QUALIFIED | PROPOSAL_SENT | WON | LOST
+  status            String    @default("NEW") @db.NVarChar(20)
+  
+  source            String?   @db.NVarChar(50)
+  remarks           String?   @db.NVarChar(500)
+  
+  convertedToDealId String?   @unique @db.NVarChar(36)
+  convertedAt       DateTime?
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model SalesTeam {
+  id            String      @id @default(cuid()) @db.NVarChar(36)
+  userId        String      @unique @db.NVarChar(36)
+  user          User        @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  
+  name          String      @db.NVarChar(200)
+  employeeCode  String      @unique @db.NVarChar(50)
+  /// ASM | MANAGER | FIELD_AGENT | etc.
+  designation   String      @db.NVarChar(50)
+  
+  managerId     String?     @db.NVarChar(36)
+  manager       SalesTeam?  @relation("Hierarchy", fields: [managerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  subordinates  SalesTeam[] @relation("Hierarchy")
+  
+  territory     String?     @db.NVarChar(100)
+  mobile        String      @db.NVarChar(20)
+  email         String      @db.NVarChar(200)
+  joiningDate   DateTime
+  
+  /// ACTIVE | INACTIVE | ON_LEAVE
+  status        String      @default("ACTIVE") @db.NVarChar(20)
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  pospsManaged  Posp[]      @relation("ASMManaged")
+  leadsAssigned Lead[]
+}
+
 model Posp {
-  id        String   @id @default(cuid()) @db.NVarChar(36)
-  name      String   @db.NVarChar(200)
-  code      String   @unique @db.NVarChar(50)
-  mobile    String   @db.NVarChar(20)
-  email     String   @unique @db.NVarChar(200)
-  joined    DateTime
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  deals     Deal[]
-  user      User?
+  id             String     @id @default(cuid()) @db.NVarChar(36)
+  name           String     @db.NVarChar(200)
+  code           String     @unique @db.NVarChar(50)
+  mobile         String     @db.NVarChar(20)
+  email          String     @unique @db.NVarChar(200)
+  joined         DateTime
+  active         Boolean    @default(true)
+  
+  asmId          String?    @db.NVarChar(36)
+  asm            SalesTeam? @relation("ASMManaged", fields: [asmId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  
+  lastBusinessAt DateTime?
+  autoInactive   Boolean    @default(false)
+  region         String?    @db.NVarChar(100)
+  
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  deals          Deal[]
+  user           User?
 }
 
 model Deal {
-  id        String   @id @default(cuid()) @db.NVarChar(36)
-  pospId    String   @db.NVarChar(36)
-  posp      Posp     @relation(fields: [pospId], references: [id])
-  customer  String   @db.NVarChar(200)
-  policy    String   @db.NVarChar(100)
-  sum       Float
-  premium   Float
-  coa       Float
-  margin    Float
+  id         String    @id @default(cuid()) @db.NVarChar(36)
+  pospId     String    @db.NVarChar(36)
+  posp       Posp      @relation(fields: [pospId], references: [id])
+  
+  customerId String?   @db.NVarChar(36)
+  customer   Customer? @relation(fields: [customerId], references: [id])
+  customerName String  @default("") @db.NVarChar(200)
+  
+  policy     String    @db.NVarChar(100)
+  sum        Float
+  premium    Float
+  coa        Float
+  margin     Float
   /// H = Hot, W = Warm, C = Cold
-  status    String   @db.NVarChar(1)
-  expected  DateTime
-  proposal  String   @db.NVarChar(100)
-  policyNo  String   @default("") @db.NVarChar(100)
-  issued    DateTime?
-  remarks   String   @default("") @db.NVarChar(500)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  status     String    @db.NVarChar(1)
+  expected   DateTime
+  proposal   String    @db.NVarChar(100)
+  policyNo   String    @default("") @db.NVarChar(100)
+  issued     DateTime?
+  remarks    String    @default("") @db.NVarChar(500)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Policy {
+  id                 String    @id @default(cuid()) @db.NVarChar(36)
+  policyNumber       String    @unique @db.NVarChar(100)
+  customerId         String    @db.NVarChar(36)
+  customer           Customer  @relation(fields: [customerId], references: [id])
+  /// LIFE | HEALTH | MOTOR
+  product            String    @db.NVarChar(100)
+  premium            Float
+  sumAssured         Float
+  issueDate          DateTime
+  rewardPoints       Int       @default(0)
+  paymentReleaseDate DateTime?
+  /// PENDING | RELEASED | PAID
+  paymentStatus      String    @default("PENDING") @db.NVarChar(20)
+  /// SYNCED | PENDING | FAILED
+  sapSyncStatus      String    @default("PENDING") @db.NVarChar(20)
+  sapSyncAt          DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 }
 
 model User {
-  id           String   @id @default(cuid()) @db.NVarChar(36)
-  email        String   @unique @db.NVarChar(200)
-  passwordHash String   @db.NVarChar(255)
-  /// ADMIN | POSP
-  role         String   @db.NVarChar(20)
+  id           String     @id @default(cuid()) @db.NVarChar(36)
+  email        String     @unique @db.NVarChar(200)
+  passwordHash String     @db.NVarChar(255)
+  /// SUPER_ADMIN | NATIONAL_HEAD | ZH | RH | ASM | DM | POSP
+  role         String     @db.NVarChar(20)
   /// PENDING | ACTIVE | INACTIVE
-  status       String   @default("PENDING") @db.NVarChar(20)
-  pospId       String?  @unique @db.NVarChar(36)
-  posp         Posp?    @relation(fields: [pospId], references: [id])
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  status       String     @default("PENDING") @db.NVarChar(20)
+  pospId       String?    @unique @db.NVarChar(36)
+  posp         Posp?      @relation(fields: [pospId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  salesTeam    SalesTeam?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }

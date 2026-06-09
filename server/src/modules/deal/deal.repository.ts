@@ -19,6 +19,13 @@ export class DealRepository {
     });
   }
 
+  findByScope(where: Record<string, unknown>): Promise<Deal[]> {
+    return this.prisma.deal.findMany({
+      where: where as Parameters<typeof this.prisma.deal.findMany>[0]['where'],
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
   async findById(id: string): Promise<Deal> {
     const deal = await this.prisma.deal.findUnique({ where: { id } });
     if (!deal) throw new NotFoundException(`Deal with id "${id}" not found`);

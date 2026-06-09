@@ -20,6 +20,17 @@ export class LeadRepository {
     });
   }
 
+  async findByScope(where: Record<string, unknown>): Promise<Lead[]> {
+    return this.prisma.lead.findMany({
+      where: where as Parameters<typeof this.prisma.lead.findMany>[0]['where'],
+      include: {
+        customer: true,
+        assignedTo: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
   async findById(id: string): Promise<Lead | null> {
     return this.prisma.lead.findUnique({
       where: { id },

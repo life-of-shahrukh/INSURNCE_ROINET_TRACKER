@@ -1,34 +1,32 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import { DealModal } from "@/components/deals/DealModal";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { FilterChips } from "@/components/ui/FilterChips";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { UniversalFilter } from "@/components/filters/UniversalFilter";
+import { useFilterState } from "@/hooks/useFilterState";
+import { applyFiltersToDeals } from "@/lib/filters/filter-utils";
 import { pospName } from "@/lib/crm-calculations";
 import { fmtDate, fmtINR } from "@/lib/formatters";
 import { useCrm } from "@/providers/crm-provider";
+import { useAuth } from "@/providers/auth-provider";
 import type { Deal } from "@/lib/types";
-import { useMemo, useState } from "react";
 
-const FILTERS = [
-  { value: "all", label: "All" },
-  { value: "H", label: "Hot" },
-  { value: "W", label: "Warm" },
-  { value: "C", label: "Cold" },
-];
-
-export default function DealsPage() {
+export default function DealsPage(): React.ReactElement {
   const { deals, posp, loading, deleteDeal } = useCrm();
-  const [filter, setFilter] = useState("all");
+  const { user } = useAuth();
+  const role = user?.role ?? "POSP";
+
+  const { filters, setFilter, applyFilters, resetFilters, activeCount } = useFilterState();
   const [search, setSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [editDeal, setEditDeal] = useState<Deal | null>(null);
 
   const rows = useMemo(() => {
-    let list = deals;
-    if (filter !== "all") list = list.filter((d) => d.status === filter);
+    let list = applyFiltersToDeals(deals, filters);
     const q = search.toLowerCase();
     if (q) {
       list = list.filter(
@@ -40,7 +38,7 @@ export default function DealsPage() {
       );
     }
     return list;
-  }, [deals, posp, filter, search]);
+  }, [deals, posp, filters, search]);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this deal?")) return;
@@ -66,17 +64,18 @@ export default function DealsPage() {
         }
       />
 
+      <UniversalFilter
+        role={role}
+        filters={filters}
+        onFilterChange={setFilter}
+        onApplyFilters={applyFilters}
+        onReset={resetFilters}
+        activeCount={activeCount}
+        search={search}
+        onSearchChange={setSearch}
+      />
+
       <Card>
-        <div className="filter-bar">
-          <FilterChips options={FILTERS} value={filter} onChange={setFilter} />
-          <input
-            className="search-input"
-            type="text"
-            placeholder="Search customer, POSP, policy…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
         <div className="table-wrap">
           <table>
             <thead>

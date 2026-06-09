@@ -1,1 +1,6 @@
 provider = "mssql"
+
+# This is an auto-generated file. Do not edit manually.
+# Applied migrations:
+# - 20260606000000_init
+# - 20260609000000_hierarchy_filter

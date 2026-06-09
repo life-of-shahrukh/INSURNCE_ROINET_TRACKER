@@ -8,6 +8,7 @@ import { ConvertLeadToDealCommand } from './commands/convert-lead-to-deal.comman
 import { GetAllLeadsQuery } from './queries/get-all-leads.query';
 import { GetMonthlyCommitmentQuery } from './queries/get-monthly-commitment.query';
 import { Lead } from '@prisma/client';
+import type { HierarchyScope } from '../../common/auth/hierarchy-scope.util';
 
 @Injectable()
 export class LeadService {
@@ -20,8 +21,8 @@ export class LeadService {
     return this.commandBus.execute(new CreateLeadCommand(dto));
   }
 
-  async findAll(): Promise<Lead[]> {
-    return this.queryBus.execute(new GetAllLeadsQuery());
+  async findAll(scope?: HierarchyScope): Promise<Lead[]> {
+    return this.queryBus.execute(new GetAllLeadsQuery(scope));
   }
 
   async getMonthlyCommitment(): Promise<{ total: number; count: number }> {

@@ -10,6 +10,7 @@ import {
   Post,
   Res,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import type { Response } from 'express';
@@ -21,11 +22,15 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 import { MinRole, Roles } from '../../common/decorators/roles.decorator';
 import { Role } from '../../common/constants';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { ResolvedScope } from '../../common/decorators/scope.decorator';
 import { AuthUser } from '../../common/auth/auth-user.interface';
+import type { HierarchyScope } from '../../common/auth/hierarchy-scope.util';
+import { HierarchyScopeInterceptor } from '../../common/interceptors/hierarchy-scope.interceptor';
 
 @ApiTags('Deals')
 @Controller('deals')
 @UseGuards(JwtAuthGuard, RolesGuard)
+@UseInterceptors(HierarchyScopeInterceptor)
 @ApiBearerAuth()
 export class DealController {
   constructor(private readonly dealService: DealService) {}
@@ -34,15 +39,19 @@ export class DealController {
   @Get()
   @Roles(Role.DM, Role.ASM, Role.RH, Role.ZH, Role.NATIONAL_HEAD, Role.SUPER_ADMIN, Role.POSP)
   @ApiOperation({ summary: 'List deals (scoped by role)' })
-  findAll(@CurrentUser() user: AuthUser) {
-    return this.dealService.getAll(user);
+  findAll(@CurrentUser() user: AuthUser, @ResolvedScope() scope: HierarchyScope) {
+    return this.dealService.getAll(user, scope);
   }
 
   @Get('export')
   @Roles(Role.DM, Role.ASM, Role.RH, Role.ZH, Role.NATIONAL_HEAD, Role.SUPER_ADMIN, Role.POSP)
   @ApiOperation({ summary: 'Export deals as CSV' })
-  async exportCsv(@Res() res: Response, @CurrentUser() user: AuthUser) {
-    const csv = await this.dealService.exportCsv(user);
+  async exportCsv(
+    @Res() res: Response,
+    @CurrentUser() user: AuthUser,
+    @ResolvedScope() scope: HierarchyScope,
+  ) {
+    const csv = await this.dealService.exportCsv(user, scope);
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', 'attachment; filename="deals.csv"');
     res.send(csv);

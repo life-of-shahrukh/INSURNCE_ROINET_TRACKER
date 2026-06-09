@@ -8,6 +8,7 @@ import {
   HttpCode,
   HttpStatus,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PospService } from './posp.service';
@@ -18,11 +19,15 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 import { MinRole, Roles } from '../../common/decorators/roles.decorator';
 import { Role } from '../../common/constants';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { ResolvedScope } from '../../common/decorators/scope.decorator';
 import { AuthUser } from '../../common/auth/auth-user.interface';
+import type { HierarchyScope } from '../../common/auth/hierarchy-scope.util';
+import { HierarchyScopeInterceptor } from '../../common/interceptors/hierarchy-scope.interceptor';
 
 @ApiTags('POSP')
 @Controller('posp')
 @UseGuards(JwtAuthGuard, RolesGuard)
+@UseInterceptors(HierarchyScopeInterceptor)
 @ApiBearerAuth()
 export class PospController {
   constructor(private readonly pospService: PospService) {}
@@ -31,8 +36,8 @@ export class PospController {
   @Get()
   @Roles(Role.DM, Role.ASM, Role.RH, Role.ZH, Role.NATIONAL_HEAD, Role.SUPER_ADMIN, Role.POSP)
   @ApiOperation({ summary: 'List POSPs (scoped by role)' })
-  findAll(@CurrentUser() user: AuthUser) {
-    return this.pospService.getAll(user);
+  findAll(@CurrentUser() user: AuthUser, @ResolvedScope() scope: HierarchyScope) {
+    return this.pospService.getAll(user, scope);
   }
 
   // Only ASM and above can create/register POSPs

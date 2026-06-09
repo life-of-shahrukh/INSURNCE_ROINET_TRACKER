@@ -10,6 +10,7 @@ import { Posp } from '@prisma/client';
 import { Role } from '../../common/constants';
 import { AuthUser } from '../../common/auth/auth-user.interface';
 import { resolvePospScope } from '../../common/auth/posp-scope.util';
+import type { HierarchyScope } from '../../common/auth/hierarchy-scope.util';
 
 @Injectable()
 export class PospService {
@@ -18,17 +19,15 @@ export class PospService {
     private readonly queryBus: QueryBus,
   ) {}
 
-  async getAll(user: AuthUser): Promise<Posp[]> {
+  async getAll(user: AuthUser, scope?: HierarchyScope): Promise<Posp[]> {
     if (user.role === Role.POSP) {
       if (!user.pospId) {
         throw new ForbiddenException('POSP account is not linked');
       }
-      const posp = await this.queryBus.execute(
-        new GetPospByIdQuery(user.pospId),
-      );
+      const posp = await this.queryBus.execute(new GetPospByIdQuery(user.pospId));
       return [posp];
     }
-    return this.queryBus.execute(new GetAllPospQuery());
+    return this.queryBus.execute(new GetAllPospQuery(scope));
   }
 
   create(dto: CreatePospDto, user: AuthUser): Promise<Posp> {

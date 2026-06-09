@@ -3,18 +3,39 @@
 import { PospModal } from "@/components/posp/PospModal";
 import { Button } from "@/components/ui/Button";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { UniversalFilter } from "@/components/filters/UniversalFilter";
+import { useFilterState } from "@/hooks/useFilterState";
 import { fmtDate, fmtINRShort } from "@/lib/formatters";
 import { useCrm } from "@/providers/crm-provider";
 import { useAuth } from "@/providers/auth-provider";
 import type { Posp } from "@/lib/types";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 export default function PospPage() {
   const { user } = useAuth();
   const { deals, posp, loading } = useCrm();
+  const role = user?.role ?? "POSP";
   const [modalOpen, setModalOpen] = useState(false);
   const [editPosp, setEditPosp] = useState<Posp | null>(null);
-  const canCreatePosp = user?.role === "SUPER_ADMIN";
+  const { filters, setFilter, applyFilters, resetFilters, activeCount } = useFilterState();
+  const [search, setSearch] = useState("");
+
+  const canCreatePosp =
+    user?.role === "SUPER_ADMIN" || user?.role === "ASM" || user?.role === "DM";
+
+  const filteredPosp = useMemo(() => {
+    let list = posp;
+    if (search) {
+      const q = search.toLowerCase();
+      list = list.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          p.code.toLowerCase().includes(q) ||
+          (p.mobile ?? "").includes(q),
+      );
+    }
+    return list;
+  }, [posp, search]);
 
   if (loading) return <div className="empty">Loading…</div>;
 
@@ -37,8 +58,19 @@ export default function PospPage() {
         }
       />
 
+      <UniversalFilter
+        role={role}
+        filters={filters}
+        onFilterChange={setFilter}
+        onApplyFilters={applyFilters}
+        onReset={resetFilters}
+        activeCount={activeCount}
+        search={search}
+        onSearchChange={setSearch}
+      />
+
       <div className="posp-grid">
-        {posp.map((p) => {
+        {filteredPosp.map((p) => {
           const myDeals = deals.filter((d) => d.pospId === p.id);
           const total = myDeals.reduce((a, d) => a + (+d.premium || 0), 0);
           return (

@@ -12,6 +12,13 @@ export class PospRepository {
     return this.prisma.posp.findMany({ orderBy: { createdAt: 'asc' } });
   }
 
+  findByScope(where: Record<string, unknown>): Promise<Posp[]> {
+    return this.prisma.posp.findMany({
+      where: where as Parameters<typeof this.prisma.posp.findMany>[0]['where'],
+      orderBy: { createdAt: 'asc' },
+    });
+  }
+
   async findById(id: string): Promise<Posp> {
     const posp = await this.prisma.posp.findUnique({ where: { id } });
     if (!posp) throw new NotFoundException(`POSP with id "${id}" not found`);

@@ -4,34 +4,50 @@ import { DealsByStatusChart } from "@/components/charts/DealsByStatusChart";
 import { PremiumByPolicyChart } from "@/components/charts/PremiumByPolicyChart";
 import { TopPospChart } from "@/components/charts/TopPospChart";
 import { DealModal } from "@/components/deals/DealModal";
+import { UniversalFilter } from "@/components/filters/UniversalFilter";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { KpiCard } from "@/components/ui/KpiCard";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { computeDashboardKpis, pospName } from "@/lib/crm-calculations";
+import { applyFiltersToDeals } from "@/lib/filters/filter-utils";
 import { fmtDate, fmtINR, fmtINRShort } from "@/lib/formatters";
 import { useCrm } from "@/providers/crm-provider";
+import { useAuth } from "@/providers/auth-provider";
+import { useFilterState } from "@/hooks/useFilterState";
 import type { Deal } from "@/lib/types";
 import { useMemo, useState } from "react";
 
-export default function DashboardPage() {
+export default function DashboardPage(): React.ReactElement {
   const { deals, posp, loading, exportCsv } = useCrm();
+  const { user } = useAuth();
+  const role = user?.role ?? "POSP";
+
+  const { filters, setFilter, applyFilters, resetFilters, activeCount } = useFilterState();
   const [dealModalOpen, setDealModalOpen] = useState(false);
   const [editDeal, setEditDeal] = useState<Deal | null>(null);
 
-  const kpis = useMemo(() => computeDashboardKpis(deals, posp), [deals, posp]);
+  const filteredDeals = useMemo(
+    () => applyFiltersToDeals(deals, filters),
+    [deals, filters],
+  );
+
+  const kpis = useMemo(
+    () => computeDashboardKpis(filteredDeals, posp),
+    [filteredDeals, posp],
+  );
 
   const recent = useMemo(
     () =>
-      [...deals]
+      [...filteredDeals]
         .sort((a, b) => {
           const aDate = new Date(a.createdAt || 0).getTime();
           const bDate = new Date(b.createdAt || 0).getTime();
           return bDate - aDate;
         })
         .slice(0, 5),
-    [deals],
+    [filteredDeals],
   );
 
   if (loading) {
@@ -58,6 +74,15 @@ export default function DashboardPage() {
             </Button>
           </>
         }
+      />
+
+      <UniversalFilter
+        role={role}
+        filters={filters}
+        onFilterChange={setFilter}
+        onApplyFilters={applyFilters}
+        onReset={resetFilters}
+        activeCount={activeCount}
       />
 
       <div className="kpi-grid">
@@ -93,15 +118,15 @@ export default function DashboardPage() {
 
       <div className="row-2">
         <Card title="Deals by Status">
-          <DealsByStatusChart deals={deals} />
+          <DealsByStatusChart deals={filteredDeals} />
         </Card>
         <Card title="Premium by Policy Type">
-          <PremiumByPolicyChart deals={deals} />
+          <PremiumByPolicyChart deals={filteredDeals} />
         </Card>
       </div>
 
       <Card title="Top POSPs by Premium">
-        <TopPospChart deals={deals} posp={posp} />
+        <TopPospChart deals={filteredDeals} posp={posp} />
       </Card>
 
       <Card title="Recent Deals">

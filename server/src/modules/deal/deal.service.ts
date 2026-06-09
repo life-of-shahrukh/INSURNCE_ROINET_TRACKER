@@ -11,6 +11,7 @@ import { Deal } from '@prisma/client';
 import { ForbiddenException } from '@nestjs/common';
 import { AuthUser } from '../../common/auth/auth-user.interface';
 import { resolvePospScope } from '../../common/auth/posp-scope.util';
+import type { HierarchyScope } from '../../common/auth/hierarchy-scope.util';
 
 @Injectable()
 export class DealService {
@@ -19,9 +20,8 @@ export class DealService {
     private readonly queryBus: QueryBus,
   ) {}
 
-  getAll(user: AuthUser): Promise<Deal[]> {
-    const pospId = user.pospId ?? undefined;
-    return this.queryBus.execute(new GetAllDealsQuery(pospId));
+  getAll(user: AuthUser, scope?: HierarchyScope): Promise<Deal[]> {
+    return this.queryBus.execute(new GetAllDealsQuery(undefined, scope));
   }
 
   create(dto: CreateDealDto, user: AuthUser): Promise<Deal> {
@@ -47,7 +47,7 @@ export class DealService {
     return this.commandBus.execute(new DeleteDealCommand(id, user.pospId));
   }
 
-  exportCsv(user: AuthUser): Promise<string> {
+  exportCsv(user: AuthUser, scope?: HierarchyScope): Promise<string> {
     const pospId = user.pospId ?? undefined;
     return this.queryBus.execute(new ExportDealsCsvQuery(pospId));
   }

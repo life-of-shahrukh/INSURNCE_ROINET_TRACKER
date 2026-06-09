@@ -5,6 +5,9 @@ import { useLeads, useMonthlyCommitment, useUpdateLead, useConvertLeadToDeal } f
 import { Button } from "@/components/ui/Button";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { LeadModal } from "@/components/lead/LeadModal";
+import { UniversalFilter } from "@/components/filters/UniversalFilter";
+import { useFilterState } from "@/hooks/useFilterState";
+import { useAuth } from "@/providers/auth-provider";
 import { fmtINRShort, fmtINR } from "@/lib/formatters";
 import type { Lead, ClosureTimeline, LeadStatus } from "@/lib/api/lead-api";
 
@@ -25,9 +28,15 @@ const STATUS_COLORS: Record<LeadStatus, string> = {
 };
 
 const PRODUCT_ICON: Record<string, string> = {
-  LIFE:   "♥",
-  HEALTH: "✚",
-  MOTOR:  "◈",
+  LIFE:        "♥",
+  HEALTH:      "✚",
+  MOTOR:       "◈",
+  PROPERTY:    "⌂",
+  MARINE:      "⚓",
+  TRAVEL:      "✈",
+  COMMERCIAL:  "⚙",
+  CROP:        "🌾",
+  ENGINEERING: "🔧",
 };
 
 export default function LeadsPage() {
@@ -35,23 +44,35 @@ export default function LeadsPage() {
   const { data: commitment } = useMonthlyCommitment();
   const updateLead = useUpdateLead();
   const convertToDeal = useConvertLeadToDeal();
+  const { user } = useAuth();
+  const role = user?.role ?? "POSP";
+
+  const { filters, setFilter, applyFilters, resetFilters, activeCount } = useFilterState();
   const [modalOpen, setModalOpen] = useState(false);
   const [editLead, setEditLead] = useState<Lead | null>(null);
   const [activeFilter, setActiveFilter] = useState<"all" | LeadStatus>("all");
+
+  const filteredLeads = useMemo(() => {
+    if (!leads) return [];
+    let list = leads;
+    if (activeFilter !== "all") {
+      list = list.filter((l) => l.status === activeFilter);
+    }
+    if (filters.productLine) {
+      list = list.filter((l) => l.product === filters.productLine);
+    }
+    return list;
+  }, [leads, activeFilter, filters.productLine]);
 
   const byTimeline = useMemo(() => {
     const map: Record<ClosureTimeline, Lead[]> = {
       THIS_MONTH: [], T_PLUS_1: [], T_PLUS_2: [], LATER: [],
     };
-    if (!leads) return map;
-    const filtered = activeFilter === "all"
-      ? leads
-      : leads.filter((l) => l.status === activeFilter);
-    filtered.forEach((l) => {
+    filteredLeads.forEach((l) => {
       if (map[l.closureTimeline]) map[l.closureTimeline].push(l);
     });
     return map;
-  }, [leads, activeFilter]);
+  }, [filteredLeads]);
 
   const handleConvert = async (lead: Lead) => {
     if (!confirm(`Convert "${lead.customer?.name}" lead to a Deal?`)) return;
@@ -81,6 +102,15 @@ export default function LeadsPage() {
         }
       />
 
+      <UniversalFilter
+        role={role}
+        filters={filters}
+        onFilterChange={setFilter}
+        onApplyFilters={applyFilters}
+        onReset={resetFilters}
+        activeCount={activeCount}
+      />
+
       {/* Monthly Commitment KPI */}
       <div className="kpi-row" style={{ marginBottom: 24 }}>
         <div className="kpi-card" style={{ flex: "0 0 auto", minWidth: 220 }}>
@@ -104,7 +134,7 @@ export default function LeadsPage() {
         </div>
       </div>
 
-      {/* Status filter */}
+      {/* Status filter pills */}
       <div style={{ marginBottom: 16, display: "flex", gap: 8, flexWrap: "wrap" }}>
         {(["all", "NEW", "CONTACTED", "QUALIFIED", "PROPOSAL_SENT", "WON", "LOST"] as const).map((s) => (
           <button
@@ -140,28 +170,19 @@ export default function LeadsPage() {
             ) : (
               byTimeline[col.key].map((lead) => (
                 <div key={lead.id} className="lead-card" style={{ position: "relative" }}>
-                  {/* Product badge */}
                   <span
                     title={lead.product}
-                    style={{
-                      position: "absolute", top: 10, right: 10,
-                      fontSize: 18, opacity: 0.6,
-                    }}
+                    style={{ position: "absolute", top: 10, right: 10, fontSize: 18, opacity: 0.6 }}
                   >
                     {PRODUCT_ICON[lead.product] || lead.product}
                   </span>
 
-                  {/* Customer */}
-                  <div className="lead-card-name">
-                    {lead.customer?.name || "—"}
-                  </div>
+                  <div className="lead-card-name">{lead.customer?.name || "—"}</div>
 
-                  {/* Premium */}
                   <div className="lead-card-meta">
                     Est. Premium: <strong>{fmtINRShort(lead.estimatedPremium)}</strong>
                   </div>
 
-                  {/* Status */}
                   <div style={{ marginTop: 6 }}>
                     <select
                       value={lead.status}
@@ -191,7 +212,6 @@ export default function LeadsPage() {
                     </div>
                   )}
 
-                  {/* Actions */}
                   <div style={{ marginTop: 8, display: "flex", gap: 6 }}>
                     <button
                       type="button"

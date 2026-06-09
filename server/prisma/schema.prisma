@@ -45,9 +45,11 @@ model Lead {
   
   assignedToId      String?   @db.NVarChar(36)
   assignedTo        SalesTeam? @relation(fields: [assignedToId], references: [id])
-  
-  /// LIFE | HEALTH | MOTOR
+
+  /// LIFE | HEALTH | MOTOR | PROPERTY | MARINE | TRAVEL | COMMERCIAL | CROP | ENGINEERING
   product           String    @db.NVarChar(100)
+  /// Term Life | Whole Life | Endowment | ULIP | Group Life | Individual Mediclaim | Family Floater | etc.
+  productSubType    String?   @db.NVarChar(100)
   estimatedPremium  Float
   estimatedSum      Float?
   
@@ -63,6 +65,12 @@ model Lead {
   
   convertedToDealId String?   @unique @db.NVarChar(36)
   convertedAt       DateTime?
+  
+  /// Denormalized hierarchy for fast filtering
+  zoneId            String?   @db.NVarChar(50)
+  regionId          String?   @db.NVarChar(50)
+  areaId            String?   @db.NVarChar(50)
+  districtId        String?   @db.NVarChar(50)
   
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
@@ -86,6 +94,14 @@ model SalesTeam {
   mobile        String      @db.NVarChar(20)
   email         String      @db.NVarChar(200)
   joiningDate   DateTime
+  
+  /// Explicit territory assignments for hierarchy scope
+  zoneId        String?     @db.NVarChar(50)
+  zoneName      String?     @db.NVarChar(100)
+  regionId      String?     @db.NVarChar(50)
+  regionName    String?     @db.NVarChar(100)
+  areaId        String?     @db.NVarChar(50)
+  areaName      String?     @db.NVarChar(100)
   
   /// ACTIVE | INACTIVE | ON_LEAVE
   status        String      @default("ACTIVE") @db.NVarChar(20)
@@ -113,6 +129,12 @@ model Posp {
   autoInactive   Boolean    @default(false)
   region         String?    @db.NVarChar(100)
   
+  /// Hierarchy territory IDs for scoped filtering
+  zoneId         String?    @db.NVarChar(50)
+  regionId       String?    @db.NVarChar(50)
+  areaId         String?    @db.NVarChar(50)
+  districtId     String?    @db.NVarChar(50)
+  
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
   deals          Deal[]
@@ -129,6 +151,12 @@ model Deal {
   customerName String  @default("") @db.NVarChar(200)
   
   policy     String    @db.NVarChar(100)
+  /// LIFE | HEALTH | MOTOR | PROPERTY | MARINE | TRAVEL | COMMERCIAL | CROP | ENGINEERING
+  productLine String?  @db.NVarChar(50)
+  /// Term Life | Family Floater | Comprehensive | etc.
+  productSubType String? @db.NVarChar(100)
+  /// Insurer name: LIC | HDFC Life | ICICI Prudential | Star Health | etc.
+  insurer    String?   @db.NVarChar(100)
   sum        Float
   premium    Float
   coa        Float
@@ -140,6 +168,13 @@ model Deal {
   policyNo   String    @default("") @db.NVarChar(100)
   issued     DateTime?
   remarks    String    @default("") @db.NVarChar(500)
+  
+  /// Denormalized hierarchy for fast role-based filtering
+  zoneId     String?   @db.NVarChar(50)
+  regionId   String?   @db.NVarChar(50)
+  areaId     String?   @db.NVarChar(50)
+  districtId String?   @db.NVarChar(50)
+  
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 }
@@ -149,8 +184,12 @@ model Policy {
   policyNumber       String    @unique @db.NVarChar(100)
   customerId         String    @db.NVarChar(36)
   customer           Customer  @relation(fields: [customerId], references: [id])
-  /// LIFE | HEALTH | MOTOR
+  /// LIFE | HEALTH | MOTOR | PROPERTY | MARINE | TRAVEL | COMMERCIAL | CROP | ENGINEERING
   product            String    @db.NVarChar(100)
+  /// Term Life | Family Floater | Comprehensive | etc.
+  productSubType     String?   @db.NVarChar(100)
+  /// Insurer name
+  insurer            String?   @db.NVarChar(100)
   premium            Float
   sumAssured         Float
   issueDate          DateTime

@@ -1,6 +1,8 @@
 "use client";
 
+import { ClosureTimelineChart } from "@/components/charts/ClosureTimelineChart";
 import { DealsByStatusChart } from "@/components/charts/DealsByStatusChart";
+import { KycStatusChart } from "@/components/charts/KycStatusChart";
 import { PremiumByPolicyChart } from "@/components/charts/PremiumByPolicyChart";
 import { TopPospChart } from "@/components/charts/TopPospChart";
 import { DealModal } from "@/components/deals/DealModal";
@@ -13,6 +15,8 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { computeDashboardKpis, pospName } from "@/lib/crm-calculations";
 import { applyFiltersToDeals } from "@/lib/filters/filter-utils";
 import { fmtDate, fmtINR, fmtINRShort } from "@/lib/formatters";
+import { useLeads } from "@/hooks/useLeads";
+import { useCustomers } from "@/hooks/useCustomers";
 import { useCrm } from "@/providers/crm-provider";
 import { useAuth } from "@/providers/auth-provider";
 import { useFilterState } from "@/hooks/useFilterState";
@@ -23,6 +27,9 @@ export default function DashboardPage(): React.ReactElement {
   const { deals, posp, loading, exportCsv } = useCrm();
   const { user } = useAuth();
   const role = user?.role ?? "POSP";
+
+  const { data: leads = [] } = useLeads();
+  const { data: customers = [] } = useCustomers();
 
   const { filters, setFilter, applyFilters, resetFilters, activeCount } = useFilterState();
   const [dealModalOpen, setDealModalOpen] = useState(false);
@@ -128,6 +135,15 @@ export default function DashboardPage(): React.ReactElement {
       <Card title="Top POSPs by Premium">
         <TopPospChart deals={filteredDeals} posp={posp} />
       </Card>
+
+      <div className="row-2">
+        <Card title="Deal Closure Timeline">
+          <ClosureTimelineChart leads={leads} />
+        </Card>
+        <Card title="Customer KYC Status">
+          <KycStatusChart customers={customers} />
+        </Card>
+      </div>
 
       <Card title="Recent Deals">
         <div className="table-wrap">

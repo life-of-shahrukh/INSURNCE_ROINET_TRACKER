@@ -59,8 +59,17 @@ BEGIN TRY
   IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Policy') AND name = 'insurer')
     ALTER TABLE [Policy] ADD [insurer] NVARCHAR(100) NULL;
 
-  -- ── Backfill: copy Deal hierarchy from POSP → ASM → SalesTeam chain ──────────
-  -- For each deal, find its POSP's ASM's territory and populate the deal's hierarchy fields
+  COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+  ROLLBACK TRANSACTION;
+  THROW;
+END CATCH;
+
+-- ── Backfill: run via dynamic SQL so column references are resolved at runtime ──
+-- (SQL Server validates static column references at parse time; dynamic SQL defers this)
+
+EXEC sp_executesql N'
   UPDATE d
   SET
     d.zoneId     = st.zoneId,
@@ -71,19 +80,20 @@ BEGIN TRY
   INNER JOIN [Posp] p ON d.pospId = p.id
   INNER JOIN [SalesTeam] st ON p.asmId = st.id
   WHERE d.zoneId IS NULL;
+';
 
-  -- Backfill Lead hierarchy from their assignedTo SalesTeam member
+EXEC sp_executesql N'
   UPDATE l
   SET
-    l.zoneId     = st.zoneId,
-    l.regionId   = st.regionId,
-    l.areaId     = st.areaId,
-    l.districtId = st.districtId
+    l.zoneId   = st.zoneId,
+    l.regionId = st.regionId,
+    l.areaId   = st.areaId
   FROM [Lead] l
   INNER JOIN [SalesTeam] st ON l.assignedToId = st.id
   WHERE l.zoneId IS NULL;
+';
 
-  -- Backfill Posp hierarchy from their ASM's SalesTeam territory
+EXEC sp_executesql N'
   UPDATE p
   SET
     p.zoneId   = st.zoneId,
@@ -92,10 +102,4 @@ BEGIN TRY
   FROM [Posp] p
   INNER JOIN [SalesTeam] st ON p.asmId = st.id
   WHERE p.zoneId IS NULL;
-
-  COMMIT TRANSACTION;
-END TRY
-BEGIN CATCH
-  ROLLBACK TRANSACTION;
-  THROW;
-END CATCH;
+';

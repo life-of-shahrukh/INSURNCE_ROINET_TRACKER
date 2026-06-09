@@ -1,18 +1,22 @@
 "use client";
 
 import { ConversionFunnelChart } from "@/components/charts/ConversionFunnelChart";
+import { LeadConversionChart } from "@/components/charts/LeadConversionChart";
 import { MonthlyTrendChart } from "@/components/charts/MonthlyTrendChart";
+import { PospActivityRadarChart } from "@/components/charts/PospActivityRadarChart";
 import { ProductFunnelChart } from "@/components/charts/ProductFunnelChart";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { computePolicySummary, marginPercent } from "@/lib/crm-calculations";
 import { fmtINR } from "@/lib/formatters";
+import { useLeads } from "@/hooks/useLeads";
 import { useCrm } from "@/providers/crm-provider";
 import { useMemo } from "react";
 
 export default function ReportsPage() {
-  const { deals, loading, exportCsv } = useCrm();
+  const { deals, posp, loading, exportCsv } = useCrm();
+  const { data: leads = [] } = useLeads();
   const summary = useMemo(() => computePolicySummary(deals), [deals]);
 
   if (loading) return <div className="empty">Loading…</div>;
@@ -41,6 +45,15 @@ export default function ReportsPage() {
       <Card title="Funnel by Product (Leads → Warm+ → Hot → Issued)">
         <ProductFunnelChart deals={deals} />
       </Card>
+
+      <div className="row-2">
+        <Card title="Top POSP Performance (Radar)">
+          <PospActivityRadarChart deals={deals} posp={posp} />
+        </Card>
+        <Card title="Lead Conversion by Product">
+          <LeadConversionChart leads={leads} />
+        </Card>
+      </div>
 
       <Card title="Summary by Policy Type">
         <div className="table-wrap">

@@ -28,8 +28,10 @@ function makeDeal(overrides: Partial<Deal> = {}): Deal {
     expected: new Date('2026-07-01'),
     proposal: 'P-001',
     policyNo: 'POL-001',
-    issued: null,
+    issued: undefined,
     remarks: '',
+    createdAt: new Date('2026-01-01'),
+    updatedAt: new Date('2026-01-01'),
     ...overrides,
   };
 }
@@ -41,7 +43,7 @@ describe('getVisibleDimensions', () => {
     'SUPER_ADMIN', 'NATIONAL_HEAD', 'ZH', 'RH', 'ASM', 'DM', 'POSP',
   ];
 
-  it.each(allRoles)('%s gets at least dateRange and dealStatus dimensions', (role) => {
+  it.each(allRoles)('%s gets at least dateRange and dealStatus dimensions', (role: UserRole) => {
     const dims = getVisibleDimensions(role, EMPTY_FILTERS);
     const keys = dims.map((d) => d.key);
     expect(keys).toContain('dateRange');
@@ -125,8 +127,8 @@ describe('getVisibleDimensions', () => {
     const dims = getVisibleDimensions('POSP', filters);
     const subType = dims.find((d) => d.key === 'productSubType');
     expect(subType).toBeDefined();
-    expect(subType!.options.length).toBeGreaterThan(1);
-    expect(subType!.options.some((o) => o.value === 'FAMILY_FLOATER')).toBe(true);
+    expect(subType?.options.length).toBeGreaterThan(1);
+    expect(subType?.options.some((o) => o.value === 'FAMILY_FLOATER')).toBe(true);
   });
 });
 
@@ -134,9 +136,9 @@ describe('getVisibleDimensions', () => {
 
 describe('applyFiltersToDeals', () => {
   const deals: Deal[] = [
-    makeDeal({ id: 'd1', status: 'H', premium: 5000, issued: null }),
+    makeDeal({ id: 'd1', status: 'H', premium: 5000, issued: undefined }),
     makeDeal({ id: 'd2', status: 'W', premium: 15000, issued: new Date('2026-05-01') }),
-    makeDeal({ id: 'd3', status: 'C', premium: 60000, issued: null }),
+    makeDeal({ id: 'd3', status: 'C', premium: 60000, issued: undefined }),
     makeDeal({ id: 'd4', status: 'H', premium: 120000, issued: new Date('2026-06-01') }),
   ];
 

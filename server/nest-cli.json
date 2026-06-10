@@ -3,6 +3,11 @@
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
   "compilerOptions": {
-    "deleteOutDir": true
+    "deleteOutDir": true,
+    "watchPathIgnorePatterns": [
+      "dist",
+      "node_modules",
+      "src/common/external-api/snapshots"
+    ]
   }
 }

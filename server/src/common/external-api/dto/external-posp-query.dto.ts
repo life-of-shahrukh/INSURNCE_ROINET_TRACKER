@@ -18,17 +18,23 @@ export class ExternalPospQueryDto {
   @Max(100)
   pageSize?: number = 20;
 
-  @ApiPropertyOptional({ description: 'Search by UserCode, Email, Mobile, or City' })
+  @ApiPropertyOptional({
+    description: 'Search by UserCode, Email, Mobile, or City',
+  })
   @IsOptional()
   @IsString()
   search?: string;
 
-  @ApiPropertyOptional({ description: 'Filter by ResidenceState (case-insensitive)' })
+  @ApiPropertyOptional({
+    description: 'Filter by ResidenceState (case-insensitive)',
+  })
   @IsOptional()
   @IsString()
   state?: string;
 
-  @ApiPropertyOptional({ description: 'Filter by ResidenceCity (case-insensitive)' })
+  @ApiPropertyOptional({
+    description: 'Filter by ResidenceCity (case-insensitive)',
+  })
   @IsOptional()
   @IsString()
   city?: string;

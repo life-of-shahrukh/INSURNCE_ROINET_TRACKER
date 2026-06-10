@@ -21,10 +21,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient({ log: ['warn', 'error'] });
 
-const SNAPSHOT_DIR = path.join(
-  __dirname,
-  '../common/external-api/snapshots',
-);
+const SNAPSHOT_DIR = path.join(__dirname, '../../../data/snapshots');
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
@@ -145,7 +142,12 @@ async function seedPosps(): Promise<void> {
       if (existing) {
         await prisma.user.update({
           where: { email },
-          data: { passwordHash, role: 'POSP', status: 'ACTIVE', pospId: posp.id },
+          data: {
+            passwordHash,
+            role: 'POSP',
+            status: 'ACTIVE',
+            pospId: posp.id,
+          },
         });
         updated++;
       } else {
@@ -162,7 +164,8 @@ async function seedPosps(): Promise<void> {
       }
     } catch (err) {
       errors++;
-      if (errors <= 5) console.error(`  ✗ POSP ${code}:`, (err as Error).message);
+      if (errors <= 5)
+        console.error(`  ✗ POSP ${code}:`, (err as Error).message);
     }
   }
 
@@ -171,7 +174,9 @@ async function seedPosps(): Promise<void> {
 
 // ── Phase B: Seed Hierarchy Users ─────────────────────────────────────────
 
-function extractHierarchyUsers(rows: HierarchySnapshotRow[]): HierarchyUserFlat[] {
+function extractHierarchyUsers(
+  rows: HierarchySnapshotRow[],
+): HierarchyUserFlat[] {
   const seen = new Map<string, HierarchyUserFlat>();
 
   for (const row of rows) {
@@ -182,11 +187,41 @@ function extractHierarchyUsers(rows: HierarchySnapshotRow[]): HierarchyUserFlat[
       role: string;
       designation: string;
     }> = [
-      { userId: row.DistrictManagerId, code: row.DistrictManagerCode, name: row.DistrictManagerName, role: 'DM', designation: 'District Manager' },
-      { userId: row.R1_UserId, code: row.R1_UserCode, name: row.R1_UserName, role: 'ASM', designation: 'Area Sales Manager' },
-      { userId: row.R2_UserId, code: row.R2_UserCode, name: row.R2_UserName, role: 'RH', designation: 'Regional Head' },
-      { userId: row.R3_UserId, code: row.R3_UserCode, name: row.R3_UserName, role: 'NATIONAL_HEAD', designation: 'National Head' },
-      { userId: row.R4_UserId, code: row.R4_UserCode, name: row.R4_UserName, role: 'SUPER_ADMIN', designation: 'Super Admin' },
+      {
+        userId: row.DistrictManagerId,
+        code: row.DistrictManagerCode,
+        name: row.DistrictManagerName,
+        role: 'DM',
+        designation: 'District Manager',
+      },
+      {
+        userId: row.R1_UserId,
+        code: row.R1_UserCode,
+        name: row.R1_UserName,
+        role: 'ASM',
+        designation: 'Area Sales Manager',
+      },
+      {
+        userId: row.R2_UserId,
+        code: row.R2_UserCode,
+        name: row.R2_UserName,
+        role: 'RH',
+        designation: 'Regional Head',
+      },
+      {
+        userId: row.R3_UserId,
+        code: row.R3_UserCode,
+        name: row.R3_UserName,
+        role: 'NATIONAL_HEAD',
+        designation: 'National Head',
+      },
+      {
+        userId: row.R4_UserId,
+        code: row.R4_UserCode,
+        name: row.R4_UserName,
+        role: 'SUPER_ADMIN',
+        designation: 'Super Admin',
+      },
     ];
 
     for (const level of levels) {

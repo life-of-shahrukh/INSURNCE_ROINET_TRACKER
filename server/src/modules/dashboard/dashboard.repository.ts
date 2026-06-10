@@ -30,13 +30,11 @@ export class DashboardRepository {
     const dateBounds = resolveDateRange(filters);
 
     const clauses: Prisma.DealWhereInput[] = [];
-    if (Object.keys(scopeWhere).length > 0)
-      clauses.push(scopeWhere as Prisma.DealWhereInput);
-    if (Object.keys(geoWhere).length > 0)
-      clauses.push(geoWhere as Prisma.DealWhereInput);
+    if (Object.keys(scopeWhere).length > 0) clauses.push(scopeWhere);
+    if (Object.keys(geoWhere).length > 0) clauses.push(geoWhere);
     if (dateBounds) clauses.push({ expected: dateBounds });
 
-    return mergeWhereClauses(...clauses) as Prisma.DealWhereInput;
+    return mergeWhereClauses(...clauses);
   }
 
   private buildLeadWhere(
@@ -48,22 +46,16 @@ export class DashboardRepository {
     const dateBounds = resolveDateRange(filters);
 
     const clauses: Prisma.LeadWhereInput[] = [];
-    if (Object.keys(scopeWhere).length > 0)
-      clauses.push(scopeWhere as Prisma.LeadWhereInput);
-    if (Object.keys(geoWhere).length > 0)
-      clauses.push(geoWhere as Prisma.LeadWhereInput);
+    if (Object.keys(scopeWhere).length > 0) clauses.push(scopeWhere);
+    if (Object.keys(geoWhere).length > 0) clauses.push(geoWhere);
     if (dateBounds) clauses.push({ createdAt: dateBounds });
 
-    return mergeWhereClauses(...clauses) as Prisma.LeadWhereInput;
+    return mergeWhereClauses(...clauses);
   }
 
   private buildPospWhere(scope: HierarchyScope): Prisma.PospWhereInput {
     const scopeWhere = buildPospScopeWhere(scope);
-    return (
-      Object.keys(scopeWhere).length > 0
-        ? (scopeWhere as Prisma.PospWhereInput)
-        : {}
-    );
+    return Object.keys(scopeWhere).length > 0 ? scopeWhere : {};
   }
 
   // ── main stats aggregation ─────────────────────────────────────────────────
@@ -168,8 +160,7 @@ export class DashboardRepository {
         totalMargin: dealAgg._sum.margin ?? 0,
         totalCoa: dealAgg._sum.coa ?? 0,
         count: dealCount,
-        hotCount:
-          dealsByStatus.find((s) => s.status === 'H')?._count._all ?? 0,
+        hotCount: dealsByStatus.find((s) => s.status === 'H')?._count._all ?? 0,
         warmCount:
           dealsByStatus.find((s) => s.status === 'W')?._count._all ?? 0,
         coldCount:

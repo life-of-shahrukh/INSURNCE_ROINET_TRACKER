@@ -16,7 +16,7 @@ export type HierarchyEntry = ExternalHierarchyUser;
 import type { ExternalPospQueryDto } from './dto/external-posp-query.dto';
 import type { PaginatedResult } from '../interfaces/paginated-result.interface';
 
-const SNAPSHOT_DIR = path.join(__dirname, 'snapshots');
+const SNAPSHOT_DIR = path.join(__dirname, '../../../../data/snapshots');
 const COGNITENSOR_BASE = 'https://uatserviceapi.roinet.in';
 
 @Injectable()

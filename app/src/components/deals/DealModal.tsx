@@ -42,7 +42,9 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
   // Sync posp into a ref so the effect reads the latest value without
   // listing it as a dependency — prevents form resets while typing.
   const pospRef = useRef(posp);
-  pospRef.current = posp;
+  useEffect(() => {
+    pospRef.current = posp;
+  });
 
   const activePosp = posp.filter((p) => p.active);
   const canSelectPosp = user?.role === "SUPER_ADMIN";

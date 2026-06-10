@@ -97,8 +97,8 @@ resource "aws_iam_role" "github_actions" {
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Effect = "Allow"
-      Action = "sts:AssumeRoleWithWebIdentity"
+      Effect    = "Allow"
+      Action    = "sts:AssumeRoleWithWebIdentity"
       Principal = { Federated = aws_iam_openid_connect_provider.github.arn }
       Condition = {
         StringLike = {

@@ -37,7 +37,7 @@ export class ExternalApiService {
   private readSnapshot<T>(filename: string): T[] {
     const filePath = path.join(SNAPSHOT_DIR, filename);
     const raw = fs.readFileSync(filePath, 'utf-8').replace(/^\uFEFF/, '');
-    const parsed: CognitensorResponse<T> = JSON.parse(raw);
+    const parsed = JSON.parse(raw) as CognitensorResponse<T>;
     return parsed.Data;
   }
 
@@ -55,14 +55,15 @@ export class ExternalApiService {
     if (!res.ok) {
       throw new Error(`Cognitensor API error: ${res.status} ${res.statusText}`);
     }
-    const wrapper: CognitensorResponse<T> = await res.json();
+    const wrapper = (await res.json()) as CognitensorResponse<T>;
     return wrapper.Data;
   }
 
   // ── public methods ──────────────────────────────────────────────────────
 
   listStates(): ExternalState[] {
-    if (this.useSnapshot) return this.readSnapshot<ExternalState>('states.json');
+    if (this.useSnapshot)
+      return this.readSnapshot<ExternalState>('states.json');
     return [];
   }
 

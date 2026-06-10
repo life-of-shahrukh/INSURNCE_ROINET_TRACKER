@@ -182,7 +182,7 @@ export class SalesTeamService {
    * Each HierarchyEntry row represents a district chain: R5→R4→R3→R2→R1→DM.
    * Nodes are deduplicated by UserId; parent-child links are derived per row.
    */
-  async getOrgChartNodes(): Promise<OrgNode[]> {
+  getOrgChartNodes(): OrgNode[] {
     let hierarchyData: HierarchyEntry[];
     try {
       hierarchyData = this.externalApiService.listHierarchy();

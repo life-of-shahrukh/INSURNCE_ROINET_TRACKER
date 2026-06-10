@@ -68,7 +68,7 @@ module "rds" {
 
   project           = var.project
   env               = var.env
-  subnet_ids        = module.vpc.public_subnet_ids   # public subnets required for publicly_accessible
+  subnet_ids        = module.vpc.public_subnet_ids # public subnets required for publicly_accessible
   security_group_id = module.vpc.rds_security_group_id
   instance_class    = var.rds_instance_class
   db_username       = var.db_username

@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import type { Request, Response } from 'express';
+import type { Application, Request, Response } from 'express';
 import { AppModule } from './app.module';
 import {
   HttpExceptionFilter,
@@ -48,12 +48,10 @@ async function bootstrap() {
 
   // Lightweight health endpoint — outside the /api prefix so ECS and ALB
   // health checks can reach it without authentication.
-  app
-    .getHttpAdapter()
-    .getInstance()
-    .get('/health', (_req: Request, res: Response) => {
-      res.status(200).json({ status: 'ok' });
-    });
+  const expressApp = app.getHttpAdapter().getInstance() as Application;
+  expressApp.get('/health', (_req: Request, res: Response) => {
+    res.status(200).json({ status: 'ok' });
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({

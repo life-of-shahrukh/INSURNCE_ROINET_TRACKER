@@ -34,9 +34,9 @@ resource "aws_db_instance" "main" {
 
   maintenance_window = "Mon:04:00-Mon:05:00"
 
-  deletion_protection       = var.env == "prod"
-  skip_final_snapshot       = var.env != "prod"
-  final_snapshot_identifier = var.env == "prod" ? "${var.project}-${var.env}-final-snapshot" : null
+  deletion_protection       = false
+  skip_final_snapshot       = true
+  final_snapshot_identifier = null
 
   # Publicly accessible so the DB can be reached from outside the VPC
   # (e.g. local dev tools, DBeaver, SSMS).  Access is still guarded by the

@@ -75,6 +75,7 @@ variable "jwt_secret" {
   type        = string
   sensitive   = true
   description = "Secret key used to sign and verify JWT tokens. Must be a long random string in production."
+  default     = ""
 }
 
 # ── ECS ───────────────────────────────────────────────────────────────────────

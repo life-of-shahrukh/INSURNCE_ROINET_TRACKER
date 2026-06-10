@@ -5,9 +5,7 @@ import { Customer } from '@prisma/client';
 import { CustomerCreatedEvent } from '../events/customer-created.event';
 
 @CommandHandler(CreateCustomerCommand)
-export class CreateCustomerHandler
-  implements ICommandHandler<CreateCustomerCommand>
-{
+export class CreateCustomerHandler implements ICommandHandler<CreateCustomerCommand> {
   constructor(
     private readonly repository: CustomerRepository,
     private readonly eventBus: EventBus,

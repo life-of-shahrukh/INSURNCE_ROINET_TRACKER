@@ -14,7 +14,9 @@ export class CreateDealHandler implements ICommandHandler<CreateDealCommand> {
 
   async execute(command: CreateDealCommand): Promise<Deal> {
     const deal = await this.dealRepo.create(command.dto);
-    this.eventBus.publish(new DealCreatedEvent(deal.id, deal.pospId, deal.status as DealStatus));
+    this.eventBus.publish(
+      new DealCreatedEvent(deal.id, deal.pospId, deal.status as DealStatus),
+    );
     return deal;
   }
 }

@@ -13,7 +13,12 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import type { Response } from 'express';
 import { DealService } from './deal.service';
 import { CreateDealDto } from './dto/create-deal.dto';
@@ -39,7 +44,15 @@ export class DealController {
 
   // Any authenticated user at DM level or above, plus POSP (own deals)
   @Get()
-  @Roles(Role.DM, Role.ASM, Role.RH, Role.ZH, Role.NATIONAL_HEAD, Role.SUPER_ADMIN, Role.POSP)
+  @Roles(
+    Role.DM,
+    Role.ASM,
+    Role.RH,
+    Role.ZH,
+    Role.NATIONAL_HEAD,
+    Role.SUPER_ADMIN,
+    Role.POSP,
+  )
   @ApiOperation({ summary: 'List deals (scoped by role, paginated)' })
   findAll(
     @Query() query: DealListQueryDto,
@@ -50,7 +63,15 @@ export class DealController {
   }
 
   @Get('export')
-  @Roles(Role.DM, Role.ASM, Role.RH, Role.ZH, Role.NATIONAL_HEAD, Role.SUPER_ADMIN, Role.POSP)
+  @Roles(
+    Role.DM,
+    Role.ASM,
+    Role.RH,
+    Role.ZH,
+    Role.NATIONAL_HEAD,
+    Role.SUPER_ADMIN,
+    Role.POSP,
+  )
   @ApiOperation({ summary: 'Export deals as CSV (respects filters)' })
   async exportCsv(
     @Query() query: DealListQueryDto,
@@ -67,16 +88,36 @@ export class DealController {
   // POSP creates own deals; ASM+ can create for any POSP
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @Roles(Role.ASM, Role.DM, Role.RH, Role.ZH, Role.NATIONAL_HEAD, Role.SUPER_ADMIN, Role.POSP)
+  @Roles(
+    Role.ASM,
+    Role.DM,
+    Role.RH,
+    Role.ZH,
+    Role.NATIONAL_HEAD,
+    Role.SUPER_ADMIN,
+    Role.POSP,
+  )
   @ApiOperation({ summary: 'Create a new deal' })
   create(@Body() dto: CreateDealDto, @CurrentUser() user: AuthUser) {
     return this.dealService.create(dto, user);
   }
 
   @Patch(':id')
-  @Roles(Role.ASM, Role.DM, Role.RH, Role.ZH, Role.NATIONAL_HEAD, Role.SUPER_ADMIN, Role.POSP)
+  @Roles(
+    Role.ASM,
+    Role.DM,
+    Role.RH,
+    Role.ZH,
+    Role.NATIONAL_HEAD,
+    Role.SUPER_ADMIN,
+    Role.POSP,
+  )
   @ApiOperation({ summary: 'Update a deal' })
-  update(@Param('id') id: string, @Body() dto: UpdateDealDto, @CurrentUser() user: AuthUser) {
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateDealDto,
+    @CurrentUser() user: AuthUser,
+  ) {
     return this.dealService.update(id, dto, user);
   }
 

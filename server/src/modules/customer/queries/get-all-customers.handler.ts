@@ -7,12 +7,12 @@ import { resolvePagination } from '../../../common/utils/pagination.util';
 import type { PaginatedResult } from '../../../common/interfaces/paginated-result.interface';
 
 @QueryHandler(GetAllCustomersQuery)
-export class GetAllCustomersHandler
-  implements IQueryHandler<GetAllCustomersQuery>
-{
+export class GetAllCustomersHandler implements IQueryHandler<GetAllCustomersQuery> {
   constructor(private readonly repository: CustomerRepository) {}
 
-  async execute(query: GetAllCustomersQuery): Promise<PaginatedResult<Customer>> {
+  async execute(
+    query: GetAllCustomersQuery,
+  ): Promise<PaginatedResult<Customer>> {
     const { filters } = query;
     const { skip, take, page, pageSize } = resolvePagination(filters);
     const where = buildCustomerFilterWhere(filters);

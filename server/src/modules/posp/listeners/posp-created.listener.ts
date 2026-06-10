@@ -11,7 +11,7 @@ export class PospCreatedListener implements IEventHandler<PospCreatedEvent> {
       this.logger.log(
         `POSP created [id=${event.pospId}] [email=${event.email}] — welcome notification queued`,
       );
-      
+
       // Future: Add side effects like sending welcome email, analytics, etc.
       // await this.emailService.sendWelcomeEmail(event.email, event.pospId);
     } catch (error) {

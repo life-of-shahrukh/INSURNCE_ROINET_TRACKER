@@ -27,4 +27,4 @@ export const Public = () => SetMetadata(PUBLIC_KEY, true);
 
 // Legacy helpers kept for backward compat
 export const AdminOnly = () => SetMetadata(ROLES_KEY, [Role.SUPER_ADMIN]);
-export const PospOnly  = () => SetMetadata(ROLES_KEY, [Role.POSP]);
+export const PospOnly = () => SetMetadata(ROLES_KEY, [Role.POSP]);

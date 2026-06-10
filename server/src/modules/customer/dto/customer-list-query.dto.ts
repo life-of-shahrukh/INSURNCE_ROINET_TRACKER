@@ -6,10 +6,7 @@ import { QueryStringArray } from '../../../common/decorators/query-string-array.
 
 import { PaginationQueryDto } from '../../../common/dto/pagination-query.dto';
 
-
-
 export class CustomerListQueryDto extends PaginationQueryDto {
-
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
@@ -26,31 +23,16 @@ export class CustomerListQueryDto extends PaginationQueryDto {
   dateTo?: string;
 
   @ApiPropertyOptional({ type: [String] })
-
   @IsOptional()
-
   @IsArray()
-
   @IsString({ each: true })
-
   @QueryStringArray()
-
   kycStatus?: string[];
 
-
-
   @ApiPropertyOptional({ type: [String] })
-
   @IsOptional()
-
   @IsArray()
-
   @IsString({ each: true })
-
   @QueryStringArray()
-
   source?: string[];
-
 }
-
-

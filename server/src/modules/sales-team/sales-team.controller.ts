@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { SalesTeamService } from './sales-team.service';
 import { CreateSalesTeamDto } from './dto/create-sales-team.dto';
 import { UpdateSalesTeamDto } from './dto/update-sales-team.dto';
@@ -19,7 +27,14 @@ export class SalesTeamController {
 
   // All management roles can view the team list
   @Get()
-  @Roles(Role.DM, Role.ASM, Role.RH, Role.ZH, Role.NATIONAL_HEAD, Role.SUPER_ADMIN)
+  @Roles(
+    Role.DM,
+    Role.ASM,
+    Role.RH,
+    Role.ZH,
+    Role.NATIONAL_HEAD,
+    Role.SUPER_ADMIN,
+  )
   findAll(@Query() query: SalesTeamListQueryDto) {
     return this.salesTeamService.findAll(query);
   }

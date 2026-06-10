@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateDealDto } from './dto/create-deal.dto';
 import { UpdateDealDto } from './dto/update-deal.dto';
@@ -22,7 +26,10 @@ export class DealRepository {
     sortBy?: string,
     sortOrder: 'asc' | 'desc' = 'desc',
   ): Prisma.DealOrderByWithRelationInput {
-    const field = sortBy && DEAL_SORT_FIELDS[sortBy] ? DEAL_SORT_FIELDS[sortBy] : 'createdAt';
+    const field =
+      sortBy && DEAL_SORT_FIELDS[sortBy]
+        ? DEAL_SORT_FIELDS[sortBy]
+        : 'createdAt';
     return { [field]: sortOrder };
   }
 
@@ -56,7 +63,7 @@ export class DealRepository {
 
   findByScope(where: Record<string, unknown>): Promise<Deal[]> {
     return this.prisma.deal.findMany({
-      where: where as Prisma.DealWhereInput,
+      where: where,
       orderBy: { createdAt: 'desc' },
     });
   }
@@ -76,43 +83,47 @@ export class DealRepository {
   }
 
   create(dto: CreateDealDto): Promise<Deal> {
-    return this.prisma.deal.create({
-      data: {
-        pospId: dto.pospId,
-        customerName: dto.customer,
-        policy: dto.policy,
-        sum: dto.sum,
-        premium: dto.premium,
-        coa: dto.coa,
-        margin: dto.margin,
-        status: dto.status,
-        expected: new Date(dto.expected),
-        proposal: dto.proposal,
-        policyNo: dto.policyNo ?? '',
-        issued: dto.issued ? new Date(dto.issued) : null,
-        remarks: dto.remarks ?? '',
-      },
-    }).catch(this.handlePrismaError);
+    return this.prisma.deal
+      .create({
+        data: {
+          pospId: dto.pospId,
+          customerName: dto.customer,
+          policy: dto.policy,
+          sum: dto.sum,
+          premium: dto.premium,
+          coa: dto.coa,
+          margin: dto.margin,
+          status: dto.status,
+          expected: new Date(dto.expected),
+          proposal: dto.proposal,
+          policyNo: dto.policyNo ?? '',
+          issued: dto.issued ? new Date(dto.issued) : null,
+          remarks: dto.remarks ?? '',
+        },
+      })
+      .catch(this.handlePrismaError);
   }
 
   createForPosp(pospId: string, dto: CreateDealDto): Promise<Deal> {
-    return this.prisma.deal.create({
-      data: {
-        pospId,
-        customerName: dto.customer,
-        policy: dto.policy,
-        sum: dto.sum,
-        premium: dto.premium,
-        coa: dto.coa,
-        margin: dto.margin,
-        status: dto.status,
-        expected: new Date(dto.expected),
-        proposal: dto.proposal,
-        policyNo: dto.policyNo ?? '',
-        issued: dto.issued ? new Date(dto.issued) : null,
-        remarks: dto.remarks ?? '',
-      },
-    }).catch(this.handlePrismaError);
+    return this.prisma.deal
+      .create({
+        data: {
+          pospId,
+          customerName: dto.customer,
+          policy: dto.policy,
+          sum: dto.sum,
+          premium: dto.premium,
+          coa: dto.coa,
+          margin: dto.margin,
+          status: dto.status,
+          expected: new Date(dto.expected),
+          proposal: dto.proposal,
+          policyNo: dto.policyNo ?? '',
+          issued: dto.issued ? new Date(dto.issued) : null,
+          remarks: dto.remarks ?? '',
+        },
+      })
+      .catch(this.handlePrismaError);
   }
 
   async update(id: string, dto: UpdateDealDto): Promise<Deal> {
@@ -135,11 +146,15 @@ export class DealRepository {
           issued: dto.issued ? new Date(dto.issued) : null,
         }),
         ...(dto.remarks !== undefined && { remarks: dto.remarks }),
-      } as Prisma.DealUncheckedUpdateInput,
+      },
     });
   }
 
-  async updateByPosp(id: string, pospId: string, dto: UpdateDealDto): Promise<Deal> {
+  async updateByPosp(
+    id: string,
+    pospId: string,
+    dto: UpdateDealDto,
+  ): Promise<Deal> {
     await this.findByIdForPosp(id, pospId);
     return this.prisma.deal.update({
       where: { id },
@@ -158,7 +173,7 @@ export class DealRepository {
           issued: dto.issued ? new Date(dto.issued) : null,
         }),
         ...(dto.remarks !== undefined && { remarks: dto.remarks }),
-      } as Prisma.DealUncheckedUpdateInput,
+      },
     });
   }
 
@@ -174,7 +189,9 @@ export class DealRepository {
   private handlePrismaError(error: unknown): never {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === 'P2003') {
-        throw new BadRequestException('Invalid POSP selected — please refresh and try again');
+        throw new BadRequestException(
+          'Invalid POSP selected — please refresh and try again',
+        );
       }
       if (error.code === 'P2025') {
         throw new NotFoundException('Record not found');

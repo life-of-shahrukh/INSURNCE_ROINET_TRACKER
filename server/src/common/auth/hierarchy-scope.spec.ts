@@ -37,11 +37,13 @@ function makePrismaMock(overrides: Record<string, unknown> = {}): unknown {
       }),
     },
     posp: {
-      findMany: jest.fn().mockResolvedValue([
-        { id: 'posp-1' },
-        { id: 'posp-2' },
-        { id: 'posp-3' },
-      ]),
+      findMany: jest
+        .fn()
+        .mockResolvedValue([
+          { id: 'posp-1' },
+          { id: 'posp-2' },
+          { id: 'posp-3' },
+        ]),
     },
     ...overrides,
   };
@@ -74,7 +76,9 @@ describe('resolveHierarchyScope', () => {
   it('POSP without pospId throws ForbiddenException', async () => {
     const user = mockUser(Role.POSP);
     const prisma = makePrismaMock() as never;
-    await expect(resolveHierarchyScope(user, prisma)).rejects.toThrow('not linked');
+    await expect(resolveHierarchyScope(user, prisma)).rejects.toThrow(
+      'not linked',
+    );
   });
 
   it('ZH gets zoneIds from SalesTeam record', async () => {
@@ -125,7 +129,9 @@ describe('buildDealScopeWhere', () => {
 
   it('pospIds scope filters by pospId', () => {
     const scope: HierarchyScope = { pospIds: ['p1', 'p2'] };
-    expect(buildDealScopeWhere(scope)).toEqual({ pospId: { in: ['p1', 'p2'] } });
+    expect(buildDealScopeWhere(scope)).toEqual({
+      pospId: { in: ['p1', 'p2'] },
+    });
   });
 
   it('zoneIds scope filters by zoneId', () => {
@@ -135,7 +141,9 @@ describe('buildDealScopeWhere', () => {
 
   it('regionIds scope filters by regionId', () => {
     const scope: HierarchyScope = { regionIds: ['r1', 'r2'] };
-    expect(buildDealScopeWhere(scope)).toEqual({ regionId: { in: ['r1', 'r2'] } });
+    expect(buildDealScopeWhere(scope)).toEqual({
+      regionId: { in: ['r1', 'r2'] },
+    });
   });
 
   it('pospIds takes priority over zoneIds', () => {

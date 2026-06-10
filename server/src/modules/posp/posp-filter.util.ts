@@ -1,8 +1,14 @@
 import type { Prisma } from '@prisma/client';
 import type { PospListQueryDto } from './dto/posp-list-query.dto';
-import { buildGeoFilterWhere, mergeWhereClauses, resolveDateRange } from '../../common/utils/filter.util';
+import {
+  buildGeoFilterWhere,
+  mergeWhereClauses,
+  resolveDateRange,
+} from '../../common/utils/filter.util';
 
-export function buildPospFilterWhere(query: PospListQueryDto): Prisma.PospWhereInput {
+export function buildPospFilterWhere(
+  query: PospListQueryDto,
+): Prisma.PospWhereInput {
   const geo = buildGeoFilterWhere(query);
   const dateBounds = resolveDateRange(query);
   const clauses: Prisma.PospWhereInput[] = [];
@@ -24,5 +30,5 @@ export function buildPospFilterWhere(query: PospListQueryDto): Prisma.PospWhereI
     });
   }
 
-  return mergeWhereClauses(...clauses) as Prisma.PospWhereInput;
+  return mergeWhereClauses(...clauses);
 }

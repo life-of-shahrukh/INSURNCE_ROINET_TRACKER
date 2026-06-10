@@ -18,7 +18,9 @@ export function resolvePospScope(
 ): string {
   if (isManager(user)) {
     if (!pospIdFromPayload) {
-      throw new ForbiddenException('Please supply a POSP ID for this operation');
+      throw new ForbiddenException(
+        'Please supply a POSP ID for this operation',
+      );
     }
     return pospIdFromPayload;
   }

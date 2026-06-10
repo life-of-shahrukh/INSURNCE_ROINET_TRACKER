@@ -1,4 +1,9 @@
-import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleDestroy,
+  OnModuleInit,
+} from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
 @Injectable()
@@ -20,7 +25,9 @@ export class PrismaService
         return;
       } catch (err) {
         attempt++;
-        this.logger.warn(`DB connect attempt ${attempt} failed: ${(err as Error).message}`);
+        this.logger.warn(
+          `DB connect attempt ${attempt} failed: ${(err as Error).message}`,
+        );
         if (attempt >= 3) throw err;
         await new Promise((r) => setTimeout(r, 3000 * attempt));
       }

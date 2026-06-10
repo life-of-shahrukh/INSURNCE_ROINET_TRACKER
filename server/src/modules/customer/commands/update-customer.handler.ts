@@ -5,9 +5,7 @@ import { Customer } from '@prisma/client';
 import { NotFoundException } from '@nestjs/common';
 
 @CommandHandler(UpdateCustomerCommand)
-export class UpdateCustomerHandler
-  implements ICommandHandler<UpdateCustomerCommand>
-{
+export class UpdateCustomerHandler implements ICommandHandler<UpdateCustomerCommand> {
   constructor(private readonly repository: CustomerRepository) {}
 
   async execute(command: UpdateCustomerCommand): Promise<Customer> {

@@ -6,16 +6,16 @@ import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { LeadConvertedEvent } from '../events/lead-converted.event';
 
 @CommandHandler(ConvertLeadToDealCommand)
-export class ConvertLeadToDealHandler
-  implements ICommandHandler<ConvertLeadToDealCommand>
-{
+export class ConvertLeadToDealHandler implements ICommandHandler<ConvertLeadToDealCommand> {
   constructor(
     private readonly leadRepository: LeadRepository,
     private readonly prisma: PrismaService,
     private readonly eventBus: EventBus,
   ) {}
 
-  async execute(command: ConvertLeadToDealCommand): Promise<{ dealId: string }> {
+  async execute(
+    command: ConvertLeadToDealCommand,
+  ): Promise<{ dealId: string }> {
     const { leadId } = command;
 
     const lead = await this.leadRepository.findById(leadId);

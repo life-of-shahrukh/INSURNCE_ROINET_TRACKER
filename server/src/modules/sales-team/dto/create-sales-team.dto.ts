@@ -1,5 +1,10 @@
 import {
-  IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength,
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
 } from 'class-validator';
 
 export class CreateSalesTeamDto {

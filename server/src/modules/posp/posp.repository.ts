@@ -21,7 +21,10 @@ export class PospRepository {
     sortBy?: string,
     sortOrder: 'asc' | 'desc' = 'asc',
   ): Prisma.PospOrderByWithRelationInput {
-    const field = sortBy && POSP_SORT_FIELDS[sortBy] ? POSP_SORT_FIELDS[sortBy] : 'createdAt';
+    const field =
+      sortBy && POSP_SORT_FIELDS[sortBy]
+        ? POSP_SORT_FIELDS[sortBy]
+        : 'createdAt';
     return { [field]: sortOrder };
   }
 
@@ -48,7 +51,7 @@ export class PospRepository {
 
   findByScope(where: Record<string, unknown>): Promise<Posp[]> {
     return this.prisma.posp.findMany({
-      where: where as Prisma.PospWhereInput,
+      where: where,
       orderBy: { createdAt: 'asc' },
     });
   }

@@ -22,7 +22,9 @@ export class CustomerService {
     return this.commandBus.execute(new CreateCustomerCommand(dto));
   }
 
-  async findAll(filters: CustomerListQueryDto): Promise<PaginatedResult<Customer>> {
+  async findAll(
+    filters: CustomerListQueryDto,
+  ): Promise<PaginatedResult<Customer>> {
     return this.queryBus.execute(new GetAllCustomersQuery(filters));
   }
 

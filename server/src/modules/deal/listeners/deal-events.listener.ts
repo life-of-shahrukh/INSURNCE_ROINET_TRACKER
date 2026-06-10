@@ -12,7 +12,7 @@ export class DealCreatedListener implements IEventHandler<DealCreatedEvent> {
       this.logger.log(
         `Deal created [id=${event.dealId}] [pospId=${event.pospId}] [status=${event.status}]`,
       );
-      
+
       // Future: Add side effects like notifications, analytics, etc.
       // await this.notificationService.notifyPospOfNewDeal(event.pospId, event.dealId);
     } catch (error) {
@@ -26,9 +26,7 @@ export class DealCreatedListener implements IEventHandler<DealCreatedEvent> {
 }
 
 @EventsHandler(DealStatusChangedEvent)
-export class DealStatusChangedListener
-  implements IEventHandler<DealStatusChangedEvent>
-{
+export class DealStatusChangedListener implements IEventHandler<DealStatusChangedEvent> {
   private readonly logger = new Logger(DealStatusChangedListener.name);
 
   async handle(event: DealStatusChangedEvent): Promise<void> {
@@ -36,7 +34,7 @@ export class DealStatusChangedListener
       this.logger.log(
         `Deal status changed [id=${event.dealId}] [${event.previousStatus} → ${event.newStatus}]`,
       );
-      
+
       // Future: Add side effects like notifications, analytics, etc.
       // await this.analyticsService.trackStatusChange(event);
     } catch (error) {

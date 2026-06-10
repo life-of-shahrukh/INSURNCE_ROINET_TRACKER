@@ -35,7 +35,9 @@ export class RolesGuard implements CanActivate {
       throw new UnauthorizedException('Authentication required');
     }
     if (user.status !== 'ACTIVE') {
-      throw new ForbiddenException(`Account is not active (status: ${user.status})`);
+      throw new ForbiddenException(
+        `Account is not active (status: ${user.status})`,
+      );
     }
 
     // --- MinRole check (hierarchical) ---
@@ -44,7 +46,7 @@ export class RolesGuard implements CanActivate {
       context.getClass(),
     ]);
     if (minRole !== undefined) {
-      const userRank     = ROLE_RANK[user.role as Role] ?? 0;
+      const userRank = ROLE_RANK[user.role] ?? 0;
       const requiredRank = ROLE_RANK[minRole] ?? 0;
       this.logger.debug(
         `MinRole check: user=${user.email} role=${user.role}(rank=${userRank}) required=${minRole}(rank=${requiredRank})`,
@@ -64,7 +66,7 @@ export class RolesGuard implements CanActivate {
     if (user.role === Role.SUPER_ADMIN) return true;
 
     // Use string comparison to avoid TS narrowing stripping valid runtime matches
-    if ((requiredRoles as string[]).includes(user.role as string)) return true;
+    if ((requiredRoles as string[]).includes(user.role)) return true;
 
     this.logger.warn(
       `Role mismatch: user=${user.email} has role="${user.role}" — required one of: ${requiredRoles.join(', ')}`,

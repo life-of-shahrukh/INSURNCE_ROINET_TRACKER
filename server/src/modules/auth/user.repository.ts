@@ -19,9 +19,7 @@ export class UserRepository {
     });
   }
 
-  async create(
-    data: Prisma.UserCreateInput,
-  ): Promise<User> {
+  async create(data: Prisma.UserCreateInput): Promise<User> {
     return this.prisma.user.create({ data });
   }
 

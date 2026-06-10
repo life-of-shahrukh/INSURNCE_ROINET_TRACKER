@@ -54,7 +54,7 @@ export class AuthService {
     const token = this.signToken({
       ...user,
       role: user.role as Role,
-      status: user.status as UserStatus,
+      status: user.status,
     });
 
     res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS);
@@ -72,45 +72,75 @@ export class AuthService {
     res.clearCookie(COOKIE_NAME, { path: '/' });
   }
 
-  async signupPosp(dto: SignupPospDto, res: Response): Promise<AuthUserPayload & { message: string }> {
+  async signupPosp(
+    dto: SignupPospDto,
+    res: Response,
+  ): Promise<AuthUserPayload & { message: string }> {
     const normalizedEmail = dto.email.toLowerCase();
 
     const existing = await this.userRepo.findByEmail(normalizedEmail);
     if (existing) throw new BadRequestException('Email is already registered');
 
     const existingCode = await this.userRepo.findPospByCode(dto.code);
-    if (existingCode) throw new BadRequestException('POSP code is already in use');
+    if (existingCode)
+      throw new BadRequestException('POSP code is already in use');
 
-    const existingPospEmail = await this.userRepo.findPospByEmail(normalizedEmail);
-    if (existingPospEmail) throw new BadRequestException('POSP email is already in use');
+    const existingPospEmail =
+      await this.userRepo.findPospByEmail(normalizedEmail);
+    if (existingPospEmail)
+      throw new BadRequestException('POSP email is already in use');
 
     const passwordHash = await bcrypt.hash(dto.password, 10);
 
     let user: {
-      id: string; email: string; role: string;
-      status: string; pospId: string | null;
+      id: string;
+      email: string;
+      role: string;
+      status: string;
+      pospId: string | null;
     };
 
     try {
       user = await this.userRepo.createWithPosp(
-        { email: normalizedEmail, passwordHash, role: Role.POSP, status: UserStatus.ACTIVE },
-        { name: dto.name, code: dto.code, mobile: dto.mobile, email: normalizedEmail, joined: new Date(dto.joined), active: dto.active ?? true },
+        {
+          email: normalizedEmail,
+          passwordHash,
+          role: Role.POSP,
+          status: UserStatus.ACTIVE,
+        },
+        {
+          name: dto.name,
+          code: dto.code,
+          mobile: dto.mobile,
+          email: normalizedEmail,
+          joined: new Date(dto.joined),
+          active: dto.active ?? true,
+        },
       );
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-        throw new BadRequestException('Signup failed: duplicate email or POSP code already exists');
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        throw new BadRequestException(
+          'Signup failed: duplicate email or POSP code already exists',
+        );
       }
       throw error;
     }
 
     const token = this.signToken({
-      ...user, role: user.role as Role, status: user.status as UserStatus,
+      ...user,
+      role: user.role as Role,
+      status: user.status as UserStatus,
     });
     res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS);
 
     return {
-      id: user.id, email: user.email,
-      role: user.role as Role, status: user.status as UserStatus,
+      id: user.id,
+      email: user.email,
+      role: user.role as Role,
+      status: user.status as UserStatus,
       pospId: user.pospId,
       message: 'Signup successful. You now have direct access.',
     };
@@ -128,24 +158,34 @@ export class AuthService {
     const profile = await this.userRepo.findById(user.userId);
     if (profile) {
       return {
-        id: profile.id, email: profile.email,
-        role: profile.role as Role, status: profile.status as UserStatus,
+        id: profile.id,
+        email: profile.email,
+        role: profile.role as Role,
+        status: profile.status as UserStatus,
         pospId: profile.pospId,
       };
     }
     return {
-      id: user.userId, email: user.email,
-      role: user.role, status: user.status,
+      id: user.userId,
+      email: user.email,
+      role: user.role,
+      status: user.status,
       pospId: user.pospId ?? null,
     };
   }
 
   private signToken(user: {
-    id: string; email: string; role: Role; status: UserStatus; pospId?: string | null;
+    id: string;
+    email: string;
+    role: Role;
+    status: UserStatus;
+    pospId?: string | null;
   }): string {
     const payload: JwtPayload = {
-      sub: user.id, email: user.email,
-      role: user.role, status: user.status,
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+      status: user.status,
       ...(user.pospId ? { pospId: user.pospId } : {}),
     };
     return this.jwtService.sign(payload);

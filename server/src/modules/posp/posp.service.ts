@@ -31,7 +31,9 @@ export class PospService {
       if (!user.pospId) {
         throw new ForbiddenException('POSP account is not linked');
       }
-      const posp = await this.queryBus.execute(new GetPospByIdQuery(user.pospId));
+      const posp = await this.queryBus.execute(
+        new GetPospByIdQuery(user.pospId),
+      );
       return buildPaginatedResult([posp], 1, 1, 1);
     }
     return this.queryBus.execute(new GetAllPospQuery(filters, scope));

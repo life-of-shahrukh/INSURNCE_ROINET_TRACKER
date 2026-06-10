@@ -4,9 +4,7 @@ import { CustomerRepository } from '../customer.repository';
 import { Customer } from '@prisma/client';
 
 @QueryHandler(SearchCustomersQuery)
-export class SearchCustomersHandler
-  implements IQueryHandler<SearchCustomersQuery>
-{
+export class SearchCustomersHandler implements IQueryHandler<SearchCustomersQuery> {
   constructor(private readonly repository: CustomerRepository) {}
 
   async execute(query: SearchCustomersQuery): Promise<Customer[]> {

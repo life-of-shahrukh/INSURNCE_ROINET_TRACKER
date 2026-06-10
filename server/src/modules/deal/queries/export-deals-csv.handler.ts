@@ -7,9 +7,7 @@ import { mergeWhereClauses } from '../../../common/utils/filter.util';
 import type { Prisma } from '@prisma/client';
 
 @QueryHandler(ExportDealsCsvQuery)
-export class ExportDealsCsvHandler
-  implements IQueryHandler<ExportDealsCsvQuery>
-{
+export class ExportDealsCsvHandler implements IQueryHandler<ExportDealsCsvQuery> {
   constructor(private readonly dealRepo: DealRepository) {}
 
   async execute(query: ExportDealsCsvQuery): Promise<string> {
@@ -23,7 +21,10 @@ export class ExportDealsCsvHandler
     }
 
     const filterWhere = buildDealFilterWhere(filters);
-    const where = mergeWhereClauses(scopeWhere, filterWhere) as Prisma.DealWhereInput;
+    const where = mergeWhereClauses(
+      scopeWhere,
+      filterWhere,
+    ) as Prisma.DealWhereInput;
 
     return this.dealRepo.exportCsvWhere(where);
   }

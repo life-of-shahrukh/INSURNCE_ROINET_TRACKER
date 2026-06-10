@@ -13,6 +13,12 @@ import { fmtDate, fmtINR } from "@/lib/formatters";
 import { useCrm } from "@/providers/crm-provider";
 import { useAuth } from "@/providers/auth-provider";
 import { useMemo } from "react";
+import type { ListQueryParams } from "@/lib/api/list-query-params";
+
+const RENEWALS_QUERY_DEFAULTS: Partial<ListQueryParams> = {
+  policyStatus: ["issued"],
+  renewals: "true",
+};
 
 export default function RenewalsPage() {
   const { posp } = useCrm();
@@ -30,7 +36,7 @@ export default function RenewalsPage() {
     setPageSize,
     applyViewFilters,
     apiParams,
-  } = useListQueryState({ policyStatus: ["issued"], renewals: "true" }, "renewals");
+  } = useListQueryState(RENEWALS_QUERY_DEFAULTS, "renewals");
 
   const dealsQuery = useDealsList(apiParams);
   const { data: result } = dealsQuery;

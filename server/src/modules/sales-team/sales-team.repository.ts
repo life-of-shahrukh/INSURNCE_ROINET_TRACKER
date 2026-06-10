@@ -79,7 +79,9 @@ export class SalesTeamRepository {
             subordinates: {
               include: {
                 subordinates: {
-                  include: { pospsManaged: { select: { id: true, name: true } } },
+                  include: {
+                    pospsManaged: { select: { id: true, name: true } },
+                  },
                 },
                 pospsManaged: { select: { id: true, name: true } },
               },
@@ -96,7 +98,10 @@ export class SalesTeamRepository {
     return this.prisma.salesTeam.findUnique({ where: { employeeCode: code } });
   }
 
-  async update(id: string, data: Prisma.SalesTeamUpdateInput): Promise<SalesTeam> {
+  async update(
+    id: string,
+    data: Prisma.SalesTeamUpdateInput,
+  ): Promise<SalesTeam> {
     return this.prisma.salesTeam.update({ where: { id }, data });
   }
 

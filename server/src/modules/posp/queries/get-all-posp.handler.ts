@@ -21,7 +21,10 @@ export class GetAllPospHandler implements IQueryHandler<GetAllPospQuery> {
       ? buildPospScopeWhere(hierarchyScope)
       : {};
     const filterWhere = buildPospFilterWhere(filters);
-    const where = mergeWhereClauses(scopeWhere, filterWhere) as Prisma.PospWhereInput;
+    const where = mergeWhereClauses(
+      scopeWhere,
+      filterWhere,
+    ) as Prisma.PospWhereInput;
 
     return this.pospRepo.findPaginated(
       where,

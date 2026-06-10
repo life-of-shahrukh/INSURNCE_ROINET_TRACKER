@@ -21,7 +21,10 @@ export class GetAllLeadsHandler implements IQueryHandler<GetAllLeadsQuery> {
       ? buildLeadScopeWhere(hierarchyScope)
       : {};
     const filterWhere = buildLeadFilterWhere(filters);
-    const where = mergeWhereClauses(scopeWhere, filterWhere) as Prisma.LeadWhereInput;
+    const where = mergeWhereClauses(
+      scopeWhere,
+      filterWhere,
+    ) as Prisma.LeadWhereInput;
 
     return this.repository.findPaginated(
       where,

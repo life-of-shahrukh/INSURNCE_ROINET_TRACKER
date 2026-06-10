@@ -6,7 +6,9 @@ import {
   resolveDateRange,
 } from '../../common/utils/filter.util';
 
-export function buildLeadFilterWhere(query: LeadListQueryDto): Prisma.LeadWhereInput {
+export function buildLeadFilterWhere(
+  query: LeadListQueryDto,
+): Prisma.LeadWhereInput {
   const geo = buildGeoFilterWhere(query);
   const dateBounds = resolveDateRange(query);
 
@@ -15,8 +17,10 @@ export function buildLeadFilterWhere(query: LeadListQueryDto): Prisma.LeadWhereI
   if (Object.keys(geo).length > 0) clauses.push(geo);
   if (dateBounds) clauses.push({ createdAt: dateBounds });
   if (query.status) clauses.push({ status: query.status });
-  if (query.closureTimeline) clauses.push({ closureTimeline: query.closureTimeline });
-  if (query.productLine?.length) clauses.push({ product: { in: query.productLine } });
+  if (query.closureTimeline)
+    clauses.push({ closureTimeline: query.closureTimeline });
+  if (query.productLine?.length)
+    clauses.push({ product: { in: query.productLine } });
   if (query.productSubType?.length) {
     clauses.push({ productSubType: { in: query.productSubType } });
   }
@@ -33,5 +37,5 @@ export function buildLeadFilterWhere(query: LeadListQueryDto): Prisma.LeadWhereI
     });
   }
 
-  return mergeWhereClauses(...clauses) as Prisma.LeadWhereInput;
+  return mergeWhereClauses(...clauses);
 }

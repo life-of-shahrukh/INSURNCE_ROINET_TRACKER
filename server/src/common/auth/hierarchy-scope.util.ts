@@ -44,7 +44,8 @@ export async function resolveHierarchyScope(
   }
 
   if (role === Role.POSP) {
-    if (!user.pospId) throw new ForbiddenException('POSP account is not linked to a profile');
+    if (!user.pospId)
+      throw new ForbiddenException('POSP account is not linked to a profile');
     return { pospIds: [user.pospId] };
   }
 

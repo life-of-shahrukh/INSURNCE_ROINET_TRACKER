@@ -1,5 +1,8 @@
 import type { PaginationQueryDto } from '../dto/pagination-query.dto';
-import type { PaginatedResult, PaginationMeta } from '../interfaces/paginated-result.interface';
+import type {
+  PaginatedResult,
+  PaginationMeta,
+} from '../interfaces/paginated-result.interface';
 
 export interface ResolvedPagination {
   page: number;
@@ -8,7 +11,9 @@ export interface ResolvedPagination {
   take: number;
 }
 
-export function resolvePagination(query: PaginationQueryDto): ResolvedPagination {
+export function resolvePagination(
+  query: PaginationQueryDto,
+): ResolvedPagination {
   const page = query.page ?? 1;
   const pageSize = query.pageSize ?? 25;
   return {

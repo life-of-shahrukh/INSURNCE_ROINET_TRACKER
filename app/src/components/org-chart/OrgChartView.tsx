@@ -86,6 +86,17 @@ interface OrgChartViewProps {
   data: OrgNode[];
 }
 
+const toolbarButtonStyle: React.CSSProperties = {
+  padding: "5px 12px",
+  fontSize: "12px",
+  fontWeight: 600,
+  borderRadius: "6px",
+  border: "1px solid #d1d5db",
+  background: "#ffffff",
+  cursor: "pointer",
+  color: "#374151",
+};
+
 export function OrgChartView({ data }: OrgChartViewProps): React.ReactElement {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<D3OrgChart | null>(null);
@@ -134,21 +145,21 @@ export function OrgChartView({ data }: OrgChartViewProps): React.ReactElement {
     }
   }, [search, data]);
 
-  function handleFit() {
+  const handleFit = useCallback(() => {
     chartRef.current?.fit();
-  }
-  function handleZoomIn() {
+  }, []);
+  const handleZoomIn = useCallback(() => {
     chartRef.current?.zoomIn();
-  }
-  function handleZoomOut() {
+  }, []);
+  const handleZoomOut = useCallback(() => {
     chartRef.current?.zoomOut();
-  }
-  function handleExpandAll() {
+  }, []);
+  const handleExpandAll = useCallback(() => {
     chartRef.current?.expandAll().render();
-  }
-  function handleCollapseAll() {
+  }, []);
+  const handleCollapseAll = useCallback(() => {
     chartRef.current?.collapseAll().render();
-  }
+  }, []);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%", gap: 0 }}>
@@ -181,33 +192,21 @@ export function OrgChartView({ data }: OrgChartViewProps): React.ReactElement {
           }}
         />
         <div style={{ display: "flex", gap: "6px", flexShrink: 0 }}>
-          {(
-            [
-              { label: "Fit", action: handleFit },
-              { label: "＋", action: handleZoomIn },
-              { label: "－", action: handleZoomOut },
-              { label: "Expand All", action: handleExpandAll },
-              { label: "Collapse All", action: handleCollapseAll },
-            ] as { label: string; action: () => void }[]
-          ).map(({ label, action }) => (
-            <button
-              key={label}
-              type="button"
-              onClick={action}
-              style={{
-                padding: "5px 12px",
-                fontSize: "12px",
-                fontWeight: 600,
-                borderRadius: "6px",
-                border: "1px solid #d1d5db",
-                background: "#ffffff",
-                cursor: "pointer",
-                color: "#374151",
-              }}
-            >
-              {label}
-            </button>
-          ))}
+          <button type="button" onClick={handleFit} style={toolbarButtonStyle}>
+            Fit
+          </button>
+          <button type="button" onClick={handleZoomIn} style={toolbarButtonStyle}>
+            ＋
+          </button>
+          <button type="button" onClick={handleZoomOut} style={toolbarButtonStyle}>
+            －
+          </button>
+          <button type="button" onClick={handleExpandAll} style={toolbarButtonStyle}>
+            Expand All
+          </button>
+          <button type="button" onClick={handleCollapseAll} style={toolbarButtonStyle}>
+            Collapse All
+          </button>
         </div>
       </div>
 

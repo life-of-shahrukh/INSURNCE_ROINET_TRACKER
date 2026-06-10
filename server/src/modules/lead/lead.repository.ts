@@ -24,7 +24,10 @@ export class LeadRepository {
     sortBy?: string,
     sortOrder: 'asc' | 'desc' = 'desc',
   ): Prisma.LeadOrderByWithRelationInput {
-    const field = sortBy && LEAD_SORT_FIELDS[sortBy] ? LEAD_SORT_FIELDS[sortBy] : 'createdAt';
+    const field =
+      sortBy && LEAD_SORT_FIELDS[sortBy]
+        ? LEAD_SORT_FIELDS[sortBy]
+        : 'createdAt';
     return { [field]: sortOrder };
   }
 
@@ -39,7 +42,13 @@ export class LeadRepository {
   ): Promise<PaginatedResult<Lead>> {
     const orderBy = this.resolveOrderBy(sortBy, sortOrder);
     const [data, total] = await Promise.all([
-      this.prisma.lead.findMany({ where, skip, take, orderBy, include: LEAD_INCLUDE }),
+      this.prisma.lead.findMany({
+        where,
+        skip,
+        take,
+        orderBy,
+        include: LEAD_INCLUDE,
+      }),
       this.prisma.lead.count({ where }),
     ]);
     return buildPaginatedResult(data, total, page, pageSize);
@@ -61,7 +70,7 @@ export class LeadRepository {
 
   async findByScope(where: Record<string, unknown>): Promise<Lead[]> {
     return this.prisma.lead.findMany({
-      where: where as Prisma.LeadWhereInput,
+      where: where,
       include: {
         customer: true,
         assignedTo: true,

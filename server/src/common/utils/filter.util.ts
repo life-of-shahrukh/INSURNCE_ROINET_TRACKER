@@ -1,24 +1,17 @@
 import type { GeoFilterQueryDto } from '../dto/geo-filter-query.dto';
 
-
-
 export interface DateRangeBounds {
-
   gte?: Date;
 
   lte?: Date;
-
 }
 
-
-
-export function resolveDateRange(query: GeoFilterQueryDto): DateRangeBounds | undefined {
-
+export function resolveDateRange(
+  query: GeoFilterQueryDto,
+): DateRangeBounds | undefined {
   const range = query.dateRange;
 
   if (!range || range === 'all') return undefined;
-
-
 
   const now = new Date();
 
@@ -26,20 +19,23 @@ export function resolveDateRange(query: GeoFilterQueryDto): DateRangeBounds | un
 
   let to: Date | undefined;
 
-
-
   switch (range) {
-
     case 'today':
-
       from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-      to = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+      to = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        23,
+        59,
+        59,
+        999,
+      );
 
       break;
 
     case 'week': {
-
       const day = now.getDay();
 
       from = new Date(now);
@@ -55,11 +51,9 @@ export function resolveDateRange(query: GeoFilterQueryDto): DateRangeBounds | un
       to.setHours(23, 59, 59, 999);
 
       break;
-
     }
 
     case 'month':
-
       from = new Date(now.getFullYear(), now.getMonth(), 1);
 
       to = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
@@ -67,7 +61,6 @@ export function resolveDateRange(query: GeoFilterQueryDto): DateRangeBounds | un
       break;
 
     case 'quarter': {
-
       const q = Math.floor(now.getMonth() / 3);
 
       from = new Date(now.getFullYear(), q * 3, 1);
@@ -75,11 +68,9 @@ export function resolveDateRange(query: GeoFilterQueryDto): DateRangeBounds | un
       to = new Date(now.getFullYear(), q * 3 + 3, 0, 23, 59, 59, 999);
 
       break;
-
     }
 
     case 'year':
-
       from = new Date(now.getFullYear(), 0, 1);
 
       to = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
@@ -87,7 +78,6 @@ export function resolveDateRange(query: GeoFilterQueryDto): DateRangeBounds | un
       break;
 
     case 'custom':
-
       from = query.dateFrom ? new Date(query.dateFrom) : undefined;
 
       to = query.dateTo ? new Date(query.dateTo) : undefined;
@@ -97,12 +87,8 @@ export function resolveDateRange(query: GeoFilterQueryDto): DateRangeBounds | un
       break;
 
     default:
-
       return undefined;
-
   }
-
-
 
   const bounds: DateRangeBounds = {};
 
@@ -111,19 +97,15 @@ export function resolveDateRange(query: GeoFilterQueryDto): DateRangeBounds | un
   if (to) bounds.lte = to;
 
   return Object.keys(bounds).length > 0 ? bounds : undefined;
-
 }
 
-
-
-export function parsePremiumRange(range: string): { gte?: number; lte?: number } | undefined {
-
+export function parsePremiumRange(
+  range: string,
+): { gte?: number; lte?: number } | undefined {
   if (!range) return undefined;
 
   if (range.endsWith('+')) {
-
     return { gte: Number(range.slice(0, -1)) };
-
   }
 
   const [min, max] = range.split('-').map(Number);
@@ -131,13 +113,11 @@ export function parsePremiumRange(range: string): { gte?: number; lte?: number }
   if (Number.isNaN(min) || Number.isNaN(max)) return undefined;
 
   return { gte: min, lte: max };
-
 }
 
-
-
-export function buildGeoFilterWhere(query: GeoFilterQueryDto): Record<string, unknown> {
-
+export function buildGeoFilterWhere(
+  query: GeoFilterQueryDto,
+): Record<string, unknown> {
   const where: Record<string, unknown> = {};
 
   if (query.zone?.length) where.zoneId = { in: query.zone };
@@ -151,17 +131,11 @@ export function buildGeoFilterWhere(query: GeoFilterQueryDto): Record<string, un
   if (query.posp?.length) where.pospId = { in: query.posp };
 
   return where;
-
 }
 
-
-
 export function buildPolicyStatusWhere(
-
   values: string[] | undefined,
-
 ): Record<string, unknown> | undefined {
-
   if (!values?.length) return undefined;
 
   const hasIssued = values.includes('issued');
@@ -175,21 +149,13 @@ export function buildPolicyStatusWhere(
   if (hasPending) return { issued: null };
 
   return undefined;
-
 }
 
-
-
 export function mergeWhereClauses(
-
   ...clauses: Array<Record<string, unknown> | undefined>
-
 ): Record<string, unknown> {
-
   const valid = clauses.filter(
-
     (c): c is Record<string, unknown> => !!c && Object.keys(c).length > 0,
-
   );
 
   if (valid.length === 0) return {};
@@ -197,7 +163,4 @@ export function mergeWhereClauses(
   if (valid.length === 1) return valid[0];
 
   return { AND: valid };
-
 }
-
-

@@ -35,13 +35,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    * This handles stale JWTs that contain roles from old schema versions.
    */
   validate(payload: JwtPayload): AuthUser | null {
-    if (!VALID_ROLES.has(payload.role as string)) {
+    if (!VALID_ROLES.has(payload.role)) {
       return null; // unknown role → 401, not 403
     }
     return {
       userId: payload.sub,
-      email:  payload.email,
-      role:   payload.role,
+      email: payload.email,
+      role: payload.role,
       status: payload.status,
       pospId: payload.pospId,
     };

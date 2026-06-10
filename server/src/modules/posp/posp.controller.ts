@@ -36,7 +36,15 @@ export class PospController {
 
   // DM and above can list POSPs; POSP can see own profile
   @Get()
-  @Roles(Role.DM, Role.ASM, Role.RH, Role.ZH, Role.NATIONAL_HEAD, Role.SUPER_ADMIN, Role.POSP)
+  @Roles(
+    Role.DM,
+    Role.ASM,
+    Role.RH,
+    Role.ZH,
+    Role.NATIONAL_HEAD,
+    Role.SUPER_ADMIN,
+    Role.POSP,
+  )
   @ApiOperation({ summary: 'List POSPs (scoped by role)' })
   findAll(
     @Query() query: PospListQueryDto,
@@ -57,7 +65,15 @@ export class PospController {
 
   // ASM+ or POSP editing own profile
   @Patch(':id')
-  @Roles(Role.ASM, Role.DM, Role.RH, Role.ZH, Role.NATIONAL_HEAD, Role.SUPER_ADMIN, Role.POSP)
+  @Roles(
+    Role.ASM,
+    Role.DM,
+    Role.RH,
+    Role.ZH,
+    Role.NATIONAL_HEAD,
+    Role.SUPER_ADMIN,
+    Role.POSP,
+  )
   @ApiOperation({ summary: 'Update a POSP' })
   update(
     @Param('id') id: string,

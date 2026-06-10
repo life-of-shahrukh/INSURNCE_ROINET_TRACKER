@@ -46,7 +46,6 @@ export default function LeadsPage() {
   const {
     filters,
     query,
-    search,
     resetFilters,
     removeFilterChip,
     setSearch,

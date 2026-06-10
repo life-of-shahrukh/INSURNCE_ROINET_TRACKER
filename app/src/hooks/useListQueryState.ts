@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   countActiveFilters,
@@ -54,12 +54,10 @@ export function useListQueryState(
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const defaultsRef = useRef(defaults);
-  defaultsRef.current = defaults;
 
   const query = useMemo(
-    () => parseListQueryFromSearchParams(searchParams, defaultsRef.current),
-    [searchParams],
+    () => parseListQueryFromSearchParams(searchParams, defaults),
+    [searchParams, defaults],
   );
 
   const pushQuery = useCallback(
@@ -136,11 +134,11 @@ export function useListQueryState(
   const resetFilters = useCallback(() => {
     pushQuery({
       ...DEFAULT_LIST_QUERY,
-      ...defaultsRef.current,
+      ...defaults,
       page: 1,
       search: "",
     });
-  }, [pushQuery]);
+  }, [pushQuery, defaults]);
 
   const setSearch = useCallback(
     (value: string) => setQuery({ search: value, page: 1 }),

@@ -25,7 +25,10 @@ export class GetAllDealsHandler implements IQueryHandler<GetAllDealsQuery> {
     }
 
     const filterWhere = buildDealFilterWhere(filters);
-    const where = mergeWhereClauses(scopeWhere, filterWhere) as Prisma.DealWhereInput;
+    const where = mergeWhereClauses(
+      scopeWhere,
+      filterWhere,
+    ) as Prisma.DealWhereInput;
 
     return this.dealRepo.findPaginated(
       where,

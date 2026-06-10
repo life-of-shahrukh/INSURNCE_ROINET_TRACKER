@@ -27,7 +27,9 @@ export class DealService {
     filters: DealListQueryDto,
     scope?: HierarchyScope,
   ): Promise<PaginatedResult<Deal>> {
-    return this.queryBus.execute(new GetAllDealsQuery(filters, scope, user.pospId ?? undefined));
+    return this.queryBus.execute(
+      new GetAllDealsQuery(filters, scope, user.pospId ?? undefined),
+    );
   }
 
   create(dto: CreateDealDto, user: AuthUser): Promise<Deal> {

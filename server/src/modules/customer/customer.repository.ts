@@ -19,7 +19,9 @@ export class CustomerRepository {
     sortOrder: 'asc' | 'desc' = 'desc',
   ): Prisma.CustomerOrderByWithRelationInput {
     const field =
-      sortBy && CUSTOMER_SORT_FIELDS[sortBy] ? CUSTOMER_SORT_FIELDS[sortBy] : 'createdAt';
+      sortBy && CUSTOMER_SORT_FIELDS[sortBy]
+        ? CUSTOMER_SORT_FIELDS[sortBy]
+        : 'createdAt';
     return { [field]: sortOrder };
   }
 
@@ -80,7 +82,10 @@ export class CustomerRepository {
     });
   }
 
-  async update(id: string, data: Prisma.CustomerUpdateInput): Promise<Customer> {
+  async update(
+    id: string,
+    data: Prisma.CustomerUpdateInput,
+  ): Promise<Customer> {
     return this.prisma.customer.update({
       where: { id },
       data,

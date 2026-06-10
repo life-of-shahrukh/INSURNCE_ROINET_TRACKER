@@ -18,7 +18,11 @@ export class UpdateDealHandler implements ICommandHandler<UpdateDealCommand> {
 
     if (command.dto.status && command.dto.status !== before.status) {
       this.eventBus.publish(
-        new DealStatusChangedEvent(updated.id, before.status as DealStatus, updated.status as DealStatus),
+        new DealStatusChangedEvent(
+          updated.id,
+          before.status as DealStatus,
+          updated.status as DealStatus,
+        ),
       );
     }
 

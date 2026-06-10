@@ -2,7 +2,10 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { HttpExceptionFilter, AllExceptionsFilter } from './common/filters/http-exception.filter';
+import {
+  HttpExceptionFilter,
+  AllExceptionsFilter,
+} from './common/filters/http-exception.filter';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const cookieParser = require('cookie-parser') as typeof import('cookie-parser');
@@ -31,7 +34,7 @@ async function bootstrap() {
       },
       methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization'],
-      credentials: true,         // required for HttpOnly cookie to be sent cross-origin
+      credentials: true, // required for HttpOnly cookie to be sent cross-origin
       optionsSuccessStatus: 200, // IE11 compatibility
     },
   });
@@ -48,13 +51,15 @@ async function bootstrap() {
   );
 
   app.useGlobalFilters(
-    new AllExceptionsFilter(),  // outermost — catches everything not caught below
-    new HttpExceptionFilter(),  // innermost — handles NestJS HttpExceptions specifically
+    new AllExceptionsFilter(), // outermost — catches everything not caught below
+    new HttpExceptionFilter(), // innermost — handles NestJS HttpExceptions specifically
   );
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Roinet CRM API')
-    .setDescription('REST API for POSP and Deals management — Roinet Insurance CRM')
+    .setDescription(
+      'REST API for POSP and Deals management — Roinet Insurance CRM',
+    )
     .setVersion('1.0')
     .addBearerAuth()
     .addCookieAuth('access_token')

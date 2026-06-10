@@ -8,7 +8,9 @@ import {
   resolveDateRange,
 } from '../../common/utils/filter.util';
 
-export function buildDealFilterWhere(query: DealListQueryDto): Prisma.DealWhereInput {
+export function buildDealFilterWhere(
+  query: DealListQueryDto,
+): Prisma.DealWhereInput {
   const geo = buildGeoFilterWhere(query);
   const dateBounds = resolveDateRange(query);
   const policyWhere = buildPolicyStatusWhere(query.policyStatus);
@@ -20,15 +22,19 @@ export function buildDealFilterWhere(query: DealListQueryDto): Prisma.DealWhereI
     const dateField = query.renewals === 'true' ? 'issued' : 'expected';
     clauses.push({ [dateField]: dateBounds });
   }
-  if (query.dealStatus?.length) clauses.push({ status: { in: query.dealStatus } });
-  if (query.productLine?.length) clauses.push({ productLine: { in: query.productLine } });
+  if (query.dealStatus?.length)
+    clauses.push({ status: { in: query.dealStatus } });
+  if (query.productLine?.length)
+    clauses.push({ productLine: { in: query.productLine } });
   if (query.productSubType?.length) {
     clauses.push({ productSubType: { in: query.productSubType } });
   }
   if (query.insurer?.length) clauses.push({ insurer: { in: query.insurer } });
   if (policyWhere) clauses.push(policyWhere);
 
-  const premium = query.premiumRange ? parsePremiumRange(query.premiumRange) : undefined;
+  const premium = query.premiumRange
+    ? parsePremiumRange(query.premiumRange)
+    : undefined;
   if (premium) {
     clauses.push({
       premium: {
@@ -56,5 +62,5 @@ export function buildDealFilterWhere(query: DealListQueryDto): Prisma.DealWhereI
     });
   }
 
-  return mergeWhereClauses(...clauses) as Prisma.DealWhereInput;
+  return mergeWhereClauses(...clauses);
 }

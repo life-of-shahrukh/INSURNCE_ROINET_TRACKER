@@ -3,7 +3,7 @@ import { SetMetadata } from '@nestjs/common';
 /**
  * Decorator to check if user owns the resource (e.g., POSP accessing their own data).
  * Used in combination with authorization logic in services.
- * 
+ *
  * @example
  * @CheckOwnership('pospId')
  * async updatePosp(@Param('id') id: string) { ... }
@@ -15,7 +15,7 @@ export const CheckOwnership = (paramName: string = 'id') =>
 /**
  * Decorator to bypass role checks for a specific route while keeping authentication.
  * Useful for routes where all authenticated users can access.
- * 
+ *
  * @example
  * @AllowAny()
  * @UseGuards(JwtAuthGuard)

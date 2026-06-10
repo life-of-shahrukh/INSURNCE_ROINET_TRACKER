@@ -27,16 +27,18 @@ export class CreateLeadHandler implements ICommandHandler<CreateLeadCommand> {
       ...(dto.assignedToId && {
         assignedTo: { connect: { id: dto.assignedToId } },
       }),
-      product:           dto.product,
-      estimatedPremium:  dto.estimatedPremium,
-      estimatedSum:      dto.estimatedSum,
-      closureTimeline:   dto.closureTimeline,
-      expectedCloseDate: toDate(dto.expectedCloseDate as unknown as string | Date | undefined),
-      source:            dto.source,
-      remarks:           dto.remarks,
+      product: dto.product,
+      estimatedPremium: dto.estimatedPremium,
+      estimatedSum: dto.estimatedSum,
+      closureTimeline: dto.closureTimeline,
+      expectedCloseDate: toDate(dto.expectedCloseDate),
+      source: dto.source,
+      remarks: dto.remarks,
     });
 
-    this.eventBus.publish(new LeadCreatedEvent(lead.id, lead.customerId, new Date()));
+    this.eventBus.publish(
+      new LeadCreatedEvent(lead.id, lead.customerId, new Date()),
+    );
     return lead;
   }
 }

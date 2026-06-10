@@ -1,6 +1,9 @@
 import type { Prisma } from '@prisma/client';
 import type { CustomerListQueryDto } from './dto/customer-list-query.dto';
-import { mergeWhereClauses, resolveDateRange } from '../../common/utils/filter.util';
+import {
+  mergeWhereClauses,
+  resolveDateRange,
+} from '../../common/utils/filter.util';
 
 export function buildCustomerFilterWhere(
   query: CustomerListQueryDto,
@@ -9,7 +12,8 @@ export function buildCustomerFilterWhere(
   const dateBounds = resolveDateRange(query);
 
   if (dateBounds) clauses.push({ createdAt: dateBounds });
-  if (query.kycStatus?.length) clauses.push({ kycStatus: { in: query.kycStatus } });
+  if (query.kycStatus?.length)
+    clauses.push({ kycStatus: { in: query.kycStatus } });
   if (query.source?.length) clauses.push({ source: { in: query.source } });
 
   if (query.search?.trim()) {
@@ -23,5 +27,5 @@ export function buildCustomerFilterWhere(
     });
   }
 
-  return mergeWhereClauses(...clauses) as Prisma.CustomerWhereInput;
+  return mergeWhereClauses(...clauses);
 }

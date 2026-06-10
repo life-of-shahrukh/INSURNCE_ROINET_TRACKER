@@ -1,6 +1,9 @@
 import type { Prisma } from '@prisma/client';
 import type { SalesTeamListQueryDto } from './dto/sales-team-list-query.dto';
-import { buildGeoFilterWhere, mergeWhereClauses } from '../../common/utils/filter.util';
+import {
+  buildGeoFilterWhere,
+  mergeWhereClauses,
+} from '../../common/utils/filter.util';
 
 export function buildSalesTeamFilterWhere(
   query: SalesTeamListQueryDto,
@@ -32,5 +35,5 @@ export function buildSalesTeamFilterWhere(
     });
   }
 
-  return mergeWhereClauses(...clauses) as Prisma.SalesTeamWhereInput;
+  return mergeWhereClauses(...clauses);
 }

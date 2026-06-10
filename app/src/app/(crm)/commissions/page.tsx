@@ -35,9 +35,9 @@ export default function CommissionsPage() {
   const dealsQuery = useDealsList(apiParams);
   const { data: result } = dealsQuery;
   const { isInitialLoading, isRefreshing } = useListQueryStatus(dealsQuery);
-  const deals = result?.data ?? [];
+  const dealsData = result?.data;
   const meta = result?.meta;
-  const rows = useMemo(() => computeCommissions(deals, posp), [deals, posp]);
+  const rows = useMemo(() => computeCommissions(dealsData ?? [], posp), [dealsData, posp]);
 
   const totals = useMemo(
     () =>

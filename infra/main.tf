@@ -9,7 +9,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket         = "roinet-crm-tf-state"
+    bucket         = "roinet-crm-tf-state-702527818159"
     key            = "prod/terraform.tfstate"
     region         = "ap-south-1"
     dynamodb_table = "roinet-crm-tf-lock"
@@ -29,102 +29,17 @@ provider "aws" {
   }
 }
 
-# ── Reuse existing default VPC — RDS is already provisioned here ─────────────
-data "aws_vpc" "main" {
-  id = var.vpc_id
-}
+# ── VPC ───────────────────────────────────────────────────────────────────────
+module "vpc" {
+  source = "./modules/vpc"
 
-# Public subnets of the default VPC (ap-south-1a/1b/1c)
-data "aws_subnet" "public_a" { id = "subnet-03e2ee4177d04fe4c" }
-data "aws_subnet" "public_b" { id = "subnet-0b1a690ff88c9c277" }
-data "aws_subnet" "public_c" { id = "subnet-0e92bd16cd26f25e5" }
-
-locals {
-  public_subnet_ids = [
-    data.aws_subnet.public_a.id,
-    data.aws_subnet.public_b.id,
-    data.aws_subnet.public_c.id,
-  ]
-  # Default VPC has no private subnets — use public for ECS (Fargate assigns ENIs)
-  private_subnet_ids = [
-    data.aws_subnet.public_a.id,
-    data.aws_subnet.public_b.id,
-    data.aws_subnet.public_c.id,
-  ]
-}
-
-# Security groups scoped to this project
-resource "aws_security_group" "alb" {
-  name        = "${var.project}-${var.env}-alb-sg"
-  description = "Allow HTTP/HTTPS from internet to ALB"
-  vpc_id      = data.aws_vpc.main.id
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = { Name = "${var.project}-${var.env}-alb-sg" }
-}
-
-resource "aws_security_group" "ecs" {
-  name        = "${var.project}-${var.env}-ecs-sg"
-  description = "Allow traffic from ALB to ECS tasks"
-  vpc_id      = data.aws_vpc.main.id
-
-  ingress {
-    from_port       = 0
-    to_port         = 65535
-    protocol        = "tcp"
-    security_groups = [aws_security_group.alb.id]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = { Name = "${var.project}-${var.env}-ecs-sg" }
-}
-
-resource "aws_security_group" "rds" {
-  name        = "${var.project}-${var.env}-rds-sg"
-  description = "Allow PostgreSQL from ECS only"
-  vpc_id      = data.aws_vpc.main.id
-
-  ingress {
-    from_port       = 5432
-    to_port         = 5432
-    protocol        = "tcp"
-    security_groups = [aws_security_group.ecs.id]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = { Name = "${var.project}-${var.env}-rds-sg" }
+  project               = var.project
+  env                   = var.env
+  vpc_cidr              = var.vpc_cidr
+  availability_zones    = var.availability_zones
+  public_subnet_cidrs   = var.public_subnet_cidrs
+  private_subnet_cidrs  = var.private_subnet_cidrs
+  database_subnet_cidrs = var.database_subnet_cidrs
 }
 
 # ── Container registries ──────────────────────────────────────────────────────
@@ -139,7 +54,7 @@ module "iam" {
   project         = var.project
   env             = var.env
   github_repo     = var.github_repo
-  tf_state_bucket = "roinet-crm-tf-state"
+  tf_state_bucket = "roinet-crm-tf-state-702527818159"
   tf_lock_table   = "roinet-crm-tf-lock"
 }
 
@@ -149,8 +64,8 @@ module "rds" {
 
   project           = var.project
   env               = var.env
-  subnet_ids        = local.private_subnet_ids
-  security_group_id = aws_security_group.rds.id
+  subnet_ids        = module.vpc.database_subnet_ids
+  security_group_id = module.vpc.rds_security_group_id
   instance_class    = var.rds_instance_class
   db_name           = var.db_name
   db_username       = var.db_username
@@ -163,9 +78,9 @@ module "alb" {
 
   project               = var.project
   env                   = var.env
-  vpc_id                = data.aws_vpc.main.id
-  public_subnet_ids     = local.public_subnet_ids
-  alb_security_group_id = aws_security_group.alb.id
+  vpc_id                = module.vpc.vpc_id
+  public_subnet_ids     = module.vpc.public_subnet_ids
+  alb_security_group_id = module.vpc.alb_security_group_id
   certificate_arn       = var.certificate_arn
 }
 
@@ -177,8 +92,8 @@ module "ecs" {
   env        = var.env
   aws_region = var.aws_region
 
-  private_subnet_ids    = local.private_subnet_ids
-  ecs_security_group_id = aws_security_group.ecs.id
+  private_subnet_ids    = module.vpc.private_subnet_ids
+  ecs_security_group_id = module.vpc.ecs_security_group_id
 
   app_target_group_arn    = module.alb.app_target_group_arn
   server_target_group_arn = module.alb.server_target_group_arn
@@ -192,6 +107,7 @@ module "ecs" {
   image_tag    = var.image_tag
 
   api_url      = "http://${module.alb.alb_dns_name}/api"
+  frontend_url = "http://${module.alb.alb_dns_name}"
   database_url = "postgresql://${var.db_username}:${var.db_password}@${module.rds.address}:5432/${var.db_name}"
 
   app_cpu    = var.app_cpu

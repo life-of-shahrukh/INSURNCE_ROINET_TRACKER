@@ -42,7 +42,8 @@ export default function DashboardPage(): React.ReactElement {
   const dealsQuery = useDealsList(dealsParams);
   const { data: dealsResult } = dealsQuery;
   const { isInitialLoading, isRefreshing } = useListQueryStatus(dealsQuery);
-  const filteredDeals = dealsResult?.data ?? [];
+  const dealsRaw = dealsResult?.data;
+  const filteredDeals = useMemo(() => dealsRaw ?? [], [dealsRaw]);
 
   const auxParams = useMemo(
     () => new URLSearchParams({ page: "1", pageSize: "100" }),

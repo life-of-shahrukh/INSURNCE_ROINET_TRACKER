@@ -41,9 +41,9 @@ export default function RenewalsPage() {
   const dealsQuery = useDealsList(apiParams);
   const { data: result } = dealsQuery;
   const { isInitialLoading, isRefreshing } = useListQueryStatus(dealsQuery);
-  const deals = result?.data ?? [];
+  const dealsData = result?.data;
   const meta = result?.meta;
-  const upcoming = useMemo(() => computeRenewals(deals), [deals]);
+  const upcoming = useMemo(() => computeRenewals(dealsData ?? []), [dealsData]);
 
   return (
     <>

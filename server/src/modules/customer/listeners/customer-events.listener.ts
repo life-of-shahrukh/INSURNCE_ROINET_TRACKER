@@ -9,7 +9,7 @@ export class CustomerEventsListener {
   @OnEvent('customer.created')
   handleCustomerCreated(event: CustomerCreatedEvent) {
     this.logger.log(
-      `Customer created: ${event.customerId} (${event.email || 'no email'}) at ${event.occurredAt}`,
+      `Customer created: ${event.customerId} (${event.email || 'no email'}) at ${event.occurredAt.toISOString()}`,
     );
   }
 }

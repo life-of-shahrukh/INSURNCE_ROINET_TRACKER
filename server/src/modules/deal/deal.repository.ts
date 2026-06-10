@@ -101,7 +101,7 @@ export class DealRepository {
           remarks: dto.remarks ?? '',
         },
       })
-      .catch(this.handlePrismaError);
+      .catch((e: unknown) => this.handlePrismaError(e));
   }
 
   createForPosp(pospId: string, dto: CreateDealDto): Promise<Deal> {
@@ -123,7 +123,7 @@ export class DealRepository {
           remarks: dto.remarks ?? '',
         },
       })
-      .catch(this.handlePrismaError);
+      .catch((e: unknown) => this.handlePrismaError(e));
   }
 
   async update(id: string, dto: UpdateDealDto): Promise<Deal> {

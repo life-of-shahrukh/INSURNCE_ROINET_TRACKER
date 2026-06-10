@@ -42,8 +42,9 @@ export default function ReportsPage() {
   const dealsQuery = useDealsList(apiParams);
   const { data: dealsResult } = dealsQuery;
   const { isInitialLoading, isRefreshing } = useListQueryStatus(dealsQuery);
-  const deals = dealsResult?.data ?? [];
+  const dealsData = dealsResult?.data;
   const meta = dealsResult?.meta;
+  const deals = useMemo(() => dealsData ?? [], [dealsData]);
 
   const leadParams = useMemo(() => new URLSearchParams({ page: "1", pageSize: "100" }), []);
   const { data: leadsResult } = useLeads(leadParams);

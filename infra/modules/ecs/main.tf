@@ -107,9 +107,10 @@ resource "aws_ecs_task_definition" "server" {
     }]
 
     environment = [
-      { name = "NODE_ENV", value = var.env },
-      { name = "PORT", value = "3001" },
-      { name = "DATABASE_URL", value = var.database_url }
+      { name = "NODE_ENV",      value = var.env },
+      { name = "PORT",          value = "3001" },
+      { name = "DATABASE_URL",  value = var.database_url },
+      { name = "FRONTEND_URL",  value = var.frontend_url }
     ]
 
     logConfiguration = {

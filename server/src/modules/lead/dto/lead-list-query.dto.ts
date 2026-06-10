@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsIn, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { GeoFilterQueryDto } from '../../../common/dto/geo-filter-query.dto';
 
 export class LeadListQueryDto extends GeoFilterQueryDto {

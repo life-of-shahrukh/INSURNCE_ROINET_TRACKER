@@ -11,7 +11,7 @@ export class LeadEventsListener {
   @OnEvent('lead.created')
   handleLeadCreated(event: LeadCreatedEvent) {
     this.logger.log(
-      `Lead created: ${event.leadId} for customer ${event.customerId} at ${event.occurredAt}`,
+      `Lead created: ${event.leadId} for customer ${event.customerId} at ${event.occurredAt.toISOString()}`,
     );
   }
 
@@ -25,7 +25,7 @@ export class LeadEventsListener {
   @OnEvent('lead.converted')
   handleLeadConverted(event: LeadConvertedEvent) {
     this.logger.log(
-      `Lead ${event.leadId} converted to deal ${event.dealId} at ${event.occurredAt}`,
+      `Lead ${event.leadId} converted to deal ${event.dealId} at ${event.occurredAt.toISOString()}`,
     );
   }
 }

@@ -23,7 +23,7 @@ export class ExampleRolesController {
    * Route accessible by any authenticated user (no role check)
    */
   @Get('authenticated')
-  async anyAuthenticatedUser(@CurrentUser() user: AuthUser) {
+  anyAuthenticatedUser(@CurrentUser() user: AuthUser) {
     return { message: 'Any authenticated user can access', user };
   }
 
@@ -32,7 +32,7 @@ export class ExampleRolesController {
    */
   @Get('admin-or-posp')
   @Roles(Role.SUPER_ADMIN, Role.POSP)
-  async adminOrPosp(@CurrentUser() user: AuthUser) {
+  adminOrPosp(@CurrentUser() user: AuthUser) {
     return { message: 'Super Admin or POSP can access', role: user.role };
   }
 
@@ -41,7 +41,7 @@ export class ExampleRolesController {
    */
   @Get('admin-only')
   @AdminOnly()
-  async adminOnly(@CurrentUser() user: AuthUser) {
+  adminOnly(@CurrentUser() user: AuthUser) {
     return { message: 'Only admin can access', user };
   }
 
@@ -50,7 +50,7 @@ export class ExampleRolesController {
    */
   @Get('posp-only')
   @PospOnly()
-  async pospOnly(@CurrentUser() user: AuthUser) {
+  pospOnly(@CurrentUser() user: AuthUser) {
     return { message: 'Only POSP can access', user };
   }
 
@@ -59,7 +59,7 @@ export class ExampleRolesController {
    */
   @Get('public')
   @Public()
-  async publicRoute() {
+  publicRoute() {
     return { message: 'Public route - no authentication required' };
   }
 
@@ -69,7 +69,7 @@ export class ExampleRolesController {
    */
   @Get('allow-any')
   @AllowAny()
-  async allowAny(@CurrentUser() user: AuthUser) {
+  allowAny(@CurrentUser() user: AuthUser) {
     return { message: 'Any authenticated user allowed', user };
   }
 
@@ -78,7 +78,7 @@ export class ExampleRolesController {
    */
   @Post('create')
   @AdminOnly()
-  async create(@CurrentUser() user: AuthUser) {
+  create(@CurrentUser() user: AuthUser) {
     return { message: 'Resource created by admin', adminId: user.userId };
   }
 }

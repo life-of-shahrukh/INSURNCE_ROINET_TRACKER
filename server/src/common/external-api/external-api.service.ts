@@ -46,7 +46,7 @@ async function apiPost<T>(
   if (!response.ok)
     throw new Error(`External API ${response.status}: ${response.statusText}`);
 
-  const wrapper: CognitensorResponse<T> = await response.json();
+  const wrapper = (await response.json()) as CognitensorResponse<T>;
   if (wrapper.description !== 'success')
     throw new Error(`API Error: ${wrapper.description}`);
 

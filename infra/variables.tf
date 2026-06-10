@@ -16,12 +16,6 @@ variable "aws_region" {
   default     = "ap-south-1"
 }
 
-variable "vpc_id" {
-  type        = string
-  description = "Existing VPC ID to deploy into (account is at VPC limit)"
-  default     = "vpc-09ae030fcfb1d5031"
-}
-
 variable "github_repo" {
   type        = string
   description = "GitHub repository in owner/repo format"
@@ -30,28 +24,33 @@ variable "github_repo" {
 
 # ── Networking ────────────────────────────────────────────────────────────────
 variable "vpc_cidr" {
-  type    = string
-  default = "10.0.0.0/16"
+  type        = string
+  description = "CIDR block for the new dedicated VPC"
+  default     = "10.1.0.0/16"
 }
 
 variable "availability_zones" {
-  type    = list(string)
-  default = ["ap-south-1a", "ap-south-1b"]
+  type        = list(string)
+  description = "AZs to distribute subnets across (2 for HA)"
+  default     = ["ap-south-1a", "ap-south-1b"]
 }
 
 variable "public_subnet_cidrs" {
-  type    = list(string)
-  default = ["10.0.1.0/24", "10.0.2.0/24"]
+  type        = list(string)
+  description = "CIDRs for public subnets (ALB)"
+  default     = ["10.1.1.0/24", "10.1.2.0/24"]
 }
 
 variable "private_subnet_cidrs" {
-  type    = list(string)
-  default = ["10.0.11.0/24", "10.0.12.0/24"]
+  type        = list(string)
+  description = "CIDRs for private subnets (ECS tasks)"
+  default     = ["10.1.11.0/24", "10.1.12.0/24"]
 }
 
 variable "database_subnet_cidrs" {
-  type    = list(string)
-  default = ["10.0.21.0/24", "10.0.22.0/24"]
+  type        = list(string)
+  description = "CIDRs for isolated database subnets (RDS)"
+  default     = ["10.1.21.0/24", "10.1.22.0/24"]
 }
 
 # ── RDS ───────────────────────────────────────────────────────────────────────

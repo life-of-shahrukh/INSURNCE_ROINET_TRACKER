@@ -13,7 +13,11 @@ const cookieParser = require('cookie-parser') as typeof import('cookie-parser');
 const ALLOWED_ORIGINS = [
   'http://localhost:3000',
   'http://localhost:3001',
-  ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : []),
+  // Accept one or more comma-separated origins from env (set in ECS/docker-compose)
+  ...( process.env.FRONTEND_URL
+    ? process.env.FRONTEND_URL.split(',').map((o) => o.trim())
+    : []
+  ),
 ];
 
 async function bootstrap() {
@@ -78,4 +82,4 @@ async function bootstrap() {
   console.log(`Allowed origins:   ${allowedOrigins.join(', ')}`);
 }
 
-bootstrap();
+bootstrap().catch(console.error);

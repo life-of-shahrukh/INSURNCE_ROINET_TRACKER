@@ -6,7 +6,6 @@ import { CreateCustomerCommand } from './commands/create-customer.command';
 import { UpdateCustomerCommand } from './commands/update-customer.command';
 import { GetAllCustomersQuery } from './queries/get-all-customers.query';
 import { SearchCustomersQuery } from './queries/search-customers.query';
-import { Lead } from '@prisma/client';
 import { Customer } from '@prisma/client';
 import { CustomerListQueryDto } from './dto/customer-list-query.dto';
 import type { PaginatedResult } from '../../common/interfaces/paginated-result.interface';

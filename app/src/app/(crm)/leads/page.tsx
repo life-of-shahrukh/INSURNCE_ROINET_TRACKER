@@ -58,8 +58,9 @@ export default function LeadsPage() {
   const leadsQuery = useLeads(apiParams);
   const { data: result } = leadsQuery;
   const { isInitialLoading, isRefreshing } = useListQueryStatus(leadsQuery);
-  const leads = result?.data ?? [];
+  const leadsData = result?.data;
   const meta = result?.meta;
+  const leads = useMemo(() => leadsData ?? [], [leadsData]);
 
   const { data: commitment } = useMonthlyCommitment();
   const updateLead = useUpdateLead();

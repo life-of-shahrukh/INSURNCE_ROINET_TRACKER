@@ -12,7 +12,7 @@ export function buildSalesTeamFilterWhere(
   const clauses: Prisma.SalesTeamWhereInput[] = [];
 
   if (Object.keys(geo).length > 0) {
-    const { pospId: _pospId, districtId, ...teamGeo } = geo;
+    const { pospId: _unused, districtId, ...teamGeo } = geo;
     if (Object.keys(teamGeo).length > 0) clauses.push(teamGeo);
     if (districtId !== undefined) clauses.push({ areaId: districtId });
   }

@@ -1,6 +1,11 @@
 import type { PaginatedResponse } from "./pagination-types";
 
-const base = () => process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+// Browser: use relative URL so requests go through ALB (/api/* → backend).
+// Server-side (SSR/build): use NEXT_PUBLIC_API_URL or localhost fallback.
+const base = () =>
+  typeof window !== "undefined"
+    ? ""
+    : (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000");
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let res: Response;

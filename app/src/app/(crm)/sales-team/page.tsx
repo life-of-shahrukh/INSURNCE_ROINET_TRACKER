@@ -8,9 +8,12 @@ import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Pagination } from "@/components/ui/Pagination";
 import { ListDataSection } from "@/components/ui/ListDataSection";
+import { ColumnManagerPanel } from "@/components/ui/ColumnManagerPanel";
 import { UniversalFilter } from "@/components/filters/UniversalFilter";
 import { SalesTeamModal } from "@/components/sales-team/SalesTeamModal";
 import { useListQueryStatus } from "@/hooks/useListQueryStatus";
+import { useColumnManager } from "@/hooks/useColumnManager";
+import type { ColumnConfig } from "@/hooks/useColumnManager";
 import { useAuth } from "@/providers/auth-provider";
 import type { SalesTeam } from "@/lib/api/sales-team-api";
 
@@ -26,7 +29,7 @@ const DESIGNATION_COLOR: Record<string, string> = {
 
 function HierarchyNode({ member, depth = 0 }: { member: SalesTeam; depth?: number }) {
   const [open, setOpen] = useState(true);
-  const color = DESIGNATION_COLOR[member.designation] || DESIGNATION_COLOR.default;
+  const color = DESIGNATION_COLOR[member.designation] ?? DESIGNATION_COLOR.default;
   const hasSubs = member.subordinates && member.subordinates.length > 0;
 
   return (
@@ -45,7 +48,11 @@ function HierarchyNode({ member, depth = 0 }: { member: SalesTeam; depth?: numbe
         }}
       >
         {hasSubs ? (
-          <button type="button" onClick={() => setOpen(!open)} style={{ border: "none", background: "none", cursor: "pointer", fontSize: 12, color: "#666", padding: 0, width: 16 }}>
+          <button
+            type="button"
+            onClick={() => setOpen(!open)}
+            style={{ border: "none", background: "none", cursor: "pointer", fontSize: 12, color: "#666", padding: 0, width: 16 }}
+          >
             {open ? "▼" : "▶"}
           </button>
         ) : (
@@ -67,7 +74,70 @@ function HierarchyNode({ member, depth = 0 }: { member: SalesTeam; depth?: numbe
   );
 }
 
-export default function SalesTeamPage() {
+const SALES_TEAM_COLUMNS: ColumnConfig[] = [
+  { key: "name", label: "Name" },
+  { key: "code", label: "Code" },
+  { key: "designation", label: "Designation" },
+  { key: "reportsTo", label: "Reports To" },
+  { key: "territory", label: "Territory" },
+  { key: "mobile", label: "Mobile" },
+  { key: "status", label: "Status" },
+  { key: "actions", label: "Actions", alwaysVisible: true },
+];
+
+function renderSalesTeamCell(
+  col: ColumnConfig,
+  m: SalesTeam,
+  onEdit: (m: SalesTeam) => void,
+): React.ReactNode {
+  switch (col.key) {
+    case "name":
+      return <td key={col.key}><strong>{m.name}</strong></td>;
+    case "code":
+      return <td key={col.key} style={{ color: "#666", fontSize: 12 }}>{m.employeeCode}</td>;
+    case "designation":
+      return (
+        <td key={col.key}>
+          <span
+            style={{
+              padding: "2px 8px",
+              borderRadius: 10,
+              background: DESIGNATION_COLOR[m.designation] ?? DESIGNATION_COLOR.default,
+              color: "white",
+              fontSize: 11,
+              fontWeight: 600,
+            }}
+          >
+            {m.designation}
+          </span>
+        </td>
+      );
+    case "reportsTo":
+      return <td key={col.key} style={{ fontSize: 13 }}>{m.manager?.name || "—"}</td>;
+    case "territory":
+      return <td key={col.key}>{m.territory || "—"}</td>;
+    case "mobile":
+      return <td key={col.key}>{m.mobile}</td>;
+    case "status":
+      return <td key={col.key}>{m.status}</td>;
+    case "actions":
+      return (
+        <td key={col.key}>
+          <button
+            type="button"
+            className="icon-btn"
+            onClick={() => onEdit(m)}
+          >
+            Edit
+          </button>
+        </td>
+      );
+    default:
+      return <td key={col.key} />;
+  }
+}
+
+export default function SalesTeamPage(): React.ReactElement {
   const { user } = useAuth();
   const role = user?.role ?? "POSP";
 
@@ -95,6 +165,9 @@ export default function SalesTeamPage() {
   const [tab, setTab] = useState<Tab>("list");
   const [modalOpen, setModalOpen] = useState(false);
   const [editMember, setEditMember] = useState<SalesTeam | null>(null);
+
+  const colManager = useColumnManager("sales-team", SALES_TEAM_COLUMNS);
+  const { visibleColumns } = colManager;
 
   const handleSync = async () => {
     if (!confirm("Sync team data from Roinet API?")) return;
@@ -154,42 +227,34 @@ export default function SalesTeamPage() {
           />
           <Card className="list-table-card">
             <ListDataSection isInitialLoading={isInitialLoading} isRefreshing={isRefreshing} stretch>
+              <div className="col-mgr-toolbar">
+                <ColumnManagerPanel manager={colManager} />
+              </div>
               <div className="table-wrap">
                 <table>
                   <thead>
                     <tr>
-                      <th>Name</th>
-                      <th>Code</th>
-                      <th>Designation</th>
-                      <th>Reports To</th>
-                      <th>Territory</th>
-                      <th>Mobile</th>
-                      <th>Status</th>
-                      <th></th>
+                      {visibleColumns.map((col) => (
+                        <th key={col.key}>{col.label}</th>
+                      ))}
                     </tr>
                   </thead>
                   <tbody>
                     {team.length === 0 ? (
-                      <tr><td colSpan={8} className="empty">No team members found.</td></tr>
+                      <tr>
+                        <td colSpan={visibleColumns.length} className="empty">
+                          No team members found.
+                        </td>
+                      </tr>
                     ) : (
                       team.map((m) => (
                         <tr key={m.id}>
-                          <td><strong>{m.name}</strong></td>
-                          <td style={{ color: "#666", fontSize: 12 }}>{m.employeeCode}</td>
-                          <td>
-                            <span style={{ padding: "2px 8px", borderRadius: 10, background: DESIGNATION_COLOR[m.designation] || DESIGNATION_COLOR.default, color: "white", fontSize: 11, fontWeight: 600 }}>
-                              {m.designation}
-                            </span>
-                          </td>
-                          <td style={{ fontSize: 13 }}>{m.manager?.name || "—"}</td>
-                          <td>{m.territory || "—"}</td>
-                          <td>{m.mobile}</td>
-                          <td>{m.status}</td>
-                          <td>
-                            <button type="button" className="icon-btn" onClick={() => { setEditMember(m); setModalOpen(true); }}>
-                              Edit
-                            </button>
-                          </td>
+                          {visibleColumns.map((col) =>
+                            renderSalesTeamCell(col, m, (member) => {
+                              setEditMember(member);
+                              setModalOpen(true);
+                            }),
+                          )}
                         </tr>
                       ))
                     )}

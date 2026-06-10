@@ -8,13 +8,82 @@ import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Pagination } from "@/components/ui/Pagination";
 import { ListDataSection } from "@/components/ui/ListDataSection";
+import { ColumnManagerPanel } from "@/components/ui/ColumnManagerPanel";
 import { UniversalFilter } from "@/components/filters/UniversalFilter";
 import { CustomerModal } from "@/components/customer/CustomerModal";
 import { useListQueryStatus } from "@/hooks/useListQueryStatus";
+import { useColumnManager } from "@/hooks/useColumnManager";
+import type { ColumnConfig } from "@/hooks/useColumnManager";
 import { useAuth } from "@/providers/auth-provider";
 import type { Customer } from "@/lib/api/customer-api";
 
-export default function CustomersPage() {
+const CUSTOMERS_COLUMNS: ColumnConfig[] = [
+  { key: "name", label: "Name" },
+  { key: "mobile", label: "Mobile" },
+  { key: "email", label: "Email" },
+  { key: "location", label: "Location" },
+  { key: "kycStatus", label: "KYC Status" },
+  { key: "source", label: "Source" },
+  { key: "created", label: "Created" },
+  { key: "actions", label: "Actions", alwaysVisible: true },
+];
+
+function renderCustomerCell(
+  col: ColumnConfig,
+  customer: Customer,
+  onEdit: (c: Customer) => void,
+): React.ReactNode {
+  switch (col.key) {
+    case "name":
+      return <td key={col.key}><strong>{customer.name}</strong></td>;
+    case "mobile":
+      return <td key={col.key}>{customer.mobile}</td>;
+    case "email":
+      return <td key={col.key}>{customer.email || "–"}</td>;
+    case "location":
+      return (
+        <td key={col.key}>
+          {customer.cityName ? `${customer.cityName}, ${customer.stateName}` : "–"}
+        </td>
+      );
+    case "kycStatus":
+      return (
+        <td key={col.key}>
+          <span
+            className={`badge ${
+              customer.kycStatus === "VERIFIED"
+                ? "badge-success"
+                : customer.kycStatus === "REJECTED"
+                  ? "badge-danger"
+                  : "badge-warning"
+            }`}
+          >
+            {customer.kycStatus}
+          </span>
+        </td>
+      );
+    case "source":
+      return <td key={col.key}>{customer.source || "–"}</td>;
+    case "created":
+      return <td key={col.key}>{new Date(customer.createdAt).toLocaleDateString()}</td>;
+    case "actions":
+      return (
+        <td key={col.key} className="actions-cell">
+          <button
+            type="button"
+            className="icon-btn"
+            onClick={() => onEdit(customer)}
+          >
+            Edit
+          </button>
+        </td>
+      );
+    default:
+      return <td key={col.key} />;
+  }
+}
+
+export default function CustomersPage(): React.ReactElement {
   const { user } = useAuth();
   const role = user?.role ?? "POSP";
 
@@ -40,88 +109,75 @@ export default function CustomersPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editCustomer, setEditCustomer] = useState<Customer | null>(null);
 
+  const colManager = useColumnManager("customers", CUSTOMERS_COLUMNS);
+  const { visibleColumns } = colManager;
+
   return (
     <>
       <div className="list-page">
-      <PageHeader
-        title="Customers"
-        subtitle="Manage customer information and KYC status"
-        actions={<Button onClick={() => { setEditCustomer(null); setModalOpen(true); }}>+ New Customer</Button>}
-      />
+        <PageHeader
+          title="Customers"
+          subtitle="Manage customer information and KYC status"
+          actions={
+            <Button onClick={() => { setEditCustomer(null); setModalOpen(true); }}>
+              + New Customer
+            </Button>
+          }
+        />
 
-      <UniversalFilter
-        view="customers"
-        role={role}
-        query={query}
-        filters={filters}
-        applyViewFilters={applyViewFilters}
-        onRemoveChip={removeFilterChip}
-        onReset={resetFilters}
-        search={search}
-        onSearchChange={setSearch}
-      />
+        <UniversalFilter
+          view="customers"
+          role={role}
+          query={query}
+          filters={filters}
+          applyViewFilters={applyViewFilters}
+          onRemoveChip={removeFilterChip}
+          onReset={resetFilters}
+          search={search}
+          onSearchChange={setSearch}
+        />
 
-      <Card className="list-table-card">
-        <ListDataSection isInitialLoading={isInitialLoading} isRefreshing={isRefreshing} stretch>
-          <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Mobile</th>
-                <th>Email</th>
-                <th>Location</th>
-                <th>KYC Status</th>
-                <th>Source</th>
-                <th>Created</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {customers.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="empty">No customers found</td>
-                </tr>
-              ) : (
-                customers.map((customer) => (
-                  <tr key={customer.id}>
-                    <td><strong>{customer.name}</strong></td>
-                    <td>{customer.mobile}</td>
-                    <td>{customer.email || "–"}</td>
-                    <td>
-                      {customer.cityName ? `${customer.cityName}, ${customer.stateName}` : "–"}
-                    </td>
-                    <td>
-                      <span
-                        className={`badge ${
-                          customer.kycStatus === "VERIFIED"
-                            ? "badge-success"
-                            : customer.kycStatus === "REJECTED"
-                              ? "badge-danger"
-                              : "badge-warning"
-                        }`}
-                      >
-                        {customer.kycStatus}
-                      </span>
-                    </td>
-                    <td>{customer.source || "–"}</td>
-                    <td>{new Date(customer.createdAt).toLocaleDateString()}</td>
-                    <td className="actions-cell">
-                      <button type="button" className="icon-btn" onClick={() => { setEditCustomer(customer); setModalOpen(true); }}>
-                        Edit
-                      </button>
-                    </td>
+        <Card className="list-table-card">
+          <ListDataSection isInitialLoading={isInitialLoading} isRefreshing={isRefreshing} stretch>
+            <div className="col-mgr-toolbar">
+              <ColumnManagerPanel manager={colManager} />
+            </div>
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    {visibleColumns.map((col) => (
+                      <th key={col.key}>{col.label}</th>
+                    ))}
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-          </div>
-          {meta ? (
-            <Pagination meta={meta} onPageChange={setPage} onPageSizeChange={setPageSize} />
-          ) : null}
-        </ListDataSection>
-      </Card>
+                </thead>
+                <tbody>
+                  {customers.length === 0 ? (
+                    <tr>
+                      <td colSpan={visibleColumns.length} className="empty">
+                        No customers found
+                      </td>
+                    </tr>
+                  ) : (
+                    customers.map((customer) => (
+                      <tr key={customer.id}>
+                        {visibleColumns.map((col) =>
+                          renderCustomerCell(col, customer, (c) => {
+                            setEditCustomer(c);
+                            setModalOpen(true);
+                          }),
+                        )}
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+            {meta ? (
+              <Pagination meta={meta} onPageChange={setPage} onPageSizeChange={setPageSize} />
+            ) : null}
+          </ListDataSection>
+        </Card>
       </div>
 
       <CustomerModal open={modalOpen} customer={editCustomer} onClose={() => setModalOpen(false)} />

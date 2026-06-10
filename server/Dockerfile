@@ -7,17 +7,33 @@ RUN npm ci
 
 COPY . .
 
-# prisma.config.ts reads DATABASE_URL at load time via dotenv.
-# A dummy value satisfies the env check — generate never connects to a DB.
+# A dummy DATABASE_URL satisfies Prisma's env check at generate/build time.
+# The real URL is injected at runtime via ECS task-definition environment vars.
 ENV DATABASE_URL="sqlserver://localhost:1433;database=roinet_crm;user=sa;password=x;trustServerCertificate=true"
 
-# Generate Prisma client BEFORE nest build so TypeScript resolves @prisma/client types
+# Generate Prisma client BEFORE nest build so TypeScript resolves @prisma/client types.
 RUN npx prisma generate
+
+# Build the NestJS application.
 RUN npm run build
+
+# Compile the Prisma seed scripts into dist/prisma/ so they can be executed
+# from the production image without ts-node or TypeScript dev deps.
+RUN npx tsc prisma/seed.ts prisma/seed-generators.ts \
+      --outDir dist/prisma \
+      --module commonjs \
+      --target ES2020 \
+      --esModuleInterop \
+      --resolveJsonModule \
+      --skipLibCheck \
+      --moduleResolution node
 
 # ── Stage 2: runner ───────────────────────────────────────────────────────────
 FROM node:20-alpine AS runner
 WORKDIR /app
+
+# Install curl for the ECS/ALB container health check.
+RUN apk add --no-cache curl
 
 ENV NODE_ENV=production
 ENV PORT=3001
@@ -29,18 +45,22 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/package-lock.json ./package-lock.json
 RUN npm ci --omit=dev
 
-# Copy schema so we can regenerate the client against prod node_modules.
-# The builder client embeds absolute paths tied to the builder layer.
+# Copy Prisma schema + migrations for migrate deploy, and the compiled seed.
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
 
+# Regenerate the Prisma client against the production node_modules.
+# The builder client embeds absolute paths tied to the builder layer.
 ENV DATABASE_URL="sqlserver://localhost:1433;database=roinet_crm;user=sa;password=x;trustServerCertificate=true"
 RUN npx prisma generate
-# Remove the dummy — real DATABASE_URL is injected at runtime
+# Remove the dummy — the real DATABASE_URL is injected at runtime.
 ENV DATABASE_URL=""
-
-COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
 
 USER nestjs
 EXPOSE 3001
 
-CMD ["node", "dist/src/main"]
+# On startup:
+#   1. Apply any pending Prisma migrations (creates the DB if it doesn't exist).
+#   2. Run the seed script (idempotent — uses upsert / count checks internally).
+#   3. Start the NestJS application.
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/prisma/seed.js && exec node dist/src/main"]

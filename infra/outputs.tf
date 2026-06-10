@@ -20,7 +20,7 @@ output "server_ecr_url" {
 
 output "rds_endpoint" {
   value       = module.rds.endpoint
-  description = "RDS PostgreSQL endpoint"
+  description = "RDS SQL Server endpoint — connect with host:1433, username/password"
   sensitive   = true
 }
 

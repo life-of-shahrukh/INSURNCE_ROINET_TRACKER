@@ -41,7 +41,9 @@ export class UpdateLeadHandler implements ICommandHandler<UpdateLeadCommand> {
 
     // Convert date string to Date object if present
     if (updateData.expectedCloseDate !== undefined) {
-      updateData.expectedCloseDate = toDate(updateData.expectedCloseDate as Date | string | undefined | null);
+      updateData.expectedCloseDate = toDate(
+        updateData.expectedCloseDate as Date | string | undefined | null,
+      );
     }
 
     const updated = await this.repository.update(id, updateData);

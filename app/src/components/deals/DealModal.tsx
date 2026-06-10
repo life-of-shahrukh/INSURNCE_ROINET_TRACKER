@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { POLICY_TYPES } from "@/lib/constants";
@@ -36,7 +36,7 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
   const { user } = useAuth();
   const { posp, saveDeal } = useCrm();
   const [form, setForm] = useState(emptyForm);
-  const activePosp = posp.filter((p) => p.active);
+  const activePosp = useMemo(() => posp.filter((p) => p.active), [posp]);
   const canSelectPosp = user?.role === "SUPER_ADMIN";
 
   useEffect(() => {

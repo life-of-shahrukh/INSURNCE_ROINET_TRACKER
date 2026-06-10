@@ -58,16 +58,19 @@ module "iam" {
   tf_lock_table   = "roinet-crm-tf-lock"
 }
 
-# ── Database ──────────────────────────────────────────────────────────────────
+# ── Database (SQL Server Express, publicly accessible) ────────────────────────
+# The RDS instance is placed in the public subnets so that publicly_accessible
+# = true can assign it a public DNS name.  Access is still guarded by the RDS
+# security group — only port 1433 is opened.  No db_name is set at the RDS
+# level; Prisma creates the "roinet_crm" database on first migrate deploy.
 module "rds" {
   source = "./modules/rds"
 
   project           = var.project
   env               = var.env
-  subnet_ids        = module.vpc.database_subnet_ids
+  subnet_ids        = module.vpc.public_subnet_ids   # public subnets required for publicly_accessible
   security_group_id = module.vpc.rds_security_group_id
   instance_class    = var.rds_instance_class
-  db_name           = var.db_name
   db_username       = var.db_username
   db_password       = var.db_password
 }
@@ -108,7 +111,12 @@ module "ecs" {
 
   api_url      = "http://${module.alb.alb_dns_name}/api"
   frontend_url = "http://${module.alb.alb_dns_name}"
-  database_url = "postgresql://${var.db_username}:${var.db_password}@${module.rds.address}:5432/${var.db_name}"
+
+  # SQL Server connection string — Prisma will create the roinet_crm database
+  # on the first `prisma migrate deploy` run inside the server container.
+  database_url = "sqlserver://${module.rds.address}:1433;database=roinet_crm;user=${var.db_username};password=${var.db_password};encrypt=true;trustServerCertificate=false"
+
+  jwt_secret = var.jwt_secret
 
   app_cpu    = var.app_cpu
   app_memory = var.app_memory

@@ -6,7 +6,10 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
 import { SalesTeamService } from './sales-team.service';
 import { CreateSalesTeamDto } from './dto/create-sales-team.dto';
 import { UpdateSalesTeamDto } from './dto/update-sales-team.dto';
@@ -15,6 +18,7 @@ import { MinRole, Roles } from '../../common/decorators/roles.decorator';
 import { Role } from '../../common/constants';
 
 @Controller('sales-team')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class SalesTeamController {
   constructor(private readonly salesTeamService: SalesTeamService) {}
 

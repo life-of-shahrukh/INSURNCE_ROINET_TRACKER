@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import type { Request, Response } from 'express';
 import { AppModule } from './app.module';
 import {
   HttpExceptionFilter,
@@ -14,10 +15,9 @@ const ALLOWED_ORIGINS = [
   'http://localhost:3000',
   'http://localhost:3001',
   // Accept one or more comma-separated origins from env (set in ECS/docker-compose)
-  ...( process.env.FRONTEND_URL
+  ...(process.env.FRONTEND_URL
     ? process.env.FRONTEND_URL.split(',').map((o) => o.trim())
-    : []
-  ),
+    : []),
 ];
 
 async function bootstrap() {
@@ -45,6 +45,15 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
   app.use(cookieParser());
+
+  // Lightweight health endpoint — outside the /api prefix so ECS and ALB
+  // health checks can reach it without authentication.
+  app
+    .getHttpAdapter()
+    .getInstance()
+    .get('/health', (_req: Request, res: Response) => {
+      res.status(200).json({ status: 'ok' });
+    });
 
   app.useGlobalPipes(
     new ValidationPipe({

@@ -37,7 +37,7 @@ variable "availability_zones" {
 
 variable "public_subnet_cidrs" {
   type        = list(string)
-  description = "CIDRs for public subnets (ALB)"
+  description = "CIDRs for public subnets (ALB + RDS)"
   default     = ["10.1.1.0/24", "10.1.2.0/24"]
 }
 
@@ -49,19 +49,15 @@ variable "private_subnet_cidrs" {
 
 variable "database_subnet_cidrs" {
   type        = list(string)
-  description = "CIDRs for isolated database subnets (RDS)"
+  description = "CIDRs reserved for future isolated database subnets (not used while publicly_accessible = true)"
   default     = ["10.1.21.0/24", "10.1.22.0/24"]
 }
 
-# ── RDS ───────────────────────────────────────────────────────────────────────
+# ── RDS (SQL Server Express) ───────────────────────────────────────────────────
 variable "rds_instance_class" {
-  type    = string
-  default = "db.t3.micro"
-}
-
-variable "db_name" {
-  type    = string
-  default = "roinet"
+  type        = string
+  default     = "db.t3.small"
+  description = "RDS instance class. Minimum for SQL Server on RDS is db.t3.small (db.t3.micro is not supported)."
 }
 
 variable "db_username" {
@@ -72,6 +68,13 @@ variable "db_username" {
 variable "db_password" {
   type      = string
   sensitive = true
+}
+
+# ── Auth ──────────────────────────────────────────────────────────────────────
+variable "jwt_secret" {
+  type        = string
+  sensitive   = true
+  description = "Secret key used to sign and verify JWT tokens. Must be a long random string in production."
 }
 
 # ── ECS ───────────────────────────────────────────────────────────────────────
@@ -93,12 +96,12 @@ variable "app_memory" {
 
 variable "server_cpu" {
   type    = number
-  default = 256
+  default = 512
 }
 
 variable "server_memory" {
   type    = number
-  default = 512
+  default = 1024
 }
 
 # ── ALB / TLS ─────────────────────────────────────────────────────────────────

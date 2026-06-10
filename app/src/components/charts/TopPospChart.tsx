@@ -11,24 +11,19 @@ import {
   YAxis,
 } from "recharts";
 import { fmtINRShort } from "@/lib/formatters";
-import type { Deal, Posp } from "@/lib/types";
 
-interface Props {
-  deals: Deal[];
-  posp: Posp[];
+export interface TopPospRow {
+  pospId: string;
+  name: string;
+  premium: number;
+  count: number;
 }
 
-export function TopPospChart({ deals, posp }: Props): React.ReactElement {
-  const data = posp
-    .map((p) => ({
-      name: p.name,
-      premium: deals
-        .filter((d) => d.pospId === p.id)
-        .reduce((a, d) => a + (+d.premium || 0), 0),
-    }))
-    .sort((a, b) => b.premium - a.premium)
-    .slice(0, 5);
+interface Props {
+  data: TopPospRow[];
+}
 
+export function TopPospChart({ data }: Props): React.ReactElement {
   return (
     <ResponsiveContainer width="100%" height={260}>
       <BarChart
@@ -42,7 +37,12 @@ export function TopPospChart({ deals, posp }: Props): React.ReactElement {
           tickFormatter={(v: number) => fmtINRShort(v)}
           tick={{ fontSize: 11 }}
         />
-        <YAxis type="category" dataKey="name" width={110} tick={{ fontSize: 12 }} />
+        <YAxis
+          type="category"
+          dataKey="name"
+          width={110}
+          tick={{ fontSize: 12 }}
+        />
         <Tooltip formatter={(v) => [fmtINRShort(Number(v)), "Premium"]} />
         <Bar dataKey="premium" fill="#0f4c75" radius={[0, 4, 4, 0]}>
           <LabelList

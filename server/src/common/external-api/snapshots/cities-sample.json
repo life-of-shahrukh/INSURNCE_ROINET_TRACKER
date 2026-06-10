@@ -1,0 +1,53 @@
+﻿{
+    "description":  "success",
+    "Data":  [
+                 {
+                     "StateId":  "2",
+                     "StateName":  "HARYANA",
+                     "DistrictId":  "387",
+                     "DistrictName":  "AMBALA",
+                     "CityId":  "127",
+                     "CityName":  "Ambala"
+                 },
+                 {
+                     "StateId":  "2",
+                     "StateName":  "HARYANA",
+                     "DistrictId":  "387",
+                     "DistrictName":  "AMBALA",
+                     "CityId":  "128",
+                     "CityName":  "Ambala Cantt."
+                 },
+                 {
+                     "StateId":  "2",
+                     "StateName":  "HARYANA",
+                     "DistrictId":  "387",
+                     "DistrictName":  "AMBALA",
+                     "CityId":  "129",
+                     "CityName":  "Ambala Sadar"
+                 },
+                 {
+                     "StateId":  "2",
+                     "StateName":  "HARYANA",
+                     "DistrictId":  "387",
+                     "DistrictName":  "AMBALA",
+                     "CityId":  "130",
+                     "CityName":  "Babiyal"
+                 },
+                 {
+                     "StateId":  "2",
+                     "StateName":  "HARYANA",
+                     "DistrictId":  "387",
+                     "DistrictName":  "AMBALA",
+                     "CityId":  "131",
+                     "CityName":  "Kardhan"
+                 },
+                 {
+                     "StateId":  "2",
+                     "StateName":  "HARYANA",
+                     "DistrictId":  "387",
+                     "DistrictName":  "AMBALA",
+                     "CityId":  "132",
+                     "CityName":  "Naraingarh"
+                 }
+             ]
+}

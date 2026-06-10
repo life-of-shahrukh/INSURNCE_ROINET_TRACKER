@@ -5,7 +5,14 @@ import { useCreateLead, useUpdateLead } from "@/hooks/useLeads";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { CustomerSearchSelect } from "@/components/customer/CustomerSearchSelect";
-import type { Lead, CreateLeadInput, ClosureTimeline, LeadProduct, LeadStatus } from "@/lib/api/lead-api";
+import { leadFormSchema, type LeadFormValues } from "@/lib/schemas";
+import type {
+  Lead,
+  CreateLeadInput,
+  ClosureTimeline,
+  LeadProduct,
+  LeadStatus,
+} from "@/lib/api/lead-api";
 
 interface LeadModalProps {
   open: boolean;
@@ -29,9 +36,15 @@ export function LeadModal({ open, lead, onClose }: LeadModalProps) {
   const createLead = useCreateLead();
   const updateLead = useUpdateLead();
   const [form, setForm] = useState(empty);
+  const [errors, setErrors] =
+    useState<Partial<Record<keyof LeadFormValues, string>>>({});
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      setErrors({});
+      return;
+    }
+    setErrors({});
     if (lead) {
       setForm({
         customerId: lead.customerId,
@@ -51,7 +64,17 @@ export function LeadModal({ open, lead, onClose }: LeadModalProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.customerId) { alert("Please select a customer"); return; }
+    const result = leadFormSchema.safeParse(form);
+    if (!result.success) {
+      const fieldErrors: Partial<Record<keyof LeadFormValues, string>> = {};
+      for (const issue of result.error.issues) {
+        const key = issue.path[0] as keyof LeadFormValues;
+        if (key && !fieldErrors[key]) fieldErrors[key] = issue.message;
+      }
+      setErrors(fieldErrors);
+      return;
+    }
+    setErrors({});
     try {
       if (lead) {
         await updateLead.mutateAsync({ id: lead.id, data: form });
@@ -73,16 +96,23 @@ export function LeadModal({ open, lead, onClose }: LeadModalProps) {
       onClose={onClose}
       footer={
         <div className="modal-footer">
-          <Button variant="secondary" onClick={onClose}>Cancel</Button>
-          <Button type="submit" form="lead-form" disabled={createLead.isPending || updateLead.isPending}>
-            {createLead.isPending || updateLead.isPending ? "Saving…" : "Save Lead"}
+          <Button variant="secondary" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            form="lead-form"
+            disabled={createLead.isPending || updateLead.isPending}
+          >
+            {createLead.isPending || updateLead.isPending
+              ? "Saving…"
+              : "Save Lead"}
           </Button>
         </div>
       }
     >
       <form id="lead-form" onSubmit={handleSubmit}>
         <div className="form-grid">
-          {/* Customer */}
           <div className="form-group full">
             <CustomerSearchSelect
               value={form.customerId || null}
@@ -92,53 +122,69 @@ export function LeadModal({ open, lead, onClose }: LeadModalProps) {
               label="Customer"
               required
             />
+            {errors.customerId && (
+              <span className="field-error">{errors.customerId}</span>
+            )}
           </div>
 
-          {/* Product */}
           <div className="form-group">
             <label htmlFor="l-product">Product *</label>
             <select
               id="l-product"
               required
               value={form.product}
-              onChange={(e) => setForm({ ...form, product: e.target.value as LeadProduct })}
+              onChange={(e) =>
+                setForm({ ...form, product: e.target.value as LeadProduct })
+              }
             >
               <option value="LIFE">Life</option>
               <option value="HEALTH">Health</option>
               <option value="MOTOR">Motor</option>
             </select>
+            {errors.product && (
+              <span className="field-error">{errors.product}</span>
+            )}
           </div>
 
-          {/* Closure Timeline */}
           <div className="form-group">
             <label htmlFor="l-timeline">Closure Timeline *</label>
             <select
               id="l-timeline"
               required
               value={form.closureTimeline}
-              onChange={(e) => setForm({ ...form, closureTimeline: e.target.value as ClosureTimeline })}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  closureTimeline: e.target.value as ClosureTimeline,
+                })
+              }
             >
               <option value="THIS_MONTH">This Month</option>
               <option value="T_PLUS_1">T+1 (Next Month)</option>
               <option value="T_PLUS_2">T+2</option>
               <option value="LATER">Later</option>
             </select>
+            {errors.closureTimeline && (
+              <span className="field-error">{errors.closureTimeline}</span>
+            )}
           </div>
 
-          {/* Estimated Premium */}
           <div className="form-group">
             <label htmlFor="l-premium">Est. Premium (₹) *</label>
             <input
               id="l-premium"
               type="number"
-              required
               min={0}
               value={form.estimatedPremium}
-              onChange={(e) => setForm({ ...form, estimatedPremium: +e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, estimatedPremium: +e.target.value })
+              }
             />
+            {errors.estimatedPremium && (
+              <span className="field-error">{errors.estimatedPremium}</span>
+            )}
           </div>
 
-          {/* Estimated Sum Assured */}
           <div className="form-group">
             <label htmlFor="l-sum">Est. Sum Assured (₹)</label>
             <input
@@ -146,29 +192,39 @@ export function LeadModal({ open, lead, onClose }: LeadModalProps) {
               type="number"
               min={0}
               value={form.estimatedSum}
-              onChange={(e) => setForm({ ...form, estimatedSum: +e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, estimatedSum: +e.target.value })
+              }
             />
+            {errors.estimatedSum && (
+              <span className="field-error">{errors.estimatedSum}</span>
+            )}
           </div>
 
-          {/* Expected Close Date */}
           <div className="form-group">
             <label htmlFor="l-closedate">Expected Close Date</label>
             <input
               id="l-closedate"
               type="date"
               value={form.expectedCloseDate}
-              onChange={(e) => setForm({ ...form, expectedCloseDate: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, expectedCloseDate: e.target.value })
+              }
             />
+            {errors.expectedCloseDate && (
+              <span className="field-error">{errors.expectedCloseDate}</span>
+            )}
           </div>
 
-          {/* Status (only for editing) */}
           {lead && (
             <div className="form-group">
               <label htmlFor="l-status">Status</label>
               <select
                 id="l-status"
                 value={form.status}
-                onChange={(e) => setForm({ ...form, status: e.target.value as LeadStatus })}
+                onChange={(e) =>
+                  setForm({ ...form, status: e.target.value as LeadStatus })
+                }
               >
                 <option value="NEW">New</option>
                 <option value="CONTACTED">Contacted</option>
@@ -177,10 +233,12 @@ export function LeadModal({ open, lead, onClose }: LeadModalProps) {
                 <option value="WON">Won</option>
                 <option value="LOST">Lost</option>
               </select>
+              {errors.status && (
+                <span className="field-error">{errors.status}</span>
+              )}
             </div>
           )}
 
-          {/* Source */}
           <div className="form-group">
             <label htmlFor="l-source">Source</label>
             <input
@@ -192,7 +250,6 @@ export function LeadModal({ open, lead, onClose }: LeadModalProps) {
             />
           </div>
 
-          {/* Remarks */}
           <div className="form-group full">
             <label htmlFor="l-remarks">Remarks</label>
             <textarea

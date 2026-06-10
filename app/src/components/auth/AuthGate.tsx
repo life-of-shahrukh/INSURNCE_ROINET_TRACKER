@@ -31,13 +31,13 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
 
     const isPublic = PUBLIC_PATHS.has(pathname);
 
-    // Not logged in → login page
-    if (!user && !isPublic) {
+    // Not logged in → login page (skip if already there)
+    if (!user && !isPublic && pathname !== "/login") {
       router.replace("/login");
       return;
     }
-    // Already logged in → dashboard
-    if (user && isPublic) {
+    // Already logged in → dashboard (skip if already there)
+    if (user && isPublic && pathname !== "/dashboard") {
       router.replace("/dashboard");
       return;
     }
@@ -47,7 +47,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
     // Role-based path guard
     for (const { prefix, minRole } of PATH_MIN_ROLE) {
       if (pathname.startsWith(prefix) && !hasMinRole(user.role, minRole)) {
-        router.replace("/dashboard");
+        if (pathname !== "/dashboard") router.replace("/dashboard");
         return;
       }
     }

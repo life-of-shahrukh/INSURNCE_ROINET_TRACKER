@@ -8,26 +8,32 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
-import type { Customer } from "@/lib/types";
 
-interface Props {
-  customers: Customer[];
+export interface KycStatusRow {
+  kycStatus: string;
+  count: number;
 }
 
-const KYC_CONFIG = [
-  { key: "VERIFIED", label: "Verified", color: "#2a9d8f" },
-  { key: "PENDING", label: "Pending", color: "#f4a261" },
-  { key: "REJECTED", label: "Rejected", color: "#e63946" },
-] as const;
+interface Props {
+  data: KycStatusRow[];
+}
 
-export function KycStatusChart({ customers }: Props): React.ReactElement {
-  const data = KYC_CONFIG.map(({ key, label, color }) => ({
-    name: label,
-    value: customers.filter((c) => c.kycStatus === key).length,
-    color,
-  })).filter((d) => d.value > 0);
+const KYC_CONFIG: Record<string, { label: string; color: string }> = {
+  VERIFIED: { label: "Verified", color: "#2a9d8f" },
+  PENDING: { label: "Pending", color: "#f4a261" },
+  REJECTED: { label: "Rejected", color: "#e63946" },
+};
 
-  if (data.length === 0) {
+export function KycStatusChart({ data }: Props): React.ReactElement {
+  const chartData = data
+    .map(({ kycStatus, count }) => ({
+      name: KYC_CONFIG[kycStatus]?.label ?? kycStatus,
+      value: count,
+      color: KYC_CONFIG[kycStatus]?.color ?? "#888",
+    }))
+    .filter((d) => d.value > 0);
+
+  if (chartData.length === 0) {
     return <div className="empty">No customer KYC data.</div>;
   }
 
@@ -35,7 +41,7 @@ export function KycStatusChart({ customers }: Props): React.ReactElement {
     <ResponsiveContainer width="100%" height={260}>
       <PieChart>
         <Pie
-          data={data}
+          data={chartData}
           cx="50%"
           cy="50%"
           innerRadius={55}
@@ -43,7 +49,7 @@ export function KycStatusChart({ customers }: Props): React.ReactElement {
           paddingAngle={3}
           dataKey="value"
         >
-          {data.map((entry) => (
+          {chartData.map((entry) => (
             <Cell key={entry.name} fill={entry.color} />
           ))}
         </Pie>

@@ -35,6 +35,7 @@ const NAV: NavItem[] = [
   { href: "/renewals",    icon: "↻", label: "Renewals" },
   { href: "/commissions", icon: "₹", label: "Commissions",     minRole: "ASM" },
   { href: "/reports",     icon: "▦", label: "Reports",         minRole: "ASM" },
+  { href: "/profile",     icon: "◎", label: "My Profile" },
 ];
 
 const ROLE_LABEL: Record<UserRole, string> = {
@@ -70,7 +71,9 @@ export function Sidebar() {
         <div className="logo">
           <div className="logo-title">Roinet Insurance</div>
           <div className="logo-sub">Brokers — Sales CRM</div>
-          <div className="logo-role">{role ? ROLE_LABEL[role] : ""}</div>
+          <Link href="/profile" className="logo-role" style={{ textDecoration: "none", cursor: "pointer" }}>
+            {role ? ROLE_LABEL[role] : ""}
+          </Link>
         </div>
         <nav className="sidebar-nav" aria-label="Main navigation">
           {visibleNav.map((item) => (

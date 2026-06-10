@@ -29,7 +29,8 @@
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
     "db:format": "prisma format",
-    "db:validate": "prisma validate"
+    "db:validate": "prisma validate",
+    "seed:all": "ts-node -r tsconfig-paths/register src/seed/sync-from-snapshots.ts"
   },
   "dependencies": {
     "@nestjs/bull": "^11.0.4",

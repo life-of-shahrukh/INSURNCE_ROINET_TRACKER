@@ -31,8 +31,11 @@ export default function CrmLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { user } = useAuth();
-  if (!user) {
+  const { user, initializing } = useAuth();
+
+  // While the session check is in flight, render nothing — AuthGate
+  // shows its own "Checking session…" spinner so no extra UI is needed.
+  if (initializing || !user) {
     return null;
   }
 

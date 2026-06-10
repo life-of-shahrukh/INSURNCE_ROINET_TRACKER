@@ -72,6 +72,23 @@ export interface HierarchyUser {
 }
 
 /**
+ * POSP data from ListPospData endpoint
+ */
+export interface PospData {
+  UserId: string;
+  UserCode: string;
+  MobileNo: string;
+  EmailId: string;
+  ResidenceState: string;
+  ResidenceCity: string;
+  CompanyState: string;
+  CompanyCity: string;
+  HephGcdCode: string;
+  CreatedDate: string;
+  CreatedBy: string;
+}
+
+/**
  * Request/Response types for external API
  */
 export interface ListDistrictRequest {

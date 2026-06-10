@@ -115,6 +115,10 @@ model SalesTeam {
 
 model Posp {
   id             String     @id @default(cuid()) @db.NVarChar(36)
+  /// UserId from Cognitensor ListPospData (null until synced)
+  externalId     String?    @unique @db.NVarChar(50)
+  /// HephGcdCode from Cognitensor (e.g. GIDROINET2000473)
+  gcdCode        String?    @db.NVarChar(100)
   name           String     @db.NVarChar(200)
   code           String     @unique @db.NVarChar(50)
   mobile         String     @db.NVarChar(20)

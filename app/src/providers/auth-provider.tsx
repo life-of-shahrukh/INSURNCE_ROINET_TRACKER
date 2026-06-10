@@ -48,16 +48,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [initializing, setInitializing] = useState(true);
 
   // On mount, call /api/auth/me to restore session from HttpOnly cookie.
-  // A 401 or 403 (stale role) means no valid session — clear user and let AuthGate redirect.
+  // Only call logout (and clear the cookie) on 401/403 — NOT on network errors,
+  // so a slow backend restart doesn't wipe a valid session.
   useEffect(() => {
     apiRequest<AuthUser>("/api/auth/me")
       .then(setUser)
-      .catch(async () => {
-        // Cookie may exist but be stale — clear it server-side
-        await fetch(`${API_BASE}/api/auth/logout`, {
-          method: "POST",
-          credentials: "include",
-        }).catch(() => {});
+      .catch(async (err: unknown) => {
+        const msg = err instanceof Error ? err.message : "";
+        const isAuthError = /API 40[13]/.test(msg);
+        if (isAuthError) {
+          await fetch(`${API_BASE}/api/auth/logout`, {
+            method: "POST",
+            credentials: "include",
+          }).catch(() => {});
+        }
         setUser(null);
       })
       .finally(() => setInitializing(false));

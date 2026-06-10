@@ -9,8 +9,8 @@ import { SalesTeamRepository } from './sales-team.repository';
 import { CreateSalesTeamDto } from './dto/create-sales-team.dto';
 import { UpdateSalesTeamDto } from './dto/update-sales-team.dto';
 import {
-  externalApi,
-  HierarchyEntry,
+  ExternalApiService,
+  type HierarchyEntry,
 } from '../../common/external-api/external-api.service';
 import type { SalesTeam } from '@prisma/client';
 import { SalesTeamListQueryDto } from './dto/sales-team-list-query.dto';
@@ -35,6 +35,7 @@ export class SalesTeamService {
   constructor(
     private readonly repository: SalesTeamRepository,
     private readonly prisma: PrismaService,
+    private readonly externalApiService: ExternalApiService,
   ) {}
 
   async create(dto: CreateSalesTeamDto): Promise<SalesTeam> {
@@ -94,11 +95,9 @@ export class SalesTeamService {
   async syncFromExternalApi(): Promise<{ synced: number }> {
     this.logger.log('Starting sales team sync from external API...');
 
-    let hierarchyData: Awaited<
-      ReturnType<typeof externalApi.getHierarchyUserData>
-    >;
+    let hierarchyData: HierarchyEntry[];
     try {
-      hierarchyData = await externalApi.getHierarchyUserData();
+      hierarchyData = this.externalApiService.listHierarchy();
     } catch (err) {
       this.logger.error('Failed to fetch hierarchy data', err);
       throw new BadRequestException(
@@ -186,7 +185,7 @@ export class SalesTeamService {
   async getOrgChartNodes(): Promise<OrgNode[]> {
     let hierarchyData: HierarchyEntry[];
     try {
-      hierarchyData = await externalApi.getHierarchyUserData();
+      hierarchyData = this.externalApiService.listHierarchy();
     } catch (err) {
       this.logger.error('Failed to fetch hierarchy data for org chart', err);
 

@@ -1,23 +1,35 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchCustomers } from '@/hooks/useCustomers';
 
 interface CustomerSearchSelectProps {
   value: string | null;
+  /** Customer name to display when there is no customerId (e.g. free-text entry). */
+  displayValue?: string | null;
   onChange: (customerId: string | null, customerName: string | null) => void;
   label?: string;
   required?: boolean;
+  /**
+   * When true, the user can type any name freely. Every keystroke emits
+   * onChange(null, typedText) so the parent always has the latest text.
+   * Selecting a suggestion overrides with the real customerId.
+   */
+  allowFreeText?: boolean;
 }
 
 export function CustomerSearchSelect({
   value,
+  displayValue,
   onChange,
   label = 'Customer',
   required = false,
+  allowFreeText = false,
 }: CustomerSearchSelectProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const { data: searchResults, isLoading } = useSearchCustomers(
     searchQuery,
     searchQuery.length >= 2,
@@ -25,11 +37,26 @@ export function CustomerSearchSelect({
 
   const selectedCustomer = searchResults?.find((c) => c.id === value);
 
+  // Sync display text: prefer the matched customer name, fall back to displayValue.
   useEffect(() => {
     if (selectedCustomer) {
       setSearchQuery(selectedCustomer.name);
+    } else if (!value && displayValue && !searchQuery) {
+      setSearchQuery(displayValue);
     }
-  }, [selectedCustomer]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCustomer, value, displayValue]);
+
+  // Close dropdown when clicking outside.
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleSelect = (customerId: string, customerName: string) => {
     setSearchQuery(customerName);
@@ -39,30 +66,47 @@ export function CustomerSearchSelect({
 
   const handleClear = () => {
     setSearchQuery('');
+    setShowDropdown(false);
     onChange(null, null);
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const text = e.target.value;
+    setSearchQuery(text);
+    setShowDropdown(true);
+    if (!text) {
+      onChange(null, null);
+    } else if (allowFreeText) {
+      // Immediately emit the typed text so the parent always has the latest name.
+      onChange(null, text);
+    }
+  };
+
+  const isCustomerLocked = Boolean(value);
+  const showClear = isCustomerLocked || (allowFreeText && searchQuery.length > 0);
+
   return (
-    <div className="form-group">
-      <label>
-        {label} {required && '*'}
-      </label>
+    <div className={label ? 'form-group' : undefined} ref={containerRef}>
+      {label && (
+        <label>
+          {label}
+          {required && ' *'}
+        </label>
+      )}
       <div style={{ position: 'relative' }}>
         <input
           type="text"
           value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-            setShowDropdown(true);
-            if (!e.target.value) {
-              onChange(null, null);
-            }
-          }}
+          onChange={handleInputChange}
           onFocus={() => setShowDropdown(true)}
-          placeholder="Search customer by name, mobile, or email..."
+          placeholder={
+            allowFreeText
+              ? 'Search existing or type a new name…'
+              : 'Search customer by name, mobile, or email…'
+          }
           required={required}
         />
-        {value && (
+        {showClear && (
           <button
             type="button"
             onClick={handleClear}
@@ -101,11 +145,13 @@ export function CustomerSearchSelect({
           >
             {isLoading ? (
               <div style={{ padding: '8px', textAlign: 'center', color: '#999' }}>
-                Searching...
+                Searching…
               </div>
             ) : !searchResults || searchResults.length === 0 ? (
               <div style={{ padding: '8px', textAlign: 'center', color: '#999' }}>
-                No customers found
+                {allowFreeText
+                  ? `No match — "${searchQuery}" will be saved as a new customer name`
+                  : 'No customers found'}
               </div>
             ) : (
               searchResults.map((customer) => (

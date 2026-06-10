@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { useCreateCustomer, useUpdateCustomer } from '@/hooks/useCustomers';
-import { LocationSelector } from '@/components/location/LocationSelector';
-import type { Customer } from '@/lib/api/customer-api';
+import { useEffect, useState } from "react";
+import { useCreateCustomer, useUpdateCustomer } from "@/hooks/useCustomers";
+import { LocationSelector } from "@/components/location/LocationSelector";
+import { customerFormSchema, type CustomerFormValues } from "@/lib/schemas";
+import type { Customer } from "@/lib/api/customer-api";
 
 interface CustomerModalProps {
   open: boolean;
@@ -11,74 +12,75 @@ interface CustomerModalProps {
   onClose: () => void;
 }
 
+const emptyForm = {
+  name: "",
+  email: "",
+  mobile: "",
+  alternateMobile: "",
+  panNumber: "",
+  aadharNumber: "",
+  stateId: "",
+  stateName: "",
+  districtId: "",
+  districtName: "",
+  cityId: "",
+  cityName: "",
+  address: "",
+  pincode: "",
+  source: "",
+  kycStatus: "PENDING" as "PENDING" | "VERIFIED" | "REJECTED",
+};
+
 export function CustomerModal({ open, customer, onClose }: CustomerModalProps) {
   const createCustomer = useCreateCustomer();
   const updateCustomer = useUpdateCustomer();
-
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    mobile: '',
-    alternateMobile: '',
-    panNumber: '',
-    aadharNumber: '',
-    stateId: '',
-    stateName: '',
-    districtId: '',
-    districtName: '',
-    cityId: '',
-    cityName: '',
-    address: '',
-    pincode: '',
-    source: '',
-    kycStatus: 'PENDING' as 'PENDING' | 'VERIFIED' | 'REJECTED',
-  });
+  const [formData, setFormData] = useState(emptyForm);
+  const [errors, setErrors] =
+    useState<Partial<Record<keyof CustomerFormValues, string>>>({});
 
   useEffect(() => {
+    if (!open) {
+      setErrors({});
+      return;
+    }
+    setErrors({});
     if (customer) {
       setFormData({
-        name: customer.name || '',
-        email: customer.email || '',
-        mobile: customer.mobile || '',
-        alternateMobile: customer.alternateMobile || '',
-        panNumber: customer.panNumber || '',
-        aadharNumber: customer.aadharNumber || '',
-        stateId: customer.stateId || '',
-        stateName: customer.stateName || '',
-        districtId: customer.districtId || '',
-        districtName: customer.districtName || '',
-        cityId: customer.cityId || '',
-        cityName: customer.cityName || '',
-        address: customer.address || '',
-        pincode: customer.pincode || '',
-        source: customer.source || '',
-        kycStatus: customer.kycStatus || 'PENDING',
+        name: customer.name || "",
+        email: customer.email || "",
+        mobile: customer.mobile || "",
+        alternateMobile: customer.alternateMobile || "",
+        panNumber: customer.panNumber || "",
+        aadharNumber: customer.aadharNumber || "",
+        stateId: customer.stateId || "",
+        stateName: customer.stateName || "",
+        districtId: customer.districtId || "",
+        districtName: customer.districtName || "",
+        cityId: customer.cityId || "",
+        cityName: customer.cityName || "",
+        address: customer.address || "",
+        pincode: customer.pincode || "",
+        source: customer.source || "",
+        kycStatus: customer.kycStatus || "PENDING",
       });
     } else {
-      setFormData({
-        name: '',
-        email: '',
-        mobile: '',
-        alternateMobile: '',
-        panNumber: '',
-        aadharNumber: '',
-        stateId: '',
-        stateName: '',
-        districtId: '',
-        districtName: '',
-        cityId: '',
-        cityName: '',
-        address: '',
-        pincode: '',
-        source: '',
-        kycStatus: 'PENDING',
-      });
+      setFormData(emptyForm);
     }
   }, [customer, open]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    const result = customerFormSchema.safeParse(formData);
+    if (!result.success) {
+      const fieldErrors: Partial<Record<keyof CustomerFormValues, string>> = {};
+      for (const issue of result.error.issues) {
+        const key = issue.path[0] as keyof CustomerFormValues;
+        if (key && !fieldErrors[key]) fieldErrors[key] = issue.message;
+      }
+      setErrors(fieldErrors);
+      return;
+    }
+    setErrors({});
     try {
       if (customer) {
         await updateCustomer.mutateAsync({ id: customer.id, data: formData });
@@ -89,8 +91,8 @@ export function CustomerModal({ open, customer, onClose }: CustomerModalProps) {
       }
       onClose();
     } catch (error) {
-      console.error('Failed to save customer:', error);
-      alert('Failed to save customer');
+      console.error("Failed to save customer:", error);
+      alert("Failed to save customer");
     }
   };
 
@@ -104,12 +106,12 @@ export function CustomerModal({ open, customer, onClose }: CustomerModalProps) {
   }) => {
     setFormData((prev) => ({
       ...prev,
-      stateId: location.stateId || '',
-      stateName: location.stateName || '',
-      districtId: location.districtId || '',
-      districtName: location.districtName || '',
-      cityId: location.cityId || '',
-      cityName: location.cityName || '',
+      stateId: location.stateId || "",
+      stateName: location.stateName || "",
+      districtId: location.districtId || "",
+      districtName: location.districtName || "",
+      cityId: location.cityId || "",
+      cityName: location.cityName || "",
     }));
   };
 
@@ -119,7 +121,7 @@ export function CustomerModal({ open, customer, onClose }: CustomerModalProps) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>{customer ? 'Edit Customer' : 'New Customer'}</h2>
+          <h2>{customer ? "Edit Customer" : "New Customer"}</h2>
           <button type="button" onClick={onClose} className="close-btn">
             ×
           </button>
@@ -128,16 +130,19 @@ export function CustomerModal({ open, customer, onClose }: CustomerModalProps) {
         <form onSubmit={handleSubmit}>
           <div className="modal-body">
             <div className="form-grid">
-              {/* Basic Info */}
               <div className="form-group">
                 <label htmlFor="name">Name *</label>
                 <input
                   id="name"
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                 />
+                {errors.name && (
+                  <span className="field-error">{errors.name}</span>
+                )}
               </div>
 
               <div className="form-group">
@@ -146,9 +151,13 @@ export function CustomerModal({ open, customer, onClose }: CustomerModalProps) {
                   id="mobile"
                   type="tel"
                   value={formData.mobile}
-                  onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
-                  required
+                  onChange={(e) =>
+                    setFormData({ ...formData, mobile: e.target.value })
+                  }
                 />
+                {errors.mobile && (
+                  <span className="field-error">{errors.mobile}</span>
+                )}
               </div>
 
               <div className="form-group">
@@ -157,8 +166,13 @@ export function CustomerModal({ open, customer, onClose }: CustomerModalProps) {
                   id="email"
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                 />
+                {errors.email && (
+                  <span className="field-error">{errors.email}</span>
+                )}
               </div>
 
               <div className="form-group">
@@ -168,21 +182,34 @@ export function CustomerModal({ open, customer, onClose }: CustomerModalProps) {
                   type="tel"
                   value={formData.alternateMobile}
                   onChange={(e) =>
-                    setFormData({ ...formData, alternateMobile: e.target.value })
+                    setFormData({
+                      ...formData,
+                      alternateMobile: e.target.value,
+                    })
                   }
                 />
+                {errors.alternateMobile && (
+                  <span className="field-error">{errors.alternateMobile}</span>
+                )}
               </div>
 
-              {/* KYC Info */}
               <div className="form-group">
                 <label htmlFor="panNumber">PAN Number</label>
                 <input
                   id="panNumber"
                   type="text"
                   value={formData.panNumber}
-                  onChange={(e) => setFormData({ ...formData, panNumber: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      panNumber: e.target.value.toUpperCase(),
+                    })
+                  }
                   maxLength={10}
                 />
+                {errors.panNumber && (
+                  <span className="field-error">{errors.panNumber}</span>
+                )}
               </div>
 
               <div className="form-group">
@@ -196,6 +223,9 @@ export function CustomerModal({ open, customer, onClose }: CustomerModalProps) {
                   }
                   maxLength={12}
                 />
+                {errors.aadharNumber && (
+                  <span className="field-error">{errors.aadharNumber}</span>
+                )}
               </div>
 
               {customer && (
@@ -207,7 +237,10 @@ export function CustomerModal({ open, customer, onClose }: CustomerModalProps) {
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        kycStatus: e.target.value as 'PENDING' | 'VERIFIED' | 'REJECTED',
+                        kycStatus: e.target.value as
+                          | "PENDING"
+                          | "VERIFIED"
+                          | "REJECTED",
                       })
                     }
                   >
@@ -224,27 +257,29 @@ export function CustomerModal({ open, customer, onClose }: CustomerModalProps) {
                   id="source"
                   type="text"
                   value={formData.source}
-                  onChange={(e) => setFormData({ ...formData, source: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, source: e.target.value })
+                  }
                   placeholder="e.g., Referral, Campaign"
                 />
               </div>
             </div>
 
-            {/* Location Selector */}
-            <div style={{ marginTop: '20px' }}>
-              <h3 style={{ marginBottom: '10px', fontSize: '14px', fontWeight: 600 }}>
+            <div style={{ marginTop: "20px" }}>
+              <h3 style={{ marginBottom: "10px", fontSize: "14px", fontWeight: 600 }}>
                 Location
               </h3>
               <LocationSelector onLocationChange={handleLocationChange} />
             </div>
 
-            {/* Address */}
-            <div className="form-group" style={{ marginTop: '20px' }}>
+            <div className="form-group" style={{ marginTop: "20px" }}>
               <label htmlFor="address">Address</label>
               <textarea
                 id="address"
                 value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, address: e.target.value })
+                }
                 rows={3}
               />
             </div>
@@ -255,9 +290,14 @@ export function CustomerModal({ open, customer, onClose }: CustomerModalProps) {
                 id="pincode"
                 type="text"
                 value={formData.pincode}
-                onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, pincode: e.target.value })
+                }
                 maxLength={6}
               />
+              {errors.pincode && (
+                <span className="field-error">{errors.pincode}</span>
+              )}
             </div>
           </div>
 
@@ -271,10 +311,10 @@ export function CustomerModal({ open, customer, onClose }: CustomerModalProps) {
               disabled={createCustomer.isPending || updateCustomer.isPending}
             >
               {createCustomer.isPending || updateCustomer.isPending
-                ? 'Saving...'
+                ? "Saving..."
                 : customer
-                  ? 'Update'
-                  : 'Create'}
+                  ? "Update"
+                  : "Create"}
             </button>
           </div>
         </form>

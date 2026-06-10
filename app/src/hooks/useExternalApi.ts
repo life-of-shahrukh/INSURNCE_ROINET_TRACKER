@@ -5,9 +5,10 @@
  * and hierarchy data with automatic caching and refetching.
  */
 
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+import { keepPreviousData, useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { externalApi } from '../lib/api/external-api';
-import type { State, District, City, HierarchyUser } from '../lib/external-api-types';
+import type { State, District, City, HierarchyUser, PospData } from '../lib/external-api-types';
+import type { PaginatedResponse } from '../lib/api/pagination-types';
 
 /**
  * Query keys for external API
@@ -73,6 +74,22 @@ export function useHierarchyUserData(): UseQueryResult<HierarchyUser[], Error> {
     queryFn: () => externalApi.getHierarchyUserData(),
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 15, // 15 minutes
+  });
+}
+
+/**
+ * Hook to fetch paginated + filtered POSP list from Cognitensor (via NestJS proxy)
+ */
+export function useExternalPosps(
+  params?: URLSearchParams,
+): UseQueryResult<PaginatedResponse<PospData>, Error> {
+  const key = params?.toString() ?? '';
+  return useQuery({
+    queryKey: [...externalApiKeys.all, 'posps', key],
+    queryFn: () => externalApi.getPosps(params),
+    staleTime: 1000 * 60 * 15, // 15 minutes
+    gcTime: 1000 * 60 * 60,    // 1 hour
+    placeholderData: keepPreviousData,
   });
 }
 

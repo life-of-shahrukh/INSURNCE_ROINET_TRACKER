@@ -17,138 +17,269 @@ import { Card } from "@/components/ui/Card";
 import { KpiCard } from "@/components/ui/KpiCard";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ListDataSection } from "@/components/ui/ListDataSection";
-import { computeDashboardKpis, pospName } from "@/lib/crm-calculations";
+import { pospName } from "@/lib/crm-calculations";
 import { fmtDate, fmtINR, fmtINRShort } from "@/lib/formatters";
-import { useLeads } from "@/hooks/useLeads";
-import { useCustomers } from "@/hooks/useCustomers";
 import { useDealsList } from "@/hooks/useDealsList";
 import { useListQueryStatus } from "@/hooks/useListQueryStatus";
+import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useCrm } from "@/providers/crm-provider";
+import { useAuth } from "@/providers/auth-provider";
+import { hasMinRole } from "@/lib/auth-types";
+import type { UserRole } from "@/lib/auth-types";
 import type { Deal } from "@/lib/types";
 import { useMemo, useState } from "react";
 
+// ── role helpers ────────────────────────────────────────────────────────────
+
+function dashboardSubtitle(role: UserRole | undefined): string {
+  if (!role) return "Overview of your sales performance";
+  if (role === "SUPER_ADMIN" || role === "NATIONAL_HEAD")
+    return "Overview of company-wide sales performance";
+  if (role === "ZH") return "Overview of your zone's sales performance";
+  if (role === "RH") return "Overview of your region's sales performance";
+  if (role === "ASM" || role === "DM")
+    return "Overview of your area's sales performance";
+  return "Overview of your personal sales performance";
+}
+
+function pospKpiLabel(role: UserRole | undefined): string {
+  if (!role || role === "POSP") return "";
+  if (role === "SUPER_ADMIN" || role === "NATIONAL_HEAD") return "Active POSPs";
+  if (role === "ZH") return "Zone POSPs";
+  if (role === "RH") return "Region POSPs";
+  return "My POSPs";
+}
+
+// ── component ───────────────────────────────────────────────────────────────
+
 export default function DashboardPage(): React.ReactElement {
   const { posp, exportCsv } = useCrm();
+  const { user } = useAuth();
+  const role = user?.role;
+
   const [period, setPeriod] = useState<DashboardPeriod>("month");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
 
-  const dealsParams = useMemo(() => {
-    return new URLSearchParams({
-      page: "1",
-      pageSize: "100",
-      dateRange: period,
-    });
-  }, [period]);
+  const apiParams = useMemo(() => {
+    const p = new URLSearchParams({ page: "1", pageSize: "5" });
+    if (period === "custom") {
+      p.set("dateRange", "custom");
+      if (dateFrom) p.set("dateFrom", dateFrom);
+      if (dateTo) p.set("dateTo", dateTo);
+    } else {
+      p.set("dateRange", period === "day" ? "today" : period);
+    }
+    return p;
+  }, [period, dateFrom, dateTo]);
 
-  const dealsQuery = useDealsList(dealsParams);
+  // Stats params has a larger page size so stats are accurate
+  const statsParams = useMemo(() => {
+    const p = new URLSearchParams(apiParams);
+    p.set("pageSize", "1"); // only KPIs from stats; paging size irrelevant
+    return p;
+  }, [apiParams]);
+
+  // Dedicated stats endpoint — one request for all KPIs and chart data
+  const { data: stats, isLoading: statsLoading } =
+    useDashboardStats(statsParams);
+
+  // Recent deals table only (pageSize=5)
+  const dealsQuery = useDealsList(apiParams);
   const { data: dealsResult } = dealsQuery;
   const { isInitialLoading, isRefreshing } = useListQueryStatus(dealsQuery);
-  const dealsRaw = dealsResult?.data;
-  const filteredDeals = useMemo(() => dealsRaw ?? [], [dealsRaw]);
-
-  const auxParams = useMemo(
-    () => new URLSearchParams({ page: "1", pageSize: "100" }),
-    [],
-  );
-  const { data: leadsResult } = useLeads(auxParams);
-  const { data: customersResult } = useCustomers(auxParams);
-  const leads = leadsResult?.data ?? [];
-  const customers = customersResult?.data ?? [];
+  const recentDeals = useMemo(() => dealsResult?.data ?? [], [dealsResult]);
 
   const [dealModalOpen, setDealModalOpen] = useState(false);
   const [editDeal, setEditDeal] = useState<Deal | null>(null);
 
-  const periodText = dashboardPeriodLabel(period);
+  const periodText = dashboardPeriodLabel(period, dateFrom, dateTo);
 
-  const kpis = useMemo(
-    () => computeDashboardKpis(filteredDeals, posp),
-    [filteredDeals, posp],
-  );
+  // ── role-based visibility flags ─────────────────────────────────────────
+  const isManager = role ? hasMinRole(role, "ASM") : false;
+  const isAdminLevel =
+    role === "SUPER_ADMIN" || role === "NATIONAL_HEAD" || role === "ZH";
+  const isPosp = role === "POSP";
 
-  const recent = useMemo(
-    () =>
-      [...filteredDeals]
-        .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
-        .slice(0, 5),
-    [filteredDeals],
-  );
+  const showPospKpi = !isPosp;
+  const showTopPospChart = !isPosp;
+  const showKycChart = isAdminLevel;
+
+  const pospKpi = pospKpiLabel(role);
 
   return (
     <>
       <PageHeader
         title="Dashboard"
-        subtitle="Overview of your sales performance"
+        subtitle={dashboardSubtitle(role)}
         actions={
           <>
-            <Button variant="secondary" onClick={() => exportCsv(dealsParams)}>
+            <Button variant="secondary" onClick={() => exportCsv(apiParams)}>
               ⬇ Export Data
             </Button>
-            <Button onClick={() => { setEditDeal(null); setDealModalOpen(true); }}>
+            <Button
+              onClick={() => {
+                setEditDeal(null);
+                setDealModalOpen(true);
+              }}
+            >
               + New Deal
             </Button>
           </>
         }
       />
 
-      <DashboardPeriodTabs value={period} onChange={setPeriod} />
+      <DashboardPeriodTabs
+        value={period}
+        onChange={setPeriod}
+        dateFrom={dateFrom}
+        dateTo={dateTo}
+        onDateFromChange={setDateFrom}
+        onDateToChange={setDateTo}
+      />
 
+      {/* ── KPI Row ────────────────────────────────────────────────────── */}
       <div className="kpi-grid">
-        <KpiCard label="Total Premium" value={fmtINRShort(kpis.totalPremium)} sub={`${kpis.dealCount} deals ${periodText}`} />
-        <KpiCard label="Retained Margin" value={fmtINRShort(kpis.totalMargin)} sub="After COA" variant="success" />
-        <KpiCard label="Hot Deals" value={String(kpis.hotDeals)} sub="Likely to close soon" variant="hot" />
-        <KpiCard label="Active POSPs" value={String(kpis.activePosps)} sub="Selling now" variant="warm" />
-        <KpiCard label="Conversion" value={`${kpis.conv}%`} sub={`${kpis.issued} issued / ${kpis.dealCount}`} />
+        <KpiCard
+          label="Total Premium"
+          value={statsLoading ? "…" : fmtINRShort(stats?.deals.totalPremium ?? 0)}
+          sub={`${stats?.deals.count ?? 0} deals ${periodText}`}
+        />
+        <KpiCard
+          label="Retained Margin"
+          value={statsLoading ? "…" : fmtINRShort(stats?.deals.totalMargin ?? 0)}
+          sub="After COA"
+          variant="success"
+        />
+        <KpiCard
+          label="Hot Deals"
+          value={statsLoading ? "…" : String(stats?.deals.hotCount ?? 0)}
+          sub="Likely to close soon"
+          variant="hot"
+        />
+        <KpiCard
+          label="Lead Pipeline"
+          value={statsLoading ? "…" : String(stats?.leads.activeCount ?? 0)}
+          sub={`${stats?.leads.total ?? 0} total leads ${periodText}`}
+          variant="warm"
+        />
+        <KpiCard
+          label="Conversion"
+          value={statsLoading ? "…" : `${stats?.deals.conversionRate ?? 0}%`}
+          sub={`${stats?.deals.issuedCount ?? 0} issued / ${stats?.deals.count ?? 0}`}
+        />
+        {showPospKpi && (
+          <KpiCard
+            label={pospKpi}
+            value={statsLoading ? "…" : String(stats?.posps.active ?? 0)}
+            sub={`${stats?.posps.total ?? 0} total`}
+          />
+        )}
+        {isAdminLevel && (
+          <KpiCard
+            label="Customers"
+            value={statsLoading ? "…" : String(stats?.customers.total ?? 0)}
+            sub={`${stats?.customers.byKycStatus.find((k) => k.kycStatus === "VERIFIED")?.count ?? 0} KYC verified`}
+          />
+        )}
       </div>
 
+      {/* ── Row 1: Status + Policy ─────────────────────────────────────── */}
       <div className="row-2">
-        <Card title="Deals by Status"><DealsByStatusChart deals={filteredDeals} /></Card>
-        <Card title="Premium by Policy Type"><PremiumByPolicyChart deals={filteredDeals} /></Card>
+        <Card title="Deals by Status">
+          <DealsByStatusChart
+            data={{
+              hot: stats?.deals.hotCount ?? 0,
+              warm: stats?.deals.warmCount ?? 0,
+              cold: stats?.deals.coldCount ?? 0,
+            }}
+          />
+        </Card>
+        <Card title="Premium by Policy Type">
+          <PremiumByPolicyChart data={stats?.deals.byPolicy ?? []} />
+        </Card>
       </div>
 
-      <Card title="Top POSPs by Premium"><TopPospChart deals={filteredDeals} posp={posp} /></Card>
+      {/* ── Top POSPs (hidden for POSP role) ──────────────────────────── */}
+      {showTopPospChart && (
+        <Card title={isManager ? "Top POSPs by Premium" : "Premium by POSP"}>
+          <TopPospChart data={stats?.deals.topPosps ?? []} />
+        </Card>
+      )}
 
+      {/* ── Row 2: Timeline + KYC ─────────────────────────────────────── */}
       <div className="row-2">
-        <Card title="Deal Closure Timeline"><ClosureTimelineChart leads={leads} /></Card>
-        <Card title="Customer KYC Status"><KycStatusChart customers={customers} /></Card>
+        <Card title="Deal Closure Timeline">
+          <ClosureTimelineChart data={stats?.leads.byTimeline ?? []} />
+        </Card>
+        {showKycChart && (
+          <Card title="Customer KYC Status">
+            <KycStatusChart data={stats?.customers.byKycStatus ?? []} />
+          </Card>
+        )}
+        {!showKycChart && (
+          <Card title="Lead Status Breakdown">
+            <ClosureTimelineChart
+              data={(stats?.leads.byStatus ?? []).map((s) => ({
+                timeline: s.status,
+                count: s.count,
+              }))}
+            />
+          </Card>
+        )}
       </div>
 
+      {/* ── Recent Deals ──────────────────────────────────────────────── */}
       <Card title="Recent Deals">
-        <ListDataSection isInitialLoading={isInitialLoading} isRefreshing={isRefreshing} stretch>
+        <ListDataSection
+          isInitialLoading={isInitialLoading}
+          isRefreshing={isRefreshing}
+          stretch
+        >
           <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Customer</th>
-                <th>POSP</th>
-                <th>Policy</th>
-                <th>Premium</th>
-                <th>Status</th>
-                <th>Expected</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recent.length === 0 ? (
+            <table>
+              <thead>
                 <tr>
-                  <td colSpan={6} className="empty">No deals {periodText}.</td>
+                  <th>Customer</th>
+                  {!isPosp && <th>POSP</th>}
+                  <th>Policy</th>
+                  <th>Premium</th>
+                  <th>Status</th>
+                  <th>Expected</th>
                 </tr>
-              ) : (
-                recent.map((d) => (
-                  <tr key={d.id}>
-                    <td>{d.customer}</td>
-                    <td>{pospName(posp, d.pospId)}</td>
-                    <td>{d.policy}</td>
-                    <td className="num">{fmtINR(d.premium)}</td>
-                    <td><Badge status={d.status} /></td>
-                    <td>{fmtDate(d.expected)}</td>
+              </thead>
+              <tbody>
+                {recentDeals.length === 0 ? (
+                  <tr>
+                    <td colSpan={isPosp ? 5 : 6} className="empty">
+                      No deals {periodText}.
+                    </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  recentDeals.map((d) => (
+                    <tr key={d.id}>
+                      <td>{d.customer}</td>
+                      {!isPosp && <td>{pospName(posp, d.pospId)}</td>}
+                      <td>{d.policy}</td>
+                      <td className="num">{fmtINR(d.premium)}</td>
+                      <td>
+                        <Badge status={d.status} />
+                      </td>
+                      <td>{fmtDate(d.expected)}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </ListDataSection>
       </Card>
 
-      <DealModal open={dealModalOpen} deal={editDeal} onClose={() => setDealModalOpen(false)} />
+      <DealModal
+        open={dealModalOpen}
+        deal={editDeal}
+        onClose={() => setDealModalOpen(false)}
+      />
     </>
   );
 }

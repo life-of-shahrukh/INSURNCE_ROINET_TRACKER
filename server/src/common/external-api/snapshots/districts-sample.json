@@ -1,0 +1,95 @@
+﻿{
+    "description":  "success",
+    "Data":  [
+                 {
+                     "StateId":  "2",
+                     "DistrictId":  "387",
+                     "DistrictName":  "AMBALA"
+                 },
+                 {
+                     "StateId":  "2",
+                     "DistrictId":  "388",
+                     "DistrictName":  "BHIWANI"
+                 },
+                 {
+                     "StateId":  "2",
+                     "DistrictId":  "390",
+                     "DistrictName":  "FATEHABAD"
+                 },
+                 {
+                     "StateId":  "2",
+                     "DistrictId":  "392",
+                     "DistrictName":  "HISAR"
+                 },
+                 {
+                     "StateId":  "2",
+                     "DistrictId":  "393",
+                     "DistrictName":  "JHAJJAR"
+                 },
+                 {
+                     "StateId":  "2",
+                     "DistrictId":  "394",
+                     "DistrictName":  "JIND"
+                 },
+                 {
+                     "StateId":  "2",
+                     "DistrictId":  "395",
+                     "DistrictName":  "KAITHAL"
+                 },
+                 {
+                     "StateId":  "2",
+                     "DistrictId":  "396",
+                     "DistrictName":  "KARNAL"
+                 },
+                 {
+                     "StateId":  "2",
+                     "DistrictId":  "397",
+                     "DistrictName":  "KURUKSHETRA"
+                 },
+                 {
+                     "StateId":  "2",
+                     "DistrictId":  "398",
+                     "DistrictName":  "MAHENDRAGARH"
+                 },
+                 {
+                     "StateId":  "2",
+                     "DistrictId":  "400",
+                     "DistrictName":  "PALWAL"
+                 },
+                 {
+                     "StateId":  "2",
+                     "DistrictId":  "401",
+                     "DistrictName":  "PANCHKULA"
+                 },
+                 {
+                     "StateId":  "2",
+                     "DistrictId":  "402",
+                     "DistrictName":  "PANIPAT"
+                 },
+                 {
+                     "StateId":  "2",
+                     "DistrictId":  "403",
+                     "DistrictName":  "REWARI"
+                 },
+                 {
+                     "StateId":  "2",
+                     "DistrictId":  "404",
+                     "DistrictName":  "ROHTAK"
+                 },
+                 {
+                     "StateId":  "2",
+                     "DistrictId":  "405",
+                     "DistrictName":  "SIRSA"
+                 },
+                 {
+                     "StateId":  "2",
+                     "DistrictId":  "406",
+                     "DistrictName":  "SONIPAT"
+                 },
+                 {
+                     "StateId":  "2",
+                     "DistrictId":  "407",
+                     "DistrictName":  "YAMUNANAGAR"
+                 }
+             ]
+}

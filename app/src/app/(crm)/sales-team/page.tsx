@@ -2,10 +2,16 @@
 
 import { useState } from "react";
 import { useSalesTeam, useTeamHierarchy, useSyncTeamFromApi } from "@/hooks/useSalesTeam";
+import { useListQueryState } from "@/hooks/useListQueryState";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { Pagination } from "@/components/ui/Pagination";
+import { ListDataSection } from "@/components/ui/ListDataSection";
+import { UniversalFilter } from "@/components/filters/UniversalFilter";
 import { SalesTeamModal } from "@/components/sales-team/SalesTeamModal";
+import { useListQueryStatus } from "@/hooks/useListQueryStatus";
+import { useAuth } from "@/providers/auth-provider";
 import type { SalesTeam } from "@/lib/api/sales-team-api";
 
 type Tab = "list" | "hierarchy";
@@ -38,32 +44,19 @@ function HierarchyNode({ member, depth = 0 }: { member: SalesTeam; depth?: numbe
           borderRadius: 6,
         }}
       >
-        {hasSubs && (
-          <button
-            type="button"
-            onClick={() => setOpen(!open)}
-            style={{
-              border: "none", background: "none", cursor: "pointer",
-              fontSize: 12, color: "#666", padding: 0, width: 16,
-            }}
-          >
+        {hasSubs ? (
+          <button type="button" onClick={() => setOpen(!open)} style={{ border: "none", background: "none", cursor: "pointer", fontSize: 12, color: "#666", padding: 0, width: 16 }}>
             {open ? "▼" : "▶"}
           </button>
+        ) : (
+          <span style={{ width: 16 }} />
         )}
-        {!hasSubs && <span style={{ width: 16 }} />}
         <div style={{ flex: 1 }}>
           <span style={{ fontWeight: 600, color: "#1a1a2e" }}>{member.name}</span>
-          <span
-            style={{
-              marginLeft: 8, fontSize: 11, padding: "1px 6px",
-              borderRadius: 10, background: color, color: "white",
-            }}
-          >
+          <span style={{ marginLeft: 8, fontSize: 11, padding: "1px 6px", borderRadius: 10, background: color, color: "white" }}>
             {member.designation}
           </span>
-          <span style={{ marginLeft: 8, fontSize: 11, color: "#666" }}>
-            {member.employeeCode}
-          </span>
+          <span style={{ marginLeft: 8, fontSize: 11, color: "#666" }}>{member.employeeCode}</span>
         </div>
         <span style={{ fontSize: 11, color: "#888" }}>{member.territory || "—"}</span>
       </div>
@@ -75,22 +68,36 @@ function HierarchyNode({ member, depth = 0 }: { member: SalesTeam; depth?: numbe
 }
 
 export default function SalesTeamPage() {
-  const { data: team, isLoading } = useSalesTeam();
+  const { user } = useAuth();
+  const role = user?.role ?? "POSP";
+
+  const {
+    filters,
+    query,
+    search,
+    resetFilters,
+    removeFilterChip,
+    setSearch,
+    setPage,
+    setPageSize,
+    applyViewFilters,
+    apiParams,
+  } = useListQueryState(undefined, "sales-team");
+
+  const teamQuery = useSalesTeam(apiParams);
+  const { data: result } = teamQuery;
+  const { isInitialLoading, isRefreshing } = useListQueryStatus(teamQuery);
+  const team = result?.data ?? [];
+  const meta = result?.meta;
+
   const { data: hierarchy, isLoading: hierarchyLoading } = useTeamHierarchy();
   const syncMutation = useSyncTeamFromApi();
   const [tab, setTab] = useState<Tab>("list");
   const [modalOpen, setModalOpen] = useState(false);
   const [editMember, setEditMember] = useState<SalesTeam | null>(null);
-  const [search, setSearch] = useState("");
-
-  const filtered = (team || []).filter((m) =>
-    m.name.toLowerCase().includes(search.toLowerCase()) ||
-    m.employeeCode.toLowerCase().includes(search.toLowerCase()) ||
-    (m.designation || "").toLowerCase().includes(search.toLowerCase())
-  );
 
   const handleSync = async () => {
-    if (!confirm("Sync team data from Roinet API? This will upsert team members.")) return;
+    if (!confirm("Sync team data from Roinet API?")) return;
     const res = await syncMutation.mutateAsync();
     alert(`Synced ${res.synced} team members.`);
   };
@@ -102,21 +109,14 @@ export default function SalesTeamPage() {
         subtitle="Manage your sales hierarchy — ASM, Regional & Zonal Heads"
         actions={
           <div style={{ display: "flex", gap: 8 }}>
-            <Button
-              variant="secondary"
-              onClick={handleSync}
-              disabled={syncMutation.isPending}
-            >
+            <Button variant="secondary" onClick={handleSync} disabled={syncMutation.isPending}>
               {syncMutation.isPending ? "Syncing…" : "Sync from Roinet API"}
             </Button>
-            <Button onClick={() => { setEditMember(null); setModalOpen(true); }}>
-              + Add Member
-            </Button>
+            <Button onClick={() => { setEditMember(null); setModalOpen(true); }}>+ Add Member</Button>
           </div>
         }
       />
 
-      {/* Tabs */}
       <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
         {(["list", "hierarchy"] as const).map((t) => (
           <button
@@ -139,96 +139,71 @@ export default function SalesTeamPage() {
         ))}
       </div>
 
-      {/* Team List Tab */}
       {tab === "list" && (
-        <Card>
-          <div className="filter-bar">
-            <input
-              className="search-input"
-              type="text"
-              placeholder="Search by name, code, designation…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          {isLoading ? (
-            <div className="empty">Loading team…</div>
-          ) : (
-            <div className="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Code</th>
-                    <th>Designation</th>
-                    <th>Reports To</th>
-                    <th>Territory</th>
-                    <th>Mobile</th>
-                    <th>Status</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.length === 0 ? (
-                    <tr><td colSpan={8} className="empty">No team members found.</td></tr>
-                  ) : (
-                    filtered.map((m) => (
-                      <tr key={m.id}>
-                        <td>
-                          <strong>{m.name}</strong>
-                        </td>
-                        <td style={{ color: "#666", fontSize: 12 }}>{m.employeeCode}</td>
-                        <td>
-                          <span
-                            style={{
-                              padding: "2px 8px",
-                              borderRadius: 10,
-                              background: DESIGNATION_COLOR[m.designation] || DESIGNATION_COLOR.default,
-                              color: "white",
-                              fontSize: 11,
-                              fontWeight: 600,
-                            }}
-                          >
-                            {m.designation}
-                          </span>
-                        </td>
-                        <td style={{ fontSize: 13 }}>{m.manager?.name || "—"}</td>
-                        <td>{m.territory || "—"}</td>
-                        <td>{m.mobile}</td>
-                        <td>
-                          <span
-                            style={{
-                              padding: "2px 8px",
-                              borderRadius: 10,
-                              fontSize: 11,
-                              fontWeight: 600,
-                              background: m.status === "ACTIVE" ? "#e6f7f5" : "#fde8e8",
-                              color: m.status === "ACTIVE" ? "#2a9d8f" : "#e63946",
-                            }}
-                          >
-                            {m.status}
-                          </span>
-                        </td>
-                        <td>
-                          <button
-                            type="button"
-                            className="icon-btn"
-                            onClick={() => { setEditMember(m); setModalOpen(true); }}
-                          >
-                            Edit
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </Card>
+        <div className="list-page-body">
+          <UniversalFilter
+            view="sales-team"
+            role={role}
+            query={query}
+            filters={filters}
+            applyViewFilters={applyViewFilters}
+            onRemoveChip={removeFilterChip}
+            onReset={resetFilters}
+            search={search}
+            onSearchChange={setSearch}
+          />
+          <Card className="list-table-card">
+            <ListDataSection isInitialLoading={isInitialLoading} isRefreshing={isRefreshing} stretch>
+              <div className="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Code</th>
+                      <th>Designation</th>
+                      <th>Reports To</th>
+                      <th>Territory</th>
+                      <th>Mobile</th>
+                      <th>Status</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {team.length === 0 ? (
+                      <tr><td colSpan={8} className="empty">No team members found.</td></tr>
+                    ) : (
+                      team.map((m) => (
+                        <tr key={m.id}>
+                          <td><strong>{m.name}</strong></td>
+                          <td style={{ color: "#666", fontSize: 12 }}>{m.employeeCode}</td>
+                          <td>
+                            <span style={{ padding: "2px 8px", borderRadius: 10, background: DESIGNATION_COLOR[m.designation] || DESIGNATION_COLOR.default, color: "white", fontSize: 11, fontWeight: 600 }}>
+                              {m.designation}
+                            </span>
+                          </td>
+                          <td style={{ fontSize: 13 }}>{m.manager?.name || "—"}</td>
+                          <td>{m.territory || "—"}</td>
+                          <td>{m.mobile}</td>
+                          <td>{m.status}</td>
+                          <td>
+                            <button type="button" className="icon-btn" onClick={() => { setEditMember(m); setModalOpen(true); }}>
+                              Edit
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+              {meta ? (
+                <Pagination meta={meta} onPageChange={setPage} onPageSizeChange={setPageSize} />
+              ) : null}
+            </ListDataSection>
+          </Card>
+        </div>
       )}
 
-      {/* Hierarchy Tab */}
       {tab === "hierarchy" && (
         <Card>
           {hierarchyLoading ? (
@@ -248,7 +223,7 @@ export default function SalesTeamPage() {
       <SalesTeamModal
         open={modalOpen}
         member={editMember}
-        teamList={team || []}
+        teamList={team}
         onClose={() => setModalOpen(false)}
       />
     </>

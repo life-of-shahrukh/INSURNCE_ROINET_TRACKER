@@ -2,11 +2,14 @@
 
 import { useState, useMemo } from "react";
 import { useLeads, useMonthlyCommitment, useUpdateLead, useConvertLeadToDeal } from "@/hooks/useLeads";
-import { Button } from "@/components/ui/Button";
+import { useListQueryState } from "@/hooks/useListQueryState";
+import { Pagination } from "@/components/ui/Pagination";
+import { ListDataSection } from "@/components/ui/ListDataSection";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { LeadModal } from "@/components/lead/LeadModal";
+import { Button } from "@/components/ui/Button";
 import { UniversalFilter } from "@/components/filters/UniversalFilter";
-import { useFilterState } from "@/hooks/useFilterState";
+import { LeadModal } from "@/components/lead/LeadModal";
+import { useListQueryStatus } from "@/hooks/useListQueryStatus";
 import { useAuth } from "@/providers/auth-provider";
 import { fmtINRShort, fmtINR } from "@/lib/formatters";
 import type { Lead, ClosureTimeline, LeadStatus } from "@/lib/api/lead-api";
@@ -40,39 +43,43 @@ const PRODUCT_ICON: Record<string, string> = {
 };
 
 export default function LeadsPage() {
-  const { data: leads, isLoading } = useLeads();
+  const {
+    filters,
+    query,
+    search,
+    resetFilters,
+    removeFilterChip,
+    setSearch,
+    setPage,
+    setPageSize,
+    applyViewFilters,
+    apiParams,
+  } = useListQueryState(undefined, "leads");
+
+  const leadsQuery = useLeads(apiParams);
+  const { data: result } = leadsQuery;
+  const { isInitialLoading, isRefreshing } = useListQueryStatus(leadsQuery);
+  const leads = result?.data ?? [];
+  const meta = result?.meta;
+
   const { data: commitment } = useMonthlyCommitment();
   const updateLead = useUpdateLead();
   const convertToDeal = useConvertLeadToDeal();
   const { user } = useAuth();
   const role = user?.role ?? "POSP";
 
-  const { filters, setFilter, applyFilters, resetFilters, activeCount } = useFilterState();
   const [modalOpen, setModalOpen] = useState(false);
   const [editLead, setEditLead] = useState<Lead | null>(null);
-  const [activeFilter, setActiveFilter] = useState<"all" | LeadStatus>("all");
-
-  const filteredLeads = useMemo(() => {
-    if (!leads) return [];
-    let list = leads;
-    if (activeFilter !== "all") {
-      list = list.filter((l) => l.status === activeFilter);
-    }
-    if (filters.productLine) {
-      list = list.filter((l) => l.product === filters.productLine);
-    }
-    return list;
-  }, [leads, activeFilter, filters.productLine]);
 
   const byTimeline = useMemo(() => {
     const map: Record<ClosureTimeline, Lead[]> = {
       THIS_MONTH: [], T_PLUS_1: [], T_PLUS_2: [], LATER: [],
     };
-    filteredLeads.forEach((l) => {
+    leads.forEach((l) => {
       if (map[l.closureTimeline]) map[l.closureTimeline].push(l);
     });
     return map;
-  }, [filteredLeads]);
+  }, [leads]);
 
   const handleConvert = async (lead: Lead) => {
     if (!confirm(`Convert "${lead.customer?.name}" lead to a Deal?`)) return;
@@ -88,10 +95,9 @@ export default function LeadsPage() {
     await updateLead.mutateAsync({ id: lead.id, data: { status } });
   };
 
-  if (isLoading) return <div className="empty">Loading leads…</div>;
-
   return (
     <>
+      <div className="list-page">
       <PageHeader
         title="Leads Pipeline"
         subtitle="Track leads by closure timeline — This Month / T+1 / T+2 / Later"
@@ -103,12 +109,15 @@ export default function LeadsPage() {
       />
 
       <UniversalFilter
+        view="leads"
         role={role}
+        query={query}
         filters={filters}
-        onFilterChange={setFilter}
-        onApplyFilters={applyFilters}
+        applyViewFilters={applyViewFilters}
+        onRemoveChip={removeFilterChip}
         onReset={resetFilters}
-        activeCount={activeCount}
+        search={query.search}
+        onSearchChange={setSearch}
       />
 
       {/* Monthly Commitment KPI */}
@@ -121,44 +130,22 @@ export default function LeadsPage() {
         <div className="kpi-card" style={{ flex: "0 0 auto", minWidth: 220 }}>
           <div className="kpi-label">Total Active Leads</div>
           <div className="kpi-value">
-            {leads?.filter((l) => l.status !== "WON" && l.status !== "LOST").length || 0}
+            {leads.filter((l) => l.status !== "WON" && l.status !== "LOST").length}
           </div>
           <div className="kpi-sub">across all timelines</div>
         </div>
         <div className="kpi-card" style={{ flex: "0 0 auto", minWidth: 220 }}>
           <div className="kpi-label">Won This Month</div>
           <div className="kpi-value">
-            {leads?.filter((l) => l.status === "WON").length || 0}
+            {leads.filter((l) => l.status === "WON").length}
           </div>
           <div className="kpi-sub">&nbsp;</div>
         </div>
       </div>
 
-      {/* Status filter pills */}
-      <div style={{ marginBottom: 16, display: "flex", gap: 8, flexWrap: "wrap" }}>
-        {(["all", "NEW", "CONTACTED", "QUALIFIED", "PROPOSAL_SENT", "WON", "LOST"] as const).map((s) => (
-          <button
-            key={s}
-            type="button"
-            onClick={() => setActiveFilter(s)}
-            style={{
-              padding: "4px 12px",
-              borderRadius: 20,
-              border: "1px solid #ddd",
-              background: activeFilter === s ? "#0f4c75" : "white",
-              color: activeFilter === s ? "white" : "#333",
-              cursor: "pointer",
-              fontSize: 12,
-              fontWeight: activeFilter === s ? 600 : 400,
-            }}
-          >
-            {s === "all" ? "All" : s.replace("_", " ")}
-          </button>
-        ))}
-      </div>
-
       {/* Kanban by Timeline */}
-      <div className="kanban">
+      <ListDataSection isInitialLoading={isInitialLoading} isRefreshing={isRefreshing} stretch>
+        <div className="kanban">
         {TIMELINE_COLS.map((col) => (
           <div key={col.key} className="kanban-col">
             <div className="kanban-col-header" style={{ borderTop: `3px solid ${col.color}` }}>
@@ -242,6 +229,12 @@ export default function LeadsPage() {
             )}
           </div>
         ))}
+        </div>
+
+        {meta ? (
+          <Pagination meta={meta} onPageChange={setPage} onPageSizeChange={setPageSize} />
+        ) : null}
+      </ListDataSection>
       </div>
 
       <LeadModal

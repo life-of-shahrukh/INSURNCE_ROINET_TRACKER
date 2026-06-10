@@ -2,26 +2,66 @@
 
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { Pagination } from "@/components/ui/Pagination";
+import { ListDataSection } from "@/components/ui/ListDataSection";
+import { UniversalFilter } from "@/components/filters/UniversalFilter";
+import { useListQueryState } from "@/hooks/useListQueryState";
+import { useListQueryStatus } from "@/hooks/useListQueryStatus";
+import { useDealsList } from "@/hooks/useDealsList";
 import { computeRenewals, pospName } from "@/lib/crm-calculations";
 import { fmtDate, fmtINR } from "@/lib/formatters";
 import { useCrm } from "@/providers/crm-provider";
+import { useAuth } from "@/providers/auth-provider";
 import { useMemo } from "react";
 
 export default function RenewalsPage() {
-  const { deals, posp, loading } = useCrm();
-  const upcoming = useMemo(() => computeRenewals(deals), [deals]);
+  const { posp } = useCrm();
+  const { user } = useAuth();
+  const role = user?.role ?? "POSP";
 
-  if (loading) return <div className="empty">Loading…</div>;
+  const {
+    filters,
+    query,
+    search,
+    resetFilters,
+    removeFilterChip,
+    setSearch,
+    setPage,
+    setPageSize,
+    applyViewFilters,
+    apiParams,
+  } = useListQueryState({ policyStatus: ["issued"], renewals: "true" }, "renewals");
+
+  const dealsQuery = useDealsList(apiParams);
+  const { data: result } = dealsQuery;
+  const { isInitialLoading, isRefreshing } = useListQueryStatus(dealsQuery);
+  const deals = result?.data ?? [];
+  const meta = result?.meta;
+  const upcoming = useMemo(() => computeRenewals(deals), [deals]);
 
   return (
     <>
+      <div className="list-page">
       <PageHeader
         title="Renewals"
-        subtitle="Policies due within next 90 days (auto-calculated from issuance date)"
+        subtitle="Policies due within next 90 days (server-filtered, paginated)"
       />
 
-      <Card>
-        <div className="table-wrap">
+      <UniversalFilter
+        view="renewals"
+        role={role}
+        query={query}
+        filters={filters}
+        applyViewFilters={applyViewFilters}
+        onRemoveChip={removeFilterChip}
+        onReset={resetFilters}
+        search={search}
+        onSearchChange={setSearch}
+      />
+
+      <Card className="list-table-card">
+        <ListDataSection isInitialLoading={isInitialLoading} isRefreshing={isRefreshing} stretch>
+          <div className="table-wrap">
           <table>
             <thead>
               <tr>
@@ -38,41 +78,31 @@ export default function RenewalsPage() {
             <tbody>
               {upcoming.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="empty">
-                    No renewals in the next 90 days. Mark a deal as issued (with a policy
-                    number + issuance date) to see it here.
-                  </td>
+                  <td colSpan={8} className="empty">No renewals due in the next 90 days.</td>
                 </tr>
               ) : (
-                upcoming.map((d) => (
-                  <tr key={d.id}>
-                    <td>
-                      <strong>{d.customer}</strong>
-                    </td>
-                    <td>{d.policyNo}</td>
-                    <td>{d.policy}</td>
-                    <td className="num-right">{fmtINR(d.premium)}</td>
-                    <td>{pospName(posp, d.pospId)}</td>
-                    <td>{fmtDate(d.issued)}</td>
-                    <td>{fmtDate(d.renew)}</td>
-                    <td>
-                      {d.daysLeft < 0 ? (
-                        <span className="badge badge-hot">
-                          Overdue {Math.abs(d.daysLeft)}d
-                        </span>
-                      ) : d.daysLeft < 30 ? (
-                        <span className="badge badge-warm">{d.daysLeft} days</span>
-                      ) : (
-                        <span className="badge badge-cold">{d.daysLeft} days</span>
-                      )}
-                    </td>
+                upcoming.map((r) => (
+                  <tr key={r.id}>
+                    <td><strong>{r.customer}</strong></td>
+                    <td>{r.policyNo || "–"}</td>
+                    <td>{r.policy}</td>
+                    <td className="num-right">{fmtINR(r.premium)}</td>
+                    <td>{pospName(posp, r.pospId)}</td>
+                    <td>{fmtDate(r.issued)}</td>
+                    <td>{fmtDate(r.renew)}</td>
+                    <td>{r.daysLeft} days</td>
                   </tr>
                 ))
               )}
             </tbody>
           </table>
-        </div>
+          </div>
+          {meta ? (
+            <Pagination meta={meta} onPageChange={setPage} onPageSizeChange={setPageSize} />
+          ) : null}
+        </ListDataSection>
       </Card>
+      </div>
     </>
   );
 }

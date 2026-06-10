@@ -15,6 +15,7 @@ import { Role } from '../../common/constants';
 import { CustomerService } from './customer.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
+import { CustomerListQueryDto } from './dto/customer-list-query.dto';
 
 @Controller('customers')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -30,8 +31,8 @@ export class CustomerController {
 
   @Get()
   @Roles(Role.DM, Role.ASM, Role.RH, Role.ZH, Role.NATIONAL_HEAD, Role.SUPER_ADMIN, Role.POSP)
-  findAll() {
-    return this.customerService.findAll();
+  findAll(@Query() query: CustomerListQueryDto) {
+    return this.customerService.findAll(query);
   }
 
   @Get('search')

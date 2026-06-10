@@ -8,6 +8,8 @@ import { ConvertLeadToDealCommand } from './commands/convert-lead-to-deal.comman
 import { GetAllLeadsQuery } from './queries/get-all-leads.query';
 import { GetMonthlyCommitmentQuery } from './queries/get-monthly-commitment.query';
 import { Lead } from '@prisma/client';
+import { LeadListQueryDto } from './dto/lead-list-query.dto';
+import type { PaginatedResult } from '../../common/interfaces/paginated-result.interface';
 import type { HierarchyScope } from '../../common/auth/hierarchy-scope.util';
 
 @Injectable()
@@ -21,8 +23,11 @@ export class LeadService {
     return this.commandBus.execute(new CreateLeadCommand(dto));
   }
 
-  async findAll(scope?: HierarchyScope): Promise<Lead[]> {
-    return this.queryBus.execute(new GetAllLeadsQuery(scope));
+  async findAll(
+    filters: LeadListQueryDto,
+    scope?: HierarchyScope,
+  ): Promise<PaginatedResult<Lead>> {
+    return this.queryBus.execute(new GetAllLeadsQuery(filters, scope));
   }
 
   async getMonthlyCommitment(): Promise<{ total: number; count: number }> {

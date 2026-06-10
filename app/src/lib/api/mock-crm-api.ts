@@ -2,10 +2,36 @@ import { buildDealsCsv } from "../crm-calculations";
 import { uid } from "../formatters";
 import { SEED } from "../seed";
 import type { CrmApi } from "./crm-api";
+import type { PaginatedResponse } from "./pagination-types";
+import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "./pagination-types";
+import { parseListQueryFromSearchParams } from "./list-query-params";
+import { filterDealsForListQuery } from "../filters/filter-utils";
 import type { CrmState, Deal, Posp } from "../types";
 
 function cloneState(): CrmState {
   return JSON.parse(JSON.stringify(SEED)) as CrmState;
+}
+
+function paginate<T>(items: T[], params?: URLSearchParams): PaginatedResponse<T> {
+  const page = Math.max(1, Number(params?.get("page")) || DEFAULT_PAGE);
+  const pageSize = Math.min(100, Math.max(1, Number(params?.get("pageSize")) || DEFAULT_PAGE_SIZE));
+  const search = (params?.get("search") ?? "").trim().toLowerCase();
+  let filtered = items;
+  if (search) {
+    filtered = items.filter((item) =>
+      JSON.stringify(item).toLowerCase().includes(search),
+    );
+  }
+  const total = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const start = (page - 1) * pageSize;
+  const data = filtered.slice(start, start + pageSize);
+  return { data, meta: { page, pageSize, total, totalPages } };
+}
+
+function filterDealsFromParams(deals: Deal[], params?: URLSearchParams): Deal[] {
+  const query = parseListQueryFromSearchParams(params ?? new URLSearchParams());
+  return filterDealsForListQuery(deals, query);
 }
 
 let state: CrmState = cloneState();
@@ -13,6 +39,15 @@ let state: CrmState = cloneState();
 export const mockCrmApi: CrmApi = {
   async getState() {
     return JSON.parse(JSON.stringify(state)) as CrmState;
+  },
+
+  async listDeals(params) {
+    const filtered = filterDealsFromParams(state.deals, params);
+    return paginate(filtered, params);
+  },
+
+  async listPosp(params) {
+    return paginate(state.posp, params);
   },
 
   async createDeal(input) {
@@ -101,8 +136,9 @@ export const mockCrmApi: CrmApi = {
     return { ...posp };
   },
 
-  async exportDealsCsv() {
-    return buildDealsCsv(state.deals, state.posp);
+  async exportDealsCsv(params) {
+    const { data } = await mockCrmApi.listDeals(params);
+    return buildDealsCsv(data, state.posp);
   },
 };
 

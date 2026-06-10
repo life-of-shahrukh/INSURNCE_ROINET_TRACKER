@@ -8,6 +8,8 @@ import { DeleteDealCommand } from './commands/delete-deal.command';
 import { GetAllDealsQuery } from './queries/get-all-deals.query';
 import { ExportDealsCsvQuery } from './queries/export-deals-csv.query';
 import { Deal } from '@prisma/client';
+import { DealListQueryDto } from './dto/deal-list-query.dto';
+import type { PaginatedResult } from '../../common/interfaces/paginated-result.interface';
 import { ForbiddenException } from '@nestjs/common';
 import { AuthUser } from '../../common/auth/auth-user.interface';
 import { resolvePospScope } from '../../common/auth/posp-scope.util';
@@ -20,8 +22,12 @@ export class DealService {
     private readonly queryBus: QueryBus,
   ) {}
 
-  getAll(user: AuthUser, scope?: HierarchyScope): Promise<Deal[]> {
-    return this.queryBus.execute(new GetAllDealsQuery(undefined, scope));
+  getAll(
+    user: AuthUser,
+    filters: DealListQueryDto,
+    scope?: HierarchyScope,
+  ): Promise<PaginatedResult<Deal>> {
+    return this.queryBus.execute(new GetAllDealsQuery(filters, scope, user.pospId ?? undefined));
   }
 
   create(dto: CreateDealDto, user: AuthUser): Promise<Deal> {
@@ -47,8 +53,13 @@ export class DealService {
     return this.commandBus.execute(new DeleteDealCommand(id, user.pospId));
   }
 
-  exportCsv(user: AuthUser, scope?: HierarchyScope): Promise<string> {
-    const pospId = user.pospId ?? undefined;
-    return this.queryBus.execute(new ExportDealsCsvQuery(pospId));
+  exportCsv(
+    user: AuthUser,
+    filters: DealListQueryDto,
+    scope?: HierarchyScope,
+  ): Promise<string> {
+    return this.queryBus.execute(
+      new ExportDealsCsvQuery(filters, scope, user.pospId ?? undefined),
+    );
   }
 }

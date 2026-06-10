@@ -6,13 +6,16 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { PrismaService } from '../../prisma/prisma.service';
-import { resolveHierarchyScope } from '../auth/hierarchy-scope.util';
+import {
+  resolveHierarchyScope,
+  type HierarchyScope,
+} from '../auth/hierarchy-scope.util';
 import type { AuthUser } from '../auth/auth-user.interface';
 import { SCOPE_KEY } from '../decorators/scope.decorator';
 
 interface RequestWithUser {
   user?: AuthUser;
-  [SCOPE_KEY]?: ReturnType<typeof resolveHierarchyScope>;
+  [SCOPE_KEY]?: HierarchyScope;
 }
 
 /**

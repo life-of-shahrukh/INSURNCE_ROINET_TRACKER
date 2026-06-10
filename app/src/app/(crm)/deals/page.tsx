@@ -1,14 +1,17 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { DealModal } from "@/components/deals/DealModal";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { Pagination } from "@/components/ui/Pagination";
+import { ListDataSection } from "@/components/ui/ListDataSection";
 import { UniversalFilter } from "@/components/filters/UniversalFilter";
-import { useFilterState } from "@/hooks/useFilterState";
-import { applyFiltersToDeals } from "@/lib/filters/filter-utils";
+import { useListQueryState } from "@/hooks/useListQueryState";
+import { useListQueryStatus } from "@/hooks/useListQueryStatus";
+import { useDealsList } from "@/hooks/useDealsList";
 import { pospName } from "@/lib/crm-calculations";
 import { fmtDate, fmtINR } from "@/lib/formatters";
 import { useCrm } from "@/providers/crm-provider";
@@ -16,39 +19,40 @@ import { useAuth } from "@/providers/auth-provider";
 import type { Deal } from "@/lib/types";
 
 export default function DealsPage(): React.ReactElement {
-  const { deals, posp, loading, deleteDeal } = useCrm();
+  const { posp, deleteDeal } = useCrm();
   const { user } = useAuth();
   const role = user?.role ?? "POSP";
 
-  const { filters, setFilter, applyFilters, resetFilters, activeCount } = useFilterState();
-  const [search, setSearch] = useState("");
+  const {
+    filters,
+    query,
+    search,
+    resetFilters,
+    removeFilterChip,
+    setSearch,
+    setPage,
+    setPageSize,
+    applyViewFilters,
+    apiParams,
+  } = useListQueryState(undefined, "deals");
+
+  const dealsQuery = useDealsList(apiParams);
+  const { data: result } = dealsQuery;
+  const { isInitialLoading, isRefreshing } = useListQueryStatus(dealsQuery);
+  const rows = result?.data ?? [];
+  const meta = result?.meta;
+
   const [modalOpen, setModalOpen] = useState(false);
   const [editDeal, setEditDeal] = useState<Deal | null>(null);
-
-  const rows = useMemo(() => {
-    let list = applyFiltersToDeals(deals, filters);
-    const q = search.toLowerCase();
-    if (q) {
-      list = list.filter(
-        (d) =>
-          (d.customer || "").toLowerCase().includes(q) ||
-          pospName(posp, d.pospId).toLowerCase().includes(q) ||
-          (d.policy || "").toLowerCase().includes(q) ||
-          (d.proposal || "").toLowerCase().includes(q),
-      );
-    }
-    return list;
-  }, [deals, posp, filters, search]);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this deal?")) return;
     await deleteDeal(id);
   };
 
-  if (loading) return <div className="empty">Loading…</div>;
-
   return (
     <>
+      <div className="list-page">
       <PageHeader
         title="Deals Tracker"
         subtitle="Master list — POSP, customer, policy details, status, expected closure"
@@ -65,18 +69,20 @@ export default function DealsPage(): React.ReactElement {
       />
 
       <UniversalFilter
+        view="deals"
         role={role}
+        query={query}
         filters={filters}
-        onFilterChange={setFilter}
-        onApplyFilters={applyFilters}
+        applyViewFilters={applyViewFilters}
+        onRemoveChip={removeFilterChip}
         onReset={resetFilters}
-        activeCount={activeCount}
         search={search}
         onSearchChange={setSearch}
       />
 
-      <Card>
-        <div className="table-wrap">
+      <Card className="list-table-card">
+        <ListDataSection isInitialLoading={isInitialLoading} isRefreshing={isRefreshing} stretch>
+          <div className="table-wrap">
           <table>
             <thead>
               <tr>
@@ -149,8 +155,17 @@ export default function DealsPage(): React.ReactElement {
               )}
             </tbody>
           </table>
-        </div>
+          </div>
+          {meta ? (
+            <Pagination
+              meta={meta}
+              onPageChange={setPage}
+              onPageSizeChange={setPageSize}
+            />
+          ) : null}
+        </ListDataSection>
       </Card>
+      </div>
 
       <DealModal open={modalOpen} deal={editDeal} onClose={() => setModalOpen(false)} />
     </>

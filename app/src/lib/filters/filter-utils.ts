@@ -1,4 +1,5 @@
 import type { UserRole } from "@/lib/auth-types";
+import type { ListQueryParams } from "@/lib/api/list-query-params";
 import type { Deal } from "@/lib/types";
 import { PRODUCT_LINE_OPTIONS, getSubTypes, INSURER_OPTIONS } from "./insurance-products";
 
@@ -7,14 +8,47 @@ export interface FilterOption {
   label: string;
 }
 
+export type MultiFilterKey =
+  | "zone"
+  | "region"
+  | "area"
+  | "district"
+  | "posp"
+  | "productLine"
+  | "productSubType"
+  | "insurer"
+  | "dealStatus"
+  | "policyStatus"
+  | "kycStatus"
+  | "source";
+
+export type SingleFilterKey = "dateRange" | "dateFrom" | "dateTo" | "premiumRange";
+
+export const MULTI_FILTER_KEYS: MultiFilterKey[] = [
+  "zone",
+  "region",
+  "area",
+  "district",
+  "posp",
+  "productLine",
+  "productSubType",
+  "insurer",
+  "dealStatus",
+  "policyStatus",
+  "kycStatus",
+  "source",
+];
+
+export function isMultiFilterKey(key: keyof FilterState): key is MultiFilterKey {
+  return (MULTI_FILTER_KEYS as string[]).includes(key);
+}
+
 export interface FilterDimension {
   key: keyof FilterState;
   label: string;
-  type: "select" | "date-range" | "multi-select";
+  type: "single-autocomplete" | "multi-autocomplete" | "date-range" | "date";
   options: FilterOption[];
-  /** Minimum role required to see this filter */
   minRole?: UserRole;
-  /** Exact roles that can see this filter (if minRole not sufficient) */
   visibleToRoles?: UserRole[];
   placeholder?: string;
 }
@@ -23,39 +57,46 @@ export interface FilterState {
   dateRange: string;
   dateFrom: string;
   dateTo: string;
-  zone: string;
-  region: string;
-  area: string;
-  district: string;
-  posp: string;
-  productLine: string;
-  productSubType: string;
-  insurer: string;
-  dealStatus: string;
   premiumRange: string;
-  policyStatus: string;
-  kycStatus: string;
-  source: string;
+  zone: string[];
+  region: string[];
+  area: string[];
+  district: string[];
+  posp: string[];
+  productLine: string[];
+  productSubType: string[];
+  insurer: string[];
+  dealStatus: string[];
+  policyStatus: string[];
+  kycStatus: string[];
+  source: string[];
 }
 
 export const EMPTY_FILTERS: FilterState = {
   dateRange: "all",
   dateFrom: "",
   dateTo: "",
-  zone: "",
-  region: "",
-  area: "",
-  district: "",
-  posp: "",
-  productLine: "",
-  productSubType: "",
-  insurer: "",
-  dealStatus: "",
   premiumRange: "",
-  policyStatus: "",
-  kycStatus: "",
-  source: "",
+  zone: [],
+  region: [],
+  area: [],
+  district: [],
+  posp: [],
+  productLine: [],
+  productSubType: [],
+  insurer: [],
+  dealStatus: [],
+  policyStatus: [],
+  kycStatus: [],
+  source: [],
 };
+
+export interface ActiveFilterChip {
+  key: keyof FilterState;
+  value: string;
+  label: string;
+  dimensionLabel: string;
+}
 
 const ROLE_RANK: Record<UserRole, number> = {
   SUPER_ADMIN: 100,
@@ -71,21 +112,36 @@ function hasMinRole(userRole: UserRole, minRole: UserRole): boolean {
   return ROLE_RANK[userRole] >= ROLE_RANK[minRole];
 }
 
-/**
- * Returns the filter dimensions visible to the given role.
- * Cascading geographical dimensions unlock as the role rank increases.
- * productSubType options cascade from productLine selection.
- */
+function selectableOptions(options: FilterOption[]): FilterOption[] {
+  return options.filter((o) => o.value !== "");
+}
+
+function subTypeOptions(productLines: string[]): FilterOption[] {
+  if (productLines.length === 0) {
+    return [{ value: "", label: "Select product first" }];
+  }
+  const seen = new Set<string>();
+  const merged: FilterOption[] = [];
+  for (const line of productLines) {
+    for (const opt of getSubTypes(line)) {
+      if (!seen.has(opt.value)) {
+        seen.add(opt.value);
+        merged.push(opt);
+      }
+    }
+  }
+  return merged;
+}
+
 export function getVisibleDimensions(
   role: UserRole,
   currentFilters: FilterState,
 ): FilterDimension[] {
   const all: FilterDimension[] = [
-    // ── Temporal ────────────────────────────────────────────────────────────
     {
       key: "dateRange",
       label: "Date Range",
-      type: "select",
+      type: "single-autocomplete",
       options: [
         { value: "all", label: "All Time" },
         { value: "today", label: "Today" },
@@ -97,21 +153,18 @@ export function getVisibleDimensions(
       ],
       placeholder: "Date Range",
     },
-
-    // ── Geographical hierarchy (unlocks upward) ──────────────────────────────
     {
       key: "zone",
       label: "Zone",
-      type: "select",
-      options: [], // populated from API
-      minRole: undefined,
+      type: "multi-autocomplete",
+      options: [],
       visibleToRoles: ["SUPER_ADMIN", "NATIONAL_HEAD"],
       placeholder: "All Zones",
     },
     {
       key: "region",
       label: "Region",
-      type: "select",
+      type: "multi-autocomplete",
       options: [],
       visibleToRoles: ["SUPER_ADMIN", "NATIONAL_HEAD", "ZH"],
       placeholder: "All Regions",
@@ -119,7 +172,7 @@ export function getVisibleDimensions(
     {
       key: "area",
       label: "Area",
-      type: "select",
+      type: "multi-autocomplete",
       options: [],
       visibleToRoles: ["SUPER_ADMIN", "NATIONAL_HEAD", "ZH", "RH"],
       placeholder: "All Areas",
@@ -127,59 +180,46 @@ export function getVisibleDimensions(
     {
       key: "district",
       label: "District",
-      type: "select",
+      type: "multi-autocomplete",
       options: [],
       visibleToRoles: ["SUPER_ADMIN", "NATIONAL_HEAD", "ZH", "RH", "ASM"],
       placeholder: "All Districts",
     },
-
-    // ── Sales hierarchy ───────────────────────────────────────────────────────
     {
       key: "posp",
       label: "POSP",
-      type: "select",
+      type: "multi-autocomplete",
       options: [],
       visibleToRoles: ["SUPER_ADMIN", "NATIONAL_HEAD", "ZH", "RH", "ASM", "DM"],
       placeholder: "All POSPs",
     },
-
-    // ── Product classification ────────────────────────────────────────────────
     {
       key: "productLine",
       label: "Product Line",
-      type: "select",
-      options: [{ value: "", label: "All Products" }, ...PRODUCT_LINE_OPTIONS],
+      type: "multi-autocomplete",
+      options: PRODUCT_LINE_OPTIONS,
       placeholder: "All Products",
     },
     {
       key: "productSubType",
       label: "Sub-Type",
-      type: "select",
-      options:
-        currentFilters.productLine
-          ? [
-              { value: "", label: "All Sub-Types" },
-              ...getSubTypes(currentFilters.productLine),
-            ]
-          : [{ value: "", label: "Select product first" }],
+      type: "multi-autocomplete",
+      options: subTypeOptions(currentFilters.productLine),
       placeholder: "Sub-Type",
     },
     {
       key: "insurer",
       label: "Insurer",
-      type: "select",
-      options: [{ value: "", label: "All Insurers" }, ...INSURER_OPTIONS],
+      type: "multi-autocomplete",
+      options: INSURER_OPTIONS,
       minRole: "ASM",
       placeholder: "All Insurers",
     },
-
-    // ── Deal metrics ──────────────────────────────────────────────────────────
     {
       key: "dealStatus",
       label: "Deal Status",
-      type: "select",
+      type: "multi-autocomplete",
       options: [
-        { value: "", label: "All Statuses" },
         { value: "H", label: "Hot" },
         { value: "W", label: "Warm" },
         { value: "C", label: "Cold" },
@@ -189,9 +229,8 @@ export function getVisibleDimensions(
     {
       key: "policyStatus",
       label: "Policy Status",
-      type: "select",
+      type: "multi-autocomplete",
       options: [
-        { value: "", label: "All" },
         { value: "issued", label: "Issued" },
         { value: "pending", label: "Pending" },
       ],
@@ -200,7 +239,7 @@ export function getVisibleDimensions(
     {
       key: "premiumRange",
       label: "Premium Range",
-      type: "select",
+      type: "single-autocomplete",
       options: [
         { value: "", label: "Any Premium" },
         { value: "0-10000", label: "₹0 – ₹10K" },
@@ -212,14 +251,11 @@ export function getVisibleDimensions(
       ],
       placeholder: "Any Premium",
     },
-
-    // ── Customer segments ─────────────────────────────────────────────────────
     {
       key: "kycStatus",
       label: "KYC Status",
-      type: "select",
+      type: "multi-autocomplete",
       options: [
-        { value: "", label: "All KYC" },
         { value: "PENDING", label: "Pending" },
         { value: "VERIFIED", label: "Verified" },
         { value: "REJECTED", label: "Rejected" },
@@ -230,9 +266,8 @@ export function getVisibleDimensions(
     {
       key: "source",
       label: "Lead Source",
-      type: "select",
+      type: "multi-autocomplete",
       options: [
-        { value: "", label: "All Sources" },
         { value: "WALK_IN", label: "Walk-In" },
         { value: "REFERRAL", label: "Referral" },
         { value: "ONLINE", label: "Online" },
@@ -245,20 +280,97 @@ export function getVisibleDimensions(
   ];
 
   return all.filter((dim) => {
-    if (dim.visibleToRoles) {
-      return dim.visibleToRoles.includes(role);
-    }
-    if (dim.minRole) {
-      return hasMinRole(role, dim.minRole);
-    }
-    return true; // no restriction
+    if (dim.visibleToRoles) return dim.visibleToRoles.includes(role);
+    if (dim.minRole) return hasMinRole(role, dim.minRole);
+    return true;
   });
 }
 
-/**
- * Parses a premium range string like "10000-25000" or "500000+"
- * into a [min, max] tuple. max = Infinity if open-ended.
- */
+export function getOptionLabel(dim: FilterDimension, value: string): string {
+  return dim.options.find((o) => o.value === value)?.label ?? value;
+}
+
+export function buildActiveFilterChips(
+  filters: FilterState,
+  dimensions: FilterDimension[],
+): ActiveFilterChip[] {
+  const chips: ActiveFilterChip[] = [];
+
+  for (const dim of dimensions) {
+    if (isMultiFilterKey(dim.key)) {
+      for (const value of filters[dim.key]) {
+        chips.push({
+          key: dim.key,
+          value,
+          label: getOptionLabel(dim, value),
+          dimensionLabel: dim.label,
+        });
+      }
+    } else if (dim.key === "dateRange" && filters.dateRange && filters.dateRange !== "all") {
+      chips.push({
+        key: "dateRange",
+        value: filters.dateRange,
+        label: getOptionLabel(dim, filters.dateRange),
+        dimensionLabel: dim.label,
+      });
+    } else if (dim.key === "premiumRange" && filters.premiumRange) {
+      chips.push({
+        key: "premiumRange",
+        value: filters.premiumRange,
+        label: getOptionLabel(dim, filters.premiumRange),
+        dimensionLabel: dim.label,
+      });
+    }
+  }
+
+  if (filters.dateRange === "custom") {
+    if (filters.dateFrom) {
+      chips.push({
+        key: "dateFrom",
+        value: filters.dateFrom,
+        label: filters.dateFrom,
+        dimensionLabel: "From",
+      });
+    }
+    if (filters.dateTo) {
+      chips.push({
+        key: "dateTo",
+        value: filters.dateTo,
+        label: filters.dateTo,
+        dimensionLabel: "To",
+      });
+    }
+  }
+
+  return chips;
+}
+
+export function countFilterSelections(filters: FilterState): number {
+  let count = 0;
+  for (const key of MULTI_FILTER_KEYS) {
+    count += filters[key].length;
+  }
+  if (filters.dateRange && filters.dateRange !== "all") count++;
+  if (filters.premiumRange) count++;
+  if (filters.dateRange === "custom") {
+    if (filters.dateFrom) count++;
+    if (filters.dateTo) count++;
+  }
+  return count;
+}
+
+export function applyCascadeClear(
+  key: keyof FilterState,
+  next: FilterState,
+): FilterState {
+  if (key === "productLine") return { ...next, productSubType: [] };
+  if (key === "zone") return { ...next, region: [], area: [], district: [], posp: [] };
+  if (key === "region") return { ...next, area: [], district: [], posp: [] };
+  if (key === "area") return { ...next, district: [], posp: [] };
+  if (key === "district") return { ...next, posp: [] };
+  return next;
+}
+
 function parsePremiumRange(range: string): [number, number] {
   if (!range) return [0, Infinity];
   if (range.endsWith("+")) return [Number(range.slice(0, -1)), Infinity];
@@ -266,33 +378,32 @@ function parsePremiumRange(range: string): [number, number] {
   return [min, max];
 }
 
-/**
- * Applies frontend-side filter state to a list of deals.
- * This is used for client-side filtering after the server has already
- * scoped data by role. Server-side scope wins — this is additive refinement.
- */
-export function applyFiltersToDeals(deals: Deal[], filters: FilterState): Deal[] {
+export function applyFiltersToDeals(
+  deals: Deal[],
+  filters: FilterState,
+  options?: { dateField?: "expected" | "issued" },
+): Deal[] {
+  const dateField = options?.dateField ?? "expected";
   let result = deals;
 
-  // Deal status
-  if (filters.dealStatus) {
-    result = result.filter((d) => d.status === filters.dealStatus);
+  if (filters.dealStatus.length > 0) {
+    result = result.filter((d) => filters.dealStatus.includes(d.status));
   }
 
-  // Policy issuance
-  if (filters.policyStatus === "issued") {
-    result = result.filter((d) => !!d.issued);
-  } else if (filters.policyStatus === "pending") {
-    result = result.filter((d) => !d.issued);
+  if (filters.policyStatus.length > 0) {
+    const hasIssued = filters.policyStatus.includes("issued");
+    const hasPending = filters.policyStatus.includes("pending");
+    if (hasIssued && !hasPending) {
+      result = result.filter((d) => !!d.issued);
+    } else if (hasPending && !hasIssued) {
+      result = result.filter((d) => !d.issued);
+    }
   }
-
-  // Premium range
   if (filters.premiumRange) {
     const [min, max] = parsePremiumRange(filters.premiumRange);
     result = result.filter((d) => d.premium >= min && d.premium <= max);
   }
 
-  // Date range on expected close date
   if (filters.dateRange && filters.dateRange !== "all") {
     const now = new Date();
     let from: Date | null = null;
@@ -331,18 +442,70 @@ export function applyFiltersToDeals(deals: Deal[], filters: FilterState): Deal[]
         break;
     }
 
-    if (from) result = result.filter((d) => new Date(d.expected) >= from!);
-    if (to) result = result.filter((d) => new Date(d.expected) <= to!);
+    if (from) {
+      result = result.filter((d) => {
+        const raw = dateField === "issued" ? d.issued : d.expected;
+        if (!raw) return false;
+        return new Date(raw) >= from;
+      });
+    }
+    if (to) {
+      result = result.filter((d) => {
+        const raw = dateField === "issued" ? d.issued : d.expected;
+        if (!raw) return false;
+        return new Date(raw) <= to;
+      });
+    }
   }
 
   return result;
 }
 
-/** Build URL query params from FilterState for server-assisted filtering (future use) */
+export function filterDealsForListQuery(deals: Deal[], query: ListQueryParams): Deal[] {
+  const dateField = query.renewals === "true" ? "issued" : "expected";
+  let result = applyFiltersToDeals(deals, query, { dateField });
+
+  if (query.posp.length > 0) {
+    result = result.filter((d) => query.posp.includes(d.pospId));
+  }
+
+  if (query.renewals === "true") {
+    result = result.filter((d) => !!d.issued);
+  }
+
+  return result;
+}
+
 export function filterStateToParams(filters: FilterState): URLSearchParams {
   const params = new URLSearchParams();
-  for (const [key, val] of Object.entries(filters)) {
-    if (val && val !== "all") params.set(key, val as string);
+
+  if (filters.dateRange && filters.dateRange !== "all") {
+    params.set("dateRange", filters.dateRange);
   }
+  if (filters.dateFrom) params.set("dateFrom", filters.dateFrom);
+  if (filters.dateTo) params.set("dateTo", filters.dateTo);
+  if (filters.premiumRange) params.set("premiumRange", filters.premiumRange);
+
+  for (const key of MULTI_FILTER_KEYS) {
+    for (const value of filters[key]) {
+      params.append(key, value);
+    }
+  }
+
   return params;
 }
+
+export function parseMultiFromParams(
+  params: URLSearchParams,
+  key: string,
+): string[] {
+  const all = params.getAll(key);
+  if (all.length === 0) {
+    const single = params.get(key);
+    if (!single) return [];
+    return single.split(",").map((v) => v.trim()).filter(Boolean);
+  }
+  return all.flatMap((v) => v.split(",")).map((v) => v.trim()).filter(Boolean);
+}
+
+export { selectableOptions };

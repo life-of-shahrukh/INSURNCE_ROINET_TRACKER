@@ -1,9 +1,30 @@
 "use client";
 
+import { Suspense } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { CrmProvider } from "@/providers/crm-provider";
 import { ReactQueryProvider } from "@/providers/react-query-provider";
+import { PrimeProvider } from "@/providers/prime-provider";
 import { useAuth } from "@/providers/auth-provider";
+
+function CrmShell({ children }: { children: React.ReactNode }) {
+  return (
+    <PrimeProvider>
+      <ReactQueryProvider>
+        <CrmProvider>
+          <div className="crm-shell">
+            <Sidebar />
+            <main className="main">
+              <Suspense fallback={null}>
+                {children}
+              </Suspense>
+            </main>
+          </div>
+        </CrmProvider>
+      </ReactQueryProvider>
+    </PrimeProvider>
+  );
+}
 
 export default function CrmLayout({
   children,
@@ -15,14 +36,5 @@ export default function CrmLayout({
     return null;
   }
 
-  return (
-    <ReactQueryProvider>
-      <CrmProvider>
-        <div className="crm-shell">
-          <Sidebar />
-          <main className="main">{children}</main>
-        </div>
-      </CrmProvider>
-    </ReactQueryProvider>
-  );
+  return <CrmShell>{children}</CrmShell>;
 }

@@ -1,6 +1,5 @@
-/** Customer API client — uses HttpOnly cookie session */
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+import type { PaginatedResponse } from './pagination-types';
+import { fetchPaginated, request } from './fetch-client';
 
 export interface Customer {
   id: string;
@@ -44,27 +43,20 @@ export interface CreateCustomerInput {
   source?: string;
 }
 
-async function apiFetch(url: string, options?: RequestInit) {
-  const res = await fetch(url, {
-    ...options,
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-  });
-  if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-  return res.json();
-}
-
 export const customerApi = {
-  getAll(): Promise<Customer[]> {
-    return apiFetch(`${API_BASE}/api/customers`);
+  getAll(params?: URLSearchParams): Promise<PaginatedResponse<Customer>> {
+    return fetchPaginated<Customer>('/api/customers', params);
   },
+
   search(q: string): Promise<Customer[]> {
-    return apiFetch(`${API_BASE}/api/customers/search?q=${encodeURIComponent(q)}`);
+    return request<Customer[]>(`/api/customers/search?q=${encodeURIComponent(q)}`);
   },
+
   create(data: CreateCustomerInput): Promise<Customer> {
-    return apiFetch(`${API_BASE}/api/customers`, { method: 'POST', body: JSON.stringify(data) });
+    return request<Customer>('/api/customers', { method: 'POST', body: JSON.stringify(data) });
   },
+
   update(id: string, data: Partial<CreateCustomerInput>): Promise<Customer> {
-    return apiFetch(`${API_BASE}/api/customers/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
+    return request<Customer>(`/api/customers/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
   },
 };

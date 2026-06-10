@@ -30,7 +30,7 @@ export interface HierarchyScope {
  *  - ZH  → zoneIds from their SalesTeam record
  *  - RH  → regionIds from their SalesTeam record
  *  - ASM → pospIds of all Posps where asmId = salesTeam.id
- *  - DM  → pospIds of all Posps in their districtId
+ *  - DM  → pospIds of all Posps in their areaId (or directly under asmId)
  *  - POSP → [user.pospId]
  */
 export async function resolveHierarchyScope(
@@ -51,7 +51,7 @@ export async function resolveHierarchyScope(
   // Management roles — need to look up their SalesTeam record
   const salesTeam = await prisma.salesTeam.findUnique({
     where: { userId: user.userId },
-    select: { id: true, zoneId: true, regionId: true, areaId: true, districtId: true },
+    select: { id: true, zoneId: true, regionId: true, areaId: true },
   });
 
   if (!salesTeam) {
@@ -74,8 +74,8 @@ export async function resolveHierarchyScope(
     }
 
     case Role.DM: {
-      const where = salesTeam.districtId
-        ? { districtId: salesTeam.districtId }
+      const where = salesTeam.areaId
+        ? { areaId: salesTeam.areaId }
         : { asmId: salesTeam.id }; // fallback: POSPs directly under this DM's ASM record
       const posps = await prisma.posp.findMany({ where, select: { id: true } });
       return { pospIds: posps.map((p) => p.id) };
@@ -84,6 +84,31 @@ export async function resolveHierarchyScope(
     default:
       return { pospIds: [] };
   }
+}
+
+/**
+ * Converts a HierarchyScope into a Prisma-compatible `where` clause fragment
+ * for Lead queries (uses geography columns, not pospId).
+ */
+export function buildLeadScopeWhere(
+  scope: HierarchyScope,
+): Record<string, unknown> {
+  if (!scope || Object.keys(scope).length === 0) return {};
+
+  if (scope.districtIds) {
+    return { districtId: { in: scope.districtIds } };
+  }
+  if (scope.areaIds) {
+    return { areaId: { in: scope.areaIds } };
+  }
+  if (scope.regionIds) {
+    return { regionId: { in: scope.regionIds } };
+  }
+  if (scope.zoneIds) {
+    return { zoneId: { in: scope.zoneIds } };
+  }
+  // pospIds scope does not map directly to Lead — geography handled above
+  return {};
 }
 
 /**

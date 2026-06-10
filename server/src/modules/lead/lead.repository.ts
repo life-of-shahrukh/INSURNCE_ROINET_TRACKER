@@ -1,10 +1,49 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Lead, Prisma } from '@prisma/client';
+import type { PaginatedResult } from '../../common/interfaces/paginated-result.interface';
+import { buildPaginatedResult } from '../../common/utils/pagination.util';
+
+const LEAD_INCLUDE = {
+  customer: true,
+  assignedTo: true,
+} as const;
+
+const LEAD_SORT_FIELDS: Record<string, keyof Lead> = {
+  createdAt: 'createdAt',
+  expectedCloseDate: 'expectedCloseDate',
+  estimatedPremium: 'estimatedPremium',
+  status: 'status',
+};
 
 @Injectable()
 export class LeadRepository {
   constructor(private readonly prisma: PrismaService) {}
+
+  private resolveOrderBy(
+    sortBy?: string,
+    sortOrder: 'asc' | 'desc' = 'desc',
+  ): Prisma.LeadOrderByWithRelationInput {
+    const field = sortBy && LEAD_SORT_FIELDS[sortBy] ? LEAD_SORT_FIELDS[sortBy] : 'createdAt';
+    return { [field]: sortOrder };
+  }
+
+  async findPaginated(
+    where: Prisma.LeadWhereInput,
+    skip: number,
+    take: number,
+    page: number,
+    pageSize: number,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
+  ): Promise<PaginatedResult<Lead>> {
+    const orderBy = this.resolveOrderBy(sortBy, sortOrder);
+    const [data, total] = await Promise.all([
+      this.prisma.lead.findMany({ where, skip, take, orderBy, include: LEAD_INCLUDE }),
+      this.prisma.lead.count({ where }),
+    ]);
+    return buildPaginatedResult(data, total, page, pageSize);
+  }
 
   async create(data: Prisma.LeadCreateInput): Promise<Lead> {
     return this.prisma.lead.create({ data });
@@ -22,7 +61,7 @@ export class LeadRepository {
 
   async findByScope(where: Record<string, unknown>): Promise<Lead[]> {
     return this.prisma.lead.findMany({
-      where: where as Parameters<typeof this.prisma.lead.findMany>[0]['where'],
+      where: where as Prisma.LeadWhereInput,
       include: {
         customer: true,
         assignedTo: true,

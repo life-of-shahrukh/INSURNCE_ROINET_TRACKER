@@ -7,6 +7,7 @@ import {
   Post,
   HttpCode,
   HttpStatus,
+  Query,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -23,6 +24,7 @@ import { ResolvedScope } from '../../common/decorators/scope.decorator';
 import { AuthUser } from '../../common/auth/auth-user.interface';
 import type { HierarchyScope } from '../../common/auth/hierarchy-scope.util';
 import { HierarchyScopeInterceptor } from '../../common/interceptors/hierarchy-scope.interceptor';
+import { PospListQueryDto } from './dto/posp-list-query.dto';
 
 @ApiTags('POSP')
 @Controller('posp')
@@ -36,8 +38,12 @@ export class PospController {
   @Get()
   @Roles(Role.DM, Role.ASM, Role.RH, Role.ZH, Role.NATIONAL_HEAD, Role.SUPER_ADMIN, Role.POSP)
   @ApiOperation({ summary: 'List POSPs (scoped by role)' })
-  findAll(@CurrentUser() user: AuthUser, @ResolvedScope() scope: HierarchyScope) {
-    return this.pospService.getAll(user, scope);
+  findAll(
+    @Query() query: PospListQueryDto,
+    @CurrentUser() user: AuthUser,
+    @ResolvedScope() scope: HierarchyScope,
+  ) {
+    return this.pospService.getAll(user, query, scope);
   }
 
   // Only ASM and above can create/register POSPs

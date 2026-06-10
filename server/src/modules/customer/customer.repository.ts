@@ -1,10 +1,44 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Customer, Prisma } from '@prisma/client';
+import type { PaginatedResult } from '../../common/interfaces/paginated-result.interface';
+import { buildPaginatedResult } from '../../common/utils/pagination.util';
+
+const CUSTOMER_SORT_FIELDS: Record<string, keyof Customer> = {
+  createdAt: 'createdAt',
+  name: 'name',
+  kycStatus: 'kycStatus',
+};
 
 @Injectable()
 export class CustomerRepository {
   constructor(private readonly prisma: PrismaService) {}
+
+  private resolveOrderBy(
+    sortBy?: string,
+    sortOrder: 'asc' | 'desc' = 'desc',
+  ): Prisma.CustomerOrderByWithRelationInput {
+    const field =
+      sortBy && CUSTOMER_SORT_FIELDS[sortBy] ? CUSTOMER_SORT_FIELDS[sortBy] : 'createdAt';
+    return { [field]: sortOrder };
+  }
+
+  async findPaginated(
+    where: Prisma.CustomerWhereInput,
+    skip: number,
+    take: number,
+    page: number,
+    pageSize: number,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
+  ): Promise<PaginatedResult<Customer>> {
+    const orderBy = this.resolveOrderBy(sortBy, sortOrder);
+    const [data, total] = await Promise.all([
+      this.prisma.customer.findMany({ where, skip, take, orderBy }),
+      this.prisma.customer.count({ where }),
+    ]);
+    return buildPaginatedResult(data, total, page, pageSize);
+  }
 
   async create(data: Prisma.CustomerCreateInput): Promise<Customer> {
     return this.prisma.customer.create({ data });

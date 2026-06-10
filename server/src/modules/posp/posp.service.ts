@@ -7,6 +7,9 @@ import { UpdatePospCommand } from './commands/update-posp.command';
 import { GetAllPospQuery } from './queries/get-all-posp.query';
 import { GetPospByIdQuery } from './queries/get-posp-by-id.query';
 import { Posp } from '@prisma/client';
+import { PospListQueryDto } from './dto/posp-list-query.dto';
+import type { PaginatedResult } from '../../common/interfaces/paginated-result.interface';
+import { buildPaginatedResult } from '../../common/utils/pagination.util';
 import { Role } from '../../common/constants';
 import { AuthUser } from '../../common/auth/auth-user.interface';
 import { resolvePospScope } from '../../common/auth/posp-scope.util';
@@ -19,15 +22,19 @@ export class PospService {
     private readonly queryBus: QueryBus,
   ) {}
 
-  async getAll(user: AuthUser, scope?: HierarchyScope): Promise<Posp[]> {
+  async getAll(
+    user: AuthUser,
+    filters: PospListQueryDto,
+    scope?: HierarchyScope,
+  ): Promise<PaginatedResult<Posp>> {
     if (user.role === Role.POSP) {
       if (!user.pospId) {
         throw new ForbiddenException('POSP account is not linked');
       }
       const posp = await this.queryBus.execute(new GetPospByIdQuery(user.pospId));
-      return [posp];
+      return buildPaginatedResult([posp], 1, 1, 1);
     }
-    return this.queryBus.execute(new GetAllPospQuery(scope));
+    return this.queryBus.execute(new GetAllPospQuery(filters, scope));
   }
 
   create(dto: CreatePospDto, user: AuthUser): Promise<Posp> {

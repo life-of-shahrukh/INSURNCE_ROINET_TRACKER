@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Res,
   UseGuards,
   UseInterceptors,
@@ -26,6 +27,7 @@ import { ResolvedScope } from '../../common/decorators/scope.decorator';
 import { AuthUser } from '../../common/auth/auth-user.interface';
 import type { HierarchyScope } from '../../common/auth/hierarchy-scope.util';
 import { HierarchyScopeInterceptor } from '../../common/interceptors/hierarchy-scope.interceptor';
+import { DealListQueryDto } from './dto/deal-list-query.dto';
 
 @ApiTags('Deals')
 @Controller('deals')
@@ -38,20 +40,25 @@ export class DealController {
   // Any authenticated user at DM level or above, plus POSP (own deals)
   @Get()
   @Roles(Role.DM, Role.ASM, Role.RH, Role.ZH, Role.NATIONAL_HEAD, Role.SUPER_ADMIN, Role.POSP)
-  @ApiOperation({ summary: 'List deals (scoped by role)' })
-  findAll(@CurrentUser() user: AuthUser, @ResolvedScope() scope: HierarchyScope) {
-    return this.dealService.getAll(user, scope);
+  @ApiOperation({ summary: 'List deals (scoped by role, paginated)' })
+  findAll(
+    @Query() query: DealListQueryDto,
+    @CurrentUser() user: AuthUser,
+    @ResolvedScope() scope: HierarchyScope,
+  ) {
+    return this.dealService.getAll(user, query, scope);
   }
 
   @Get('export')
   @Roles(Role.DM, Role.ASM, Role.RH, Role.ZH, Role.NATIONAL_HEAD, Role.SUPER_ADMIN, Role.POSP)
-  @ApiOperation({ summary: 'Export deals as CSV' })
+  @ApiOperation({ summary: 'Export deals as CSV (respects filters)' })
   async exportCsv(
+    @Query() query: DealListQueryDto,
     @Res() res: Response,
     @CurrentUser() user: AuthUser,
     @ResolvedScope() scope: HierarchyScope,
   ) {
-    const csv = await this.dealService.exportCsv(user, scope);
+    const csv = await this.dealService.exportCsv(user, query, scope);
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', 'attachment; filename="deals.csv"');
     res.send(csv);

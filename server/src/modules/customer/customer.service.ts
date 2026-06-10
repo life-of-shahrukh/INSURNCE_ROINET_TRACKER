@@ -6,7 +6,10 @@ import { CreateCustomerCommand } from './commands/create-customer.command';
 import { UpdateCustomerCommand } from './commands/update-customer.command';
 import { GetAllCustomersQuery } from './queries/get-all-customers.query';
 import { SearchCustomersQuery } from './queries/search-customers.query';
+import { Lead } from '@prisma/client';
 import { Customer } from '@prisma/client';
+import { CustomerListQueryDto } from './dto/customer-list-query.dto';
+import type { PaginatedResult } from '../../common/interfaces/paginated-result.interface';
 
 @Injectable()
 export class CustomerService {
@@ -19,8 +22,8 @@ export class CustomerService {
     return this.commandBus.execute(new CreateCustomerCommand(dto));
   }
 
-  async findAll(): Promise<Customer[]> {
-    return this.queryBus.execute(new GetAllCustomersQuery());
+  async findAll(filters: CustomerListQueryDto): Promise<PaginatedResult<Customer>> {
+    return this.queryBus.execute(new GetAllCustomersQuery(filters));
   }
 
   async search(query: string): Promise<Customer[]> {

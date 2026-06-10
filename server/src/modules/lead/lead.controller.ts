@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -18,6 +19,7 @@ import { UpdateLeadDto } from './dto/update-lead.dto';
 import { ResolvedScope } from '../../common/decorators/scope.decorator';
 import type { HierarchyScope } from '../../common/auth/hierarchy-scope.util';
 import { HierarchyScopeInterceptor } from '../../common/interceptors/hierarchy-scope.interceptor';
+import { LeadListQueryDto } from './dto/lead-list-query.dto';
 
 @Controller('leads')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -33,8 +35,11 @@ export class LeadController {
 
   @Get()
   @Roles(Role.DM, Role.ASM, Role.RH, Role.ZH, Role.NATIONAL_HEAD, Role.SUPER_ADMIN, Role.POSP)
-  findAll(@ResolvedScope() scope: HierarchyScope) {
-    return this.leadService.findAll(scope);
+  findAll(
+    @Query() query: LeadListQueryDto,
+    @ResolvedScope() scope: HierarchyScope,
+  ) {
+    return this.leadService.findAll(query, scope);
   }
 
   @Get('commitment')

@@ -5,6 +5,10 @@ import { CreateSalesTeamDto } from './dto/create-sales-team.dto';
 import { UpdateSalesTeamDto } from './dto/update-sales-team.dto';
 import { externalApi, HierarchyEntry } from '../../common/external-api/external-api.service';
 import type { SalesTeam } from '@prisma/client';
+import { SalesTeamListQueryDto } from './dto/sales-team-list-query.dto';
+import { buildSalesTeamFilterWhere } from './sales-team-filter.util';
+import { resolvePagination } from '../../common/utils/pagination.util';
+import type { PaginatedResult } from '../../common/interfaces/paginated-result.interface';
 
 export interface OrgNode {
   id: string;
@@ -44,8 +48,18 @@ export class SalesTeamService {
     });
   }
 
-  async findAll(): Promise<SalesTeam[]> {
-    return this.repository.findAll();
+  async findAll(query: SalesTeamListQueryDto): Promise<PaginatedResult<SalesTeam>> {
+    const { skip, take, page, pageSize } = resolvePagination(query);
+    const where = buildSalesTeamFilterWhere(query);
+    return this.repository.findPaginated(
+      where,
+      skip,
+      take,
+      page,
+      pageSize,
+      query.sortBy,
+      query.sortOrder,
+    );
   }
 
   async getHierarchy(): Promise<SalesTeam[]> {

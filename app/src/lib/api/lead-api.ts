@@ -1,6 +1,5 @@
-/** Lead API client — uses HttpOnly cookie session */
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+import type { PaginatedResponse } from './pagination-types';
+import { fetchPaginated, request } from './fetch-client';
 
 export type LeadStatus = 'NEW' | 'CONTACTED' | 'QUALIFIED' | 'PROPOSAL_SENT' | 'WON' | 'LOST';
 export type LeadProduct = 'LIFE' | 'HEALTH' | 'MOTOR';
@@ -40,30 +39,24 @@ export interface CreateLeadInput {
 
 export type UpdateLeadInput = Partial<CreateLeadInput> & { status?: LeadStatus };
 
-async function apiFetch(url: string, options?: RequestInit) {
-  const res = await fetch(url, {
-    ...options,
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-  });
-  if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-  return res.json();
-}
-
 export const leadApi = {
-  getAll(): Promise<Lead[]> {
-    return apiFetch(`${API_BASE}/api/leads`);
+  getAll(params?: URLSearchParams): Promise<PaginatedResponse<Lead>> {
+    return fetchPaginated<Lead>('/api/leads', params);
   },
+
   getMonthlyCommitment(): Promise<{ total: number; count: number }> {
-    return apiFetch(`${API_BASE}/api/leads/commitment`);
+    return request<{ total: number; count: number }>('/api/leads/commitment');
   },
+
   create(data: CreateLeadInput): Promise<Lead> {
-    return apiFetch(`${API_BASE}/api/leads`, { method: 'POST', body: JSON.stringify(data) });
+    return request<Lead>('/api/leads', { method: 'POST', body: JSON.stringify(data) });
   },
+
   update(id: string, data: UpdateLeadInput): Promise<Lead> {
-    return apiFetch(`${API_BASE}/api/leads/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
+    return request<Lead>(`/api/leads/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
   },
+
   convertToDeal(id: string): Promise<{ dealId: string }> {
-    return apiFetch(`${API_BASE}/api/leads/${id}/convert`, { method: 'POST' });
+    return request<{ dealId: string }>(`/api/leads/${id}/convert`, { method: 'POST' });
   },
 };

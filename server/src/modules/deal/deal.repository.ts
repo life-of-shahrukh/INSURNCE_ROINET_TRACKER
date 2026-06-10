@@ -3,10 +3,45 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { CreateDealDto } from './dto/create-deal.dto';
 import { UpdateDealDto } from './dto/update-deal.dto';
 import { Deal, Prisma } from '@prisma/client';
+import type { PaginatedResult } from '../../common/interfaces/paginated-result.interface';
+import { buildPaginatedResult } from '../../common/utils/pagination.util';
+
+const DEAL_SORT_FIELDS: Record<string, keyof Deal> = {
+  createdAt: 'createdAt',
+  expected: 'expected',
+  premium: 'premium',
+  customerName: 'customerName',
+  status: 'status',
+};
 
 @Injectable()
 export class DealRepository {
   constructor(private readonly prisma: PrismaService) {}
+
+  private resolveOrderBy(
+    sortBy?: string,
+    sortOrder: 'asc' | 'desc' = 'desc',
+  ): Prisma.DealOrderByWithRelationInput {
+    const field = sortBy && DEAL_SORT_FIELDS[sortBy] ? DEAL_SORT_FIELDS[sortBy] : 'createdAt';
+    return { [field]: sortOrder };
+  }
+
+  async findPaginated(
+    where: Prisma.DealWhereInput,
+    skip: number,
+    take: number,
+    page: number,
+    pageSize: number,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
+  ): Promise<PaginatedResult<Deal>> {
+    const orderBy = this.resolveOrderBy(sortBy, sortOrder);
+    const [data, total] = await Promise.all([
+      this.prisma.deal.findMany({ where, skip, take, orderBy }),
+      this.prisma.deal.count({ where }),
+    ]);
+    return buildPaginatedResult(data, total, page, pageSize);
+  }
 
   findAll(): Promise<Deal[]> {
     return this.prisma.deal.findMany({ orderBy: { createdAt: 'desc' } });
@@ -21,7 +56,7 @@ export class DealRepository {
 
   findByScope(where: Record<string, unknown>): Promise<Deal[]> {
     return this.prisma.deal.findMany({
-      where: where as Parameters<typeof this.prisma.deal.findMany>[0]['where'],
+      where: where as Prisma.DealWhereInput,
       orderBy: { createdAt: 'desc' },
     });
   }
@@ -148,8 +183,15 @@ export class DealRepository {
     throw error;
   }
 
-  async exportCsv(): Promise<string> {
-    const deals = await this.findAll();
+  async exportCsvWhere(where: Prisma.DealWhereInput): Promise<string> {
+    const deals = await this.prisma.deal.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+    });
+    return this.formatCsv(deals);
+  }
+
+  private formatCsv(deals: Deal[]): string {
     const header =
       'id,pospId,customer,policy,sum,premium,coa,margin,status,expected,proposal,policyNo,issued,remarks';
     const rows = deals.map((d) =>
@@ -173,28 +215,13 @@ export class DealRepository {
     return [header, ...rows].join('\n');
   }
 
+  async exportCsv(): Promise<string> {
+    const deals = await this.findAll();
+    return this.formatCsv(deals);
+  }
+
   async exportCsvByPosp(pospId: string): Promise<string> {
     const deals = await this.findAllByPospId(pospId);
-    const header =
-      'id,pospId,customer,policy,sum,premium,coa,margin,status,expected,proposal,policyNo,issued,remarks';
-    const rows = deals.map((d) =>
-      [
-        d.id,
-        d.pospId,
-        `"${d.customerName}"`,
-        d.policy,
-        d.sum,
-        d.premium,
-        d.coa,
-        d.margin,
-        d.status,
-        d.expected.toISOString().split('T')[0],
-        d.proposal,
-        d.policyNo,
-        d.issued ? d.issued.toISOString().split('T')[0] : '',
-        `"${d.remarks}"`,
-      ].join(','),
-    );
-    return [header, ...rows].join('\n');
+    return this.formatCsv(deals);
   }
 }

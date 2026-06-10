@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { salesTeamApi, CreateSalesTeamInput } from '../lib/api/sales-team-api';
+import { LIST_QUERY_OPTIONS } from '@/lib/query/list-query-options';
 export type { OrgNode } from '../lib/api/sales-team-api';
 
 export const teamKeys = {
@@ -9,11 +10,13 @@ export const teamKeys = {
   orgChart: () => [...teamKeys.all, 'org-chart'] as const,
 };
 
-export function useSalesTeam() {
+export function useSalesTeam(apiParams: URLSearchParams) {
+  const key = apiParams.toString();
   return useQuery({
-    queryKey: teamKeys.lists(),
-    queryFn: () => salesTeamApi.getAll(),
+    queryKey: [...teamKeys.lists(), key],
+    queryFn: () => salesTeamApi.getAll(apiParams),
     staleTime: 1000 * 60 * 5,
+    ...LIST_QUERY_OPTIONS,
   });
 }
 

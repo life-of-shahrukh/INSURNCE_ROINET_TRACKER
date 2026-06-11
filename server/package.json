@@ -29,7 +29,8 @@
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
     "db:format": "prisma format",
-    "db:validate": "prisma validate"
+    "db:validate": "prisma validate",
+    "seed:all": "ts-node -r tsconfig-paths/register src/seed/sync-from-snapshots.ts"
   },
   "dependencies": {
     "@nestjs/bull": "^11.0.4",
@@ -43,10 +44,12 @@
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.4.4",
     "@prisma/client": "^6.19.3",
+    "@types/cookie-parser": "^1.4.10",
     "bcrypt": "^6.0.0",
     "bull": "^4.16.5",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
+    "cookie-parser": "^1.4.7",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "prisma": "^6.19.3",

@@ -18,6 +18,15 @@ const eslintConfig = defineConfig([
       // 2. PospModal.tsx: setForm() when the modal opens to reset/populate fields
       // Both are valid React patterns — the rule produces false positives here.
       "react-hooks/set-state-in-effect": "off",
+      // Allow underscore-prefixed variables to be unused (intentional omit pattern).
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
     },
   },
 ]);

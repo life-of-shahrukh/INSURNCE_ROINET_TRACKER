@@ -6,64 +6,62 @@ import { CreateDealCommand } from './commands/create-deal.command';
 import { UpdateDealCommand } from './commands/update-deal.command';
 import { DeleteDealCommand } from './commands/delete-deal.command';
 import { GetAllDealsQuery } from './queries/get-all-deals.query';
-import { DealRepository } from './deal.repository';
-import { Deal, Role } from '@prisma/client';
+import { ExportDealsCsvQuery } from './queries/export-deals-csv.query';
+import { Deal } from '@prisma/client';
+import { DealListQueryDto } from './dto/deal-list-query.dto';
+import type { PaginatedResult } from '../../common/interfaces/paginated-result.interface';
 import { ForbiddenException } from '@nestjs/common';
 import { AuthUser } from '../../common/auth/auth-user.interface';
 import { resolvePospScope } from '../../common/auth/posp-scope.util';
+import type { HierarchyScope } from '../../common/auth/hierarchy-scope.util';
 
 @Injectable()
 export class DealService {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
-    private readonly dealRepo: DealRepository,
   ) {}
 
-  getAll(user: AuthUser): Promise<Deal[]> {
-    if (user.role === Role.POSP) {
-      if (!user.pospId) {
-        throw new ForbiddenException('POSP account is not linked');
-      }
-      return this.dealRepo.findAllByPospId(user.pospId);
-    }
-    return this.queryBus.execute(new GetAllDealsQuery());
+  getAll(
+    user: AuthUser,
+    filters: DealListQueryDto,
+    scope?: HierarchyScope,
+  ): Promise<PaginatedResult<Deal>> {
+    return this.queryBus.execute(
+      new GetAllDealsQuery(filters, scope, user.pospId ?? undefined),
+    );
   }
 
   create(dto: CreateDealDto, user: AuthUser): Promise<Deal> {
-    if (user.role === Role.POSP) {
-      const pospId = resolvePospScope(user, dto.pospId);
-      return this.dealRepo.createForPosp(pospId, dto);
+    const finalDto = { ...dto };
+    if (user.pospId) {
+      finalDto.pospId = resolvePospScope(user, dto.pospId);
     }
-    return this.commandBus.execute(new CreateDealCommand(dto));
+    return this.commandBus.execute(new CreateDealCommand(finalDto));
   }
 
   update(id: string, dto: UpdateDealDto, user: AuthUser): Promise<Deal> {
-    if (user.role === Role.POSP) {
-      const pospId = resolvePospScope(user, dto.pospId);
-      return this.dealRepo.updateByPosp(id, pospId, dto);
+    const finalDto = { ...dto };
+    if (user.pospId) {
+      finalDto.pospId = resolvePospScope(user, dto.pospId);
     }
-    return this.commandBus.execute(new UpdateDealCommand(id, dto));
+    return this.commandBus.execute(new UpdateDealCommand(id, finalDto));
   }
 
   async delete(id: string, user: AuthUser): Promise<void> {
-    if (user.role === Role.POSP) {
-      if (!user.pospId) {
-        throw new ForbiddenException('POSP account is not linked');
-      }
-      await this.dealRepo.deleteByPosp(id, user.pospId);
-      return;
+    if (!user.pospId && !user.userId) {
+      throw new ForbiddenException('Unauthorized');
     }
-    return this.commandBus.execute(new DeleteDealCommand(id));
+    return this.commandBus.execute(new DeleteDealCommand(id, user.pospId));
   }
 
-  exportCsv(user: AuthUser): Promise<string> {
-    if (user.role === Role.POSP) {
-      if (!user.pospId) {
-        throw new ForbiddenException('POSP account is not linked');
-      }
-      return this.dealRepo.exportCsvByPosp(user.pospId);
-    }
-    return this.dealRepo.exportCsv();
+  exportCsv(
+    user: AuthUser,
+    filters: DealListQueryDto,
+    scope?: HierarchyScope,
+  ): Promise<string> {
+    return this.queryBus.execute(
+      new ExportDealsCsvQuery(filters, scope, user.pospId ?? undefined),
+    );
   }
 }

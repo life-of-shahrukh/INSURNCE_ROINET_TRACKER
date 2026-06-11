@@ -195,14 +195,25 @@ resource "aws_security_group" "ecs" {
 
 resource "aws_security_group" "rds" {
   name        = "${var.project}-${var.env}-rds-sg"
-  description = "Allow PostgreSQL from ECS tasks only"
+  description = "SQL Server port 1433 — open to ECS tasks and internet (username/password auth)"
   vpc_id      = aws_vpc.main.id
 
+  # Allow ECS tasks to connect internally
   ingress {
-    from_port       = 5432
-    to_port         = 5432
+    from_port       = 1433
+    to_port         = 1433
     protocol        = "tcp"
     security_groups = [aws_security_group.ecs.id]
+    description     = "ECS tasks → SQL Server"
+  }
+
+  # Allow public internet access (SSMS, DBeaver, local dev, migrations from CI)
+  ingress {
+    from_port   = 1433
+    to_port     = 1433
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Public SQL Server access (username/password protected)"
   }
 
   egress {

@@ -4,112 +4,119 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from '../../prisma/prisma.service';
+import type { Response } from 'express';
 import { LoginDto } from './dto/login.dto';
 import { SignupPospDto } from './dto/signup-posp.dto';
-import { Role, UserStatus, Prisma } from '@prisma/client';
+import { Role, UserStatus } from '../../common/constants';
+import { Prisma } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { ApprovePospDto } from './dto/approve-posp.dto';
 import { JwtPayload } from '../../common/auth/jwt-payload.interface';
 import { AuthUser } from '../../common/auth/auth-user.interface';
-export interface AuthResponse {
-  accessToken: string;
-  user: {
-    id: string;
-    email: string;
-    role: Role;
-    status: UserStatus;
-    pospId: string | null;
-  };
+import { UserRepository } from './user.repository';
+
+const COOKIE_NAME = 'access_token';
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax' as const,
+  path: '/',
+  maxAge: 8 * 60 * 60 * 1000, // 8 hours in ms
+};
+
+export interface AuthUserPayload {
+  id: string;
+  email: string;
+  role: Role;
+  status: UserStatus;
+  pospId: string | null;
 }
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly userRepo: UserRepository,
     private readonly jwtService: JwtService,
   ) {}
 
-  async login(dto: LoginDto): Promise<AuthResponse> {
-    const user = await this.prisma.user.findUnique({
-      where: { email: dto.email.toLowerCase() },
-    });
+  async login(dto: LoginDto, res: Response): Promise<AuthUserPayload> {
+    const user = await this.userRepo.findByEmail(dto.email);
 
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
+    if (!user) throw new UnauthorizedException('Invalid credentials');
 
     const ok = await bcrypt.compare(dto.password, user.passwordHash);
-    if (!ok) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
+    if (!ok) throw new UnauthorizedException('Invalid credentials');
 
     if (user.status !== UserStatus.ACTIVE) {
       throw new UnauthorizedException('Account is not active yet');
     }
 
-    return this.createResponse(user);
+    const token = this.signToken({
+      ...user,
+      role: user.role as Role,
+      status: user.status,
+    });
+
+    res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS);
+
+    return {
+      id: user.id,
+      email: user.email,
+      role: user.role as Role,
+      status: user.status as UserStatus,
+      pospId: user.pospId,
+    };
   }
 
-  async signupPosp(dto: SignupPospDto) {
+  logout(res: Response): void {
+    res.clearCookie(COOKIE_NAME, { path: '/' });
+  }
+
+  async signupPosp(
+    dto: SignupPospDto,
+    res: Response,
+  ): Promise<AuthUserPayload & { message: string }> {
     const normalizedEmail = dto.email.toLowerCase();
 
-    const existing = await this.prisma.user.findUnique({
-      where: { email: normalizedEmail },
-    });
-    if (existing) {
-      throw new BadRequestException('Email is already registered');
-    }
+    const existing = await this.userRepo.findByEmail(normalizedEmail);
+    if (existing) throw new BadRequestException('Email is already registered');
 
-    const existingPospCode = await this.prisma.posp.findUnique({
-      where: { code: dto.code },
-      select: { id: true },
-    });
-    if (existingPospCode) {
+    const existingCode = await this.userRepo.findPospByCode(dto.code);
+    if (existingCode)
       throw new BadRequestException('POSP code is already in use');
-    }
 
-    const existingPospEmail = await this.prisma.posp.findUnique({
-      where: { email: normalizedEmail },
-      select: { id: true },
-    });
-    if (existingPospEmail) {
+    const existingPospEmail =
+      await this.userRepo.findPospByEmail(normalizedEmail);
+    if (existingPospEmail)
       throw new BadRequestException('POSP email is already in use');
-    }
 
     const passwordHash = await bcrypt.hash(dto.password, 10);
 
     let user: {
       id: string;
       email: string;
-      role: Role;
-      status: UserStatus;
+      role: string;
+      status: string;
       pospId: string | null;
     };
 
     try {
-      user = await this.prisma.$transaction(async (tx) => {
-        const posp = await tx.posp.create({
-          data: {
-            name: dto.name,
-            code: dto.code,
-            mobile: dto.mobile,
-            email: normalizedEmail,
-            joined: new Date(dto.joined),
-            active: dto.active ?? true,
-          },
-        });
-
-        return tx.user.create({
-          data: {
-            email: normalizedEmail,
-            passwordHash,
-            role: Role.POSP,
-            status: UserStatus.ACTIVE,
-            pospId: posp.id,
-          },
-        });
-      });
+      user = await this.userRepo.createWithPosp(
+        {
+          email: normalizedEmail,
+          passwordHash,
+          role: Role.POSP,
+          status: UserStatus.ACTIVE,
+        },
+        {
+          name: dto.name,
+          code: dto.code,
+          mobile: dto.mobile,
+          email: normalizedEmail,
+          joined: new Date(dto.joined),
+          active: dto.active ?? true,
+        },
+      );
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -122,49 +129,42 @@ export class AuthService {
       throw error;
     }
 
+    const token = this.signToken({
+      ...user,
+      role: user.role as Role,
+      status: user.status as UserStatus,
+    });
+    res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS);
+
     return {
-      ...this.createResponse(user),
+      id: user.id,
+      email: user.email,
+      role: user.role as Role,
+      status: user.status as UserStatus,
+      pospId: user.pospId,
       message: 'Signup successful. You now have direct access.',
     };
   }
 
   async approvePosp(userId: string, dto: ApprovePospDto) {
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    const user = await this.userRepo.findById(userId);
     if (!user || user.role !== Role.POSP) {
       throw new BadRequestException('POSP user not found');
     }
-
-    return this.prisma.user.update({
-      where: { id: userId },
-      data: {
-        status: dto.status as UserStatus,
-      },
-      select: {
-        id: true,
-        email: true,
-        role: true,
-        status: true,
-        pospId: true,
-      },
-    });
+    return this.userRepo.updateStatus(userId, dto.status);
   }
 
-  async me(user: AuthUser) {
-    const profile = await this.prisma.user.findUnique({
-      where: { id: user.userId },
-      select: {
-        id: true,
-        email: true,
-        role: true,
-        status: true,
-        pospId: true,
-      },
-    });
-
+  async me(user: AuthUser): Promise<AuthUserPayload> {
+    const profile = await this.userRepo.findById(user.userId);
     if (profile) {
-      return profile;
+      return {
+        id: profile.id,
+        email: profile.email,
+        role: profile.role as Role,
+        status: profile.status as UserStatus,
+        pospId: profile.pospId,
+      };
     }
-
     return {
       id: user.userId,
       email: user.email,
@@ -174,13 +174,13 @@ export class AuthService {
     };
   }
 
-  private createResponse(user: {
+  private signToken(user: {
     id: string;
     email: string;
     role: Role;
     status: UserStatus;
-    pospId: string | null;
-  }): AuthResponse {
+    pospId?: string | null;
+  }): string {
     const payload: JwtPayload = {
       sub: user.id,
       email: user.email,
@@ -188,10 +188,6 @@ export class AuthService {
       status: user.status,
       ...(user.pospId ? { pospId: user.pospId } : {}),
     };
-
-    return {
-      accessToken: this.jwtService.sign(payload),
-      user,
-    };
+    return this.jwtService.sign(payload);
   }
 }

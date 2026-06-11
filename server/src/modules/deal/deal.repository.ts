@@ -1,12 +1,54 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateDealDto } from './dto/create-deal.dto';
 import { UpdateDealDto } from './dto/update-deal.dto';
 import { Deal, Prisma } from '@prisma/client';
+import type { PaginatedResult } from '../../common/interfaces/paginated-result.interface';
+import { buildPaginatedResult } from '../../common/utils/pagination.util';
+
+const DEAL_SORT_FIELDS: Record<string, keyof Deal> = {
+  createdAt: 'createdAt',
+  expected: 'expected',
+  premium: 'premium',
+  customerName: 'customerName',
+  status: 'status',
+};
 
 @Injectable()
 export class DealRepository {
   constructor(private readonly prisma: PrismaService) {}
+
+  private resolveOrderBy(
+    sortBy?: string,
+    sortOrder: 'asc' | 'desc' = 'desc',
+  ): Prisma.DealOrderByWithRelationInput {
+    const field =
+      sortBy && DEAL_SORT_FIELDS[sortBy]
+        ? DEAL_SORT_FIELDS[sortBy]
+        : 'createdAt';
+    return { [field]: sortOrder };
+  }
+
+  async findPaginated(
+    where: Prisma.DealWhereInput,
+    skip: number,
+    take: number,
+    page: number,
+    pageSize: number,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
+  ): Promise<PaginatedResult<Deal>> {
+    const orderBy = this.resolveOrderBy(sortBy, sortOrder);
+    const [data, total] = await Promise.all([
+      this.prisma.deal.findMany({ where, skip, take, orderBy }),
+      this.prisma.deal.count({ where }),
+    ]);
+    return buildPaginatedResult(data, total, page, pageSize);
+  }
 
   findAll(): Promise<Deal[]> {
     return this.prisma.deal.findMany({ orderBy: { createdAt: 'desc' } });
@@ -15,6 +57,13 @@ export class DealRepository {
   findAllByPospId(pospId: string): Promise<Deal[]> {
     return this.prisma.deal.findMany({
       where: { pospId },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  findByScope(where: Record<string, unknown>): Promise<Deal[]> {
+    return this.prisma.deal.findMany({
+      where: where,
       orderBy: { createdAt: 'desc' },
     });
   }
@@ -34,43 +83,47 @@ export class DealRepository {
   }
 
   create(dto: CreateDealDto): Promise<Deal> {
-    return this.prisma.deal.create({
-      data: {
-        pospId: dto.pospId,
-        customer: dto.customer,
-        policy: dto.policy,
-        sum: dto.sum,
-        premium: dto.premium,
-        coa: dto.coa,
-        margin: dto.margin,
-        status: dto.status,
-        expected: new Date(dto.expected),
-        proposal: dto.proposal,
-        policyNo: dto.policyNo ?? '',
-        issued: dto.issued ? new Date(dto.issued) : null,
-        remarks: dto.remarks ?? '',
-      },
-    }).catch(this.handlePrismaError);
+    return this.prisma.deal
+      .create({
+        data: {
+          pospId: dto.pospId,
+          customerName: dto.customer,
+          policy: dto.policy,
+          sum: dto.sum,
+          premium: dto.premium,
+          coa: dto.coa,
+          margin: dto.margin,
+          status: dto.status,
+          expected: new Date(dto.expected),
+          proposal: dto.proposal,
+          policyNo: dto.policyNo ?? '',
+          issued: dto.issued ? new Date(dto.issued) : null,
+          remarks: dto.remarks ?? '',
+        },
+      })
+      .catch((e: unknown) => this.handlePrismaError(e));
   }
 
   createForPosp(pospId: string, dto: CreateDealDto): Promise<Deal> {
-    return this.prisma.deal.create({
-      data: {
-        pospId,
-        customer: dto.customer,
-        policy: dto.policy,
-        sum: dto.sum,
-        premium: dto.premium,
-        coa: dto.coa,
-        margin: dto.margin,
-        status: dto.status,
-        expected: new Date(dto.expected),
-        proposal: dto.proposal,
-        policyNo: dto.policyNo ?? '',
-        issued: dto.issued ? new Date(dto.issued) : null,
-        remarks: dto.remarks ?? '',
-      },
-    }).catch(this.handlePrismaError);
+    return this.prisma.deal
+      .create({
+        data: {
+          pospId,
+          customerName: dto.customer,
+          policy: dto.policy,
+          sum: dto.sum,
+          premium: dto.premium,
+          coa: dto.coa,
+          margin: dto.margin,
+          status: dto.status,
+          expected: new Date(dto.expected),
+          proposal: dto.proposal,
+          policyNo: dto.policyNo ?? '',
+          issued: dto.issued ? new Date(dto.issued) : null,
+          remarks: dto.remarks ?? '',
+        },
+      })
+      .catch((e: unknown) => this.handlePrismaError(e));
   }
 
   async update(id: string, dto: UpdateDealDto): Promise<Deal> {
@@ -79,7 +132,7 @@ export class DealRepository {
       where: { id },
       data: {
         ...(dto.pospId !== undefined && { pospId: dto.pospId }),
-        ...(dto.customer !== undefined && { customer: dto.customer }),
+        ...(dto.customer !== undefined && { customerName: dto.customer }),
         ...(dto.policy !== undefined && { policy: dto.policy }),
         ...(dto.sum !== undefined && { sum: dto.sum }),
         ...(dto.premium !== undefined && { premium: dto.premium }),
@@ -97,12 +150,16 @@ export class DealRepository {
     });
   }
 
-  async updateByPosp(id: string, pospId: string, dto: UpdateDealDto): Promise<Deal> {
+  async updateByPosp(
+    id: string,
+    pospId: string,
+    dto: UpdateDealDto,
+  ): Promise<Deal> {
     await this.findByIdForPosp(id, pospId);
     return this.prisma.deal.update({
       where: { id },
       data: {
-        ...(dto.customer !== undefined && { customer: dto.customer }),
+        ...(dto.customer !== undefined && { customerName: dto.customer }),
         ...(dto.policy !== undefined && { policy: dto.policy }),
         ...(dto.sum !== undefined && { sum: dto.sum }),
         ...(dto.premium !== undefined && { premium: dto.premium }),
@@ -132,7 +189,9 @@ export class DealRepository {
   private handlePrismaError(error: unknown): never {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === 'P2003') {
-        throw new BadRequestException('Invalid POSP selected — please refresh and try again');
+        throw new BadRequestException(
+          'Invalid POSP selected — please refresh and try again',
+        );
       }
       if (error.code === 'P2025') {
         throw new NotFoundException('Record not found');
@@ -141,15 +200,22 @@ export class DealRepository {
     throw error;
   }
 
-  async exportCsv(): Promise<string> {
-    const deals = await this.findAll();
+  async exportCsvWhere(where: Prisma.DealWhereInput): Promise<string> {
+    const deals = await this.prisma.deal.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+    });
+    return this.formatCsv(deals);
+  }
+
+  private formatCsv(deals: Deal[]): string {
     const header =
       'id,pospId,customer,policy,sum,premium,coa,margin,status,expected,proposal,policyNo,issued,remarks';
     const rows = deals.map((d) =>
       [
         d.id,
         d.pospId,
-        `"${d.customer}"`,
+        `"${d.customerName}"`,
         d.policy,
         d.sum,
         d.premium,
@@ -166,28 +232,13 @@ export class DealRepository {
     return [header, ...rows].join('\n');
   }
 
+  async exportCsv(): Promise<string> {
+    const deals = await this.findAll();
+    return this.formatCsv(deals);
+  }
+
   async exportCsvByPosp(pospId: string): Promise<string> {
     const deals = await this.findAllByPospId(pospId);
-    const header =
-      'id,pospId,customer,policy,sum,premium,coa,margin,status,expected,proposal,policyNo,issued,remarks';
-    const rows = deals.map((d) =>
-      [
-        d.id,
-        d.pospId,
-        `"${d.customer}"`,
-        d.policy,
-        d.sum,
-        d.premium,
-        d.coa,
-        d.margin,
-        d.status,
-        d.expected.toISOString().split('T')[0],
-        d.proposal,
-        d.policyNo,
-        d.issued ? d.issued.toISOString().split('T')[0] : '',
-        `"${d.remarks}"`,
-      ].join(','),
-    );
-    return [header, ...rows].join('\n');
+    return this.formatCsv(deals);
   }
 }

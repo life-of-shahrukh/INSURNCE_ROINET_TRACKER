@@ -2,11 +2,16 @@ data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
 # ── GitHub OIDC Provider ──────────────────────────────────────────────────────
-# The provider already exists in this account (created by the swirl project).
-# We reference it with a data source instead of creating a duplicate — Terraform
-# would error on create if the provider ARN already exists.
-data "aws_iam_openid_connect_provider" "github" {
-  url = "https://token.actions.githubusercontent.com"
+# Create the provider if it doesn't already exist in this account.
+resource "aws_iam_openid_connect_provider" "github" {
+  url             = "https://token.actions.githubusercontent.com"
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
+
+  tags = {
+    Project     = var.project
+    Environment = var.env
+  }
 }
 
 # ── ECS Task Execution Role ───────────────────────────────────────────────────
@@ -92,10 +97,9 @@ resource "aws_iam_role" "github_actions" {
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Effect = "Allow"
-      Action = "sts:AssumeRoleWithWebIdentity"
-      # Reference the existing OIDC provider via data source
-      Principal = { Federated = data.aws_iam_openid_connect_provider.github.arn }
+      Effect    = "Allow"
+      Action    = "sts:AssumeRoleWithWebIdentity"
+      Principal = { Federated = aws_iam_openid_connect_provider.github.arn }
       Condition = {
         StringLike = {
           "token.actions.githubusercontent.com:sub" = "repo:${var.github_repo}:*"

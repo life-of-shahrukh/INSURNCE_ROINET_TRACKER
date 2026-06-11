@@ -109,7 +109,9 @@ resource "aws_ecs_task_definition" "server" {
     environment = [
       { name = "NODE_ENV", value = var.env },
       { name = "PORT", value = "3001" },
-      { name = "DATABASE_URL", value = var.database_url }
+      { name = "DATABASE_URL", value = var.database_url },
+      { name = "FRONTEND_URL", value = var.frontend_url },
+      { name = "JWT_SECRET", value = var.jwt_secret }
     ]
 
     logConfiguration = {
@@ -122,11 +124,11 @@ resource "aws_ecs_task_definition" "server" {
     }
 
     healthCheck = {
-      command     = ["CMD-SHELL", "curl -f http://localhost:3001/health || exit 1"]
+      command     = ["CMD-SHELL", "curl -sf http://localhost:3001/health || exit 1"]
       interval    = 30
       timeout     = 5
       retries     = 3
-      startPeriod = 60
+      startPeriod = 120
     }
   }])
 

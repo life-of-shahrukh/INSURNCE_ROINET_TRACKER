@@ -54,6 +54,7 @@ jobs:
           terraform plan \
             -var="db_username=${{ secrets.DB_USERNAME }}" \
             -var="db_password=${{ secrets.DB_PASSWORD }}" \
+            -var="jwt_secret=${{ secrets.JWT_SECRET }}" \
             -out=tfplan
 
       - name: Terraform apply

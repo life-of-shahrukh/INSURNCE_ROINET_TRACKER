@@ -1,10 +1,20 @@
 "use client";
 
-import { Bar } from "react-chartjs-2";
-import { registerCharts } from "@/lib/chart-setup";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import type { Deal } from "@/lib/types";
 
-registerCharts();
+interface Props {
+  deals: Deal[];
+}
 
 const STAGE_COLORS: Record<string, string> = {
   Leads: "#bbe1fa",
@@ -13,48 +23,34 @@ const STAGE_COLORS: Record<string, string> = {
   Issued: "#2a9d8f",
 };
 
-interface Props {
-  deals: Deal[];
-}
+const STAGES = ["Leads", "Warm+", "Hot", "Issued"] as const;
 
-export function ProductFunnelChart({ deals }: Props) {
+export function ProductFunnelChart({ deals }: Props): React.ReactElement {
   const products = [...new Set(deals.map((d) => d.policy))];
-  const stages = Object.keys(STAGE_COLORS);
 
-  const stageData = (stage: string) =>
-    products.map((prod) => {
-      const items = deals.filter((d) => d.policy === prod);
-      if (stage === "Leads") return items.length;
-      if (stage === "Warm+") return items.filter((d) => d.status === "W" || d.status === "H").length;
-      if (stage === "Hot") return items.filter((d) => d.status === "H").length;
-      if (stage === "Issued") return items.filter((d) => d.policyNo).length;
-      return 0;
-    });
+  const data = products.map((product) => {
+    const items = deals.filter((d) => d.policy === product);
+    return {
+      product,
+      Leads: items.length,
+      "Warm+": items.filter((d) => d.status === "W" || d.status === "H").length,
+      Hot: items.filter((d) => d.status === "H").length,
+      Issued: items.filter((d) => d.policyNo).length,
+    };
+  });
 
   return (
-    <div className="chart-wrap tall">
-      <Bar
-        data={{
-          labels: products,
-          datasets: stages.map((stage) => ({
-            label: stage,
-            data: stageData(stage),
-            backgroundColor: STAGE_COLORS[stage],
-            borderWidth: 0,
-          })),
-        }}
-        options={{
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: "bottom" },
-            tooltip: { mode: "index", intersect: false },
-          },
-          scales: {
-            x: { stacked: false, ticks: { autoSkip: false } },
-            y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 } },
-          },
-        }}
-      />
-    </div>
+    <ResponsiveContainer width="100%" height={320}>
+      <BarChart data={data} margin={{ top: 8, right: 16, left: 8, bottom: 8 }}>
+        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+        <XAxis dataKey="product" tick={{ fontSize: 12 }} />
+        <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+        <Tooltip />
+        <Legend />
+        {STAGES.map((stage) => (
+          <Bar key={stage} dataKey={stage} fill={STAGE_COLORS[stage]} radius={[3, 3, 0, 0]} />
+        ))}
+      </BarChart>
+    </ResponsiveContainer>
   );
 }

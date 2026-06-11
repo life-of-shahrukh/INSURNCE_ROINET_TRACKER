@@ -6,7 +6,7 @@ import { PospCreatedEvent } from '../events/posp-created.event';
 export class PospCreatedListener implements IEventHandler<PospCreatedEvent> {
   private readonly logger = new Logger(PospCreatedListener.name);
 
-  handle(event: PospCreatedEvent) {
+  handle(event: PospCreatedEvent): void {
     this.logger.log(
       `POSP created [id=${event.pospId}] [email=${event.email}] — welcome notification queued`,
     );

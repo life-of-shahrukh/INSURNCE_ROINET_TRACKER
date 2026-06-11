@@ -2,14 +2,58 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreatePospDto } from './dto/create-posp.dto';
 import { UpdatePospDto } from './dto/update-posp.dto';
-import { Posp } from '@prisma/client';
+import { Posp, Prisma } from '@prisma/client';
+import type { PaginatedResult } from '../../common/interfaces/paginated-result.interface';
+import { buildPaginatedResult } from '../../common/utils/pagination.util';
+
+const POSP_SORT_FIELDS: Record<string, keyof Posp> = {
+  createdAt: 'createdAt',
+  name: 'name',
+  code: 'code',
+  joined: 'joined',
+};
 
 @Injectable()
 export class PospRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  private resolveOrderBy(
+    sortBy?: string,
+    sortOrder: 'asc' | 'desc' = 'asc',
+  ): Prisma.PospOrderByWithRelationInput {
+    const field =
+      sortBy && POSP_SORT_FIELDS[sortBy]
+        ? POSP_SORT_FIELDS[sortBy]
+        : 'createdAt';
+    return { [field]: sortOrder };
+  }
+
+  async findPaginated(
+    where: Prisma.PospWhereInput,
+    skip: number,
+    take: number,
+    page: number,
+    pageSize: number,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
+  ): Promise<PaginatedResult<Posp>> {
+    const orderBy = this.resolveOrderBy(sortBy, sortOrder);
+    const [data, total] = await Promise.all([
+      this.prisma.posp.findMany({ where, skip, take, orderBy }),
+      this.prisma.posp.count({ where }),
+    ]);
+    return buildPaginatedResult(data, total, page, pageSize);
+  }
+
   findAll(): Promise<Posp[]> {
     return this.prisma.posp.findMany({ orderBy: { createdAt: 'asc' } });
+  }
+
+  findByScope(where: Record<string, unknown>): Promise<Posp[]> {
+    return this.prisma.posp.findMany({
+      where: where,
+      orderBy: { createdAt: 'asc' },
+    });
   }
 
   async findById(id: string): Promise<Posp> {

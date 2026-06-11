@@ -13,23 +13,22 @@ import type { AuthUser, LoginPayload, SignupPospPayload } from "@/lib/auth-types
 import { toAuthApiError } from "@/lib/auth-errors";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
-const TOKEN_KEY = "roinet_access_token";
-const USER_KEY = "roinet_user";
 
 interface AuthContextValue {
   user: AuthUser | null;
-  token: string | null;
   initializing: boolean;
   login: (payload: LoginPayload) => Promise<void>;
   signupPosp: (payload: SignupPospPayload) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+/** All auth requests use credentials:'include' so the HttpOnly cookie is sent. */
 async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     ...init,
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
       ...(init?.headers ?? {}),
@@ -37,76 +36,61 @@ async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
   });
   if (!res.ok) {
     let parsed: unknown = null;
-    try {
-      parsed = (await res.json()) as unknown;
-    } catch {
-      parsed = null;
-    }
+    try { parsed = await res.json(); } catch { /* empty */ }
     throw toAuthApiError(parsed, res.status);
   }
+  if (res.status === 204) return undefined as T;
   return res.json() as Promise<T>;
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [initializing, setInitializing] = useState(true);
 
+  // On mount, call /api/auth/me to restore session from HttpOnly cookie.
+  // Only call logout (and clear the cookie) on 401/403 — NOT on network errors,
+  // so a slow backend restart doesn't wipe a valid session.
   useEffect(() => {
-    const savedToken = window.localStorage.getItem(TOKEN_KEY);
-    const savedUser = window.localStorage.getItem(USER_KEY);
-    if (savedToken && savedUser) {
-      setToken(savedToken);
-      setUser(JSON.parse(savedUser) as AuthUser);
-    }
-    setInitializing(false);
+    apiRequest<AuthUser>("/api/auth/me")
+      .then(setUser)
+      .catch(async (err: unknown) => {
+        const msg = err instanceof Error ? err.message : "";
+        const isAuthError = /API 40[13]/.test(msg);
+        if (isAuthError) {
+          await fetch(`${API_BASE}/api/auth/logout`, {
+            method: "POST",
+            credentials: "include",
+          }).catch(() => {});
+        }
+        setUser(null);
+      })
+      .finally(() => setInitializing(false));
   }, []);
 
   const login = useCallback(async (payload: LoginPayload) => {
-    const data = await apiRequest<{ accessToken: string; user: AuthUser }>(
-      "/api/auth/login",
-      {
-        method: "POST",
-        body: JSON.stringify(payload),
-      },
-    );
-    setToken(data.accessToken);
-    setUser(data.user);
-    window.localStorage.setItem(TOKEN_KEY, data.accessToken);
-    window.localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+    const data = await apiRequest<AuthUser>("/api/auth/login", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+    setUser(data);
   }, []);
 
   const signupPosp = useCallback(async (payload: SignupPospPayload) => {
-    const data = await apiRequest<{ accessToken: string; user: AuthUser }>(
-      "/api/auth/signup-posp",
-      {
-        method: "POST",
-        body: JSON.stringify(payload),
-      },
-    );
-    setToken(data.accessToken);
-    setUser(data.user);
-    window.localStorage.setItem(TOKEN_KEY, data.accessToken);
-    window.localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+    const data = await apiRequest<AuthUser & { message?: string }>("/api/auth/signup-posp", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+    setUser(data);
   }, []);
 
-  const logout = useCallback(() => {
-    setToken(null);
+  const logout = useCallback(async () => {
+    await apiRequest<void>("/api/auth/logout", { method: "POST" }).catch(() => {});
     setUser(null);
-    window.localStorage.removeItem(TOKEN_KEY);
-    window.localStorage.removeItem(USER_KEY);
   }, []);
 
   const value = useMemo(
-    () => ({
-      user,
-      token,
-      initializing,
-      login,
-      signupPosp,
-      logout,
-    }),
-    [user, token, initializing, login, signupPosp, logout],
+    () => ({ user, initializing, login, signupPosp, logout }),
+    [user, initializing, login, signupPosp, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -114,8 +98,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth(): AuthContextValue {
   const ctx = useContext(AuthContext);
-  if (!ctx) {
-    throw new Error("useAuth must be used within AuthProvider");
-  }
+  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
   return ctx;
 }

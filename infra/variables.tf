@@ -16,12 +16,6 @@ variable "aws_region" {
   default     = "ap-south-1"
 }
 
-variable "vpc_id" {
-  type        = string
-  description = "Existing VPC ID to deploy into (account is at VPC limit)"
-  default     = "vpc-09ae030fcfb1d5031"
-}
-
 variable "github_repo" {
   type        = string
   description = "GitHub repository in owner/repo format"
@@ -30,39 +24,40 @@ variable "github_repo" {
 
 # ── Networking ────────────────────────────────────────────────────────────────
 variable "vpc_cidr" {
-  type    = string
-  default = "10.0.0.0/16"
+  type        = string
+  description = "CIDR block for the new dedicated VPC"
+  default     = "10.1.0.0/16"
 }
 
 variable "availability_zones" {
-  type    = list(string)
-  default = ["ap-south-1a", "ap-south-1b"]
+  type        = list(string)
+  description = "AZs to distribute subnets across (2 for HA)"
+  default     = ["ap-south-1a", "ap-south-1b"]
 }
 
 variable "public_subnet_cidrs" {
-  type    = list(string)
-  default = ["10.0.1.0/24", "10.0.2.0/24"]
+  type        = list(string)
+  description = "CIDRs for public subnets (ALB + RDS)"
+  default     = ["10.1.1.0/24", "10.1.2.0/24"]
 }
 
 variable "private_subnet_cidrs" {
-  type    = list(string)
-  default = ["10.0.11.0/24", "10.0.12.0/24"]
+  type        = list(string)
+  description = "CIDRs for private subnets (ECS tasks)"
+  default     = ["10.1.11.0/24", "10.1.12.0/24"]
 }
 
 variable "database_subnet_cidrs" {
-  type    = list(string)
-  default = ["10.0.21.0/24", "10.0.22.0/24"]
+  type        = list(string)
+  description = "CIDRs reserved for future isolated database subnets (not used while publicly_accessible = true)"
+  default     = ["10.1.21.0/24", "10.1.22.0/24"]
 }
 
-# ── RDS ───────────────────────────────────────────────────────────────────────
+# ── RDS (SQL Server Express) ───────────────────────────────────────────────────
 variable "rds_instance_class" {
-  type    = string
-  default = "db.t3.micro"
-}
-
-variable "db_name" {
-  type    = string
-  default = "roinet"
+  type        = string
+  default     = "db.t3.small"
+  description = "RDS instance class. Minimum for SQL Server on RDS is db.t3.small (db.t3.micro is not supported)."
 }
 
 variable "db_username" {
@@ -73,6 +68,14 @@ variable "db_username" {
 variable "db_password" {
   type      = string
   sensitive = true
+}
+
+# ── Auth ──────────────────────────────────────────────────────────────────────
+variable "jwt_secret" {
+  type        = string
+  sensitive   = true
+  description = "Secret key used to sign and verify JWT tokens. Must be a long random string in production."
+  default     = ""
 }
 
 # ── ECS ───────────────────────────────────────────────────────────────────────
@@ -94,12 +97,12 @@ variable "app_memory" {
 
 variable "server_cpu" {
   type    = number
-  default = 256
+  default = 512
 }
 
 variable "server_memory" {
   type    = number
-  default = 512
+  default = 1024
 }
 
 # ── ALB / TLS ─────────────────────────────────────────────────────────────────

@@ -58,3 +58,7 @@ infra/bootstrap/.terraform.lock.hcl
 # ─── Misc ────────────────────────────────────────────────────────
 *.pem
 .vercel
+
+# Secrets file
+.secret
+infra/.secret

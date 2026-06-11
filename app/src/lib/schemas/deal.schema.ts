@@ -1,0 +1,21 @@
+import { z } from "zod";
+import { POLICY_TYPES } from "@/lib/constants";
+
+export const dealFormSchema = z.object({
+  pospId: z.string().min(1, "POSP is required"),
+  customerId: z.string().optional(),
+  customer: z.string().min(2, "Customer name must be at least 2 characters"),
+  policy: z.enum(POLICY_TYPES, { error: "Select a valid policy type" }),
+  sum: z.coerce.number({ error: "Enter a valid amount" }).min(1, "Sum assured must be greater than 0"),
+  premium: z.coerce.number({ error: "Enter a valid amount" }).min(1, "Premium must be greater than 0"),
+  coa: z.coerce.number({ error: "Enter a valid amount" }).min(0, "COA cannot be negative"),
+  margin: z.coerce.number({ error: "Enter a valid amount" }).min(0, "Margin cannot be negative"),
+  status: z.enum(["H", "W", "C"], { error: "Select a valid status" }),
+  expected: z.string().min(1, "Expected closure date is required"),
+  proposal: z.string().min(1, "Proposal number is required"),
+  policyNo: z.string().min(1, "Policy number is required"),
+  issued: z.string().optional(),
+  remarks: z.string().optional(),
+});
+
+export type DealFormValues = z.infer<typeof dealFormSchema>;

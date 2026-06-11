@@ -1,14 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsDateString,
-  IsEnum,
+  IsIn,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
   Min,
 } from 'class-validator';
-import { DealStatus } from '@prisma/client';
+import { DealStatus } from '../../../common/constants';
 
 export class CreateDealDto {
   @ApiProperty({ example: 'clxxxxxxxxxxxxxx' })
@@ -46,8 +46,8 @@ export class CreateDealDto {
   @Min(0)
   margin: number;
 
-  @ApiProperty({ enum: DealStatus, example: 'W' })
-  @IsEnum(DealStatus)
+  @ApiProperty({ enum: ['H', 'W', 'C'], example: 'W' })
+  @IsIn(Object.values(DealStatus))
   status: DealStatus;
 
   @ApiProperty({ example: '2026-06-15' })

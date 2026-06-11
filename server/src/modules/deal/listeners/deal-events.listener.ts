@@ -7,7 +7,7 @@ import { DealStatusChangedEvent } from '../events/deal-status-changed.event';
 export class DealCreatedListener implements IEventHandler<DealCreatedEvent> {
   private readonly logger = new Logger(DealCreatedListener.name);
 
-  handle(event: DealCreatedEvent) {
+  handle(event: DealCreatedEvent): void {
     this.logger.log(
       `Deal created [id=${event.dealId}] [pospId=${event.pospId}] [status=${event.status}]`,
     );
@@ -15,12 +15,10 @@ export class DealCreatedListener implements IEventHandler<DealCreatedEvent> {
 }
 
 @EventsHandler(DealStatusChangedEvent)
-export class DealStatusChangedListener
-  implements IEventHandler<DealStatusChangedEvent>
-{
+export class DealStatusChangedListener implements IEventHandler<DealStatusChangedEvent> {
   private readonly logger = new Logger(DealStatusChangedListener.name);
 
-  handle(event: DealStatusChangedEvent) {
+  handle(event: DealStatusChangedEvent): void {
     this.logger.log(
       `Deal status changed [id=${event.dealId}] [${event.previousStatus} → ${event.newStatus}]`,
     );

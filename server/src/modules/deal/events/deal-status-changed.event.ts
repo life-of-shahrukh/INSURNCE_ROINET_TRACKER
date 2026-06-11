@@ -1,4 +1,4 @@
-import { DealStatus } from '@prisma/client';
+import { DealStatus } from '../../../common/constants';
 
 export class DealStatusChangedEvent {
   constructor(

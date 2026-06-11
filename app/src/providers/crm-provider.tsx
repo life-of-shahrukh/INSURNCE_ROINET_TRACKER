@@ -9,7 +9,10 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { crmApi } from "@/lib/api";
+import { dealKeys } from "@/hooks/useDealsList";
+import { pospKeys } from "@/hooks/usePospList";
 import { downloadCsv } from "@/lib/crm-calculations";
 import type { Deal, DealInput, Posp, PospInput } from "@/lib/types";
 import { useAuth } from "./auth-provider";
@@ -22,13 +25,14 @@ interface CrmContextValue {
   saveDeal: (input: DealInput) => Promise<void>;
   deleteDeal: (id: string) => Promise<void>;
   savePosp: (input: PospInput) => Promise<void>;
-  exportCsv: () => Promise<void>;
+  exportCsv: (params?: URLSearchParams) => Promise<void>;
 }
 
 const CrmContext = createContext<CrmContextValue | null>(null);
 
 export function CrmProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [deals, setDeals] = useState<Deal[]>([]);
   const [posp, setPosp] = useState<Posp[]>([]);
   const [loading, setLoading] = useState(true);
@@ -66,16 +70,18 @@ export function CrmProvider({ children }: { children: ReactNode }) {
         await crmApi.createDeal(input);
       }
       await refresh();
+      await queryClient.invalidateQueries({ queryKey: dealKeys.all });
     },
-    [refresh],
+    [refresh, queryClient],
   );
 
   const deleteDeal = useCallback(
     async (id: string) => {
       await crmApi.deleteDeal(id);
       await refresh();
+      await queryClient.invalidateQueries({ queryKey: dealKeys.all });
     },
-    [refresh],
+    [refresh, queryClient],
   );
 
   const savePosp = useCallback(
@@ -86,12 +92,13 @@ export function CrmProvider({ children }: { children: ReactNode }) {
         await crmApi.createPosp(input);
       }
       await refresh();
+      await queryClient.invalidateQueries({ queryKey: pospKeys.all });
     },
-    [refresh],
+    [refresh, queryClient],
   );
 
-  const exportCsv = useCallback(async () => {
-    const csv = await crmApi.exportDealsCsv();
+  const exportCsv = useCallback(async (params?: URLSearchParams) => {
+    const csv = await crmApi.exportDealsCsv(params);
     downloadCsv(csv);
   }, []);
 

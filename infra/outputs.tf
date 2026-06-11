@@ -1,3 +1,8 @@
+output "vpc_id" {
+  value       = module.vpc.vpc_id
+  description = "Dedicated VPC ID for the Roinet CRM project"
+}
+
 output "alb_dns_name" {
   value       = module.alb.alb_dns_name
   description = "Public DNS name — point your domain CNAME here"
@@ -15,7 +20,7 @@ output "server_ecr_url" {
 
 output "rds_endpoint" {
   value       = module.rds.endpoint
-  description = "RDS PostgreSQL endpoint"
+  description = "RDS SQL Server endpoint — connect with host:1433, username/password"
   sensitive   = true
 }
 
@@ -29,11 +34,11 @@ output "github_actions_role_arn" {
 }
 
 output "ecs_subnet_id" {
-  value       = data.aws_subnet.public_a.id
+  value       = module.vpc.private_subnet_ids[0]
   description = "Add this as ECS_SUBNET_ID secret in GitHub"
 }
 
 output "ecs_security_group_id" {
-  value       = aws_security_group.ecs.id
+  value       = module.vpc.ecs_security_group_id
   description = "Add this as ECS_SECURITY_GROUP_ID secret in GitHub"
 }

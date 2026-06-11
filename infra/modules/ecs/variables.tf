@@ -30,6 +30,16 @@ variable "database_url" {
   sensitive = true
 }
 
+variable "jwt_secret" {
+  type      = string
+  sensitive = true
+}
+
+variable "frontend_url" {
+  type        = string
+  description = "Public URL of the frontend (used as FRONTEND_URL for CORS)"
+}
+
 variable "app_cpu" {
   type    = number
   default = 256

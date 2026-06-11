@@ -144,10 +144,7 @@ jobs:
             --overrides '{
               "containerOverrides": [{
                 "name": "server",
-                "command": ["npx", "prisma", "migrate", "deploy"],
-                "environment": [
-                  {"name": "DATABASE_URL", "value": "${{ secrets.DATABASE_URL }}"}
-                ]
+                "command": ["npx", "prisma", "migrate", "deploy"]
               }]
             }' \
             --query 'tasks[0].taskArn' \

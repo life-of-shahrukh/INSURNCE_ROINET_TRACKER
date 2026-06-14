@@ -22,14 +22,20 @@ export class CreateCustomerHandler implements ICommandHandler<CreateCustomerComm
       return this.repository.update(existing.id, {
         name: dto.name,
         ...(dto.email !== undefined && { email: dto.email }),
-        ...(dto.alternateMobile !== undefined && { alternateMobile: dto.alternateMobile }),
+        ...(dto.alternateMobile !== undefined && {
+          alternateMobile: dto.alternateMobile,
+        }),
         ...(dto.dateOfBirth !== undefined && { dateOfBirth: dto.dateOfBirth }),
         ...(dto.panNumber !== undefined && { panNumber: dto.panNumber }),
-        ...(dto.aadharNumber !== undefined && { aadharNumber: dto.aadharNumber }),
+        ...(dto.aadharNumber !== undefined && {
+          aadharNumber: dto.aadharNumber,
+        }),
         ...(dto.stateId !== undefined && { stateId: dto.stateId }),
         ...(dto.stateName !== undefined && { stateName: dto.stateName }),
         ...(dto.districtId !== undefined && { districtId: dto.districtId }),
-        ...(dto.districtName !== undefined && { districtName: dto.districtName }),
+        ...(dto.districtName !== undefined && {
+          districtName: dto.districtName,
+        }),
         ...(dto.cityId !== undefined && { cityId: dto.cityId }),
         ...(dto.cityName !== undefined && { cityName: dto.cityName }),
         ...(dto.address !== undefined && { address: dto.address }),

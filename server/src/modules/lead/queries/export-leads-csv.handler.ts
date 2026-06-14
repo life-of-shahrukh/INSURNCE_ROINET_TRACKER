@@ -12,9 +12,14 @@ export class ExportLeadsCsvHandler implements IQueryHandler<ExportLeadsCsvQuery>
 
   async execute(query: ExportLeadsCsvQuery): Promise<string> {
     const { filters, hierarchyScope } = query;
-    const scopeWhere = hierarchyScope ? buildLeadScopeWhere(hierarchyScope) : {};
+    const scopeWhere = hierarchyScope
+      ? buildLeadScopeWhere(hierarchyScope)
+      : {};
     const filterWhere = buildLeadFilterWhere(filters);
-    const where = mergeWhereClauses(scopeWhere, filterWhere) as Prisma.LeadWhereInput;
+    const where = mergeWhereClauses(
+      scopeWhere,
+      filterWhere,
+    ) as Prisma.LeadWhereInput;
     return this.repo.exportCsvWhere(where);
   }
 }

@@ -3,8 +3,10 @@ import { request } from './fetch-client';
 export interface DashboardStats {
   deals: {
     totalPremium: number;
-    totalMargin: number;
-    totalCoa: number;
+    /** null for roles below SUPER_ADMIN — stripped server-side */
+    totalMargin: number | null;
+    /** null for roles below SUPER_ADMIN — stripped server-side */
+    totalCoa: number | null;
     count: number;
     avgPremium: number;
     hotCount: number;
@@ -13,8 +15,8 @@ export interface DashboardStats {
     issuedCount: number;
     /** 0-100 */
     conversionRate: number;
-    /** Cost per issued policy in INR */
-    costPerIssuedPolicy: number;
+    /** null for roles below SUPER_ADMIN — stripped server-side */
+    costPerIssuedPolicy: number | null;
     /** Average calendar days from deal creation to policy issuance */
     avgDaysToIssue: number;
     byPolicy: Array<{ policy: string; premium: number; count: number }>;
@@ -47,8 +49,8 @@ export interface DashboardStats {
 export const EMPTY_STATS: DashboardStats = {
   deals: {
     totalPremium: 0,
-    totalMargin: 0,
-    totalCoa: 0,
+    totalMargin: null,
+    totalCoa: null,
     count: 0,
     avgPremium: 0,
     hotCount: 0,
@@ -56,7 +58,7 @@ export const EMPTY_STATS: DashboardStats = {
     coldCount: 0,
     issuedCount: 0,
     conversionRate: 0,
-    costPerIssuedPolicy: 0,
+    costPerIssuedPolicy: null,
     avgDaysToIssue: 0,
     byPolicy: [],
     topPosps: [],

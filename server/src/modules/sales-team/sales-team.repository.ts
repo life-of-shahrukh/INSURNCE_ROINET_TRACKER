@@ -137,7 +137,10 @@ export class SalesTeamRepository {
       { header: 'Manager', value: (r) => r.manager?.name ?? '' },
       { header: 'Territory', value: (r) => r.territory ?? '' },
       { header: 'Status', value: (r) => r.status },
-      { header: 'Joining Date', value: (r) => r.joiningDate.toISOString().split('T')[0] },
+      {
+        header: 'Joining Date',
+        value: (r) => r.joiningDate.toISOString().split('T')[0],
+      },
     ];
     return toCsv(members, columns);
   }

@@ -12,7 +12,11 @@ import { ExportPospCsvHandler } from './queries/export-posp-csv.handler';
 import { PospCreatedListener } from './listeners/posp-created.listener';
 
 const CommandHandlers = [CreatePospHandler, UpdatePospHandler];
-const QueryHandlers = [GetAllPospHandler, GetPospByIdHandler, ExportPospCsvHandler];
+const QueryHandlers = [
+  GetAllPospHandler,
+  GetPospByIdHandler,
+  ExportPospCsvHandler,
+];
 const EventListeners = [PospCreatedListener];
 
 @Module({

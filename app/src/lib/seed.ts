@@ -68,6 +68,8 @@ function buildDeal(index: number, pospId: string): Deal {
     sum,
     premium,
     coa,
+    coaType: "AMOUNT" as const,
+    coaAmount: coa,
     margin,
     status,
     expected: new Date(2026, index % 12, 1 + (index % 28)),

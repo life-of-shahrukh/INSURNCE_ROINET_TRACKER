@@ -192,13 +192,20 @@ export class SalesTeamService {
     let hierarchyData: HierarchyEntry[];
     try {
       hierarchyData = await this.externalApiService.listHierarchyLive();
-      this.logger.log(`getOrgChartNodes: received ${hierarchyData?.length ?? 'null'} entries from live API`);
+      this.logger.log(
+        `getOrgChartNodes: received ${hierarchyData?.length ?? 'null'} entries from live API`,
+      );
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : String(err);
-      this.logger.error(`getOrgChartNodes: live API failed - ${errMsg}`, err instanceof Error ? err.stack : undefined);
+      this.logger.error(
+        `getOrgChartNodes: live API failed - ${errMsg}`,
+        err instanceof Error ? err.stack : undefined,
+      );
       this.logger.warn('getOrgChartNodes: falling back to snapshot');
       hierarchyData = this.externalApiService.listHierarchy();
-      this.logger.log(`getOrgChartNodes: snapshot returned ${hierarchyData.length} entries`);
+      this.logger.log(
+        `getOrgChartNodes: snapshot returned ${hierarchyData.length} entries`,
+      );
     }
 
     const nodeMap = new Map<string, OrgNode>();

@@ -114,7 +114,7 @@ export default function RenewalsPage(): React.ReactElement {
           title="Renewals"
           subtitle="Policies due within next 90 days (server-filtered, paginated)"
           actions={
-            <Button variant="secondary" onClick={handleExport} disabled={exporting || !upcoming.length}>
+            <Button variant="secondary" onClick={handleExport} disabled={!upcoming.length}>
               Export CSV
             </Button>
           }

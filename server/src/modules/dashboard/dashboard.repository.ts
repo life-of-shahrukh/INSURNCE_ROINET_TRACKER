@@ -35,7 +35,11 @@ export class DashboardRepository {
         where: { id: { in: scope.pospIds } },
         select: { districtId: true },
       });
-      const districtIds = [...new Set(posps.map((p) => p.districtId).filter((d): d is string => !!d))];
+      const districtIds = [
+        ...new Set(
+          posps.map((p) => p.districtId).filter((d): d is string => !!d),
+        ),
+      ];
       if (districtIds.length === 0) return { id: 'NO_MATCH' };
       return { districtId: { in: districtIds } };
     }
@@ -85,10 +89,10 @@ export class DashboardRepository {
     return subScope;
   }
 
-  private async buildDealWhere(
+  private buildDealWhere(
     filters: DashboardQueryDto,
     scope: HierarchyScope,
-  ): Promise<Prisma.DealWhereInput> {
+  ): Prisma.DealWhereInput {
     const scopeWhere = buildDealScopeWhere(scope);
     const geoWhere = buildGeoFilterWhere(filters);
     const dateBounds = resolveDateRange(filters);
@@ -133,13 +137,20 @@ export class DashboardRepository {
       filters.subordinateId,
     );
 
-    const dealWhere = await this.buildDealWhere(filters, effectiveScope);
+    const dealWhere = this.buildDealWhere(filters, effectiveScope);
     const leadWhere = await this.buildLeadWhere(filters, effectiveScope);
     const pospWhere = this.buildPospWhere(effectiveScope);
 
-    const customerScopeWhere = Object.keys(pospWhere).length > 0
-      ? { deals: { some: buildDealScopeWhere(effectiveScope) as Prisma.DealWhereInput } }
-      : undefined;
+    const customerScopeWhere =
+      Object.keys(pospWhere).length > 0
+        ? {
+            deals: {
+              some: buildDealScopeWhere(
+                effectiveScope,
+              ) as Prisma.DealWhereInput,
+            },
+          }
+        : undefined;
 
     const [
       dealAgg,
@@ -232,7 +243,9 @@ export class DashboardRepository {
     ]);
 
     // Resolve POSP names for top-POSP chart — filter out Self-issued deals (null pospId)
-    const topPospIds = topPospsRaw.map((p) => p.pospId).filter((id): id is string => id !== null);
+    const topPospIds = topPospsRaw
+      .map((p) => p.pospId)
+      .filter((id): id is string => id !== null);
     const pospNames =
       topPospIds.length > 0
         ? await this.prisma.posp.findMany({
@@ -254,7 +267,8 @@ export class DashboardRepository {
         ? Math.round(
             issuedDeals.reduce((sum, d) => {
               const days =
-                (new Date(d.issued!).getTime() - new Date(d.createdAt).getTime()) /
+                (new Date(d.issued!).getTime() -
+                  new Date(d.createdAt).getTime()) /
                 86_400_000;
               return sum + days;
             }, 0) / issuedDeals.length,
@@ -273,7 +287,11 @@ export class DashboardRepository {
     const monthlyPremium = [...monthlyMap.entries()]
       .sort(([a], [b]) => a.localeCompare(b))
       .slice(-12)
-      .map(([month, v]) => ({ month, premium: Math.round(v.premium), count: v.count }));
+      .map(([month, v]) => ({
+        month,
+        premium: Math.round(v.premium),
+        count: v.count,
+      }));
 
     const activeLeadCount = leadsByStatus
       .filter((s) => !['WON', 'LOST'].includes(s.status))
@@ -293,7 +311,8 @@ export class DashboardRepository {
           dealsByStatus.find((s) => s.status === 'C')?._count._all ?? 0,
         issuedCount,
         conversionRate,
-        costPerIssuedPolicy: issuedCount > 0 ? Math.round(totalCoa / issuedCount) : 0,
+        costPerIssuedPolicy:
+          issuedCount > 0 ? Math.round(totalCoa / issuedCount) : 0,
         avgDaysToIssue,
         byPolicy: dealsByPolicy.map((p) => ({
           policy: p.policy,

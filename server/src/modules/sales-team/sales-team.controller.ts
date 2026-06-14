@@ -50,7 +50,10 @@ export class SalesTeamController {
   async exportCsv(@Query() query: SalesTeamListQueryDto, @Res() res: Response) {
     const csv = await this.salesTeamService.exportCsv(query);
     res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', 'attachment; filename="sales-team.csv"');
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename="sales-team.csv"',
+    );
     res.send(csv);
   }
 

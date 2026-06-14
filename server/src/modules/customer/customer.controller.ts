@@ -66,7 +66,10 @@ export class CustomerController {
   async exportCsv(@Query() query: CustomerListQueryDto, @Res() res: Response) {
     const csv = await this.customerService.exportCsv(query);
     res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', 'attachment; filename="customers.csv"');
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename="customers.csv"',
+    );
     res.send(csv);
   }
 

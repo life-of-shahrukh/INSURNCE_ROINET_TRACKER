@@ -22,7 +22,11 @@ import { Role } from '../../common/constants';
  * On create the omitted fields fall back to repository defaults; on update the
  * existing persisted values are preserved (repository only writes provided keys).
  */
-function stripFinancials(dto: { coa?: number; coaType?: string; margin?: number }): void {
+function stripFinancials(dto: {
+  coa?: number;
+  coaType?: string;
+  margin?: number;
+}): void {
   delete dto.coa;
   delete dto.coaType;
   delete dto.margin;

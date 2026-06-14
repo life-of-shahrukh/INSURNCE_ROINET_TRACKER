@@ -62,12 +62,19 @@ export class HierarchyService {
     // Subordinate SalesTeam members below the caller
     const subordinates = await this.getSubordinates(user, scope);
 
-    return { zones, regions, areas, districts, subordinates, posps: pospOptions };
+    return {
+      zones,
+      regions,
+      areas,
+      districts,
+      subordinates,
+      posps: pospOptions,
+    };
   }
 
   private async getSubordinates(
     user: AuthUser,
-    scope: HierarchyScope,
+    _scope: HierarchyScope,
   ): Promise<FilterOptionItem[]> {
     // POSP has no subordinates; SUPER_ADMIN/NATIONAL_HEAD can see all team members
     if (user.role === Role.POSP) return [];
@@ -77,7 +84,10 @@ export class HierarchyService {
         select: { id: true, name: true, designation: true },
         orderBy: { name: 'asc' },
       });
-      return all.map((m) => ({ id: m.id, name: `${m.name} (${m.designation})` }));
+      return all.map((m) => ({
+        id: m.id,
+        name: `${m.name} (${m.designation})`,
+      }));
     }
 
     // Find the caller's SalesTeam record
@@ -93,13 +103,21 @@ export class HierarchyService {
       select: { id: true, name: true, designation: true },
       orderBy: { name: 'asc' },
     });
-    return subs.map((m) => ({ id: m.id, name: `${m.name} (${m.designation})` }));
+    return subs.map((m) => ({
+      id: m.id,
+      name: `${m.name} (${m.designation})`,
+    }));
   }
 }
 
 /** Extracts distinct non-null values for a POSP field, returning id + name. */
 function distinct(
-  posps: Array<{ zoneId?: string | null; regionId?: string | null; areaId?: string | null; districtId?: string | null }>,
+  posps: Array<{
+    zoneId?: string | null;
+    regionId?: string | null;
+    areaId?: string | null;
+    districtId?: string | null;
+  }>,
   field: 'zoneId' | 'regionId' | 'areaId' | 'districtId',
 ): FilterOptionItem[] {
   const seen = new Set<string>();

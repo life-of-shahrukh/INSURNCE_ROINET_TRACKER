@@ -33,6 +33,7 @@ import { useCrm } from "@/providers/crm-provider";
 import { useAuth } from "@/providers/auth-provider";
 import { hasMinRole } from "@/lib/auth-types";
 import type { UserRole } from "@/lib/auth-types";
+import { canSeeWidget } from "@/lib/dashboard-widget-registry";
 import type { Deal } from "@/lib/types";
 import { useMemo, useState } from "react";
 
@@ -110,15 +111,20 @@ export default function DashboardPage(): React.ReactElement {
 
   const periodText = dashboardPeriodLabel(period, dateFrom, dateTo);
 
-  // ── role-based visibility flags ─────────────────────────────────────────
-  const isManager = role ? hasMinRole(role, "ASM") : false;
-  const isAdminLevel =
-    role === "SUPER_ADMIN" || role === "NATIONAL_HEAD" || role === "ZH";
+  // ── role-based visibility flags (driven by the widget registry) ──────────
+  // Use canSeeWidget() for all widget-level decisions so the registry is the
+  // single source of truth. Inline flags are kept only for non-widget UI
+  // choices (column visibility, scope bar, page subtitle, etc.).
   const isPosp = role === "POSP";
+  const isManager = role ? hasMinRole(role, "ASM") : false; // kept for DashboardScopeBar
 
-  const showPospKpi = !isPosp;
-  const showTopPospChart = !isPosp;
-  const showKycChart = isAdminLevel;
+  const showPospKpi        = canSeeWidget(role, "POSP_KPI");
+  const showCustomersKpi   = canSeeWidget(role, "CUSTOMERS_KPI");
+  const showRetainedMargin = canSeeWidget(role, "RETAINED_MARGIN");
+  const showCostPerIssued  = canSeeWidget(role, "COST_PER_ISSUED");
+  const showPipelineVel    = canSeeWidget(role, "PIPELINE_VELOCITY");
+  const showTopPospChart   = canSeeWidget(role, "TOP_POSP");
+  const showKycChart       = canSeeWidget(role, "KYC_STATUS");
 
   const pospKpi = pospKpiLabel(role);
 
@@ -167,12 +173,14 @@ export default function DashboardPage(): React.ReactElement {
           value={statsLoading ? "…" : fmtINRShort(stats?.deals.totalPremium ?? 0)}
           sub={`${stats?.deals.count ?? 0} deals ${periodText}`}
         />
-        <KpiCard
-          label="Retained Margin"
-          value={statsLoading ? "…" : fmtINRShort(stats?.deals.totalMargin ?? 0)}
-          sub="After COA"
-          variant="success"
-        />
+        {showRetainedMargin && (
+          <KpiCard
+            label="Retained Margin"
+            value={statsLoading ? "…" : fmtINRShort(stats?.deals.totalMargin ?? 0)}
+            sub="After COA"
+            variant="success"
+          />
+        )}
         <KpiCard
           label="Hot Deals"
           value={statsLoading ? "…" : String(stats?.deals.hotCount ?? 0)}
@@ -197,7 +205,7 @@ export default function DashboardPage(): React.ReactElement {
             sub={`${stats?.posps.total ?? 0} total`}
           />
         )}
-        {isAdminLevel && (
+        {showCustomersKpi && (
           <KpiCard
             label="Customers"
             value={statsLoading ? "…" : String(stats?.customers.total ?? 0)}
@@ -209,14 +217,14 @@ export default function DashboardPage(): React.ReactElement {
           value={statsLoading ? "…" : fmtINRShort(stats?.deals.avgPremium ?? 0)}
           sub="Per deal"
         />
-        {isManager && (
+        {showCostPerIssued && (
           <KpiCard
             label="Cost / Issued Policy"
             value={statsLoading ? "…" : fmtINRShort(stats?.deals.costPerIssuedPolicy ?? 0)}
             sub="Acquisition cost"
           />
         )}
-        {isManager && (
+        {showPipelineVel && (
           <KpiCard
             label="Pipeline Velocity"
             value={statsLoading ? "…" : `${stats?.deals.avgDaysToIssue ?? 0}d`}
@@ -275,16 +283,9 @@ export default function DashboardPage(): React.ReactElement {
         <Card title="Premium Trend (Monthly)">
           <MonthlyPremiumChart data={stats?.deals.monthlyPremium ?? []} />
         </Card>
-        {isManager && (
-          <Card title="Lead Sources">
-            <LeadSourceChart data={stats?.leads.bySource ?? []} />
-          </Card>
-        )}
-        {!isManager && (
-          <Card title="My Lead Sources">
-            <LeadSourceChart data={stats?.leads.bySource ?? []} />
-          </Card>
-        )}
+        <Card title={canSeeWidget(role, "PIPELINE_VELOCITY") ? "Lead Sources" : "My Lead Sources"}>
+          <LeadSourceChart data={stats?.leads.bySource ?? []} />
+        </Card>
       </div>
 
       {/* ── Recent Deals ──────────────────────────────────────────────── */}

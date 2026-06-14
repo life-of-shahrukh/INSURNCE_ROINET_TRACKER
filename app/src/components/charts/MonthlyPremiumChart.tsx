@@ -44,8 +44,8 @@ export function MonthlyPremiumChart({ data }: Props): React.ReactElement {
         <XAxis dataKey="label" tick={{ fontSize: 11 }} />
         <YAxis tickFormatter={(v: number) => fmtINRShort(v)} tick={{ fontSize: 11 }} width={72} />
         <Tooltip
-          formatter={(v: unknown, name: string) => [
-            name === "premium" ? fmtINRShort(Number(v)) : v,
+          formatter={(v: unknown, name?: string | number): [string, string] => [
+            name === "premium" ? fmtINRShort(Number(v)) : String(v ?? ""),
             name === "premium" ? "Premium" : "Deals",
           ]}
         />

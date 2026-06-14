@@ -2,8 +2,10 @@
 export interface DashboardStats {
   deals: {
     totalPremium: number;
-    totalMargin: number;
-    totalCoa: number;
+    /** null for roles below SUPER_ADMIN — financial field, stripped server-side */
+    totalMargin: number | null;
+    /** null for roles below SUPER_ADMIN — financial field, stripped server-side */
+    totalCoa: number | null;
     count: number;
     avgPremium: number;
     hotCount: number;
@@ -12,8 +14,8 @@ export interface DashboardStats {
     issuedCount: number;
     /** 0-100 percentage */
     conversionRate: number;
-    /** Cost per issued policy (totalCoa / issuedCount), INR */
-    costPerIssuedPolicy: number;
+    /** null for roles below SUPER_ADMIN — financial field, stripped server-side */
+    costPerIssuedPolicy: number | null;
     /** Avg days from deal created to issued (pipeline velocity) */
     avgDaysToIssue: number;
     byPolicy: Array<{ policy: string; premium: number; count: number }>;

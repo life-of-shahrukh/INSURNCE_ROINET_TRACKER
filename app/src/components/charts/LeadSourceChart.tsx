@@ -38,8 +38,8 @@ export function LeadSourceChart({ data }: Props): React.ReactElement {
           cx="50%"
           cy="50%"
           outerRadius={80}
-          label={({ source, percent }: { source: string; percent: number }) =>
-            `${source} ${(percent * 100).toFixed(0)}%`
+          label={({ name, percent }: { name?: string | number; percent?: number }) =>
+            `${String(name ?? "")} ${(((percent ?? 0) * 100).toFixed(0))}%`
           }
           labelLine={false}
         >

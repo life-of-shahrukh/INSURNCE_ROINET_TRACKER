@@ -17,7 +17,11 @@ const CommandHandlers = [
   UpdateLeadHandler,
   ConvertLeadToDealHandler,
 ];
-const QueryHandlers = [GetAllLeadsHandler, GetMonthlyCommitmentHandler, ExportLeadsCsvHandler];
+const QueryHandlers = [
+  GetAllLeadsHandler,
+  GetMonthlyCommitmentHandler,
+  ExportLeadsCsvHandler,
+];
 const EventListeners = [LeadEventsListener];
 
 @Module({

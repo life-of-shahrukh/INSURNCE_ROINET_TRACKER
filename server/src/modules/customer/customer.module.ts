@@ -12,7 +12,11 @@ import { ExportCustomersCsvHandler } from './queries/export-customers-csv.handle
 import { CustomerEventsListener } from './listeners/customer-events.listener';
 
 const CommandHandlers = [CreateCustomerHandler, UpdateCustomerHandler];
-const QueryHandlers = [GetAllCustomersHandler, SearchCustomersHandler, ExportCustomersCsvHandler];
+const QueryHandlers = [
+  GetAllCustomersHandler,
+  SearchCustomersHandler,
+  ExportCustomersCsvHandler,
+];
 const EventListeners = [CustomerEventsListener];
 
 @Module({

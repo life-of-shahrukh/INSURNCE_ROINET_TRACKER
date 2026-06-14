@@ -113,7 +113,10 @@ export class PospRepository {
       { header: 'Region ID', value: (r) => r.regionId ?? '' },
       { header: 'Area ID', value: (r) => r.areaId ?? '' },
       { header: 'District ID', value: (r) => r.districtId ?? '' },
-      { header: 'Created At', value: (r) => r.createdAt.toISOString().split('T')[0] },
+      {
+        header: 'Created At',
+        value: (r) => r.createdAt.toISOString().split('T')[0],
+      },
     ];
     return toCsv(posps, columns);
   }

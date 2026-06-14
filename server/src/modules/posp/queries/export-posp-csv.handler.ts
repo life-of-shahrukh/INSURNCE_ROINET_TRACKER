@@ -12,9 +12,14 @@ export class ExportPospCsvHandler implements IQueryHandler<ExportPospCsvQuery> {
 
   async execute(query: ExportPospCsvQuery): Promise<string> {
     const { filters, hierarchyScope } = query;
-    const scopeWhere = hierarchyScope ? buildPospScopeWhere(hierarchyScope) : {};
+    const scopeWhere = hierarchyScope
+      ? buildPospScopeWhere(hierarchyScope)
+      : {};
     const filterWhere = buildPospFilterWhere(filters);
-    const where = mergeWhereClauses(scopeWhere, filterWhere) as Prisma.PospWhereInput;
+    const where = mergeWhereClauses(
+      scopeWhere,
+      filterWhere,
+    ) as Prisma.PospWhereInput;
     return this.repo.exportCsvWhere(where);
   }
 }

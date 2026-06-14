@@ -30,7 +30,8 @@ export class HierarchyController {
     Role.SUPER_ADMIN,
   )
   @ApiOperation({
-    summary: 'Get scoped geo + people options for dashboard filters and scope bar',
+    summary:
+      'Get scoped geo + people options for dashboard filters and scope bar',
     description:
       "Returns distinct zones, regions, areas, districts, POSPs and subordinate team members within the caller's data territory.",
   })

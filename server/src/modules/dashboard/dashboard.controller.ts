@@ -15,6 +15,9 @@ import { Role } from '../../common/constants';
 import { ResolvedScope } from '../../common/decorators/scope.decorator';
 import type { HierarchyScope } from '../../common/auth/hierarchy-scope.util';
 import { HierarchyScopeInterceptor } from '../../common/interceptors/hierarchy-scope.interceptor';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import type { AuthUser } from '../../common/auth/auth-user.interface';
+import type { DashboardStats } from './dashboard.types';
 
 @ApiTags('Dashboard')
 @Controller('dashboard')
@@ -38,10 +41,21 @@ export class DashboardController {
     summary:
       'Aggregated dashboard KPIs and chart data (scoped by role and date range)',
   })
-  getStats(
+  async getStats(
     @Query() query: DashboardQueryDto,
     @ResolvedScope() scope: HierarchyScope,
-  ) {
-    return this.dashboardService.getStats(query, scope);
+    @CurrentUser() user: AuthUser,
+  ): Promise<DashboardStats> {
+    const stats = await this.dashboardService.getStats(query, scope);
+
+    // Financial fields (COA / margin / cost-per-issued) are SUPER_ADMIN-only.
+    // Strip them for every other role so they never reach the client payload.
+    if (user.role !== Role.SUPER_ADMIN) {
+      stats.deals.totalMargin = null;
+      stats.deals.totalCoa = null;
+      stats.deals.costPerIssuedPolicy = null;
+    }
+
+    return stats;
   }
 }

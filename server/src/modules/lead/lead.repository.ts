@@ -153,11 +153,17 @@ export class LeadRepository {
       { header: 'Estimated Sum', value: (r) => r.estimatedSum ?? '' },
       { header: 'Status', value: (r) => r.status },
       { header: 'Closure Timeline', value: (r) => r.closureTimeline },
-      { header: 'Expected Close Date', value: (r) => r.expectedCloseDate?.toISOString().split('T')[0] ?? '' },
+      {
+        header: 'Expected Close Date',
+        value: (r) => r.expectedCloseDate?.toISOString().split('T')[0] ?? '',
+      },
       { header: 'Source', value: (r) => r.source ?? '' },
       { header: 'Assigned To', value: (r) => r.assignedTo?.name ?? '' },
       { header: 'Remarks', value: (r) => r.remarks ?? '' },
-      { header: 'Created At', value: (r) => r.createdAt.toISOString().split('T')[0] },
+      {
+        header: 'Created At',
+        value: (r) => r.createdAt.toISOString().split('T')[0],
+      },
     ];
     return toCsv(leads, columns);
   }

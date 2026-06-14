@@ -115,7 +115,10 @@ export class CustomerRepository {
       { header: 'Name', value: (r) => r.name },
       { header: 'Mobile', value: (r) => r.mobile },
       { header: 'Email', value: (r) => r.email ?? '' },
-      { header: 'Date of Birth', value: (r) => r.dateOfBirth?.toISOString().split('T')[0] ?? '' },
+      {
+        header: 'Date of Birth',
+        value: (r) => r.dateOfBirth?.toISOString().split('T')[0] ?? '',
+      },
       { header: 'PAN', value: (r) => r.panNumber ?? '' },
       { header: 'Aadhar', value: (r) => r.aadharNumber ?? '' },
       { header: 'State', value: (r) => r.stateName ?? '' },
@@ -124,7 +127,10 @@ export class CustomerRepository {
       { header: 'Pincode', value: (r) => r.pincode ?? '' },
       { header: 'KYC Status', value: (r) => r.kycStatus },
       { header: 'Source', value: (r) => r.source ?? '' },
-      { header: 'Created At', value: (r) => r.createdAt.toISOString().split('T')[0] },
+      {
+        header: 'Created At',
+        value: (r) => r.createdAt.toISOString().split('T')[0],
+      },
     ];
     return toCsv(customers, columns);
   }

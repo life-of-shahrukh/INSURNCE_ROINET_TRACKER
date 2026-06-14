@@ -234,6 +234,73 @@ a {
   background: #c52836;
 }
 
+/* ── Dashboard scope bar ─────────────────────────────────────────────────── */
+
+.scope-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.scope-bar__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-right: 4px;
+}
+
+.scope-bar__select {
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 13px;
+  cursor: pointer;
+  min-width: 140px;
+}
+
+.scope-bar__select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.scope-bar__reset {
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.scope-bar__reset:hover {
+  background: var(--danger-light, #fef2f2);
+  color: var(--danger, #dc2626);
+  border-color: var(--danger, #dc2626);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.chart-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 120px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

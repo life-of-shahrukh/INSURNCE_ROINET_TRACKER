@@ -12,6 +12,7 @@ import { SalesTeamModule } from './modules/sales-team/sales-team.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ExternalApiModule } from './common/external-api/external-api.module';
 import { ProfileModule } from './modules/profile/profile.module';
+import { HierarchyModule } from './modules/hierarchy/hierarchy.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ProfileModule } from './modules/profile/profile.module';
     DashboardModule,
     ExternalApiModule,
     ProfileModule,
+    HierarchyModule,
   ],
 })
 export class AppModule {}

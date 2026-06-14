@@ -3,7 +3,6 @@ import type { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import {
   buildDealScopeWhere,
-  buildLeadScopeWhere,
   buildPospScopeWhere,
   type HierarchyScope,
 } from '../../common/auth/hierarchy-scope.util';
@@ -19,12 +18,77 @@ import type { DashboardStats } from './dashboard.types';
 export class DashboardRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  // ── where-clause helpers ───────────────────────────────────────────────────
+  // ── scope helpers ──────────────────────────────────────────────────────────
 
-  private buildDealWhere(
+  /**
+   * When `pospIds` is set in scope, Lead does not have a pospId column.
+   * Resolve the POSP records' districtIds and use those for Lead scoping.
+   */
+  private async buildLeadScopeWhere(
+    scope: HierarchyScope,
+  ): Promise<Prisma.LeadWhereInput> {
+    if (!scope || Object.keys(scope).length === 0) return {};
+
+    if (scope.pospIds !== undefined) {
+      if (scope.pospIds.length === 0) return { id: 'NO_MATCH' };
+      const posps = await this.prisma.posp.findMany({
+        where: { id: { in: scope.pospIds } },
+        select: { districtId: true },
+      });
+      const districtIds = [...new Set(posps.map((p) => p.districtId).filter((d): d is string => !!d))];
+      if (districtIds.length === 0) return { id: 'NO_MATCH' };
+      return { districtId: { in: districtIds } };
+    }
+    if (scope.districtIds) return { districtId: { in: scope.districtIds } };
+    if (scope.areaIds) return { areaId: { in: scope.areaIds } };
+    if (scope.regionIds) return { regionId: { in: scope.regionIds } };
+    if (scope.zoneIds) return { zoneId: { in: scope.zoneIds } };
+    return {};
+  }
+
+  /**
+   * Resolves the effective scope for a subordinate SalesTeam member
+   * (for drill-down) and intersects it with the caller's own scope.
+   */
+  private async resolveEffectiveScope(
+    callerScope: HierarchyScope,
+    subordinateId: string | undefined,
+  ): Promise<HierarchyScope> {
+    if (!subordinateId) return callerScope;
+
+    const sub = await this.prisma.salesTeam.findUnique({
+      where: { id: subordinateId },
+      select: { id: true, zoneId: true, regionId: true, areaId: true },
+    });
+    if (!sub) return callerScope;
+
+    // Build subordinate scope by resolving their POSPs
+    const posps = await this.prisma.posp.findMany({
+      where: { asmId: sub.id },
+      select: { id: true },
+    });
+    const subScope: HierarchyScope =
+      posps.length > 0
+        ? { pospIds: posps.map((p) => p.id) }
+        : sub.areaId
+          ? { areaIds: [sub.areaId] }
+          : sub.regionId
+            ? { regionIds: [sub.regionId] }
+            : sub.zoneId
+              ? { zoneIds: [sub.zoneId] }
+              : { pospIds: [] };
+
+    // If caller has no restriction (SUPER_ADMIN / NATIONAL_HEAD), just use subordinate scope
+    if (Object.keys(callerScope).length === 0) return subScope;
+
+    // Otherwise return the more-restrictive of the two (subordinate scope is always narrower)
+    return subScope;
+  }
+
+  private async buildDealWhere(
     filters: DashboardQueryDto,
     scope: HierarchyScope,
-  ): Prisma.DealWhereInput {
+  ): Promise<Prisma.DealWhereInput> {
     const scopeWhere = buildDealScopeWhere(scope);
     const geoWhere = buildGeoFilterWhere(filters);
     const dateBounds = resolveDateRange(filters);
@@ -37,11 +101,11 @@ export class DashboardRepository {
     return mergeWhereClauses(...clauses);
   }
 
-  private buildLeadWhere(
+  private async buildLeadWhere(
     filters: DashboardQueryDto,
     scope: HierarchyScope,
-  ): Prisma.LeadWhereInput {
-    const scopeWhere = buildLeadScopeWhere(scope);
+  ): Promise<Prisma.LeadWhereInput> {
+    const scopeWhere = await this.buildLeadScopeWhere(scope);
     const geoWhere = buildGeoFilterWhere(filters);
     const dateBounds = resolveDateRange(filters);
 
@@ -64,9 +128,18 @@ export class DashboardRepository {
     filters: DashboardQueryDto,
     scope: HierarchyScope,
   ): Promise<DashboardStats> {
-    const dealWhere = this.buildDealWhere(filters, scope);
-    const leadWhere = this.buildLeadWhere(filters, scope);
-    const pospWhere = this.buildPospWhere(scope);
+    const effectiveScope = await this.resolveEffectiveScope(
+      scope,
+      filters.subordinateId,
+    );
+
+    const dealWhere = await this.buildDealWhere(filters, effectiveScope);
+    const leadWhere = await this.buildLeadWhere(filters, effectiveScope);
+    const pospWhere = this.buildPospWhere(effectiveScope);
+
+    const customerScopeWhere = Object.keys(pospWhere).length > 0
+      ? { deals: { some: buildDealScopeWhere(effectiveScope) as Prisma.DealWhereInput } }
+      : undefined;
 
     const [
       dealAgg,
@@ -74,19 +147,23 @@ export class DashboardRepository {
       dealsByPolicy,
       topPospsRaw,
       issuedCount,
+      issuedDeals,
       leadTotal,
       leadsByStatus,
       leadsByTimeline,
+      leadsBySource,
       pospTotal,
       pospActive,
       customerTotal,
       customersByKyc,
+      monthlyDeals,
     ] = await Promise.all([
       // ── deals ──
       this.prisma.deal.aggregate({
         where: dealWhere,
         _sum: { premium: true, margin: true, coaAmount: true },
         _count: { _all: true },
+        _avg: { premium: true },
       }),
       this.prisma.deal.groupBy({
         by: ['status'],
@@ -111,6 +188,12 @@ export class DashboardRepository {
       this.prisma.deal.count({
         where: { ...dealWhere, policyNo: { not: '' } },
       }),
+      // Issued deals for pipeline velocity (createdAt → issued)
+      this.prisma.deal.findMany({
+        where: { ...dealWhere, issued: { not: null } },
+        select: { createdAt: true, issued: true },
+        take: 500,
+      }),
       // ── leads ──
       this.prisma.lead.count({ where: leadWhere }),
       this.prisma.lead.groupBy({
@@ -123,14 +206,28 @@ export class DashboardRepository {
         where: leadWhere,
         _count: { _all: true },
       }),
+      this.prisma.lead.groupBy({
+        by: ['source'],
+        where: leadWhere,
+        _count: { _all: true },
+        orderBy: { _count: { source: 'desc' } },
+      }),
       // ── posps ──
       this.prisma.posp.count({ where: pospWhere }),
       this.prisma.posp.count({ where: { ...pospWhere, active: true } }),
-      // ── customers (global — not hierarchy-scoped) ──
-      this.prisma.customer.count(),
+      // ── customers — scoped via their deals' pospId ──
+      this.prisma.customer.count({ where: customerScopeWhere }),
       this.prisma.customer.groupBy({
         by: ['kycStatus'],
+        where: customerScopeWhere,
         _count: { _all: true },
+      }),
+      // Monthly premium trend — last 12 months of data in scope
+      this.prisma.deal.findMany({
+        where: dealWhere,
+        select: { createdAt: true, premium: true },
+        orderBy: { createdAt: 'asc' },
+        take: 5000,
       }),
     ]);
 
@@ -146,9 +243,37 @@ export class DashboardRepository {
     const nameMap = new Map(pospNames.map((p) => [p.id, p.name]));
 
     const dealCount = dealAgg._count._all;
+    const totalCoa = dealAgg._sum.coaAmount ?? 0;
     const conversionRate = dealCount
       ? Math.round((issuedCount / dealCount) * 100)
       : 0;
+
+    // Pipeline velocity — average calendar days from deal creation to issuance
+    const avgDaysToIssue =
+      issuedDeals.length > 0
+        ? Math.round(
+            issuedDeals.reduce((sum, d) => {
+              const days =
+                (new Date(d.issued!).getTime() - new Date(d.createdAt).getTime()) /
+                86_400_000;
+              return sum + days;
+            }, 0) / issuedDeals.length,
+          )
+        : 0;
+
+    // Monthly premium grouping: "YYYY-MM" buckets
+    const monthlyMap = new Map<string, { premium: number; count: number }>();
+    for (const d of monthlyDeals) {
+      const key = `${d.createdAt.getFullYear()}-${String(d.createdAt.getMonth() + 1).padStart(2, '0')}`;
+      const existing = monthlyMap.get(key) ?? { premium: 0, count: 0 };
+      existing.premium += d.premium;
+      existing.count += 1;
+      monthlyMap.set(key, existing);
+    }
+    const monthlyPremium = [...monthlyMap.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .slice(-12)
+      .map(([month, v]) => ({ month, premium: Math.round(v.premium), count: v.count }));
 
     const activeLeadCount = leadsByStatus
       .filter((s) => !['WON', 'LOST'].includes(s.status))
@@ -158,8 +283,9 @@ export class DashboardRepository {
       deals: {
         totalPremium: dealAgg._sum.premium ?? 0,
         totalMargin: dealAgg._sum.margin ?? 0,
-        totalCoa: dealAgg._sum.coaAmount ?? 0,
+        totalCoa,
         count: dealCount,
+        avgPremium: Math.round(dealAgg._avg.premium ?? 0),
         hotCount: dealsByStatus.find((s) => s.status === 'H')?._count._all ?? 0,
         warmCount:
           dealsByStatus.find((s) => s.status === 'W')?._count._all ?? 0,
@@ -167,6 +293,8 @@ export class DashboardRepository {
           dealsByStatus.find((s) => s.status === 'C')?._count._all ?? 0,
         issuedCount,
         conversionRate,
+        costPerIssuedPolicy: issuedCount > 0 ? Math.round(totalCoa / issuedCount) : 0,
+        avgDaysToIssue,
         byPolicy: dealsByPolicy.map((p) => ({
           policy: p.policy,
           premium: p._sum.premium ?? 0,
@@ -180,6 +308,7 @@ export class DashboardRepository {
             premium: p._sum.premium ?? 0,
             count: p._count._all,
           })),
+        monthlyPremium,
       },
       leads: {
         total: leadTotal,
@@ -191,6 +320,10 @@ export class DashboardRepository {
         byTimeline: leadsByTimeline.map((t) => ({
           timeline: t.closureTimeline,
           count: t._count._all,
+        })),
+        bySource: leadsBySource.map((s) => ({
+          source: s.source ?? 'Unknown',
+          count: s._count._all,
         })),
       },
       posps: {

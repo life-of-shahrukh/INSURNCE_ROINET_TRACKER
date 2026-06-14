@@ -3,6 +3,8 @@
 import { ClosureTimelineChart } from "@/components/charts/ClosureTimelineChart";
 import { DealsByStatusChart } from "@/components/charts/DealsByStatusChart";
 import { KycStatusChart } from "@/components/charts/KycStatusChart";
+import { MonthlyPremiumChart } from "@/components/charts/MonthlyPremiumChart";
+import { LeadSourceChart } from "@/components/charts/LeadSourceChart";
 import { PremiumByPolicyChart } from "@/components/charts/PremiumByPolicyChart";
 import { TopPospChart } from "@/components/charts/TopPospChart";
 import {
@@ -10,6 +12,10 @@ import {
   dashboardPeriodLabel,
   type DashboardPeriod,
 } from "@/components/dashboard/DashboardPeriodTabs";
+import {
+  DashboardScopeBar,
+  type DashboardScope,
+} from "@/components/dashboard/DashboardScopeBar";
 import { DealModal } from "@/components/deals/DealModal";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -22,6 +28,7 @@ import { fmtDate, fmtINR, fmtINRShort } from "@/lib/formatters";
 import { useDealsList } from "@/hooks/useDealsList";
 import { useListQueryStatus } from "@/hooks/useListQueryStatus";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
+import { useHierarchyFilterOptions } from "@/hooks/useHierarchyFilterOptions";
 import { useCrm } from "@/providers/crm-provider";
 import { useAuth } from "@/providers/auth-provider";
 import { hasMinRole } from "@/lib/auth-types";
@@ -60,6 +67,9 @@ export default function DashboardPage(): React.ReactElement {
   const [period, setPeriod] = useState<DashboardPeriod>("month");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [scopeDrill, setScopeDrill] = useState<DashboardScope>({});
+
+  const { data: filterOptions } = useHierarchyFilterOptions();
 
   const apiParams = useMemo(() => {
     const p = new URLSearchParams({ page: "1", pageSize: "5" });
@@ -70,8 +80,13 @@ export default function DashboardPage(): React.ReactElement {
     } else {
       p.set("dateRange", period === "day" ? "today" : period);
     }
+    if (scopeDrill.subordinateId) p.set("subordinateId", scopeDrill.subordinateId);
+    if (scopeDrill.zone) p.set("zone", scopeDrill.zone);
+    if (scopeDrill.region) p.set("region", scopeDrill.region);
+    if (scopeDrill.area) p.set("area", scopeDrill.area);
+    if (scopeDrill.district) p.set("district", scopeDrill.district);
     return p;
-  }, [period, dateFrom, dateTo]);
+  }, [period, dateFrom, dateTo, scopeDrill]);
 
   // Stats params has a larger page size so stats are accurate
   const statsParams = useMemo(() => {
@@ -138,6 +153,13 @@ export default function DashboardPage(): React.ReactElement {
         onDateToChange={setDateTo}
       />
 
+      <DashboardScopeBar
+        role={role}
+        options={filterOptions ?? { zones: [], regions: [], areas: [], districts: [], subordinates: [], posps: [] }}
+        scope={scopeDrill}
+        onChange={setScopeDrill}
+      />
+
       {/* ── KPI Row ────────────────────────────────────────────────────── */}
       <div className="kpi-grid">
         <KpiCard
@@ -180,6 +202,25 @@ export default function DashboardPage(): React.ReactElement {
             label="Customers"
             value={statsLoading ? "…" : String(stats?.customers.total ?? 0)}
             sub={`${stats?.customers.byKycStatus.find((k) => k.kycStatus === "VERIFIED")?.count ?? 0} KYC verified`}
+          />
+        )}
+        <KpiCard
+          label="Avg Premium"
+          value={statsLoading ? "…" : fmtINRShort(stats?.deals.avgPremium ?? 0)}
+          sub="Per deal"
+        />
+        {isManager && (
+          <KpiCard
+            label="Cost / Issued Policy"
+            value={statsLoading ? "…" : fmtINRShort(stats?.deals.costPerIssuedPolicy ?? 0)}
+            sub="Acquisition cost"
+          />
+        )}
+        {isManager && (
+          <KpiCard
+            label="Pipeline Velocity"
+            value={statsLoading ? "…" : `${stats?.deals.avgDaysToIssue ?? 0}d`}
+            sub="Avg days to issue"
           />
         )}
       </div>
@@ -225,6 +266,23 @@ export default function DashboardPage(): React.ReactElement {
                 count: s.count,
               }))}
             />
+          </Card>
+        )}
+      </div>
+
+      {/* ── Row 3: Monthly trend + Lead source ────────────────────────── */}
+      <div className="row-2">
+        <Card title="Premium Trend (Monthly)">
+          <MonthlyPremiumChart data={stats?.deals.monthlyPremium ?? []} />
+        </Card>
+        {isManager && (
+          <Card title="Lead Sources">
+            <LeadSourceChart data={stats?.leads.bySource ?? []} />
+          </Card>
+        )}
+        {!isManager && (
+          <Card title="My Lead Sources">
+            <LeadSourceChart data={stats?.leads.bySource ?? []} />
           </Card>
         )}
       </div>

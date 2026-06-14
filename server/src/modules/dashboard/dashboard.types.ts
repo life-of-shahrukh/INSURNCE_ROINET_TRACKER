@@ -5,12 +5,17 @@ export interface DashboardStats {
     totalMargin: number;
     totalCoa: number;
     count: number;
+    avgPremium: number;
     hotCount: number;
     warmCount: number;
     coldCount: number;
     issuedCount: number;
     /** 0-100 percentage */
     conversionRate: number;
+    /** Cost per issued policy (totalCoa / issuedCount), INR */
+    costPerIssuedPolicy: number;
+    /** Avg days from deal created to issued (pipeline velocity) */
+    avgDaysToIssue: number;
     byPolicy: Array<{ policy: string; premium: number; count: number }>;
     topPosps: Array<{
       pospId: string;
@@ -18,12 +23,16 @@ export interface DashboardStats {
       premium: number;
       count: number;
     }>;
+    /** Monthly trend: premium grouped by year-month */
+    monthlyPremium: Array<{ month: string; premium: number; count: number }>;
   };
   leads: {
     total: number;
     activeCount: number;
     byStatus: Array<{ status: string; count: number }>;
     byTimeline: Array<{ timeline: string; count: number }>;
+    /** Lead source breakdown (referral, walk-in, digital, etc.) */
+    bySource: Array<{ source: string; count: number }>;
   };
   posps: {
     total: number;

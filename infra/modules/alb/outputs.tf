@@ -3,6 +3,11 @@ output "alb_dns_name" {
   description = "Public DNS name of the ALB"
 }
 
+output "alb_zone_id" {
+  value       = aws_alb.main.zone_id
+  description = "Hosted-zone ID of the ALB — required for Route 53 alias A records"
+}
+
 output "alb_arn" {
   value = aws_alb.main.arn
 }

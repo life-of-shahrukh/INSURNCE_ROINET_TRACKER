@@ -9,3 +9,9 @@ variable "certificate_arn" {
   description = "ACM certificate ARN. Leave empty to use HTTP only."
   default     = ""
 }
+
+variable "api_domain" {
+  type        = string
+  description = "Fully-qualified API subdomain, e.g. api.insuranceroinet.xyz. Used for host-header routing to the server target group."
+  default     = ""
+}

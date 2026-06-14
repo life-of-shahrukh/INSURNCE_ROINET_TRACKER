@@ -195,7 +195,7 @@ resource "aws_security_group" "ecs" {
 
 resource "aws_security_group" "rds" {
   name        = "${var.project}-${var.env}-rds-sg"
-  description = "SQL Server port 1433 — open to ECS tasks and internet (username/password auth)"
+  description = "SQL Server port 1433 - open to ECS tasks and internet (username/password auth)"
   vpc_id      = aws_vpc.main.id
 
   # Allow ECS tasks to connect internally
@@ -204,7 +204,7 @@ resource "aws_security_group" "rds" {
     to_port         = 1433
     protocol        = "tcp"
     security_groups = [aws_security_group.ecs.id]
-    description     = "ECS tasks → SQL Server"
+    description     = "ECS tasks to SQL Server"
   }
 
   # Allow public internet access (SSMS, DBeaver, local dev, migrations from CI)

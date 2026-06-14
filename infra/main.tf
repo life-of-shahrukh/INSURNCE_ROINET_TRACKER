@@ -75,6 +75,15 @@ module "rds" {
   db_password       = var.db_password
 }
 
+# ── DNS: Route 53 hosted zone + ACM certificate ───────────────────────────────
+# Must come BEFORE module.alb so the validated certificate ARN is available.
+# Alias A records (apex + api + www) are defined below after the ALB exists,
+# which avoids a circular dependency between this module and module.alb.
+module "dns" {
+  source      = "./modules/dns"
+  domain_name = var.domain_name
+}
+
 # ── Load balancer ─────────────────────────────────────────────────────────────
 module "alb" {
   source = "./modules/alb"
@@ -84,7 +93,50 @@ module "alb" {
   vpc_id                = module.vpc.vpc_id
   public_subnet_ids     = module.vpc.public_subnet_ids
   alb_security_group_id = module.vpc.alb_security_group_id
-  certificate_arn       = var.certificate_arn
+  certificate_arn       = module.dns.certificate_arn   # one-way dep: dns → alb
+  api_domain            = "api.${var.domain_name}"
+}
+
+# ── Route 53 alias A records → ALB ────────────────────────────────────────────
+# Defined here (not inside module.dns) to avoid a circular dependency:
+#   module.dns produces certificate_arn → consumed by module.alb
+#   module.alb produces alb_dns_name/alb_zone_id → consumed by these records
+# Both modules are complete by the time Terraform evaluates these resources.
+
+resource "aws_route53_record" "apex" {
+  zone_id = module.dns.zone_id
+  name    = var.domain_name
+  type    = "A"
+
+  alias {
+    name                   = module.alb.alb_dns_name
+    zone_id                = module.alb.alb_zone_id
+    evaluate_target_health = true
+  }
+}
+
+resource "aws_route53_record" "api" {
+  zone_id = module.dns.zone_id
+  name    = "api.${var.domain_name}"
+  type    = "A"
+
+  alias {
+    name                   = module.alb.alb_dns_name
+    zone_id                = module.alb.alb_zone_id
+    evaluate_target_health = true
+  }
+}
+
+resource "aws_route53_record" "www" {
+  zone_id = module.dns.zone_id
+  name    = "www.${var.domain_name}"
+  type    = "A"
+
+  alias {
+    name                   = module.alb.alb_dns_name
+    zone_id                = module.alb.alb_zone_id
+    evaluate_target_health = true
+  }
 }
 
 # ── ECS Cluster + Services ────────────────────────────────────────────────────
@@ -109,12 +161,12 @@ module "ecs" {
   server_image = module.ecr.server_repository_url
   image_tag    = var.image_tag
 
-  api_url      = "http://${module.alb.alb_dns_name}/api"
-  frontend_url = "http://${module.alb.alb_dns_name}"
+  api_url      = "https://api.${var.domain_name}"
+  frontend_url = "https://${var.domain_name}"
 
   # SQL Server connection string — Prisma will create the roinet_crm database
   # on the first `prisma migrate deploy` run inside the server container.
-  database_url = "sqlserver://${module.rds.address}:1433;database=roinet_crm;user=${var.db_username};password=${var.db_password};encrypt=true;trustServerCertificate=false"
+  database_url = "sqlserver://${module.rds.address}:1433;database=roinet_crm;user=${var.db_username};password=${var.db_password};encrypt=true;trustServerCertificate=true"
 
   jwt_secret = var.jwt_secret
 

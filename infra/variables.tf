@@ -105,9 +105,9 @@ variable "server_memory" {
   default = 1024
 }
 
-# ── ALB / TLS ─────────────────────────────────────────────────────────────────
-variable "certificate_arn" {
+# ── Domain ────────────────────────────────────────────────────────────────────
+variable "domain_name" {
   type        = string
-  description = "ACM certificate ARN for HTTPS. Leave empty to skip TLS."
-  default     = ""
+  description = "Apex domain purchased in GoDaddy. Route 53 hosted zone + ACM cert are auto-provisioned."
+  default     = "insuranceroinet.xyz"
 }

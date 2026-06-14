@@ -5,7 +5,28 @@ output "vpc_id" {
 
 output "alb_dns_name" {
   value       = module.alb.alb_dns_name
-  description = "Public DNS name — point your domain CNAME here"
+  description = "Raw ALB DNS name (alias records in Route 53 point here automatically)"
+}
+
+# ── Domain outputs ─────────────────────────────────────────────────────────────
+output "route53_name_servers" {
+  value       = module.dns.name_servers
+  description = "Paste these 4 nameservers into GoDaddy > DNS > Nameservers > Custom"
+}
+
+output "frontend_url" {
+  value       = "https://${var.domain_name}"
+  description = "Public URL of the Next.js frontend"
+}
+
+output "api_url" {
+  value       = "https://api.${var.domain_name}"
+  description = "Public URL of the NestJS API"
+}
+
+output "acm_certificate_arn" {
+  value       = module.dns.certificate_arn
+  description = "ARN of the validated ACM TLS certificate"
 }
 
 output "app_ecr_url" {

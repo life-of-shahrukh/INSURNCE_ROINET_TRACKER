@@ -103,7 +103,25 @@ resource "aws_alb_listener" "https" {
   }
 }
 
-# Route /api/* → NestJS server target group
+# Priority 5: api.insuranceroinet.xyz (host-header) → NestJS server — all traffic
+resource "aws_alb_listener_rule" "api_host" {
+  count        = var.certificate_arn != "" && var.api_domain != "" ? 1 : 0
+  listener_arn = aws_alb_listener.https[0].arn
+  priority     = 5
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_alb_target_group.server.arn
+  }
+
+  condition {
+    host_header {
+      values = [var.api_domain]
+    }
+  }
+}
+
+# Priority 10: /api/* path (fallback + HTTP-only mode) → NestJS server
 resource "aws_alb_listener_rule" "api" {
   count        = var.certificate_arn != "" ? 1 : 0
   listener_arn = aws_alb_listener.https[0].arn

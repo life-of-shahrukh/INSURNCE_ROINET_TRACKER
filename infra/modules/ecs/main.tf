@@ -67,8 +67,11 @@ resource "aws_ecs_task_definition" "app" {
     }]
 
     environment = [
-      { name = "NODE_ENV", value = var.env },
-      { name = "NEXT_PUBLIC_API_URL", value = var.api_url }
+      { name = "NODE_ENV",             value = var.env },
+      { name = "NEXT_PUBLIC_API_URL",  value = var.api_url },
+      # BACKEND_URL is used by next.config.ts rewrites: ${BACKEND_URL}/api/:path*
+      # Must be the ALB base URL (no /api suffix) to avoid double /api in the destination.
+      { name = "BACKEND_URL",          value = var.frontend_url }
     ]
 
     logConfiguration = {

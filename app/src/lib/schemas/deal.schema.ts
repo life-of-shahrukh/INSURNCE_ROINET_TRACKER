@@ -8,8 +8,10 @@ export const dealFormSchema = z.object({
   policy: z.enum(POLICY_TYPES, { error: "Select a valid policy type" }),
   sum: z.coerce.number({ error: "Enter a valid amount" }).min(1, "Sum assured must be greater than 0"),
   premium: z.coerce.number({ error: "Enter a valid amount" }).min(1, "Premium must be greater than 0"),
-  coa: z.coerce.number({ error: "Enter a valid amount" }).min(0, "COA cannot be negative"),
-  margin: z.coerce.number({ error: "Enter a valid amount" }).min(0, "Margin cannot be negative"),
+  // COA / coaType / margin are SUPER_ADMIN-only financial fields — optional in the form.
+  coa: z.coerce.number({ error: "Enter a valid amount" }).min(0, "COA cannot be negative").optional(),
+  coaType: z.enum(["PERCENT", "AMOUNT"]).optional(),
+  margin: z.coerce.number({ error: "Enter a valid amount" }).min(0, "Margin cannot be negative").optional(),
   status: z.enum(["H", "W", "C"], { error: "Select a valid status" }),
   expected: z.string().min(1, "Expected closure date is required"),
   // Proposal number: assigned by insurer on proposal form submission (before policy issuance).

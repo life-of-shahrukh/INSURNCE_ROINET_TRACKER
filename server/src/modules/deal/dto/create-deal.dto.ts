@@ -38,15 +38,22 @@ export class CreateDealDto {
   @Min(0)
   premium: number;
 
-  @ApiProperty({ example: 6000 })
+  @ApiPropertyOptional({ example: 6000, description: 'COA — raw value (interpret with coaType). SUPER_ADMIN only; ignored from other roles.' })
   @IsNumber()
   @Min(0)
-  coa: number;
+  @IsOptional()
+  coa?: number;
 
-  @ApiProperty({ example: 3000 })
+  @ApiPropertyOptional({ enum: ['PERCENT', 'AMOUNT'], example: 'AMOUNT', description: 'COA entry mode' })
+  @IsIn(['PERCENT', 'AMOUNT'])
+  @IsOptional()
+  coaType?: string;
+
+  @ApiPropertyOptional({ example: 3000, description: 'Retained margin (₹). SUPER_ADMIN only; ignored from other roles.' })
   @IsNumber()
   @Min(0)
-  margin: number;
+  @IsOptional()
+  margin?: number;
 
   @ApiProperty({ enum: ['H', 'W', 'C'], example: 'W' })
   @IsIn(Object.values(DealStatus))

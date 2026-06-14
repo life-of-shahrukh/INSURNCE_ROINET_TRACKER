@@ -26,6 +26,8 @@ function makeDeal(overrides: Partial<Deal> = {}): Deal {
     sum: 500000,
     premium: 12000,
     coa: 1200,
+    coaType: "AMOUNT",
+    coaAmount: 1200,
     margin: 600,
     status: "H",
     expected: new Date("2026-07-01"),

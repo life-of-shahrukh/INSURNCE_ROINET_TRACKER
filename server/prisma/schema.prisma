@@ -163,7 +163,12 @@ model Deal {
   insurer    String?   @db.NVarChar(100)
   sum        Float
   premium    Float
+  /// Raw COA value as entered (interpret with coaType)
   coa        Float
+  /// COA entry mode: PERCENT (of premium) | AMOUNT (rupees)
+  coaType    String    @default("AMOUNT") @db.NVarChar(10)
+  /// Computed effective COA in rupees — use this for aggregations
+  coaAmount  Float     @default(0)
   margin     Float
   /// H = Hot, W = Warm, C = Cold
   status     String    @db.NVarChar(1)

@@ -10,6 +10,19 @@ import { Deal, Prisma } from '@prisma/client';
 import type { PaginatedResult } from '../../common/interfaces/paginated-result.interface';
 import { buildPaginatedResult } from '../../common/utils/pagination.util';
 
+/**
+ * Effective COA in rupees. PERCENT mode treats `coa` as a percent of premium;
+ * AMOUNT mode uses `coa` directly. Persisted as `coaAmount` so DB aggregations
+ * never need to know the entry mode.
+ */
+function computeCoaAmount(
+  coaType: string,
+  coa: number,
+  premium: number,
+): number {
+  return coaType === 'PERCENT' ? (premium * coa) / 100 : coa;
+}
+
 const DEAL_SORT_FIELDS: Record<string, keyof Deal> = {
   createdAt: 'createdAt',
   expected: 'expected',
@@ -83,6 +96,8 @@ export class DealRepository {
   }
 
   create(dto: CreateDealDto): Promise<Deal> {
+    const coaType = dto.coaType ?? 'AMOUNT';
+    const coa = dto.coa ?? 0;
     return this.prisma.deal
       .create({
         data: {
@@ -92,8 +107,10 @@ export class DealRepository {
           policy: dto.policy,
           sum: dto.sum,
           premium: dto.premium,
-          coa: dto.coa,
-          margin: dto.margin,
+          coa,
+          coaType,
+          coaAmount: computeCoaAmount(coaType, coa, dto.premium),
+          margin: dto.margin ?? 0,
           status: dto.status,
           expected: new Date(dto.expected),
           proposal: dto.proposal ?? '',
@@ -106,6 +123,8 @@ export class DealRepository {
   }
 
   createForPosp(pospId: string, dto: CreateDealDto): Promise<Deal> {
+    const coaType = dto.coaType ?? 'AMOUNT';
+    const coa = dto.coa ?? 0;
     return this.prisma.deal
       .create({
         data: {
@@ -115,8 +134,10 @@ export class DealRepository {
           policy: dto.policy,
           sum: dto.sum,
           premium: dto.premium,
-          coa: dto.coa,
-          margin: dto.margin,
+          coa,
+          coaType,
+          coaAmount: computeCoaAmount(coaType, coa, dto.premium),
+          margin: dto.margin ?? 0,
           status: dto.status,
           expected: new Date(dto.expected),
           proposal: dto.proposal ?? '',
@@ -129,7 +150,16 @@ export class DealRepository {
   }
 
   async update(id: string, dto: UpdateDealDto): Promise<Deal> {
-    await this.findById(id);
+    const existing = await this.findById(id);
+    // Recompute the effective COA whenever its inputs change (raw value, mode,
+    // or premium — PERCENT-mode COA depends on premium).
+    const recomputeCoa =
+      dto.coa !== undefined ||
+      dto.coaType !== undefined ||
+      dto.premium !== undefined;
+    const coaType = dto.coaType ?? existing.coaType;
+    const coa = dto.coa ?? existing.coa;
+    const premium = dto.premium ?? existing.premium;
     return this.prisma.deal.update({
       where: { id },
       data: {
@@ -139,6 +169,10 @@ export class DealRepository {
         ...(dto.sum !== undefined && { sum: dto.sum }),
         ...(dto.premium !== undefined && { premium: dto.premium }),
         ...(dto.coa !== undefined && { coa: dto.coa }),
+        ...(dto.coaType !== undefined && { coaType: dto.coaType }),
+        ...(recomputeCoa && {
+          coaAmount: computeCoaAmount(coaType, coa, premium),
+        }),
         ...(dto.margin !== undefined && { margin: dto.margin }),
         ...(dto.status !== undefined && { status: dto.status }),
         ...(dto.expected !== undefined && { expected: new Date(dto.expected) }),
@@ -157,7 +191,16 @@ export class DealRepository {
     pospId: string,
     dto: UpdateDealDto,
   ): Promise<Deal> {
-    await this.findByIdForPosp(id, pospId);
+    const existing = await this.findByIdForPosp(id, pospId);
+    // POSP cannot edit COA/margin (stripped in service), but changing premium
+    // must still keep a PERCENT-mode coaAmount in sync.
+    const recomputeCoa =
+      dto.coa !== undefined ||
+      dto.coaType !== undefined ||
+      dto.premium !== undefined;
+    const coaType = dto.coaType ?? existing.coaType;
+    const coa = dto.coa ?? existing.coa;
+    const premium = dto.premium ?? existing.premium;
     return this.prisma.deal.update({
       where: { id },
       data: {
@@ -166,6 +209,10 @@ export class DealRepository {
         ...(dto.sum !== undefined && { sum: dto.sum }),
         ...(dto.premium !== undefined && { premium: dto.premium }),
         ...(dto.coa !== undefined && { coa: dto.coa }),
+        ...(dto.coaType !== undefined && { coaType: dto.coaType }),
+        ...(recomputeCoa && {
+          coaAmount: computeCoaAmount(coaType, coa, premium),
+        }),
         ...(dto.margin !== undefined && { margin: dto.margin }),
         ...(dto.status !== undefined && { status: dto.status }),
         ...(dto.expected !== undefined && { expected: new Date(dto.expected) }),

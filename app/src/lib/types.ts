@@ -82,6 +82,9 @@ export interface SalesTeam {
 // Deal types (for legacy CRM provider compatibility)
 export type DealStatus = 'H' | 'W' | 'C';
 
+// COA entry mode: PERCENT (of premium) | AMOUNT (rupees)
+export type CoaType = 'PERCENT' | 'AMOUNT';
+
 export interface Deal {
   id: string;
   pospId: string | null;
@@ -89,7 +92,11 @@ export interface Deal {
   policy: string;
   sum: number;
   premium: number;
+  // Raw COA value as entered (interpret with coaType)
   coa: number;
+  coaType: CoaType;
+  // Computed effective COA in rupees (use this for sums)
+  coaAmount: number;
   margin: number;
   status: DealStatus;
   expected: Date;
@@ -109,8 +116,10 @@ export interface DealInput {
   policy: string;
   sum: number;
   premium: number;
-  coa: number;
-  margin: number;
+  // COA fields are SUPER_ADMIN-only; omitted from the payload for other roles.
+  coa?: number;
+  coaType?: CoaType;
+  margin?: number;
   status: DealStatus;
   expected: Date;
   proposal?: string;

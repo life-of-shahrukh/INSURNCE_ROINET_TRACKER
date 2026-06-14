@@ -85,7 +85,7 @@ export class DashboardRepository {
       // ── deals ──
       this.prisma.deal.aggregate({
         where: dealWhere,
-        _sum: { premium: true, margin: true, coa: true },
+        _sum: { premium: true, margin: true, coaAmount: true },
         _count: { _all: true },
       }),
       this.prisma.deal.groupBy({
@@ -158,7 +158,7 @@ export class DashboardRepository {
       deals: {
         totalPremium: dealAgg._sum.premium ?? 0,
         totalMargin: dealAgg._sum.margin ?? 0,
-        totalCoa: dealAgg._sum.coa ?? 0,
+        totalCoa: dealAgg._sum.coaAmount ?? 0,
         count: dealCount,
         hotCount: dealsByStatus.find((s) => s.status === 'H')?._count._all ?? 0,
         warmCount:

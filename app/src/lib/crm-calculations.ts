@@ -7,6 +7,11 @@ export function pospName(posp: Posp[], id: string | null): string {
   return p ? p.name : "–";
 }
 
+/** Effective COA in rupees. Prefers the backend-computed coaAmount, falling back to raw coa. */
+export function effectiveCoa(d: Pick<Deal, "coa" | "coaAmount">): number {
+  return +(d.coaAmount ?? d.coa) || 0;
+}
+
 export interface DashboardKpis {
   totalPremium: number;
   totalMargin: number;
@@ -67,7 +72,7 @@ export function computeCommissions(deals: Deal[], posp: Posp[]): CommissionRow[]
     .map((p) => {
       const myDeals = deals.filter((d) => d.pospId === p.id);
       const premium = myDeals.reduce((a, d) => a + (+d.premium || 0), 0);
-      const coa = myDeals.reduce((a, d) => a + (+d.coa || 0), 0);
+      const coa = myDeals.reduce((a, d) => a + effectiveCoa(d), 0);
       const margin = myDeals.reduce((a, d) => a + (+d.margin || 0), 0);
       const issued = myDeals.filter((d) => d.policyNo).length;
       return { posp: p, premium, coa, margin, dealCount: myDeals.length, issued };
@@ -91,7 +96,7 @@ export function computePolicySummary(deals: Deal[]): PolicySummaryRow[] {
     }
     policySums[d.policy].count++;
     policySums[d.policy].premium += +d.premium || 0;
-    policySums[d.policy].coa += +d.coa || 0;
+    policySums[d.policy].coa += effectiveCoa(d);
     policySums[d.policy].margin += +d.margin || 0;
   });
   return Object.values(policySums).sort((a, b) => b.premium - a.premium);
@@ -119,7 +124,7 @@ export function buildDealsCsv(deals: Deal[], posp: Posp[]): string {
     d.policy,
     d.sum,
     d.premium,
-    d.coa,
+    effectiveCoa(d),
     d.margin,
     { H: "Hot", W: "Warm", C: "Cold" }[d.status] || "",
     d.expected,

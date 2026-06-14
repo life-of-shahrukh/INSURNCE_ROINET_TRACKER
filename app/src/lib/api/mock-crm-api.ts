@@ -59,6 +59,11 @@ export const mockCrmApi: CrmApi = {
       sum: input.sum ?? 0,
       premium: input.premium ?? 0,
       coa: input.coa ?? 0,
+      coaType: input.coaType ?? "AMOUNT",
+      coaAmount:
+        (input.coaType ?? "AMOUNT") === "PERCENT"
+          ? ((input.premium ?? 0) * (input.coa ?? 0)) / 100
+          : input.coa ?? 0,
       margin: input.margin ?? 0,
       status: input.status,
       expected: new Date(input.expected),
@@ -84,6 +89,11 @@ export const mockCrmApi: CrmApi = {
       sum: input.sum ?? 0,
       premium: input.premium ?? 0,
       coa: input.coa ?? 0,
+      coaType: input.coaType ?? "AMOUNT",
+      coaAmount:
+        (input.coaType ?? "AMOUNT") === "PERCENT"
+          ? ((input.premium ?? 0) * (input.coa ?? 0)) / 100
+          : input.coa ?? 0,
       margin: input.margin ?? 0,
       status: input.status,
       expected: new Date(input.expected),

@@ -55,7 +55,7 @@ function renderCommissionCell(
     case "margin":
       return <td key={col.key} className="num-right">{fmtINR(r.margin)}</td>;
     case "marginPct":
-      return <td key={col.key} className="num-right">{marginPercent(r.margin, r.premium)}%</td>;
+      return <td key={col.key} className="num-right">{marginPercent(r.margin, r.premium)}</td>;
     default:
       return <td key={col.key} />;
   }
@@ -76,7 +76,7 @@ function renderTotalsCell(col: ColumnConfig, totals: Totals): React.ReactNode {
     case "margin":
       return <td key={col.key} className="num-right">{fmtINR(totals.margin)}</td>;
     case "marginPct":
-      return <td key={col.key} className="num-right">{marginPercent(totals.margin, totals.premium)}%</td>;
+      return <td key={col.key} className="num-right">{marginPercent(totals.margin, totals.premium)}</td>;
     default:
       return <td key={col.key} />;
   }

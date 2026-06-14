@@ -14,6 +14,19 @@ import { ForbiddenException } from '@nestjs/common';
 import { AuthUser } from '../../common/auth/auth-user.interface';
 import { resolvePospScope } from '../../common/auth/posp-scope.util';
 import type { HierarchyScope } from '../../common/auth/hierarchy-scope.util';
+import { Role } from '../../common/constants';
+
+/**
+ * COA, COA mode, and Retained Margin are financial fields only SUPER_ADMIN may set.
+ * Stripping them server-side is the real gate — the UI lock alone is insufficient.
+ * On create the omitted fields fall back to repository defaults; on update the
+ * existing persisted values are preserved (repository only writes provided keys).
+ */
+function stripFinancials(dto: { coa?: number; coaType?: string; margin?: number }): void {
+  delete dto.coa;
+  delete dto.coaType;
+  delete dto.margin;
+}
 
 @Injectable()
 export class DealService {
@@ -35,6 +48,9 @@ export class DealService {
   create(dto: CreateDealDto, user: AuthUser): Promise<Deal> {
     const finalDto = { ...dto };
     finalDto.pospId = resolvePospScope(user, dto.pospId);
+    if (user.role !== Role.SUPER_ADMIN) {
+      stripFinancials(finalDto);
+    }
     return this.commandBus.execute(new CreateDealCommand(finalDto));
   }
 
@@ -43,6 +59,9 @@ export class DealService {
     // Only re-resolve pospId scope when the client is explicitly changing it.
     if (dto.pospId !== undefined) {
       finalDto.pospId = resolvePospScope(user, dto.pospId);
+    }
+    if (user.role !== Role.SUPER_ADMIN) {
+      stripFinancials(finalDto);
     }
     return this.commandBus.execute(new UpdateDealCommand(id, finalDto));
   }

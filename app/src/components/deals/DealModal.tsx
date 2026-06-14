@@ -26,6 +26,7 @@ const emptyForm = {
   sum: "",
   premium: "",
   coa: "0",
+  coaType: "AMOUNT" as "PERCENT" | "AMOUNT",
   margin: "0",
   status: "W" as DealStatus,
   expected: "",
@@ -44,10 +45,19 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
   const [form, setForm] = useState(emptyForm);
   const [errors, setErrors] = useState<Partial<Record<keyof DealFormValues, string>>>({});
   const [saving, setSaving] = useState(false);
+  const [savedProposal, setSavedProposal] = useState<string | null>(null);
 
   const isPosp = user?.role === "POSP";
   const isManager = user?.role ? MANAGER_ROLES.has(user.role) : false;
   const isEditMode = !!deal;
+  // COA + Retained Margin are financial fields only SUPER_ADMIN may edit.
+  const canEditFinancials = user?.role === "SUPER_ADMIN";
+
+  // Live rupee value of a PERCENT-mode COA, for the helper text.
+  const coaPreview =
+    form.coaType === "PERCENT"
+      ? ((+form.premium || 0) * (+form.coa || 0)) / 100
+      : null;
 
   const activePosp = posp.filter((p) => p.active);
 
@@ -60,6 +70,7 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
     if (!open) return;
     setErrors({});
     setSaving(false);
+    setSavedProposal(null);
 
     if (deal) {
       setForm({
@@ -71,6 +82,7 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
         sum: String(deal.sum ?? ""),
         premium: String(deal.premium ?? ""),
         coa: String(deal.coa ?? 0),
+        coaType: deal.coaType ?? "AMOUNT",
         margin: String(deal.margin ?? 0),
         status: deal.status,
         expected: deal.expected
@@ -114,11 +126,18 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
         policy: form.policy,
         sum: +form.sum || 0,
         premium: +form.premium || 0,
-        coa: +form.coa || 0,
-        margin: +form.margin || 0,
         status: form.status,
         expected: new Date(form.expected),
         remarks: form.remarks.trim(),
+        // COA + Retained Margin are sent only by SUPER_ADMIN; the backend ignores
+        // them from any other role, this keeps the payload clean.
+        ...(canEditFinancials
+          ? {
+              coa: +form.coa || 0,
+              coaType: form.coaType,
+              margin: +form.margin || 0,
+            }
+          : {}),
         ...(form.customerId ? { customerId: form.customerId } : {}),
         // Proposal, policyNo, issued are only sent in edit mode
         ...(isEditMode ? {
@@ -130,9 +149,18 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
 
       const savedDeal = await saveDeal(payload);
 
-      const proposalInfo = savedDeal.proposal ? ` — Proposal: ${savedDeal.proposal}` : "";
-      toast.success(`Deal ${isEditMode ? "updated" : "saved"} successfully${proposalInfo}`);
-      onClose();
+      if (!isEditMode && savedDeal.proposal) {
+        // Show the auto-generated proposal number inside the modal for 2.5 s before closing.
+        setSavedProposal(savedDeal.proposal);
+        toast.success(`Deal saved — Proposal: ${savedDeal.proposal}`);
+        setTimeout(() => {
+          setSavedProposal(null);
+          onClose();
+        }, 2500);
+      } else {
+        toast.success(`Deal ${isEditMode ? "updated" : "saved"} successfully`);
+        onClose();
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Please try again.";
       toast.error(`Failed to save deal: ${msg}`);
@@ -148,15 +176,47 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
       onClose={onClose}
       footer={
         <div className="modal-footer">
-          <Button variant="secondary" onClick={onClose} disabled={saving}>
+          <Button variant="secondary" onClick={onClose} disabled={saving || !!savedProposal}>
             Cancel
           </Button>
-          <Button type="submit" form="deal-form" disabled={saving}>
+          <Button type="submit" form="deal-form" disabled={saving || !!savedProposal}>
             {saving ? "Saving…" : "Save Deal"}
           </Button>
         </div>
       }
     >
+      {savedProposal && (
+        <div
+          style={{
+            background: "var(--color-success-bg, #ecfdf5)",
+            border: "1.5px solid var(--color-success, #22c55e)",
+            borderRadius: 8,
+            padding: "12px 16px",
+            marginBottom: 16,
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            fontWeight: 600,
+            fontSize: 15,
+            color: "var(--color-success-text, #15803d)",
+          }}
+        >
+          <span style={{ fontSize: 20 }}>✓</span>
+          Deal saved &mdash; Proposal ID:&nbsp;
+          <span
+            style={{
+              fontFamily: "monospace",
+              letterSpacing: "0.04em",
+              background: "var(--color-success-chip-bg, #bbf7d0)",
+              borderRadius: 4,
+              padding: "1px 8px",
+            }}
+          >
+            {savedProposal}
+          </span>
+        </div>
+      )}
+
       <form id="deal-form" onSubmit={handleSubmit}>
         <div className="form-grid">
           {/* ── Issued By ────────────────────────────────────────────── */}
@@ -243,21 +303,57 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
             )}
           </div>
           <div className="form-group">
-            <label htmlFor="d-coa">COA (₹)</label>
-            <input
-              id="d-coa"
-              type="number"
-              value={form.coa}
-              onChange={(e) => setForm({ ...form, coa: e.target.value })}
-            />
+            <label htmlFor="d-coa">
+              COA ({form.coaType === "PERCENT" ? "%" : "₹"})
+              {!canEditFinancials && (
+                <span style={{ fontWeight: 400, color: "#888", marginLeft: 6, fontSize: 12 }}>
+                  (admin only)
+                </span>
+              )}
+            </label>
+            <div style={{ display: "flex", gap: 8 }}>
+              <input
+                id="d-coa"
+                type="number"
+                style={{ flex: 1 }}
+                value={form.coa}
+                disabled={!canEditFinancials}
+                onChange={(e) => setForm({ ...form, coa: e.target.value })}
+              />
+              <select
+                aria-label="COA mode"
+                style={{ width: 80 }}
+                value={form.coaType}
+                disabled={!canEditFinancials}
+                onChange={(e) =>
+                  setForm({ ...form, coaType: e.target.value as "PERCENT" | "AMOUNT" })
+                }
+              >
+                <option value="AMOUNT">₹</option>
+                <option value="PERCENT">%</option>
+              </select>
+            </div>
+            {coaPreview !== null && (
+              <span style={{ color: "#666", fontSize: 12, marginTop: 4 }}>
+                = ₹{coaPreview.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
+              </span>
+            )}
             {errors.coa && <span className="field-error">{errors.coa}</span>}
           </div>
           <div className="form-group">
-            <label htmlFor="d-margin">Retained Margin (₹)</label>
+            <label htmlFor="d-margin">
+              Retained Margin (₹)
+              {!canEditFinancials && (
+                <span style={{ fontWeight: 400, color: "#888", marginLeft: 6, fontSize: 12 }}>
+                  (admin only)
+                </span>
+              )}
+            </label>
             <input
               id="d-margin"
               type="number"
               value={form.margin}
+              disabled={!canEditFinancials}
               onChange={(e) => setForm({ ...form, margin: e.target.value })}
             />
             {errors.margin && (

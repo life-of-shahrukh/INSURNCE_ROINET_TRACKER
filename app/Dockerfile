@@ -18,6 +18,9 @@ ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ARG BACKEND_URL
 ENV BACKEND_URL=$BACKEND_URL
+# Explicitly disable mock mode in production builds.
+ARG NEXT_PUBLIC_USE_MOCK=false
+ENV NEXT_PUBLIC_USE_MOCK=$NEXT_PUBLIC_USE_MOCK
 RUN npm run build
 
 # ── Stage 3: runner ───────────────────────────────────────────────────────────

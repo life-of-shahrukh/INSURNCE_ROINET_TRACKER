@@ -12,10 +12,16 @@ export const dealFormSchema = z.object({
   margin: z.coerce.number({ error: "Enter a valid amount" }).min(0, "Margin cannot be negative"),
   status: z.enum(["H", "W", "C"], { error: "Select a valid status" }),
   expected: z.string().min(1, "Expected closure date is required"),
-  proposal: z.string().min(1, "Proposal number is required"),
-  policyNo: z.string().min(1, "Policy number is required"),
+  // Proposal number: assigned by insurer on proposal form submission (before policy issuance).
+  // Optional at deal creation — POSP fills it once they receive it from the insurer.
+  proposal: z.string().optional(),
+  // Policy number: assigned by insurer only after underwriting approval + first premium receipt.
+  // Must not be required at proposal/lead stage.
+  policyNo: z.string().optional(),
+  // Issuance date: required when a policy number is provided.
   issued: z.string().optional(),
   remarks: z.string().optional(),
+
 });
 
 export type DealFormValues = z.infer<typeof dealFormSchema>;

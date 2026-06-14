@@ -101,7 +101,7 @@ export function CustomerSearchSelect({
           onFocus={() => setShowDropdown(true)}
           placeholder={
             allowFreeText
-              ? 'Search existing or type a new name…'
+              ? 'Search by name / mobile number, or type a new name…'
               : 'Search customer by name, mobile, or email…'
           }
           required={required}

@@ -157,7 +157,7 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
             onChange={(id, name) =>
               setForm({ ...form, customerId: id ?? "", customer: name ?? "" })
             }
-            label="Customer Name"
+            label="Customer Name / Number"
             allowFreeText
           />
           {errors.customer && (
@@ -259,10 +259,16 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
             )}
           </div>
           <div className="form-group">
-            <label htmlFor="d-proposal">Proposal Number</label>
+            <label htmlFor="d-proposal">
+              Proposal Number
+              <span style={{ fontWeight: 400, color: "#888", marginLeft: 6, fontSize: 12 }}>
+                (issued by insurer on proposal submission)
+              </span>
+            </label>
             <input
               id="d-proposal"
               value={form.proposal}
+              placeholder="e.g. PRP-2024-123456"
               onChange={(e) => setForm({ ...form, proposal: e.target.value })}
             />
             {errors.proposal && (
@@ -270,10 +276,16 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
             )}
           </div>
           <div className="form-group">
-            <label htmlFor="d-policyno">Policy Number</label>
+            <label htmlFor="d-policyno">
+              Policy Number
+              <span style={{ fontWeight: 400, color: "#888", marginLeft: 6, fontSize: 12 }}>
+                (issued after premium receipt &amp; approval)
+              </span>
+            </label>
             <input
               id="d-policyno"
               value={form.policyNo}
+              placeholder="e.g. POL-2024-987654"
               onChange={(e) => setForm({ ...form, policyNo: e.target.value })}
             />
             {errors.policyNo && (
@@ -281,7 +293,12 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
             )}
           </div>
           <div className="form-group">
-            <label htmlFor="d-issued">Issuance Date</label>
+            <label htmlFor="d-issued">
+              Issuance Date
+              <span style={{ fontWeight: 400, color: "#888", marginLeft: 6, fontSize: 12 }}>
+                (date policy document was issued)
+              </span>
+            </label>
             <input
               id="d-issued"
               type="date"

@@ -1,0 +1,33 @@
+---
+description: Prevent autonomous AWS deployments without explicit user instruction
+alwaysApply: true
+---
+
+# AWS Deployment Guard
+
+**Never** perform any of the following actions unless the user explicitly says to deploy, push, or ship to AWS:
+
+- `docker push` to ECR
+- `aws ecs update-service` or `register-task-definition`
+- `terraform apply`
+- `aws ecs wait services-stable`
+- Any other command that modifies live AWS infrastructure
+
+## What you CAN do without permission
+
+- Edit code, Dockerfiles, Terraform files locally
+- Run `docker build` to verify the image builds
+- Run `terraform plan` to preview changes
+- Check AWS status (`describe-services`, `describe-tasks`, CloudWatch logs)
+
+## Trigger phrases required before deploying
+
+The user must say something like:
+- "deploy it"
+- "push to AWS"
+- "push the image"
+- "redeploy"
+- "apply terraform"
+- "update the service"
+
+If you have made code changes and they are ready to deploy, **stop and tell the user** what needs to be deployed and wait for explicit approval.

@@ -134,8 +134,8 @@ export class DashboardRepository {
       }),
     ]);
 
-    // Resolve POSP names for top-POSP chart
-    const topPospIds = topPospsRaw.map((p) => p.pospId);
+    // Resolve POSP names for top-POSP chart — filter out Self-issued deals (null pospId)
+    const topPospIds = topPospsRaw.map((p) => p.pospId).filter((id): id is string => id !== null);
     const pospNames =
       topPospIds.length > 0
         ? await this.prisma.posp.findMany({
@@ -172,12 +172,14 @@ export class DashboardRepository {
           premium: p._sum.premium ?? 0,
           count: p._count._all,
         })),
-        topPosps: topPospsRaw.map((p) => ({
-          pospId: p.pospId,
-          name: nameMap.get(p.pospId) ?? p.pospId,
-          premium: p._sum.premium ?? 0,
-          count: p._count._all,
-        })),
+        topPosps: topPospsRaw
+          .filter((p) => p.pospId !== null)
+          .map((p) => ({
+            pospId: p.pospId as string,
+            name: nameMap.get(p.pospId as string) ?? (p.pospId as string),
+            premium: p._sum.premium ?? 0,
+            count: p._count._all,
+          })),
       },
       leads: {
         total: leadTotal,

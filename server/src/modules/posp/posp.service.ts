@@ -47,7 +47,7 @@ export class PospService {
   }
 
   update(id: string, dto: UpdatePospDto, user: AuthUser): Promise<Posp> {
-    const finalId = user.pospId ? resolvePospScope(user, id) : id;
+    const finalId = user.pospId ? (resolvePospScope(user, id) ?? id) : id;
     return this.commandBus.execute(new UpdatePospCommand(finalId, dto));
   }
 }

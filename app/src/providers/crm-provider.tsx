@@ -22,7 +22,7 @@ interface CrmContextValue {
   posp: Posp[];
   loading: boolean;
   refresh: () => Promise<void>;
-  saveDeal: (input: DealInput) => Promise<void>;
+  saveDeal: (input: DealInput) => Promise<Deal>;
   deleteDeal: (id: string) => Promise<void>;
   savePosp: (input: PospInput) => Promise<void>;
   exportCsv: (params?: URLSearchParams) => Promise<void>;
@@ -63,14 +63,14 @@ export function CrmProvider({ children }: { children: ReactNode }) {
   }, [refresh]);
 
   const saveDeal = useCallback(
-    async (input: DealInput) => {
-      if (input.id) {
-        await crmApi.updateDeal(input.id, input);
-      } else {
-        await crmApi.createDeal(input);
-      }
-      await refresh();
-      await queryClient.invalidateQueries({ queryKey: dealKeys.all });
+    async (input: DealInput): Promise<Deal> => {
+      const savedDeal = input.id
+        ? await crmApi.updateDeal(input.id, input)
+        : await crmApi.createDeal(input);
+      // Refresh state in background — don't let a refresh failure mask success.
+      void refresh();
+      void queryClient.invalidateQueries({ queryKey: dealKeys.all });
+      return savedDeal;
     },
     [refresh, queryClient],
   );

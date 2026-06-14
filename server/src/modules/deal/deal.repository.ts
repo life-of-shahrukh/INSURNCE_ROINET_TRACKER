@@ -86,7 +86,8 @@ export class DealRepository {
     return this.prisma.deal
       .create({
         data: {
-          pospId: dto.pospId,
+          pospId: dto.pospId ?? null,
+          customerId: dto.customerId ?? null,
           customerName: dto.customer,
           policy: dto.policy,
           sum: dto.sum,
@@ -95,7 +96,7 @@ export class DealRepository {
           margin: dto.margin,
           status: dto.status,
           expected: new Date(dto.expected),
-          proposal: dto.proposal,
+          proposal: dto.proposal ?? '',
           policyNo: dto.policyNo ?? '',
           issued: dto.issued ? new Date(dto.issued) : null,
           remarks: dto.remarks ?? '',
@@ -109,6 +110,7 @@ export class DealRepository {
       .create({
         data: {
           pospId,
+          customerId: dto.customerId ?? null,
           customerName: dto.customer,
           policy: dto.policy,
           sum: dto.sum,
@@ -117,7 +119,7 @@ export class DealRepository {
           margin: dto.margin,
           status: dto.status,
           expected: new Date(dto.expected),
-          proposal: dto.proposal,
+          proposal: dto.proposal ?? '',
           policyNo: dto.policyNo ?? '',
           issued: dto.issued ? new Date(dto.issued) : null,
           remarks: dto.remarks ?? '',

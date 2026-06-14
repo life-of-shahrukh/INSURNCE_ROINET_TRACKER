@@ -84,7 +84,7 @@ export type DealStatus = 'H' | 'W' | 'C';
 
 export interface Deal {
   id: string;
-  pospId: string;
+  pospId: string | null;
   customer: string;
   policy: string;
   sum: number;
@@ -103,7 +103,8 @@ export interface Deal {
 
 export interface DealInput {
   id?: string;
-  pospId: string;
+  pospId?: string;
+  customerId?: string;
   customer: string;
   policy: string;
   sum: number;
@@ -112,11 +113,10 @@ export interface DealInput {
   margin: number;
   status: DealStatus;
   expected: Date;
-  proposal: string;
-  policyNo: string;
+  proposal?: string;
+  policyNo?: string;
   issued?: Date;
   remarks: string;
-  customerId?: string;
 }
 
 // POSP types (for legacy CRM provider compatibility)

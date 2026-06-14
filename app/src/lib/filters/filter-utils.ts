@@ -466,7 +466,7 @@ export function filterDealsForListQuery(deals: Deal[], query: ListQueryParams): 
   let result = applyFiltersToDeals(deals, query, { dateField });
 
   if (query.posp.length > 0) {
-    result = result.filter((d) => query.posp.includes(d.pospId));
+    result = result.filter((d) => d.pospId !== null && query.posp.includes(d.pospId));
   }
 
   if (query.renewals === "true") {

@@ -68,6 +68,12 @@ export class CustomerRepository {
     });
   }
 
+  async findByMobile(mobile: string): Promise<Customer | null> {
+    return this.prisma.customer.findFirst({
+      where: { mobile },
+    });
+  }
+
   async search(query: string): Promise<Customer[]> {
     return this.prisma.customer.findMany({
       where: {

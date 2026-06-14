@@ -11,7 +11,7 @@ model Customer {
   id              String    @id @default(cuid()) @db.NVarChar(36)
   name            String    @db.NVarChar(200)
   email           String?   @db.NVarChar(200)
-  mobile          String    @db.NVarChar(20)
+  mobile          String    @unique @db.NVarChar(20)
   alternateMobile String?   @db.NVarChar(20)
   dateOfBirth     DateTime?
   panNumber       String?   @db.NVarChar(20)
@@ -147,8 +147,8 @@ model Posp {
 
 model Deal {
   id         String    @id @default(cuid()) @db.NVarChar(36)
-  pospId     String    @db.NVarChar(36)
-  posp       Posp      @relation(fields: [pospId], references: [id])
+  pospId     String?   @db.NVarChar(36)
+  posp       Posp?     @relation(fields: [pospId], references: [id])
   
   customerId String?   @db.NVarChar(36)
   customer   Customer? @relation(fields: [customerId], references: [id])

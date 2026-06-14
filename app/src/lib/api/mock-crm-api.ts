@@ -53,7 +53,7 @@ export const mockCrmApi: CrmApi = {
   async createDeal(input) {
     const deal: Deal = {
       id: input.id ?? uid(),
-      pospId: input.pospId,
+      pospId: input.pospId ?? null,
       customer: input.customer,
       policy: input.policy,
       sum: input.sum ?? 0,
@@ -78,7 +78,7 @@ export const mockCrmApi: CrmApi = {
     if (idx < 0) throw new Error("Deal not found");
     const deal: Deal = {
       id,
-      pospId: input.pospId,
+      pospId: input.pospId ?? null,
       customer: input.customer,
       policy: input.policy,
       sum: input.sum ?? 0,

@@ -1,14 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { POLICY_TYPES } from "@/lib/constants";
 import { useCrm } from "@/providers/crm-provider";
 import { useAuth } from "@/providers/auth-provider";
+import { useProfile } from "@/hooks/useProfile";
 import { CustomerSearchSelect } from "@/components/customer/CustomerSearchSelect";
 import { dealFormSchema, type DealFormValues } from "@/lib/schemas";
-import type { Deal, DealStatus } from "@/lib/types";
+import type { Deal, DealInput, DealStatus } from "@/lib/types";
 
 interface DealModalProps {
   open: boolean;
@@ -33,29 +35,35 @@ const emptyForm = {
   remarks: "",
 };
 
+const MANAGER_ROLES = new Set(["DM", "ASM", "RH", "ZH", "NATIONAL_HEAD", "SUPER_ADMIN"]);
+
 export function DealModal({ open, deal, onClose }: DealModalProps) {
   const { user } = useAuth();
   const { posp, saveDeal } = useCrm();
+  const { data: profile } = useProfile();
   const [form, setForm] = useState(emptyForm);
   const [errors, setErrors] = useState<Partial<Record<keyof DealFormValues, string>>>({});
+  const [saving, setSaving] = useState(false);
 
-  // Sync posp into a ref so the effect reads the latest value without
-  // listing it as a dependency — prevents form resets while typing.
-  const pospRef = useRef(posp);
-  useEffect(() => {
-    pospRef.current = posp;
-  });
+  const isPosp = user?.role === "POSP";
+  const isManager = user?.role ? MANAGER_ROLES.has(user.role) : false;
+  const isEditMode = !!deal;
 
   const activePosp = posp.filter((p) => p.active);
-  const canSelectPosp = user?.role === "SUPER_ADMIN";
+
+  // Self label shown as first dropdown option for manager roles
+  const selfLabel = profile?.salesTeam?.name
+    ? `— Self (${profile.salesTeam.name}) —`
+    : "— Self (Me) —";
 
   useEffect(() => {
     if (!open) return;
     setErrors({});
-    const firstActive = pospRef.current.filter((p) => p.active)[0]?.id ?? "";
+    setSaving(false);
+
     if (deal) {
       setForm({
-        pospId: deal.pospId,
+        pospId: deal.pospId ?? "",
         customerId:
           (deal as unknown as Record<string, unknown>).customerId as string ?? "",
         customer: deal.customer,
@@ -76,9 +84,11 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
         remarks: deal.remarks ?? "",
       });
     } else {
-      setForm({ ...emptyForm, pospId: firstActive });
+      // New deal: pre-fill pospId for POSP users, leave empty (Self) for managers
+      const initialPospId = isPosp ? (user?.pospId ?? "") : "";
+      setForm({ ...emptyForm, pospId: initialPospId });
     }
-  }, [open, deal]); // pospRef is intentionally omitted — it is always current via .current
+  }, [open, deal, isPosp, user?.pospId]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -93,24 +103,42 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
       return;
     }
     setErrors({});
-    await saveDeal({
-      id: deal?.id,
-      pospId: form.pospId,
-      customer: form.customer.trim(),
-      policy: form.policy,
-      sum: +form.sum || 0,
-      premium: +form.premium || 0,
-      coa: +form.coa || 0,
-      margin: +form.margin || 0,
-      status: form.status,
-      expected: new Date(form.expected),
-      proposal: form.proposal.trim(),
-      policyNo: form.policyNo.trim(),
-      issued: new Date(form.issued),
-      remarks: form.remarks.trim(),
-      ...(form.customerId ? { customerId: form.customerId } : {}),
-    });
-    onClose();
+    setSaving(true);
+
+    try {
+      const payload: DealInput = {
+        id: deal?.id,
+        // Empty string means "Self" for managers → send as undefined (null in DB)
+        pospId: form.pospId || undefined,
+        customer: form.customer.trim(),
+        policy: form.policy,
+        sum: +form.sum || 0,
+        premium: +form.premium || 0,
+        coa: +form.coa || 0,
+        margin: +form.margin || 0,
+        status: form.status,
+        expected: new Date(form.expected),
+        remarks: form.remarks.trim(),
+        ...(form.customerId ? { customerId: form.customerId } : {}),
+        // Proposal, policyNo, issued are only sent in edit mode
+        ...(isEditMode ? {
+          proposal: form.proposal.trim(),
+          policyNo: form.policyNo.trim(),
+          ...(form.issued ? { issued: new Date(form.issued) } : {}),
+        } : {}),
+      };
+
+      const savedDeal = await saveDeal(payload);
+
+      const proposalInfo = savedDeal.proposal ? ` — Proposal: ${savedDeal.proposal}` : "";
+      toast.success(`Deal ${isEditMode ? "updated" : "saved"} successfully${proposalInfo}`);
+      onClose();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Please try again.";
+      toast.error(`Failed to save deal: ${msg}`);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -120,26 +148,30 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
       onClose={onClose}
       footer={
         <div className="modal-footer">
-          <Button variant="secondary" onClick={onClose}>
+          <Button variant="secondary" onClick={onClose} disabled={saving}>
             Cancel
           </Button>
-          <Button type="submit" form="deal-form">
-            Save Deal
+          <Button type="submit" form="deal-form" disabled={saving}>
+            {saving ? "Saving…" : "Save Deal"}
           </Button>
         </div>
       }
     >
       <form id="deal-form" onSubmit={handleSubmit}>
         <div className="form-grid">
+          {/* ── Issued By ────────────────────────────────────────────── */}
           <div className="form-group">
-            <label htmlFor="d-posp">POSP Name</label>
+            <label htmlFor="d-posp">Issued By</label>
             <select
               id="d-posp"
-              required
               value={form.pospId}
-              disabled={!canSelectPosp}
+              disabled={isPosp}
               onChange={(e) => setForm({ ...form, pospId: e.target.value })}
             >
+              {/* Manager roles get a "Self" option first */}
+              {isManager && (
+                <option value="">{selfLabel}</option>
+              )}
               {activePosp.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name} ({p.code})
@@ -151,6 +183,7 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
             )}
           </div>
 
+          {/* ── Customer ─────────────────────────────────────────────── */}
           <CustomerSearchSelect
             value={form.customerId || null}
             displayValue={form.customer || null}
@@ -166,6 +199,7 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
             </span>
           )}
 
+          {/* ── Policy Type ───────────────────────────────────────────── */}
           <div className="form-group">
             <label htmlFor="d-policy">Policy Type</label>
             <select
@@ -184,6 +218,8 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
               <span className="field-error">{errors.policy}</span>
             )}
           </div>
+
+          {/* ── Financials ────────────────────────────────────────────── */}
           <div className="form-group">
             <label htmlFor="d-sum">Sum Assured (₹)</label>
             <input
@@ -228,6 +264,8 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
               <span className="field-error">{errors.margin}</span>
             )}
           </div>
+
+          {/* ── Status & Closure Date ─────────────────────────────────── */}
           <div className="form-group">
             <label htmlFor="d-status">Deal Status</label>
             <select
@@ -258,57 +296,71 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
               <span className="field-error">{errors.expected}</span>
             )}
           </div>
-          <div className="form-group">
-            <label htmlFor="d-proposal">
-              Proposal Number
-              <span style={{ fontWeight: 400, color: "#888", marginLeft: 6, fontSize: 12 }}>
-                (issued by insurer on proposal submission)
-              </span>
-            </label>
-            <input
-              id="d-proposal"
-              value={form.proposal}
-              placeholder="e.g. PRP-2024-123456"
-              onChange={(e) => setForm({ ...form, proposal: e.target.value })}
-            />
-            {errors.proposal && (
-              <span className="field-error">{errors.proposal}</span>
-            )}
-          </div>
-          <div className="form-group">
-            <label htmlFor="d-policyno">
-              Policy Number
-              <span style={{ fontWeight: 400, color: "#888", marginLeft: 6, fontSize: 12 }}>
-                (issued after premium receipt &amp; approval)
-              </span>
-            </label>
-            <input
-              id="d-policyno"
-              value={form.policyNo}
-              placeholder="e.g. POL-2024-987654"
-              onChange={(e) => setForm({ ...form, policyNo: e.target.value })}
-            />
-            {errors.policyNo && (
-              <span className="field-error">{errors.policyNo}</span>
-            )}
-          </div>
-          <div className="form-group">
-            <label htmlFor="d-issued">
-              Issuance Date
-              <span style={{ fontWeight: 400, color: "#888", marginLeft: 6, fontSize: 12 }}>
-                (date policy document was issued)
-              </span>
-            </label>
-            <input
-              id="d-issued"
-              type="date"
-              value={form.issued}
-              onChange={(e) => setForm({ ...form, issued: e.target.value })}
-            />
-            {errors.issued && (
-              <span className="field-error">{errors.issued}</span>
-            )}
-          </div>
+
+          {/* ── Proposal Number — only in edit mode (backend generates on create) */}
+          {isEditMode && (
+            <div className="form-group">
+              <label htmlFor="d-proposal">
+                Proposal Number
+                <span style={{ fontWeight: 400, color: "#888", marginLeft: 6, fontSize: 12 }}>
+                  (assigned by insurer)
+                </span>
+              </label>
+              <input
+                id="d-proposal"
+                value={form.proposal}
+                placeholder="e.g. PRP-2024-123456"
+                onChange={(e) => setForm({ ...form, proposal: e.target.value })}
+              />
+              {errors.proposal && (
+                <span className="field-error">{errors.proposal}</span>
+              )}
+            </div>
+          )}
+
+          {/* ── Policy Number — only in edit mode (assigned after policy issued) */}
+          {isEditMode && (
+            <div className="form-group">
+              <label htmlFor="d-policyno">
+                Policy Number
+                <span style={{ fontWeight: 400, color: "#888", marginLeft: 6, fontSize: 12 }}>
+                  (issued after premium receipt &amp; approval)
+                </span>
+              </label>
+              <input
+                id="d-policyno"
+                value={form.policyNo}
+                placeholder="e.g. POL-2024-987654"
+                onChange={(e) => setForm({ ...form, policyNo: e.target.value })}
+              />
+              {errors.policyNo && (
+                <span className="field-error">{errors.policyNo}</span>
+              )}
+            </div>
+          )}
+
+          {/* ── Issuance Date — only in edit mode */}
+          {isEditMode && (
+            <div className="form-group">
+              <label htmlFor="d-issued">
+                Issuance Date
+                <span style={{ fontWeight: 400, color: "#888", marginLeft: 6, fontSize: 12 }}>
+                  (date policy document was issued)
+                </span>
+              </label>
+              <input
+                id="d-issued"
+                type="date"
+                value={form.issued}
+                onChange={(e) => setForm({ ...form, issued: e.target.value })}
+              />
+              {errors.issued && (
+                <span className="field-error">{errors.issued}</span>
+              )}
+            </div>
+          )}
+
+          {/* ── Remarks ───────────────────────────────────────────────── */}
           <div className="form-group full">
             <label htmlFor="d-remarks">Remarks</label>
             <textarea

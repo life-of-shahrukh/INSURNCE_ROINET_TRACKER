@@ -1,7 +1,8 @@
 import { CRM_SESSION_DATE } from "./constants";
 import type { Deal, Posp } from "./types";
 
-export function pospName(posp: Posp[], id: string): string {
+export function pospName(posp: Posp[], id: string | null): string {
+  if (!id) return "—";
   const p = posp.find((x) => x.id === id);
   return p ? p.name : "–";
 }

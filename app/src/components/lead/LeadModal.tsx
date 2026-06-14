@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { useCreateLead, useUpdateLead } from "@/hooks/useLeads";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
@@ -83,9 +84,11 @@ export function LeadModal({ open, lead, onClose }: LeadModalProps) {
         const { status, ...createPayload } = form;
         await createLead.mutateAsync(createPayload);
       }
+      toast.success(lead ? "Lead updated successfully" : "Lead created successfully");
       onClose();
-    } catch {
-      alert("Failed to save lead");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Please try again.";
+      toast.error(`Failed to save lead: ${msg}`);
     }
   };
 

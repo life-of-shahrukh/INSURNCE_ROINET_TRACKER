@@ -2,7 +2,7 @@ import { z } from "zod";
 import { POLICY_TYPES } from "@/lib/constants";
 
 export const dealFormSchema = z.object({
-  pospId: z.string().min(1, "POSP is required"),
+  pospId: z.string().optional(),
   customerId: z.string().optional(),
   customer: z.string().min(2, "Customer name must be at least 2 characters"),
   policy: z.enum(POLICY_TYPES, { error: "Select a valid policy type" }),

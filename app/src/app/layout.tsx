@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/providers/auth-provider";
 import { AuthGate } from "@/components/auth/AuthGate";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Roinet Insurance Brokers — Sales CRM",
@@ -19,6 +20,7 @@ export default function RootLayout({
         <AuthProvider>
           <AuthGate>{children}</AuthGate>
         </AuthProvider>
+        <Toaster position="top-right" richColors closeButton />
       </body>
     </html>
   );

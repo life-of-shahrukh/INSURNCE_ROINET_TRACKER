@@ -34,15 +34,14 @@ export class DealService {
 
   create(dto: CreateDealDto, user: AuthUser): Promise<Deal> {
     const finalDto = { ...dto };
-    if (user.pospId) {
-      finalDto.pospId = resolvePospScope(user, dto.pospId);
-    }
+    finalDto.pospId = resolvePospScope(user, dto.pospId);
     return this.commandBus.execute(new CreateDealCommand(finalDto));
   }
 
   update(id: string, dto: UpdateDealDto, user: AuthUser): Promise<Deal> {
     const finalDto = { ...dto };
-    if (user.pospId) {
+    // Only re-resolve pospId scope when the client is explicitly changing it.
+    if (dto.pospId !== undefined) {
       finalDto.pospId = resolvePospScope(user, dto.pospId);
     }
     return this.commandBus.execute(new UpdateDealCommand(id, finalDto));

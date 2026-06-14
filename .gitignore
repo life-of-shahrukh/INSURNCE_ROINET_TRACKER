@@ -55,6 +55,10 @@ infra/*.tfstate.backup
 infra/bootstrap/.terraform/
 infra/bootstrap/.terraform.lock.hcl
 
+# ─── API response snapshots (local dev only) ─────────────────────
+api-responses/
+api-samples/
+
 # ─── Misc ────────────────────────────────────────────────────────
 *.pem
 .vercel

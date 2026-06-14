@@ -84,6 +84,10 @@ function buildNodeHtml(d: { data: OrgNode }): string {
 
 interface OrgChartViewProps {
   data: OrgNode[];
+  /** The OrgNode.id matching the currently logged-in user. When supplied the
+   *  chart expands all nodes, highlights the path to root, and centres on this
+   *  node automatically on first render. */
+  currentUserNodeId?: string;
 }
 
 const toolbarButtonStyle: React.CSSProperties = {
@@ -97,7 +101,7 @@ const toolbarButtonStyle: React.CSSProperties = {
   color: "#374151",
 };
 
-export function OrgChartView({ data }: OrgChartViewProps): React.ReactElement {
+export function OrgChartView({ data, currentUserNodeId }: OrgChartViewProps): React.ReactElement {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<D3OrgChart | null>(null);
   const [search, setSearch] = useState("");
@@ -116,7 +120,19 @@ export function OrgChartView({ data }: OrgChartViewProps): React.ReactElement {
       .nodeHeight(() => 90)
       .nodeContent(buildNodeHtml)
       .render();
-  }, [data]);
+
+    // Expand the full tree, then focus on the current user's node.
+    if (currentUserNodeId) {
+      chartRef.current
+        .expandAll()
+        .setUpToTheRootHighlighted(currentUserNodeId)
+        .setCentered(currentUserNodeId)
+        .render();
+    } else {
+      // No specific user node — expand all so the full hierarchy is visible.
+      chartRef.current.expandAll().render();
+    }
+  }, [data, currentUserNodeId]);
 
   useEffect(() => {
     initChart();

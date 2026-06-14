@@ -178,20 +178,22 @@ export class SalesTeamService {
   }
 
   /**
-   * Build a flat OrgNode[] from the Cognitensor ListHierarchyUserData response.
+   * Build a flat OrgNode[] from the live Cognitensor ListHierarchyUserData API.
    * Each HierarchyEntry row represents a district chain: R5→R4→R3→R2→R1→DM.
    * Nodes are deduplicated by UserId; parent-child links are derived per row.
    */
-  getOrgChartNodes(): OrgNode[] {
+  async getOrgChartNodes(): Promise<OrgNode[]> {
+    this.logger.log('getOrgChartNodes: calling live Cognitensor API...');
     let hierarchyData: HierarchyEntry[];
     try {
-      hierarchyData = this.externalApiService.listHierarchy();
+      hierarchyData = await this.externalApiService.listHierarchyLive();
+      this.logger.log(`getOrgChartNodes: received ${hierarchyData?.length ?? 'null'} entries from live API`);
     } catch (err) {
-      this.logger.error('Failed to fetch hierarchy data for org chart', err);
-
-      // TEMPORARY: Return mock data if external API is unavailable/unauthorized
-      this.logger.warn('Returning mock org chart data as fallback');
-      return this.getMockOrgChartNodes();
+      const errMsg = err instanceof Error ? err.message : String(err);
+      this.logger.error(`getOrgChartNodes: live API failed - ${errMsg}`, err instanceof Error ? err.stack : undefined);
+      this.logger.warn('getOrgChartNodes: falling back to snapshot');
+      hierarchyData = this.externalApiService.listHierarchy();
+      this.logger.log(`getOrgChartNodes: snapshot returned ${hierarchyData.length} entries`);
     }
 
     const nodeMap = new Map<string, OrgNode>();

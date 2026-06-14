@@ -6,6 +6,7 @@ import { CreateCustomerCommand } from './commands/create-customer.command';
 import { UpdateCustomerCommand } from './commands/update-customer.command';
 import { GetAllCustomersQuery } from './queries/get-all-customers.query';
 import { SearchCustomersQuery } from './queries/search-customers.query';
+import { ExportCustomersCsvQuery } from './queries/export-customers-csv.query';
 import { Customer } from '@prisma/client';
 import { CustomerListQueryDto } from './dto/customer-list-query.dto';
 import type { PaginatedResult } from '../../common/interfaces/paginated-result.interface';
@@ -33,5 +34,9 @@ export class CustomerService {
 
   async update(id: string, dto: UpdateCustomerDto): Promise<Customer> {
     return this.commandBus.execute(new UpdateCustomerCommand(id, dto));
+  }
+
+  exportCsv(filters: CustomerListQueryDto): Promise<string> {
+    return this.queryBus.execute(new ExportCustomersCsvQuery(filters));
   }
 }

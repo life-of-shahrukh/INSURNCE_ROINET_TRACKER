@@ -3,6 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { Lead, Prisma } from '@prisma/client';
 import type { PaginatedResult } from '../../common/interfaces/paginated-result.interface';
 import { buildPaginatedResult } from '../../common/utils/pagination.util';
+import { toCsv, type CsvColumn } from '../../common/utils/csv.util';
 
 const LEAD_INCLUDE = {
   customer: true,
@@ -135,5 +136,29 @@ export class LeadRepository {
     return this.prisma.lead.delete({
       where: { id },
     });
+  }
+
+  async exportCsvWhere(where: Prisma.LeadWhereInput): Promise<string> {
+    const leads = await this.prisma.lead.findMany({
+      where,
+      include: { customer: true, assignedTo: true },
+      orderBy: { createdAt: 'desc' },
+    });
+    const columns: CsvColumn<(typeof leads)[0]>[] = [
+      { header: 'ID', value: (r) => r.id },
+      { header: 'Customer Name', value: (r) => r.customer?.name ?? '' },
+      { header: 'Customer Mobile', value: (r) => r.customer?.mobile ?? '' },
+      { header: 'Product', value: (r) => r.product },
+      { header: 'Estimated Premium', value: (r) => r.estimatedPremium },
+      { header: 'Estimated Sum', value: (r) => r.estimatedSum ?? '' },
+      { header: 'Status', value: (r) => r.status },
+      { header: 'Closure Timeline', value: (r) => r.closureTimeline },
+      { header: 'Expected Close Date', value: (r) => r.expectedCloseDate?.toISOString().split('T')[0] ?? '' },
+      { header: 'Source', value: (r) => r.source ?? '' },
+      { header: 'Assigned To', value: (r) => r.assignedTo?.name ?? '' },
+      { header: 'Remarks', value: (r) => r.remarks ?? '' },
+      { header: 'Created At', value: (r) => r.createdAt.toISOString().split('T')[0] },
+    ];
+    return toCsv(leads, columns);
   }
 }

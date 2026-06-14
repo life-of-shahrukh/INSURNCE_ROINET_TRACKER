@@ -5,6 +5,7 @@ import { UpdatePospDto } from './dto/update-posp.dto';
 import { Posp, Prisma } from '@prisma/client';
 import type { PaginatedResult } from '../../common/interfaces/paginated-result.interface';
 import { buildPaginatedResult } from '../../common/utils/pagination.util';
+import { toCsv, type CsvColumn } from '../../common/utils/csv.util';
 
 const POSP_SORT_FIELDS: Record<string, keyof Posp> = {
   createdAt: 'createdAt',
@@ -92,5 +93,28 @@ export class PospRepository {
         ...(dto.active !== undefined && { active: dto.active }),
       },
     });
+  }
+
+  async exportCsvWhere(where: Prisma.PospWhereInput): Promise<string> {
+    const posps = await this.prisma.posp.findMany({
+      where,
+      orderBy: { createdAt: 'asc' },
+    });
+    const columns: CsvColumn<Posp>[] = [
+      { header: 'ID', value: (r) => r.id },
+      { header: 'Name', value: (r) => r.name },
+      { header: 'Code', value: (r) => r.code },
+      { header: 'Mobile', value: (r) => r.mobile },
+      { header: 'Email', value: (r) => r.email },
+      { header: 'Joined', value: (r) => r.joined.toISOString().split('T')[0] },
+      { header: 'Active', value: (r) => (r.active ? 'Yes' : 'No') },
+      { header: 'Region', value: (r) => r.region ?? '' },
+      { header: 'Zone ID', value: (r) => r.zoneId ?? '' },
+      { header: 'Region ID', value: (r) => r.regionId ?? '' },
+      { header: 'Area ID', value: (r) => r.areaId ?? '' },
+      { header: 'District ID', value: (r) => r.districtId ?? '' },
+      { header: 'Created At', value: (r) => r.createdAt.toISOString().split('T')[0] },
+    ];
+    return toCsv(posps, columns);
   }
 }

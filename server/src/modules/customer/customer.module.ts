@@ -8,10 +8,11 @@ import { CreateCustomerHandler } from './commands/create-customer.handler';
 import { UpdateCustomerHandler } from './commands/update-customer.handler';
 import { GetAllCustomersHandler } from './queries/get-all-customers.handler';
 import { SearchCustomersHandler } from './queries/search-customers.handler';
+import { ExportCustomersCsvHandler } from './queries/export-customers-csv.handler';
 import { CustomerEventsListener } from './listeners/customer-events.listener';
 
 const CommandHandlers = [CreateCustomerHandler, UpdateCustomerHandler];
-const QueryHandlers = [GetAllCustomersHandler, SearchCustomersHandler];
+const QueryHandlers = [GetAllCustomersHandler, SearchCustomersHandler, ExportCustomersCsvHandler];
 const EventListeners = [CustomerEventsListener];
 
 @Module({

@@ -6,8 +6,10 @@ import {
   Patch,
   Post,
   Query,
+  Res,
   UseGuards,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -49,6 +51,23 @@ export class CustomerController {
   )
   findAll(@Query() query: CustomerListQueryDto) {
     return this.customerService.findAll(query);
+  }
+
+  @Get('export')
+  @Roles(
+    Role.DM,
+    Role.ASM,
+    Role.RH,
+    Role.ZH,
+    Role.NATIONAL_HEAD,
+    Role.SUPER_ADMIN,
+    Role.POSP,
+  )
+  async exportCsv(@Query() query: CustomerListQueryDto, @Res() res: Response) {
+    const csv = await this.customerService.exportCsv(query);
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="customers.csv"');
+    res.send(csv);
   }
 
   @Get('search')

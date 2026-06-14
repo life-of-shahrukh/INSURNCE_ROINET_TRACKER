@@ -8,9 +8,11 @@ import {
   HttpCode,
   HttpStatus,
   Query,
+  Res,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PospService } from './posp.service';
 import { CreatePospDto } from './dto/create-posp.dto';
@@ -52,6 +54,20 @@ export class PospController {
     @ResolvedScope() scope: HierarchyScope,
   ) {
     return this.pospService.getAll(user, query, scope);
+  }
+
+  @Get('export')
+  @MinRole(Role.DM)
+  @ApiOperation({ summary: 'Export POSPs as CSV (scoped)' })
+  async exportCsv(
+    @Query() query: PospListQueryDto,
+    @Res() res: Response,
+    @ResolvedScope() scope: HierarchyScope,
+  ) {
+    const csv = await this.pospService.exportCsv(query, scope);
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="posp.csv"');
+    res.send(csv);
   }
 
   // Only ASM and above can create/register POSPs

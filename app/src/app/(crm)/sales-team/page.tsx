@@ -16,6 +16,8 @@ import { useColumnManager } from "@/hooks/useColumnManager";
 import type { ColumnConfig } from "@/hooks/useColumnManager";
 import { useAuth } from "@/providers/auth-provider";
 import type { SalesTeam } from "@/lib/api/sales-team-api";
+import { fetchAndDownloadCsv } from "@/lib/crm-calculations";
+import { toast } from "sonner";
 
 type Tab = "list" | "hierarchy";
 
@@ -169,6 +171,19 @@ export default function SalesTeamPage(): React.ReactElement {
   const colManager = useColumnManager("sales-team", SALES_TEAM_COLUMNS);
   const { visibleColumns } = colManager;
 
+  const [exporting, setExporting] = useState(false);
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      await fetchAndDownloadCsv("/api/sales-team/export", "sales-team.csv", apiParams);
+    } catch {
+      toast.error("Export failed. Please try again.");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const handleSync = async () => {
     if (!confirm("Sync team data from Roinet API?")) return;
     const res = await syncMutation.mutateAsync();
@@ -182,6 +197,9 @@ export default function SalesTeamPage(): React.ReactElement {
         subtitle="Manage your sales hierarchy — ASM, Regional & Zonal Heads"
         actions={
           <div style={{ display: "flex", gap: 8 }}>
+            <Button variant="secondary" onClick={handleExport} disabled={exporting}>
+              {exporting ? "Exporting…" : "Export CSV"}
+            </Button>
             <Button variant="secondary" onClick={handleSync} disabled={syncMutation.isPending}>
               {syncMutation.isPending ? "Syncing…" : "Sync from Roinet API"}
             </Button>

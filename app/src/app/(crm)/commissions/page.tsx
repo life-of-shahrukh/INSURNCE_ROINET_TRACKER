@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { Pagination } from "@/components/ui/Pagination";
 import { ListDataSection } from "@/components/ui/ListDataSection";
 import { ColumnManagerPanel } from "@/components/ui/ColumnManagerPanel";
@@ -12,7 +13,7 @@ import { useListQueryStatus } from "@/hooks/useListQueryStatus";
 import { useColumnManager } from "@/hooks/useColumnManager";
 import type { ColumnConfig } from "@/hooks/useColumnManager";
 import { useDealsList } from "@/hooks/useDealsList";
-import { computeCommissions, marginPercent } from "@/lib/crm-calculations";
+import { computeCommissions, marginPercent, downloadCsv } from "@/lib/crm-calculations";
 import { fmtINR } from "@/lib/formatters";
 import { useCrm } from "@/providers/crm-provider";
 import { useAuth } from "@/providers/auth-provider";
@@ -131,6 +132,32 @@ export default function CommissionsPage(): React.ReactElement {
         <PageHeader
           title="Commissions"
           subtitle="COA and retained margin by POSP (current page of deals)"
+          actions={
+            <Button
+              variant="secondary"
+              disabled={!rows.length}
+              onClick={() => {
+                const headers = ["POSP", "Deals", "Issued", "Premium", "COA", "Margin", "Margin %"];
+                const csv = [
+                  headers,
+                  ...rows.map((r) => [
+                    r.posp.name,
+                    String(r.dealCount),
+                    String(r.issued),
+                    String(r.premium),
+                    String(r.coa),
+                    String(r.margin),
+                    marginPercent(r.margin, r.premium),
+                  ]),
+                ]
+                  .map((row) => row.map((c) => `"${String(c ?? "").replace(/"/g, '""')}"`).join(","))
+                  .join("\n");
+                downloadCsv(csv, "commissions.csv");
+              }}
+            >
+              Export CSV
+            </Button>
+          }
         />
 
         <UniversalFilter

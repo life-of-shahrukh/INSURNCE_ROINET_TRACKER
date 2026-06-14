@@ -13,6 +13,8 @@ import { useListQueryStatus } from "@/hooks/useListQueryStatus";
 import { useAuth } from "@/providers/auth-provider";
 import { fmtINRShort, fmtINR } from "@/lib/formatters";
 import type { Lead, ClosureTimeline, LeadStatus } from "@/lib/api/lead-api";
+import { fetchAndDownloadCsv } from "@/lib/crm-calculations";
+import { toast } from "sonner";
 
 const TIMELINE_COLS: { key: ClosureTimeline; label: string; color: string }[] = [
   { key: "THIS_MONTH", label: "This Month", color: "#2a9d8f" },
@@ -70,6 +72,18 @@ export default function LeadsPage() {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editLead, setEditLead] = useState<Lead | null>(null);
+  const [exporting, setExporting] = useState(false);
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      await fetchAndDownloadCsv("/api/leads/export", "leads.csv", apiParams);
+    } catch {
+      toast.error("Export failed. Please try again.");
+    } finally {
+      setExporting(false);
+    }
+  };
 
   const byTimeline = useMemo(() => {
     const map: Record<ClosureTimeline, Lead[]> = {
@@ -102,9 +116,14 @@ export default function LeadsPage() {
         title="Leads Pipeline"
         subtitle="Track leads by closure timeline — This Month / T+1 / T+2 / Later"
         actions={
-          <Button onClick={() => { setEditLead(null); setModalOpen(true); }}>
-            + New Lead
-          </Button>
+          <div style={{ display: "flex", gap: 8 }}>
+            <Button variant="secondary" onClick={handleExport} disabled={exporting}>
+              {exporting ? "Exporting…" : "Export CSV"}
+            </Button>
+            <Button onClick={() => { setEditLead(null); setModalOpen(true); }}>
+              + New Lead
+            </Button>
+          </div>
         }
       />
 

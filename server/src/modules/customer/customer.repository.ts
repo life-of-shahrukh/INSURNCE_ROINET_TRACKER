@@ -3,6 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { Customer, Prisma } from '@prisma/client';
 import type { PaginatedResult } from '../../common/interfaces/paginated-result.interface';
 import { buildPaginatedResult } from '../../common/utils/pagination.util';
+import { toCsv, type CsvColumn } from '../../common/utils/csv.util';
 
 const CUSTOMER_SORT_FIELDS: Record<string, keyof Customer> = {
   createdAt: 'createdAt',
@@ -102,5 +103,29 @@ export class CustomerRepository {
     return this.prisma.customer.delete({
       where: { id },
     });
+  }
+
+  async exportCsvWhere(where: Prisma.CustomerWhereInput): Promise<string> {
+    const customers = await this.prisma.customer.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+    });
+    const columns: CsvColumn<Customer>[] = [
+      { header: 'ID', value: (r) => r.id },
+      { header: 'Name', value: (r) => r.name },
+      { header: 'Mobile', value: (r) => r.mobile },
+      { header: 'Email', value: (r) => r.email ?? '' },
+      { header: 'Date of Birth', value: (r) => r.dateOfBirth?.toISOString().split('T')[0] ?? '' },
+      { header: 'PAN', value: (r) => r.panNumber ?? '' },
+      { header: 'Aadhar', value: (r) => r.aadharNumber ?? '' },
+      { header: 'State', value: (r) => r.stateName ?? '' },
+      { header: 'District', value: (r) => r.districtName ?? '' },
+      { header: 'City', value: (r) => r.cityName ?? '' },
+      { header: 'Pincode', value: (r) => r.pincode ?? '' },
+      { header: 'KYC Status', value: (r) => r.kycStatus },
+      { header: 'Source', value: (r) => r.source ?? '' },
+      { header: 'Created At', value: (r) => r.createdAt.toISOString().split('T')[0] },
+    ];
+    return toCsv(customers, columns);
   }
 }

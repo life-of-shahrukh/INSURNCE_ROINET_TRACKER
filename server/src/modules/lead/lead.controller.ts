@@ -6,9 +6,11 @@ import {
   Patch,
   Post,
   Query,
+  Res,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { MinRole, Roles } from '../../common/decorators/roles.decorator';
@@ -56,6 +58,27 @@ export class LeadController {
     @ResolvedScope() scope: HierarchyScope,
   ) {
     return this.leadService.findAll(query, scope);
+  }
+
+  @Get('export')
+  @Roles(
+    Role.DM,
+    Role.ASM,
+    Role.RH,
+    Role.ZH,
+    Role.NATIONAL_HEAD,
+    Role.SUPER_ADMIN,
+    Role.POSP,
+  )
+  async exportCsv(
+    @Query() query: LeadListQueryDto,
+    @Res() res: Response,
+    @ResolvedScope() scope: HierarchyScope,
+  ) {
+    const csv = await this.leadService.exportCsv(query, scope);
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="leads.csv"');
+    res.send(csv);
   }
 
   @Get('commitment')

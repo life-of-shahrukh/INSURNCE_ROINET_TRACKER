@@ -16,6 +16,8 @@ import { useColumnManager } from "@/hooks/useColumnManager";
 import type { ColumnConfig } from "@/hooks/useColumnManager";
 import { useAuth } from "@/providers/auth-provider";
 import type { Customer } from "@/lib/api/customer-api";
+import { fetchAndDownloadCsv } from "@/lib/crm-calculations";
+import { toast } from "sonner";
 
 const CUSTOMERS_COLUMNS: ColumnConfig[] = [
   { key: "name", label: "Name" },
@@ -108,6 +110,18 @@ export default function CustomersPage(): React.ReactElement {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editCustomer, setEditCustomer] = useState<Customer | null>(null);
+  const [exporting, setExporting] = useState(false);
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      await fetchAndDownloadCsv("/api/customers/export", "customers.csv", apiParams);
+    } catch {
+      toast.error("Export failed. Please try again.");
+    } finally {
+      setExporting(false);
+    }
+  };
 
   const colManager = useColumnManager("customers", CUSTOMERS_COLUMNS);
   const { visibleColumns } = colManager;
@@ -119,9 +133,14 @@ export default function CustomersPage(): React.ReactElement {
           title="Customers"
           subtitle="Manage customer information and KYC status"
           actions={
-            <Button onClick={() => { setEditCustomer(null); setModalOpen(true); }}>
-              + New Customer
-            </Button>
+            <div style={{ display: "flex", gap: 8 }}>
+              <Button variant="secondary" onClick={handleExport} disabled={exporting}>
+                {exporting ? "Exporting…" : "Export CSV"}
+              </Button>
+              <Button onClick={() => { setEditCustomer(null); setModalOpen(true); }}>
+                + New Customer
+              </Button>
+            </div>
           }
         />
 

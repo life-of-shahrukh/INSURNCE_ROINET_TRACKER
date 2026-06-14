@@ -59,6 +59,11 @@ export class SalesTeamService {
     });
   }
 
+  async exportCsv(query: SalesTeamListQueryDto): Promise<string> {
+    const where = buildSalesTeamFilterWhere(query);
+    return this.repository.exportCsvWhere(where);
+  }
+
   async findAll(
     query: SalesTeamListQueryDto,
   ): Promise<PaginatedResult<SalesTeam>> {

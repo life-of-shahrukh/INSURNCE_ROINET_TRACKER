@@ -15,6 +15,8 @@ import { useDealsList } from "@/hooks/useDealsList";
 import { fmtDate, fmtINRShort } from "@/lib/formatters";
 import { useAuth } from "@/providers/auth-provider";
 import type { Posp } from "@/lib/types";
+import { fetchAndDownloadCsv } from "@/lib/crm-calculations";
+import { toast } from "sonner";
 
 export default function PospPage() {
   const { user } = useAuth();
@@ -45,9 +47,21 @@ export default function PospPage() {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editPosp, setEditPosp] = useState<Posp | null>(null);
+  const [exporting, setExporting] = useState(false);
 
   const canCreatePosp =
     user?.role === "SUPER_ADMIN" || user?.role === "ASM" || user?.role === "DM";
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      await fetchAndDownloadCsv("/api/posp/export", "posp.csv", apiParams);
+    } catch {
+      toast.error("Export failed. Please try again.");
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
     <>
@@ -56,9 +70,14 @@ export default function PospPage() {
         title="POSP Roster"
         subtitle="Active and inactive Point of Sales Persons"
         actions={
-          canCreatePosp ? (
-            <Button onClick={() => { setEditPosp(null); setModalOpen(true); }}>+ Add POSP</Button>
-          ) : null
+          <div style={{ display: "flex", gap: 8 }}>
+            <Button variant="secondary" onClick={handleExport} disabled={exporting}>
+              {exporting ? "Exporting…" : "Export CSV"}
+            </Button>
+            {canCreatePosp && (
+              <Button onClick={() => { setEditPosp(null); setModalOpen(true); }}>+ Add POSP</Button>
+            )}
+          </div>
         }
       />
 

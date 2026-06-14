@@ -3,6 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { SalesTeam, Prisma } from '@prisma/client';
 import type { PaginatedResult } from '../../common/interfaces/paginated-result.interface';
 import { buildPaginatedResult } from '../../common/utils/pagination.util';
+import { toCsv, type CsvColumn } from '../../common/utils/csv.util';
 
 const SALES_TEAM_INCLUDE = {
   manager: { select: { id: true, name: true, designation: true } },
@@ -118,5 +119,26 @@ export class SalesTeamRepository {
         territory: data.territory,
       },
     });
+  }
+
+  async exportCsvWhere(where: Prisma.SalesTeamWhereInput): Promise<string> {
+    const members = await this.prisma.salesTeam.findMany({
+      where,
+      include: { manager: { select: { name: true } } },
+      orderBy: { name: 'asc' },
+    });
+    const columns: CsvColumn<(typeof members)[0]>[] = [
+      { header: 'ID', value: (r) => r.id },
+      { header: 'Name', value: (r) => r.name },
+      { header: 'Employee Code', value: (r) => r.employeeCode },
+      { header: 'Designation', value: (r) => r.designation },
+      { header: 'Mobile', value: (r) => r.mobile },
+      { header: 'Email', value: (r) => r.email },
+      { header: 'Manager', value: (r) => r.manager?.name ?? '' },
+      { header: 'Territory', value: (r) => r.territory ?? '' },
+      { header: 'Status', value: (r) => r.status },
+      { header: 'Joining Date', value: (r) => r.joiningDate.toISOString().split('T')[0] },
+    ];
+    return toCsv(members, columns);
   }
 }

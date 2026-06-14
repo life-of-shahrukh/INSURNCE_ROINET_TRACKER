@@ -6,6 +6,7 @@ import { CreatePospCommand } from './commands/create-posp.command';
 import { UpdatePospCommand } from './commands/update-posp.command';
 import { GetAllPospQuery } from './queries/get-all-posp.query';
 import { GetPospByIdQuery } from './queries/get-posp-by-id.query';
+import { ExportPospCsvQuery } from './queries/export-posp-csv.query';
 import { Posp } from '@prisma/client';
 import { PospListQueryDto } from './dto/posp-list-query.dto';
 import type { PaginatedResult } from '../../common/interfaces/paginated-result.interface';
@@ -49,5 +50,12 @@ export class PospService {
   update(id: string, dto: UpdatePospDto, user: AuthUser): Promise<Posp> {
     const finalId = user.pospId ? (resolvePospScope(user, id) ?? id) : id;
     return this.commandBus.execute(new UpdatePospCommand(finalId, dto));
+  }
+
+  exportCsv(
+    filters: PospListQueryDto,
+    scope?: HierarchyScope,
+  ): Promise<string> {
+    return this.queryBus.execute(new ExportPospCsvQuery(filters, scope));
   }
 }

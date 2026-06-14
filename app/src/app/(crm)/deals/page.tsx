@@ -15,10 +15,11 @@ import { useListQueryStatus } from "@/hooks/useListQueryStatus";
 import { useColumnManager } from "@/hooks/useColumnManager";
 import type { ColumnConfig } from "@/hooks/useColumnManager";
 import { useDealsList } from "@/hooks/useDealsList";
-import { pospName } from "@/lib/crm-calculations";
+import { pospName, fetchAndDownloadCsv } from "@/lib/crm-calculations";
 import { fmtDate, fmtINR } from "@/lib/formatters";
 import { useCrm } from "@/providers/crm-provider";
 import { useAuth } from "@/providers/auth-provider";
+import { toast } from "sonner";
 import type { Deal } from "@/lib/types";
 
 const DEALS_COLUMNS: ColumnConfig[] = [
@@ -126,6 +127,18 @@ export default function DealsPage(): React.ReactElement {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editDeal, setEditDeal] = useState<Deal | null>(null);
+  const [exporting, setExporting] = useState(false);
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      await fetchAndDownloadCsv("/api/deals/export", "deals.csv", apiParams);
+    } catch {
+      toast.error("Export failed. Please try again.");
+    } finally {
+      setExporting(false);
+    }
+  };
 
   const colManager = useColumnManager("deals", DEALS_COLUMNS);
   const { visibleColumns } = colManager;
@@ -142,14 +155,19 @@ export default function DealsPage(): React.ReactElement {
           title="Deals Tracker"
           subtitle="Master list — POSP, customer, policy details, status, expected closure"
           actions={
-            <Button
-              onClick={() => {
-                setEditDeal(null);
-                setModalOpen(true);
-              }}
-            >
-              + New Deal
-            </Button>
+            <div style={{ display: "flex", gap: 8 }}>
+              <Button variant="secondary" onClick={handleExport} disabled={exporting}>
+                {exporting ? "Exporting…" : "Export CSV"}
+              </Button>
+              <Button
+                onClick={() => {
+                  setEditDeal(null);
+                  setModalOpen(true);
+                }}
+              >
+                + New Deal
+              </Button>
+            </div>
           }
         />
 

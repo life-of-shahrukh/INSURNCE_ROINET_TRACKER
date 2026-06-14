@@ -9,6 +9,7 @@ import { UpdateLeadHandler } from './commands/update-lead.handler';
 import { ConvertLeadToDealHandler } from './commands/convert-lead-to-deal.handler';
 import { GetAllLeadsHandler } from './queries/get-all-leads.handler';
 import { GetMonthlyCommitmentHandler } from './queries/get-monthly-commitment.handler';
+import { ExportLeadsCsvHandler } from './queries/export-leads-csv.handler';
 import { LeadEventsListener } from './listeners/lead-events.listener';
 
 const CommandHandlers = [
@@ -16,7 +17,7 @@ const CommandHandlers = [
   UpdateLeadHandler,
   ConvertLeadToDealHandler,
 ];
-const QueryHandlers = [GetAllLeadsHandler, GetMonthlyCommitmentHandler];
+const QueryHandlers = [GetAllLeadsHandler, GetMonthlyCommitmentHandler, ExportLeadsCsvHandler];
 const EventListeners = [LeadEventsListener];
 
 @Module({

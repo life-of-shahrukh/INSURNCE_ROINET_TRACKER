@@ -6,8 +6,10 @@ import {
   Patch,
   Post,
   Query,
+  Res,
   UseGuards,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { SalesTeamService } from './sales-team.service';
@@ -41,6 +43,15 @@ export class SalesTeamController {
   )
   findAll(@Query() query: SalesTeamListQueryDto) {
     return this.salesTeamService.findAll(query);
+  }
+
+  @Get('export')
+  @MinRole(Role.DM)
+  async exportCsv(@Query() query: SalesTeamListQueryDto, @Res() res: Response) {
+    const csv = await this.salesTeamService.exportCsv(query);
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="sales-team.csv"');
+    res.send(csv);
   }
 
   // Hierarchy view: RH and above

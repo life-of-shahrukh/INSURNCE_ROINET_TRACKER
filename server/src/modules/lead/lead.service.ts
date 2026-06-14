@@ -7,6 +7,7 @@ import { UpdateLeadCommand } from './commands/update-lead.command';
 import { ConvertLeadToDealCommand } from './commands/convert-lead-to-deal.command';
 import { GetAllLeadsQuery } from './queries/get-all-leads.query';
 import { GetMonthlyCommitmentQuery } from './queries/get-monthly-commitment.query';
+import { ExportLeadsCsvQuery } from './queries/export-leads-csv.query';
 import { Lead } from '@prisma/client';
 import { LeadListQueryDto } from './dto/lead-list-query.dto';
 import type { PaginatedResult } from '../../common/interfaces/paginated-result.interface';
@@ -40,5 +41,12 @@ export class LeadService {
 
   async convertToDeal(leadId: string): Promise<{ dealId: string }> {
     return this.commandBus.execute(new ConvertLeadToDealCommand(leadId));
+  }
+
+  exportCsv(
+    filters: LeadListQueryDto,
+    scope?: HierarchyScope,
+  ): Promise<string> {
+    return this.queryBus.execute(new ExportLeadsCsvQuery(filters, scope));
   }
 }

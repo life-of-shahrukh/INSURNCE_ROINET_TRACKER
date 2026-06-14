@@ -148,6 +148,24 @@ export function downloadCsv(csv: string, filename = "deals-export.csv"): void {
   URL.revokeObjectURL(url);
 }
 
+/**
+ * Fetches a CSV from the given backend path (with optional query params)
+ * and triggers a browser download. Auth cookies are forwarded automatically.
+ * Throws on HTTP errors.
+ */
+export async function fetchAndDownloadCsv(
+  path: string,
+  filename: string,
+  params?: URLSearchParams,
+): Promise<void> {
+  const qs = params?.toString();
+  const url = qs ? `${path}?${qs}` : path;
+  const res = await fetch(url, { credentials: "include" });
+  if (!res.ok) throw new Error(`CSV export failed: ${res.status}`);
+  const csv = await res.text();
+  downloadCsv(csv, filename);
+}
+
 export function marginPercent(margin: number, premium: number): string {
   return premium ? ((margin / premium) * 100).toFixed(1) + "%" : "–";
 }

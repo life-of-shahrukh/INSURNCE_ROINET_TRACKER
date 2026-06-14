@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { Pagination } from "@/components/ui/Pagination";
 import { ListDataSection } from "@/components/ui/ListDataSection";
 import { ColumnManagerPanel } from "@/components/ui/ColumnManagerPanel";
@@ -12,7 +13,7 @@ import { useListQueryStatus } from "@/hooks/useListQueryStatus";
 import { useColumnManager } from "@/hooks/useColumnManager";
 import type { ColumnConfig } from "@/hooks/useColumnManager";
 import { useDealsList } from "@/hooks/useDealsList";
-import { computeRenewals, pospName } from "@/lib/crm-calculations";
+import { computeRenewals, pospName, downloadCsv } from "@/lib/crm-calculations";
 import { fmtDate, fmtINR } from "@/lib/formatters";
 import { useCrm } from "@/providers/crm-provider";
 import { useAuth } from "@/providers/auth-provider";
@@ -90,6 +91,21 @@ export default function RenewalsPage(): React.ReactElement {
 
   const colManager = useColumnManager("renewals", RENEWALS_COLUMNS);
   const { visibleColumns } = colManager;
+  const handleExport = () => {
+    const headers = ["POSP", "Customer", "Policy", "Premium", "Renewal Date", "Days Left"];
+    const rows = upcoming.map((r) => [
+      pospName(posp, r.pospId),
+      r.customer,
+      r.policy,
+      String(r.premium),
+      r.renew.toISOString().split("T")[0],
+      String(r.daysLeft),
+    ]);
+    const csv = [headers, ...rows]
+      .map((row) => row.map((c) => `"${String(c ?? "").replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+    downloadCsv(csv, "renewals.csv");
+  };
 
   return (
     <>
@@ -97,6 +113,11 @@ export default function RenewalsPage(): React.ReactElement {
         <PageHeader
           title="Renewals"
           subtitle="Policies due within next 90 days (server-filtered, paginated)"
+          actions={
+            <Button variant="secondary" onClick={handleExport} disabled={exporting || !upcoming.length}>
+              Export CSV
+            </Button>
+          }
         />
 
         <UniversalFilter

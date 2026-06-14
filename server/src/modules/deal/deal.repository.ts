@@ -259,7 +259,7 @@ export class DealRepository {
 
   private formatCsv(deals: Deal[]): string {
     const header =
-      'id,pospId,customer,policy,sum,premium,coa,margin,status,expected,proposal,policyNo,issued,remarks';
+      'id,pospId,customer,policy,sum,premium,coa,coaType,coaAmount,margin,status,expected,proposal,policyNo,issued,remarks';
     const rows = deals.map((d) =>
       [
         d.id,
@@ -269,6 +269,8 @@ export class DealRepository {
         d.sum,
         d.premium,
         d.coa,
+        d.coaType,
+        d.coaAmount,
         d.margin,
         d.status,
         d.expected.toISOString().split('T')[0],

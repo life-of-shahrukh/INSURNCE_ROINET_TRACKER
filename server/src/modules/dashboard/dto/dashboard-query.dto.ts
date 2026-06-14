@@ -17,4 +17,11 @@ export class DashboardQueryDto extends GeoFilterQueryDto {
   @IsOptional()
   @IsString()
   subordinateId?: string;
+
+  @ApiPropertyOptional({
+    description: 'Posp.id for terminal POSP-level drill-down',
+  })
+  @IsOptional()
+  @IsString()
+  pospId?: string;
 }

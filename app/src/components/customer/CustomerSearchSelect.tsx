@@ -16,6 +16,12 @@ interface CustomerSearchSelectProps {
    * Selecting a suggestion overrides with the real customerId.
    */
   allowFreeText?: boolean;
+  /**
+   * When provided, an "Add new customer" row is shown at the bottom of the
+   * dropdown. Calling this callback opens the quick-add modal with the
+   * current search text pre-filled as the customer name.
+   */
+  onAddNew?: (prefillName: string) => void;
 }
 
 export function CustomerSearchSelect({
@@ -25,6 +31,7 @@ export function CustomerSearchSelect({
   label = 'Customer',
   required = false,
   allowFreeText = false,
+  onAddNew,
 }: CustomerSearchSelectProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
@@ -147,38 +154,79 @@ export function CustomerSearchSelect({
               <div style={{ padding: '8px', textAlign: 'center', color: '#999' }}>
                 Searching…
               </div>
-            ) : !searchResults || searchResults.length === 0 ? (
-              <div style={{ padding: '8px', textAlign: 'center', color: '#999' }}>
-                {allowFreeText
-                  ? `No match — "${searchQuery}" will be saved as a new customer name`
-                  : 'No customers found'}
-              </div>
             ) : (
-              searchResults.map((customer) => (
-                <div
-                  key={customer.id}
-                  onClick={() => handleSelect(customer.id, customer.name)}
-                  style={{
-                    padding: '8px 12px',
-                    cursor: 'pointer',
-                    borderBottom: '1px solid #f0f0f0',
-                    backgroundColor: value === customer.id ? '#f0f0f0' : 'transparent',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#f5f5f5';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor =
-                      value === customer.id ? '#f0f0f0' : 'transparent';
-                  }}
-                >
-                  <div style={{ fontWeight: 600 }}>{customer.name}</div>
-                  <div style={{ fontSize: '12px', color: '#666' }}>
-                    {customer.mobile}
-                    {customer.email && ` • ${customer.email}`}
+              <>
+                {(!searchResults || searchResults.length === 0) && (
+                  <div style={{ padding: '8px 12px', color: '#999', fontSize: 13 }}>
+                    {allowFreeText
+                      ? `No match — "${searchQuery}" will be saved as a new name`
+                      : 'No customers found'}
                   </div>
-                </div>
-              ))
+                )}
+
+                {searchResults && searchResults.map((customer) => (
+                  <div
+                    key={customer.id}
+                    onClick={() => handleSelect(customer.id, customer.name)}
+                    style={{
+                      padding: '8px 12px',
+                      cursor: 'pointer',
+                      borderBottom: '1px solid #f0f0f0',
+                      backgroundColor: value === customer.id ? '#f0f0f0' : 'transparent',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#f5f5f5';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor =
+                        value === customer.id ? '#f0f0f0' : 'transparent';
+                    }}
+                  >
+                    <div style={{ fontWeight: 600 }}>{customer.name}</div>
+                    <div style={{ fontSize: '12px', color: '#666' }}>
+                      {customer.mobile}
+                      {customer.email && ` • ${customer.email}`}
+                    </div>
+                  </div>
+                ))}
+
+                {/* ── Add new customer row ── */}
+                {onAddNew && (
+                  <div
+                    onClick={() => {
+                      setShowDropdown(false);
+                      onAddNew(searchQuery);
+                    }}
+                    style={{
+                      padding: '9px 12px',
+                      cursor: 'pointer',
+                      borderTop: searchResults && searchResults.length > 0
+                        ? '1px solid #e8f0fe'
+                        : undefined,
+                      background: '#f0f7ff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      color: '#1a6ed8',
+                      fontWeight: 600,
+                      fontSize: 13,
+                      borderBottomLeftRadius: 4,
+                      borderBottomRightRadius: 4,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = '#dbeafe';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = '#f0f7ff';
+                    }}
+                  >
+                    <span style={{ fontSize: 16, lineHeight: 1 }}>＋</span>
+                    <span>
+                      Add{searchQuery.trim() ? ` "${searchQuery.trim()}"` : ""} as new customer
+                    </span>
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}

@@ -1,4 +1,10 @@
-import { Controller, Get, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
@@ -40,5 +46,24 @@ export class HierarchyController {
     @ResolvedScope() scope: HierarchyScope,
   ) {
     return this.hierarchyService.getFilterOptions(user, scope);
+  }
+
+  @Get('subordinates')
+  @Roles(
+    Role.DM,
+    Role.ASM,
+    Role.RH,
+    Role.ZH,
+    Role.NATIONAL_HEAD,
+    Role.SUPER_ADMIN,
+  )
+  @ApiOperation({
+    summary:
+      'Get direct children (SalesTeam members or POSPs) under a specific SalesTeam member',
+    description:
+      'Returns members (next-level managers) and posps for the given salesTeamId. Used by the cascading drill-down scope bar.',
+  })
+  getSubordinatesForMember(@Query('salesTeamId') salesTeamId: string) {
+    return this.hierarchyService.getSubordinatesForMember(salesTeamId);
   }
 }

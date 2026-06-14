@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useCreateLead, useUpdateLead } from "@/hooks/useLeads";
 import { Modal } from "@/components/ui/Modal";
@@ -40,13 +40,29 @@ export function LeadModal({ open, lead, onClose }: LeadModalProps) {
   const [errors, setErrors] =
     useState<Partial<Record<keyof LeadFormValues, string>>>({});
 
+  /**
+   * Tracks the last lead ID that was loaded into the form.
+   * undefined  = modal never opened yet
+   * null       = last open was in "new lead" mode
+   * string     = last open was editing that lead ID
+   *
+   * This lets us preserve the new-lead draft across open/close cycles while
+   * still clearing stale edit data when the user switches from edit → new.
+   */
+  const prevLeadIdRef = useRef<string | null | undefined>(undefined);
+
   useEffect(() => {
     if (!open) {
+      // Clear validation errors on dismiss but do NOT reset form data —
+      // the draft is preserved so re-opening restores what the user typed.
       setErrors({});
       return;
     }
+
     setErrors({});
+
     if (lead) {
+      // Edit mode: always sync form to the lead being edited.
       setForm({
         customerId: lead.customerId,
         product: lead.product,
@@ -58,8 +74,18 @@ export function LeadModal({ open, lead, onClose }: LeadModalProps) {
         remarks: lead.remarks || "",
         status: lead.status,
       });
-    } else {
+      prevLeadIdRef.current = lead.id;
+    } else if (
+      prevLeadIdRef.current !== null &&
+      prevLeadIdRef.current !== undefined
+    ) {
+      // Transitioning from edit mode to new-lead mode: clear the stale
+      // edit data so it doesn't bleed into the blank new-lead form.
       setForm(empty);
+      prevLeadIdRef.current = null;
+    } else {
+      // Re-opening in new-lead mode: keep the existing draft.
+      prevLeadIdRef.current = null;
     }
   }, [open, lead]);
 
@@ -85,6 +111,7 @@ export function LeadModal({ open, lead, onClose }: LeadModalProps) {
         await createLead.mutateAsync(createPayload);
       }
       toast.success(lead ? "Lead updated successfully" : "Lead created successfully");
+      setForm(empty);
       onClose();
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Please try again.";

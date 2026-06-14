@@ -8,6 +8,12 @@ import { buildPospScopeWhere } from '../../common/auth/hierarchy-scope.util';
 export interface FilterOptionItem {
   id: string;
   name: string;
+  designation?: string;
+}
+
+export interface SubordinatesResult {
+  members: FilterOptionItem[];
+  posps: FilterOptionItem[];
 }
 
 export interface HierarchyFilterOptions {
@@ -76,17 +82,19 @@ export class HierarchyService {
     user: AuthUser,
     _scope: HierarchyScope,
   ): Promise<FilterOptionItem[]> {
-    // POSP has no subordinates; SUPER_ADMIN/NATIONAL_HEAD can see all team members
     if (user.role === Role.POSP) return [];
 
     if (user.role === Role.SUPER_ADMIN || user.role === Role.NATIONAL_HEAD) {
-      const all = await this.prisma.salesTeam.findMany({
+      // For top-level roles, return Zone Heads (top of the sales hierarchy)
+      const topLevel = await this.prisma.salesTeam.findMany({
+        where: { managerId: null },
         select: { id: true, name: true, designation: true },
         orderBy: { name: 'asc' },
       });
-      return all.map((m) => ({
+      return topLevel.map((m) => ({
         id: m.id,
         name: `${m.name} (${m.designation})`,
+        designation: m.designation,
       }));
     }
 
@@ -106,7 +114,61 @@ export class HierarchyService {
     return subs.map((m) => ({
       id: m.id,
       name: `${m.name} (${m.designation})`,
+      designation: m.designation,
     }));
+  }
+
+  /**
+   * Returns the direct SalesTeam children and POSPs under a specific SalesTeam member.
+   * Used by the cascading drill-down scope bar on the frontend.
+   */
+  async getSubordinatesForMember(
+    salesTeamId: string,
+  ): Promise<SubordinatesResult> {
+    const parent = await this.prisma.salesTeam.findUnique({
+      where: { id: salesTeamId },
+      select: { id: true, designation: true, areaId: true },
+    });
+    if (!parent) return { members: [], posps: [] };
+
+    // Get direct SalesTeam children (next level managers)
+    const memberRows = await this.prisma.salesTeam.findMany({
+      where: { managerId: salesTeamId },
+      select: { id: true, name: true, designation: true },
+      orderBy: { name: 'asc' },
+    });
+    const members: FilterOptionItem[] = memberRows.map((m) => ({
+      id: m.id,
+      name: `${m.name} (${m.designation})`,
+      designation: m.designation,
+    }));
+
+    // If this member has children (not at terminal level), posps stay empty
+    if (members.length > 0) return { members, posps: [] };
+
+    // Terminal level (ASM or DM): resolve their POSPs
+    let pospRows: Array<{ id: string; name: string; code: string }> = [];
+
+    if (parent.designation === 'ASM') {
+      pospRows = await this.prisma.posp.findMany({
+        where: { asmId: parent.id },
+        select: { id: true, name: true, code: true },
+        orderBy: { name: 'asc' },
+      });
+    } else if (parent.designation === 'DM' && parent.areaId) {
+      pospRows = await this.prisma.posp.findMany({
+        where: { areaId: parent.areaId },
+        select: { id: true, name: true, code: true },
+        orderBy: { name: 'asc' },
+      });
+    }
+
+    const posps: FilterOptionItem[] = pospRows.map((p) => ({
+      id: p.id,
+      name: `${p.name} (${p.code})`,
+    }));
+
+    return { members: [], posps };
   }
 }
 

@@ -68,7 +68,9 @@ export default function DashboardPage(): React.ReactElement {
   const [period, setPeriod] = useState<DashboardPeriod>("month");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
-  const [scopeDrill, setScopeDrill] = useState<DashboardScope>({});
+  const [scopeDrill, setScopeDrill] = useState<DashboardScope>({
+    salesTeamPath: [],
+  });
 
   const { data: filterOptions } = useHierarchyFilterOptions();
 
@@ -81,11 +83,13 @@ export default function DashboardPage(): React.ReactElement {
     } else {
       p.set("dateRange", period === "day" ? "today" : period);
     }
-    if (scopeDrill.subordinateId) p.set("subordinateId", scopeDrill.subordinateId);
-    if (scopeDrill.zone) p.set("zone", scopeDrill.zone);
-    if (scopeDrill.region) p.set("region", scopeDrill.region);
-    if (scopeDrill.area) p.set("area", scopeDrill.area);
-    if (scopeDrill.district) p.set("district", scopeDrill.district);
+    // Cascading drill-down: pospId takes priority, then deepest SalesTeam selection
+    if (scopeDrill.posp) {
+      p.set("pospId", scopeDrill.posp.id);
+    } else {
+      const lastSalesTeamId = scopeDrill.salesTeamPath.at(-1)?.id;
+      if (lastSalesTeamId) p.set("subordinateId", lastSalesTeamId);
+    }
     return p;
   }, [period, dateFrom, dateTo, scopeDrill]);
 
@@ -116,7 +120,6 @@ export default function DashboardPage(): React.ReactElement {
   // single source of truth. Inline flags are kept only for non-widget UI
   // choices (column visibility, scope bar, page subtitle, etc.).
   const isPosp = role === "POSP";
-  const isManager = role ? hasMinRole(role, "ASM") : false; // kept for DashboardScopeBar
 
   const showPospKpi        = canSeeWidget(role, "POSP_KPI");
   const showCustomersKpi   = canSeeWidget(role, "CUSTOMERS_KPI");
@@ -251,7 +254,7 @@ export default function DashboardPage(): React.ReactElement {
 
       {/* ── Top POSPs (hidden for POSP role) ──────────────────────────── */}
       {showTopPospChart && (
-        <Card title={isManager ? "Top POSPs by Premium" : "Premium by POSP"}>
+        <Card title={role && hasMinRole(role, "ASM") ? "Top POSPs by Premium" : "Premium by POSP"}>
           <TopPospChart data={stats?.deals.topPosps ?? []} />
         </Card>
       )}

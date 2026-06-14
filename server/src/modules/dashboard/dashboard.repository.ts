@@ -51,41 +51,67 @@ export class DashboardRepository {
   }
 
   /**
-   * Resolves the effective scope for a subordinate SalesTeam member
-   * (for drill-down) and intersects it with the caller's own scope.
+   * Resolves the effective scope for a drill-down selection.
+   * Priority: pospId > subordinateId > callerScope.
+   * For subordinateId, resolution is designation-aware (ZH/RH/ASM/DM).
    */
   private async resolveEffectiveScope(
     callerScope: HierarchyScope,
     subordinateId: string | undefined,
+    pospId: string | undefined,
   ): Promise<HierarchyScope> {
+    // Terminal POSP-level drill takes highest priority
+    if (pospId) return { pospIds: [pospId] };
+
     if (!subordinateId) return callerScope;
 
     const sub = await this.prisma.salesTeam.findUnique({
       where: { id: subordinateId },
-      select: { id: true, zoneId: true, regionId: true, areaId: true },
+      select: {
+        id: true,
+        designation: true,
+        zoneId: true,
+        regionId: true,
+        areaId: true,
+      },
     });
     if (!sub) return callerScope;
 
-    // Build subordinate scope by resolving their POSPs
-    const posps = await this.prisma.posp.findMany({
-      where: { asmId: sub.id },
-      select: { id: true },
-    });
-    const subScope: HierarchyScope =
-      posps.length > 0
-        ? { pospIds: posps.map((p) => p.id) }
-        : sub.areaId
-          ? { areaIds: [sub.areaId] }
-          : sub.regionId
-            ? { regionIds: [sub.regionId] }
-            : sub.zoneId
-              ? { zoneIds: [sub.zoneId] }
-              : { pospIds: [] };
+    let subScope: HierarchyScope;
 
-    // If caller has no restriction (SUPER_ADMIN / NATIONAL_HEAD), just use subordinate scope
+    switch (sub.designation) {
+      case 'ZH':
+        subScope = sub.zoneId ? { zoneIds: [sub.zoneId] } : { pospIds: [] };
+        break;
+      case 'RH':
+        subScope = sub.regionId
+          ? { regionIds: [sub.regionId] }
+          : { pospIds: [] };
+        break;
+      case 'ASM': {
+        const posps = await this.prisma.posp.findMany({
+          where: { asmId: sub.id },
+          select: { id: true },
+        });
+        subScope = { pospIds: posps.map((p) => p.id) };
+        break;
+      }
+      case 'DM': {
+        const posps = await this.prisma.posp.findMany({
+          where: sub.areaId ? { areaId: sub.areaId } : { id: 'NO_MATCH' },
+          select: { id: true },
+        });
+        subScope = { pospIds: posps.map((p) => p.id) };
+        break;
+      }
+      default:
+        subScope = { pospIds: [] };
+    }
+
+    // If caller has no restriction (SUPER_ADMIN / NATIONAL_HEAD), use sub scope directly
     if (Object.keys(callerScope).length === 0) return subScope;
 
-    // Otherwise return the more-restrictive of the two (subordinate scope is always narrower)
+    // Subordinate scope is always narrower — use it directly
     return subScope;
   }
 
@@ -135,6 +161,7 @@ export class DashboardRepository {
     const effectiveScope = await this.resolveEffectiveScope(
       scope,
       filters.subordinateId,
+      filters.pospId,
     );
 
     const dealWhere = this.buildDealWhere(filters, effectiveScope);

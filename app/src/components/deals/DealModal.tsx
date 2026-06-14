@@ -9,8 +9,10 @@ import { useCrm } from "@/providers/crm-provider";
 import { useAuth } from "@/providers/auth-provider";
 import { useProfile } from "@/hooks/useProfile";
 import { CustomerSearchSelect } from "@/components/customer/CustomerSearchSelect";
+import { QuickAddCustomerModal } from "@/components/customer/QuickAddCustomerModal";
 import { dealFormSchema, type DealFormValues } from "@/lib/schemas";
 import type { Deal, DealInput, DealStatus } from "@/lib/types";
+import type { Customer } from "@/lib/api/customer-api";
 
 interface DealModalProps {
   open: boolean;
@@ -46,6 +48,8 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
   const [errors, setErrors] = useState<Partial<Record<keyof DealFormValues, string>>>({});
   const [saving, setSaving] = useState(false);
   const [savedProposal, setSavedProposal] = useState<string | null>(null);
+  const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const [quickAddName, setQuickAddName] = useState("");
 
   const isPosp = user?.role === "POSP";
   const isManager = user?.role ? MANAGER_ROLES.has(user.role) : false;
@@ -101,6 +105,17 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
       setForm({ ...emptyForm, pospId: initialPospId });
     }
   }, [open, deal, isPosp, user?.pospId]);
+
+  /** Called when QuickAddCustomerModal successfully creates a customer. */
+  const handleCustomerCreated = (customer: Customer, policyType: string) => {
+    setQuickAddOpen(false);
+    setForm((prev) => ({
+      ...prev,
+      customerId: customer.id,
+      customer: customer.name,
+      policy: policyType,
+    }));
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -170,6 +185,13 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
   };
 
   return (
+    <>
+    <QuickAddCustomerModal
+      open={quickAddOpen}
+      prefillName={quickAddName}
+      onClose={() => setQuickAddOpen(false)}
+      onCreated={handleCustomerCreated}
+    />
     <Modal
       open={open}
       title={deal ? "Edit Deal" : "New Deal"}
@@ -252,6 +274,10 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
             }
             label="Customer Name / Number"
             allowFreeText
+            onAddNew={(prefillName) => {
+              setQuickAddName(prefillName);
+              setQuickAddOpen(true);
+            }}
           />
           {errors.customer && (
             <span className="field-error" style={{ marginTop: -10 }}>
@@ -471,5 +497,6 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
         </div>
       </form>
     </Modal>
+    </>
   );
 }

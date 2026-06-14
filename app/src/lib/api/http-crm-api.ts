@@ -41,7 +41,13 @@ export const httpCrmApi: CrmApi = {
   exportDealsCsv: (params?: URLSearchParams) => {
     const qs = params?.toString();
     const path = qs ? `/api/deals/export?${qs}` : "/api/deals/export";
-    return fetch(`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"}${path}`, {
+    // Relative URL in the browser — ALB routes /api/* → backend.
+    // Absolute URL server-side (SSR) via NEXT_PUBLIC_API_URL or localhost fallback.
+    const base =
+      typeof window !== "undefined"
+        ? ""
+        : (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000");
+    return fetch(`${base}${path}`, {
       credentials: "include",
     }).then((r) => {
       if (!r.ok) throw new Error("Export failed");

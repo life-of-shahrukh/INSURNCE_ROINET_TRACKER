@@ -12,6 +12,12 @@ RUN npm ci
 COPY . .
 # Build with standalone output for minimal image size
 ENV NEXT_TELEMETRY_DISABLED=1
+# NEXT_PUBLIC_* vars are inlined at build time by webpack.
+# Pass the ALB URL as a build arg so client bundles use the correct backend URL.
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ARG BACKEND_URL
+ENV BACKEND_URL=$BACKEND_URL
 RUN npm run build
 
 # ── Stage 3: runner ───────────────────────────────────────────────────────────

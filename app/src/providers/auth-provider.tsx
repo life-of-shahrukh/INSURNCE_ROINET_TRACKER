@@ -12,7 +12,12 @@ import {
 import type { AuthUser, LoginPayload, SignupPospPayload } from "@/lib/auth-types";
 import { toAuthApiError } from "@/lib/auth-errors";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+// In the browser the ALB routes /api/* → backend, so relative URLs are enough.
+// During SSR (server-side) we need an absolute URL to reach the backend container.
+const getApiBase = () =>
+  typeof window !== "undefined"
+    ? ""
+    : (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000");
 
 interface AuthContextValue {
   user: AuthUser | null;
@@ -26,7 +31,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 /** All auth requests use credentials:'include' so the HttpOnly cookie is sent. */
 async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
+  const res = await fetch(`${getApiBase()}${path}`, {
     ...init,
     credentials: "include",
     headers: {
@@ -57,7 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const msg = err instanceof Error ? err.message : "";
         const isAuthError = /API 40[13]/.test(msg);
         if (isAuthError) {
-          await fetch(`${API_BASE}/api/auth/logout`, {
+          await fetch(`${getApiBase()}/api/auth/logout`, {
             method: "POST",
             credentials: "include",
           }).catch(() => {});

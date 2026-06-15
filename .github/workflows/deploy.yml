@@ -1,0 +1,207 @@
+name: CI/CD — Build, Lint & Deploy to AWS
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  id-token: write   # Required for OIDC AWS auth
+  contents: read
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "20"
+
+jobs:
+  # ─────────────────────────────────────────────────
+  # JOB 1 — Lint & type-check
+  # ─────────────────────────────────────────────────
+  lint:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: |
+            server/package-lock.json
+            app/package-lock.json
+
+      - name: Install server deps
+        run: npm ci
+        working-directory: server
+
+      - name: Lint server
+        run: npm run lint
+        working-directory: server
+
+      - name: Type-check server
+        run: npx tsc --noEmit
+        working-directory: server
+
+      - name: Install app deps
+        run: npm ci
+        working-directory: app
+
+      - name: Lint app
+        run: npm run lint
+        working-directory: app
+
+      - name: Type-check app
+        run: npx tsc --noEmit
+        working-directory: app
+
+  # ─────────────────────────────────────────────────
+  # JOB 2 — Build & push Docker images (main only)
+  # ─────────────────────────────────────────────────
+  build-and-push:
+    name: Build & Push Images
+    runs-on: ubuntu-latest
+    needs: lint
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    outputs:
+      server-image: ${{ steps.server-meta.outputs.image }}
+      app-image:    ${{ steps.app-meta.outputs.image }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Authenticate to AWS via OIDC — no long-lived credentials stored
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume:    ${{ secrets.AWS_ROLE_ARN }}
+          aws-region:        ${{ secrets.AWS_REGION }}
+          role-session-name: github-actions-deploy
+
+      - name: Log in to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # ── Server image ──────────────────────────────
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build & push server image
+        id: server-meta
+        uses: docker/build-push-action@v5
+        with:
+          context: ./server
+          file:    ./server/Dockerfile
+          push:    true
+          tags: |
+            ${{ secrets.ECR_REGISTRY }}/${{ secrets.SERVER_ECR_REPO }}:latest
+            ${{ secrets.ECR_REGISTRY }}/${{ secrets.SERVER_ECR_REPO }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to:   type=gha,mode=max
+
+      - name: Export server image URI
+        run: echo "image=${{ secrets.ECR_REGISTRY }}/${{ secrets.SERVER_ECR_REPO }}:${{ github.sha }}" >> $GITHUB_OUTPUT
+        id: server-meta-out
+        # Overwrite the id so downstream jobs can reference it cleanly
+        shell: bash
+
+      # ── App image ─────────────────────────────────
+      - name: Build & push app image
+        id: app-meta
+        uses: docker/build-push-action@v5
+        with:
+          context: ./app
+          file:    ./app/Dockerfile
+          push:    true
+          build-args: |
+            NEXT_PUBLIC_USE_MOCK=false
+          tags: |
+            ${{ secrets.ECR_REGISTRY }}/${{ secrets.APP_ECR_REPO }}:latest
+            ${{ secrets.ECR_REGISTRY }}/${{ secrets.APP_ECR_REPO }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to:   type=gha,mode=max
+
+  # ─────────────────────────────────────────────────
+  # JOB 3 — Deploy server to ECS
+  # ─────────────────────────────────────────────────
+  deploy-server:
+    name: Deploy Server → ECS
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume:    ${{ secrets.AWS_ROLE_ARN }}
+          aws-region:        ${{ secrets.AWS_REGION }}
+          role-session-name: github-actions-deploy-server
+
+      - name: Fetch current task definition
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition ${{ secrets.SERVER_TASK_FAMILY }} \
+            --query taskDefinition \
+            --output json > task-def.json
+
+      - name: Update image in task definition
+        id: new-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-def.json
+          container-name:  server
+          image:           ${{ secrets.ECR_REGISTRY }}/${{ secrets.SERVER_ECR_REPO }}:${{ github.sha }}
+
+      - name: Register & deploy new task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.new-task-def.outputs.task-definition }}
+          service:         ${{ secrets.SERVER_ECS_SERVICE }}
+          cluster:         ${{ secrets.ECS_CLUSTER }}
+          wait-for-service-stability: true
+
+  # ─────────────────────────────────────────────────
+  # JOB 4 — Deploy app to ECS
+  # ─────────────────────────────────────────────────
+  deploy-app:
+    name: Deploy App → ECS
+    runs-on: ubuntu-latest
+    needs: deploy-server   # App waits for server to be healthy first
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume:    ${{ secrets.AWS_ROLE_ARN }}
+          aws-region:        ${{ secrets.AWS_REGION }}
+          role-session-name: github-actions-deploy-app
+
+      - name: Fetch current task definition
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition ${{ secrets.APP_TASK_FAMILY }} \
+            --query taskDefinition \
+            --output json > task-def.json
+
+      - name: Update image in task definition
+        id: new-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-def.json
+          container-name:  app
+          image:           ${{ secrets.ECR_REGISTRY }}/${{ secrets.APP_ECR_REPO }}:${{ github.sha }}
+
+      - name: Register & deploy new task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.new-task-def.outputs.task-definition }}
+          service:         ${{ secrets.APP_ECS_SERVICE }}
+          cluster:         ${{ secrets.ECS_CLUSTER }}
+          wait-for-service-stability: true

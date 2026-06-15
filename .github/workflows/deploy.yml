@@ -161,10 +161,12 @@ jobs:
       - name: Register & deploy new task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ steps.new-task-def.outputs.task-definition }}
-          service:         ${{ secrets.SERVER_ECS_SERVICE }}
-          cluster:         ${{ secrets.ECS_CLUSTER }}
+          task-definition:            ${{ steps.new-task-def.outputs.task-definition }}
+          service:                    ${{ secrets.SERVER_ECS_SERVICE }}
+          cluster:                    ${{ secrets.ECS_CLUSTER }}
           wait-for-service-stability: true
+          wait-for-minutes:           20
+          force-new-deployment:       true
 
   # ─────────────────────────────────────────────────
   # JOB 4 — Deploy app to ECS
@@ -201,7 +203,9 @@ jobs:
       - name: Register & deploy new task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ steps.new-task-def.outputs.task-definition }}
-          service:         ${{ secrets.APP_ECS_SERVICE }}
-          cluster:         ${{ secrets.ECS_CLUSTER }}
+          task-definition:            ${{ steps.new-task-def.outputs.task-definition }}
+          service:                    ${{ secrets.APP_ECS_SERVICE }}
+          cluster:                    ${{ secrets.ECS_CLUSTER }}
           wait-for-service-stability: true
+          wait-for-minutes:           20
+          force-new-deployment:       true

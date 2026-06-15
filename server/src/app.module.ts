@@ -13,6 +13,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ExternalApiModule } from './common/external-api/external-api.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { HierarchyModule } from './modules/hierarchy/hierarchy.module';
+import { SsoModule } from './modules/sso/sso.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { HierarchyModule } from './modules/hierarchy/hierarchy.module';
     CqrsModule.forRoot(),
     PrismaModule,
     AuthModule,
+    SsoModule,
     PospModule,
     DealModule,
     CustomerModule,

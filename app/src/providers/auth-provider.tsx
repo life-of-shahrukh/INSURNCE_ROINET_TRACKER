@@ -24,6 +24,7 @@ interface AuthContextValue {
   initializing: boolean;
   login: (payload: LoginPayload) => Promise<void>;
   signupPosp: (payload: SignupPospPayload) => Promise<void>;
+  ssoLogin: (token: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -88,14 +89,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(data);
   }, []);
 
+  const ssoLogin = useCallback(async (token: string) => {
+    const data = await apiRequest<AuthUser>("/api/v1/sso/verify-token", {
+      method: "POST",
+      body: JSON.stringify({ token }),
+    });
+    setUser(data);
+  }, []);
+
   const logout = useCallback(async () => {
     await apiRequest<void>("/api/auth/logout", { method: "POST" }).catch(() => {});
     setUser(null);
   }, []);
 
   const value = useMemo(
-    () => ({ user, initializing, login, signupPosp, logout }),
-    [user, initializing, login, signupPosp, logout],
+    () => ({ user, initializing, login, signupPosp, ssoLogin, logout }),
+    [user, initializing, login, signupPosp, ssoLogin, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

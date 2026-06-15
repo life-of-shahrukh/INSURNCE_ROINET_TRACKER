@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { useAuth } from "@/providers/auth-provider";
 import { hasMinRole } from "@/lib/auth-types";
 
-const PUBLIC_PATHS = new Set(["/login", "/signup"]);
+const PUBLIC_PATHS = new Set(["/login", "/signup", "/sso/callback"]);
 
 /**
  * Minimum role required to access each path prefix.

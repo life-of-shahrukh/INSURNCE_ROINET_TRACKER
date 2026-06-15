@@ -4,6 +4,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import {
   buildDealScopeWhere,
   buildPospScopeWhere,
+  collectPospIdsForSubtree,
   type HierarchyScope,
 } from '../../common/auth/hierarchy-scope.util';
 import {
@@ -67,52 +68,15 @@ export class DashboardRepository {
 
     const sub = await this.prisma.salesTeam.findUnique({
       where: { id: subordinateId },
-      select: {
-        id: true,
-        designation: true,
-        zoneId: true,
-        regionId: true,
-        areaId: true,
-      },
+      select: { id: true },
     });
     if (!sub) return callerScope;
 
-    let subScope: HierarchyScope;
-
-    switch (sub.designation) {
-      case 'ZH':
-        subScope = sub.zoneId ? { zoneIds: [sub.zoneId] } : { pospIds: [] };
-        break;
-      case 'RH':
-        subScope = sub.regionId
-          ? { regionIds: [sub.regionId] }
-          : { pospIds: [] };
-        break;
-      case 'ASM': {
-        const posps = await this.prisma.posp.findMany({
-          where: { asmId: sub.id },
-          select: { id: true },
-        });
-        subScope = { pospIds: posps.map((p) => p.id) };
-        break;
-      }
-      case 'DM': {
-        const posps = await this.prisma.posp.findMany({
-          where: sub.areaId ? { areaId: sub.areaId } : { id: 'NO_MATCH' },
-          select: { id: true },
-        });
-        subScope = { pospIds: posps.map((p) => p.id) };
-        break;
-      }
-      default:
-        subScope = { pospIds: [] };
-    }
-
-    // If caller has no restriction (SUPER_ADMIN / NATIONAL_HEAD), use sub scope directly
-    if (Object.keys(callerScope).length === 0) return subScope;
-
-    // Subordinate scope is always narrower — use it directly
-    return subScope;
+    // Uniform rule: the selected member's scope is every POSP owned by their
+    // SalesTeam subtree (themselves + all descendants). This guarantees a
+    // selection only ever narrows to that member's own lower hierarchy.
+    const pospIds = await collectPospIdsForSubtree(this.prisma, sub.id);
+    return { pospIds };
   }
 
   private buildDealWhere(

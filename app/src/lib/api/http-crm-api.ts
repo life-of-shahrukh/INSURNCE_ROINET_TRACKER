@@ -3,9 +3,25 @@ import type { Deal, Posp } from "../types";
 import type { PaginatedResponse } from "./pagination-types";
 import { fetchPaginated, request } from "./fetch-client";
 
+/**
+ * The Prisma model persists the customer name as `customerName`.
+ * The frontend Deal type uses `customer`. This function normalises the raw
+ * API payload so the rest of the app never has to worry about the mismatch.
+ */
+function normalizeDeal(raw: Record<string, unknown>): Deal {
+  return {
+    ...(raw as unknown as Deal),
+    customer: (raw["customerName"] ?? raw["customer"] ?? "") as string,
+    customerId: (raw["customerId"] ?? null) as string | null,
+  };
+}
+
 export const httpCrmApi: CrmApi = {
   listDeals: (params) =>
-    fetchPaginated<Deal>("/api/deals", params),
+    fetchPaginated<Deal>("/api/deals", params).then((res) => ({
+      ...res,
+      data: res.data.map((d) => normalizeDeal(d as unknown as Record<string, unknown>)),
+    })),
 
   listPosp: (params) =>
     fetchPaginated<Posp>("/api/posp", params),
@@ -17,15 +33,17 @@ export const httpCrmApi: CrmApi = {
       fetchPaginated<Deal>("/api/deals", new URLSearchParams({ pageSize: "100", page: "1" })),
     ]).then(([pospRes, dealsRes]) => ({
       posp: pospRes.data,
-      deals: dealsRes.data,
+      deals: dealsRes.data.map((d) => normalizeDeal(d as unknown as Record<string, unknown>)),
     })),
 
   createDeal: (input) =>
-    request<Deal>("/api/deals", { method: "POST", body: JSON.stringify(input) }),
+    request<Record<string, unknown>>("/api/deals", { method: "POST", body: JSON.stringify(input) })
+      .then(normalizeDeal),
 
   updateDeal: (id, input) => {
     const { id: _dealId, ...body } = input;
-    return request<Deal>(`/api/deals/${id}`, { method: "PATCH", body: JSON.stringify(body) });
+    return request<Record<string, unknown>>(`/api/deals/${id}`, { method: "PATCH", body: JSON.stringify(body) })
+      .then(normalizeDeal);
   },
 
   deleteDeal: (id) => request<void>(`/api/deals/${id}`, { method: "DELETE" }),

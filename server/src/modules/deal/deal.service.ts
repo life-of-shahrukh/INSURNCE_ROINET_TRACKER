@@ -55,7 +55,9 @@ export class DealService {
     if (user.role !== Role.SUPER_ADMIN) {
       stripFinancials(finalDto);
     }
-    return this.commandBus.execute(new CreateDealCommand(finalDto));
+    return this.commandBus.execute(
+      new CreateDealCommand(finalDto, user.userId),
+    );
   }
 
   update(id: string, dto: UpdateDealDto, user: AuthUser): Promise<Deal> {

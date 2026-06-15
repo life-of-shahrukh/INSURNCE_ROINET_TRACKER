@@ -117,6 +117,10 @@ export class DealRepository {
           policyNo: dto.policyNo ?? '',
           issued: dto.issued ? new Date(dto.issued) : null,
           remarks: dto.remarks ?? '',
+          zoneId: dto.zoneId ?? null,
+          regionId: dto.regionId ?? null,
+          areaId: dto.areaId ?? null,
+          districtId: dto.districtId ?? null,
         },
       })
       .catch((e: unknown) => this.handlePrismaError(e));

@@ -110,4 +110,21 @@ export class CreateDealDto {
   @IsString()
   @IsOptional()
   remarks?: string;
+
+  // ── Geo fields — populated server-side from POSP or SalesTeam, never from client ──
+  @IsString()
+  @IsOptional()
+  zoneId?: string;
+
+  @IsString()
+  @IsOptional()
+  regionId?: string;
+
+  @IsString()
+  @IsOptional()
+  areaId?: string;
+
+  @IsString()
+  @IsOptional()
+  districtId?: string;
 }

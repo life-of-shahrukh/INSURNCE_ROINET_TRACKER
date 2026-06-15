@@ -7,18 +7,81 @@ export const SEED_TARGETS = {
 } as const;
 
 const FIRST_NAMES = [
-  'Rajesh', 'Sunita', 'Aditya', 'Kavita', 'Mohan', 'Sneha', 'Arjun', 'Deepika',
-  'Karan', 'Meera', 'Sanjay', 'Ritu', 'Naveen', 'Pooja', 'Harish', 'Geeta',
-  'Ashok', 'Lakshmi', 'Vikram', 'Anjali', 'Rohit', 'Priya', 'Neha', 'Sameer',
-  'Bharat', 'Green', 'Amit', 'Divya', 'Suresh', 'Rekha', 'Manoj', 'Anita',
-  'Pradeep', 'Swati', 'Ramesh', 'Kiran', 'Vijay', 'Pallavi', 'Gaurav', 'Shilpa',
+  'Rajesh',
+  'Sunita',
+  'Aditya',
+  'Kavita',
+  'Mohan',
+  'Sneha',
+  'Arjun',
+  'Deepika',
+  'Karan',
+  'Meera',
+  'Sanjay',
+  'Ritu',
+  'Naveen',
+  'Pooja',
+  'Harish',
+  'Geeta',
+  'Ashok',
+  'Lakshmi',
+  'Vikram',
+  'Anjali',
+  'Rohit',
+  'Priya',
+  'Neha',
+  'Sameer',
+  'Bharat',
+  'Green',
+  'Amit',
+  'Divya',
+  'Suresh',
+  'Rekha',
+  'Manoj',
+  'Anita',
+  'Pradeep',
+  'Swati',
+  'Ramesh',
+  'Kiran',
+  'Vijay',
+  'Pallavi',
+  'Gaurav',
+  'Shilpa',
 ];
 
 const LAST_NAMES = [
-  'Mehta', 'Desai', 'Kapoor', 'Nair', 'Pillai', 'Reddy', 'Bhatt', 'Joshi',
-  'Malhotra', 'Saxena', 'Verma', 'Agarwal', 'Khanna', 'Goel', 'Mishra', 'Pandey',
-  'Rao', 'Sharma', 'Kumar', 'Iyer', 'Singh', 'Patel', 'Bhatia', 'Industries',
-  'Gupta', 'Shah', 'Menon', 'Chopra', 'Das', 'Banerjee', 'Kulkarni', 'Naik',
+  'Mehta',
+  'Desai',
+  'Kapoor',
+  'Nair',
+  'Pillai',
+  'Reddy',
+  'Bhatt',
+  'Joshi',
+  'Malhotra',
+  'Saxena',
+  'Verma',
+  'Agarwal',
+  'Khanna',
+  'Goel',
+  'Mishra',
+  'Pandey',
+  'Rao',
+  'Sharma',
+  'Kumar',
+  'Iyer',
+  'Singh',
+  'Patel',
+  'Bhatia',
+  'Industries',
+  'Gupta',
+  'Shah',
+  'Menon',
+  'Chopra',
+  'Das',
+  'Banerjee',
+  'Kulkarni',
+  'Naik',
 ];
 
 const STATES = [
@@ -34,22 +97,52 @@ const STATES = [
   { stateName: 'Karnataka', cityName: 'Bengaluru' },
 ];
 
-const KYC_STATUSES = ['VERIFIED', 'VERIFIED', 'VERIFIED', 'PENDING', 'PENDING', 'REJECTED'] as const;
+const KYC_STATUSES = [
+  'VERIFIED',
+  'VERIFIED',
+  'VERIFIED',
+  'PENDING',
+  'PENDING',
+  'REJECTED',
+] as const;
 const SOURCES = ['REFERRAL', 'WALK_IN', 'ONLINE', 'CAMPAIGN'] as const;
 
 const POLICIES = [
-  'Life', 'Health', 'Motor', 'Term', 'Travel', 'Home', 'ULIP',
-  'Personal Loan', 'Home Loan', 'Business Loan',
+  'Life',
+  'Health',
+  'Motor',
+  'Term',
+  'Travel',
+  'Home',
+  'ULIP',
+  'Personal Loan',
+  'Home Loan',
+  'Business Loan',
 ] as const;
 
 const DEAL_STATUSES = ['H', 'W', 'C'] as const;
 
 const LEAD_PRODUCTS = [
-  'LIFE', 'HEALTH', 'MOTOR', 'PROPERTY', 'MARINE', 'TRAVEL', 'COMMERCIAL', 'CROP', 'ENGINEERING',
+  'LIFE',
+  'HEALTH',
+  'MOTOR',
+  'PROPERTY',
+  'MARINE',
+  'TRAVEL',
+  'COMMERCIAL',
+  'CROP',
+  'ENGINEERING',
 ] as const;
 
 const LEAD_TIMELINES = ['THIS_MONTH', 'T_PLUS_1', 'T_PLUS_2', 'LATER'] as const;
-const LEAD_STATUSES = ['NEW', 'CONTACTED', 'QUALIFIED', 'PROPOSAL_SENT', 'WON', 'LOST'] as const;
+const LEAD_STATUSES = [
+  'NEW',
+  'CONTACTED',
+  'QUALIFIED',
+  'PROPOSAL_SENT',
+  'WON',
+  'LOST',
+] as const;
 
 function personName(index: number): string {
   const first = FIRST_NAMES[index % FIRST_NAMES.length];
@@ -58,7 +151,9 @@ function personName(index: number): string {
 }
 
 function mobileFor(index: number, prefix = '98'): string {
-  return `${prefix}${String(10000000 + index).padStart(8, '0').slice(-8)}`;
+  return `${prefix}${String(10000000 + index)
+    .padStart(8, '0')
+    .slice(-8)}`;
 }
 
 export function buildCustomerSeed(index: number) {
@@ -103,8 +198,9 @@ export function buildDealSeed(
   const coa = Math.round(premium * 0.12 + sum * 0.001);
   const margin = Math.round(premium * 0.06 + (isLoan ? sum * 0.01 : 0));
   const status = DEAL_STATUSES[index % DEAL_STATUSES.length];
-  const issued = index % 4 === 0 ? new Date(2025, index % 12, 1 + (index % 28)) : null;
-  const month = (index % 12);
+  const issued =
+    index % 4 === 0 ? new Date(2025, index % 12, 1 + (index % 28)) : null;
+  const month = index % 12;
   const day = 1 + (index % 28);
 
   return {
@@ -129,7 +225,7 @@ export function buildLeadSeed(
   customerId: string,
   assignedToId: string | null,
 ) {
-  const month = (index % 12);
+  const month = index % 12;
   const day = 5 + (index % 24);
 
   return {

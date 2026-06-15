@@ -54,6 +54,7 @@ export const mockCrmApi: CrmApi = {
     const deal: Deal = {
       id: input.id ?? uid(),
       pospId: input.pospId ?? null,
+      customerId: input.customerId ?? null,
       customer: input.customer,
       policy: input.policy,
       sum: input.sum ?? 0,
@@ -84,6 +85,7 @@ export const mockCrmApi: CrmApi = {
     const deal: Deal = {
       id,
       pospId: input.pospId ?? null,
+      customerId: input.customerId ?? state.deals[idx]?.customerId ?? null,
       customer: input.customer,
       policy: input.policy,
       sum: input.sum ?? 0,

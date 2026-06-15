@@ -88,6 +88,7 @@ export type CoaType = 'PERCENT' | 'AMOUNT';
 export interface Deal {
   id: string;
   pospId: string | null;
+  customerId: string | null;
   customer: string;
   policy: string;
   sum: number;

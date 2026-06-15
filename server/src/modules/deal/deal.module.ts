@@ -12,6 +12,7 @@ import {
   DealCreatedListener,
   DealStatusChangedListener,
 } from './listeners/deal-events.listener';
+import { PrismaModule } from '../../prisma/prisma.module';
 
 const CommandHandlers = [
   CreateDealHandler,
@@ -22,7 +23,7 @@ const QueryHandlers = [GetAllDealsHandler, ExportDealsCsvHandler];
 const EventListeners = [DealCreatedListener, DealStatusChangedListener];
 
 @Module({
-  imports: [CqrsModule],
+  imports: [CqrsModule, PrismaModule],
   controllers: [DealController],
   providers: [
     DealService,

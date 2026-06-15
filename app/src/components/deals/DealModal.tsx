@@ -79,8 +79,7 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
     if (deal) {
       setForm({
         pospId: deal.pospId ?? "",
-        customerId:
-          (deal as unknown as Record<string, unknown>).customerId as string ?? "",
+        customerId: deal.customerId ?? "",
         customer: deal.customer,
         policy: deal.policy,
         sum: String(deal.sum ?? ""),

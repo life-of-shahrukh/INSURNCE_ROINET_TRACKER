@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { PospModal } from "@/components/posp/PospModal";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -14,7 +13,6 @@ import { usePospList } from "@/hooks/usePospList";
 import { useDealsList } from "@/hooks/useDealsList";
 import { fmtDate, fmtINRShort } from "@/lib/formatters";
 import { useAuth } from "@/providers/auth-provider";
-import type { Posp } from "@/lib/types";
 import { fetchAndDownloadCsv } from "@/lib/crm-calculations";
 import { toast } from "sonner";
 
@@ -45,12 +43,7 @@ export default function PospPage() {
   const { data: dealsResult } = useDealsList(dealsParams);
   const deals = dealsResult?.data ?? [];
 
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editPosp, setEditPosp] = useState<Posp | null>(null);
   const [exporting, setExporting] = useState(false);
-
-  const canCreatePosp =
-    user?.role === "SUPER_ADMIN" || user?.role === "ASM" || user?.role === "DM";
 
   const handleExport = async () => {
     setExporting(true);
@@ -68,16 +61,11 @@ export default function PospPage() {
       <div className="list-page">
       <PageHeader
         title="POSP Roster"
-        subtitle="Active and inactive Point of Sales Persons"
+        subtitle="Active and inactive Point of Sales Persons — synced from Roinet"
         actions={
-          <div style={{ display: "flex", gap: 8 }}>
-            <Button variant="secondary" onClick={handleExport} disabled={exporting}>
-              {exporting ? "Exporting…" : "Export CSV"}
-            </Button>
-            {canCreatePosp && (
-              <Button onClick={() => { setEditPosp(null); setModalOpen(true); }}>+ Add POSP</Button>
-            )}
-          </div>
+          <Button variant="secondary" onClick={handleExport} disabled={exporting}>
+            {exporting ? "Exporting…" : "Export CSV"}
+          </Button>
         }
       />
 
@@ -106,19 +94,6 @@ export default function PospPage() {
               <div
                 key={p.id}
                 className="posp-card"
-                onClick={
-                  canCreatePosp
-                    ? () => { setEditPosp(p); setModalOpen(true); }
-                    : undefined
-                }
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (canCreatePosp && e.key === "Enter") {
-                    setEditPosp(p);
-                    setModalOpen(true);
-                  }
-                }}
               >
                 <div className="posp-card-header">
                   <div>
@@ -150,7 +125,6 @@ export default function PospPage() {
       </Card>
       </div>
 
-      <PospModal open={modalOpen} pospItem={editPosp} onClose={() => setModalOpen(false)} />
     </>
   );
 }

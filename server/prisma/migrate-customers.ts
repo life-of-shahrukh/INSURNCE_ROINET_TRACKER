@@ -1,6 +1,6 @@
 /**
  * Data Migration Script: Migrate Deal.customer to Customer model
- * 
+ *
  * This script:
  * 1. Reads existing Deal.customerName (previously customer) values
  * 2. Creates Customer records for each unique customer name
@@ -28,7 +28,7 @@ async function migrateCustomers() {
 
     // Group deals by customer name to avoid duplicates
     const customerGroups = new Map<string, string[]>();
-    
+
     deals.forEach((deal) => {
       if (deal.customerName && !deal.customerId) {
         const name = deal.customerName.trim();
@@ -89,8 +89,9 @@ async function migrateCustomers() {
 
     const totalDeals = await prisma.deal.count();
     console.log(`\n📊 Verification:`);
-    console.log(`- ${dealsWithCustomers}/${totalDeals} deals now have customer links`);
-
+    console.log(
+      `- ${dealsWithCustomers}/${totalDeals} deals now have customer links`,
+    );
   } catch (error) {
     console.error('❌ Migration failed:', error);
     throw error;

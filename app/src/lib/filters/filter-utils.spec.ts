@@ -21,6 +21,7 @@ function makeDeal(overrides: Partial<Deal> = {}): Deal {
   return {
     id: "deal-1",
     pospId: "posp-1",
+    customerId: null,
     customer: "Test Customer",
     policy: "Term Life",
     sum: 500000,

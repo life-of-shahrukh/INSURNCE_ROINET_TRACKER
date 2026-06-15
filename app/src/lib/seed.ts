@@ -63,6 +63,7 @@ function buildDeal(index: number, pospId: string): Deal {
   return {
     id: `d${index + 1}`,
     pospId,
+    customerId: null,
     customer: personName(index),
     policy,
     sum,

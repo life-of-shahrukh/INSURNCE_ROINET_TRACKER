@@ -49,6 +49,9 @@ RUN npm ci --omit=dev
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
 
+# Snapshot files used when USE_EXTERNAL_API_SNAPSHOT=true (avoids VPN dependency in ECS).
+COPY --from=builder --chown=nestjs:nodejs /app/data ./data
+
 # Regenerate the Prisma client against the production node_modules.
 # The builder client embeds absolute paths tied to the builder layer.
 ENV DATABASE_URL="sqlserver://localhost:1433;database=roinet_crm;user=sa;password=x;trustServerCertificate=true"

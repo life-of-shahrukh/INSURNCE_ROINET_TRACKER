@@ -110,11 +110,24 @@ resource "aws_ecs_task_definition" "server" {
     }]
 
     environment = [
-      { name = "NODE_ENV", value = var.env },
-      { name = "PORT", value = "3001" },
-      { name = "DATABASE_URL", value = var.database_url },
-      { name = "FRONTEND_URL", value = var.frontend_url },
-      { name = "JWT_SECRET", value = var.jwt_secret }
+      { name = "NODE_ENV",                 value = var.env },
+      { name = "PORT",                     value = "3001" },
+      { name = "DATABASE_URL",             value = var.database_url },
+      { name = "FRONTEND_URL",             value = var.frontend_url },
+      { name = "JWT_SECRET",               value = var.jwt_secret },
+      # External API — use bundled snapshots in ECS (no VPN tunnel available from Fargate).
+      { name = "USE_EXTERNAL_API_SNAPSHOT", value = "true" },
+      # SSO — non-sensitive config (plain env vars are fine)
+      { name = "SSO_TOKEN_EXPIRY_SECONDS", value = tostring(var.sso_token_expiry_seconds) },
+      { name = "SSO_REDIRECT_BASE_URL",    value = var.sso_redirect_base_url }
+    ]
+
+    # SSO — sensitive values pulled from AWS Secrets Manager at container startup.
+    # The ECS execution role has secretsmanager:GetSecretValue on roinet-crm/prod/sso/*.
+    secrets = [
+      { name = "SSO_API_KEY",         valueFrom = var.sso_api_key_secret_arn },
+      { name = "SSO_RSA_PRIVATE_KEY", valueFrom = var.sso_rsa_private_key_secret_arn },
+      { name = "SSO_RSA_PUBLIC_KEY",  valueFrom = var.sso_rsa_public_key_secret_arn }
     ]
 
     logConfiguration = {

@@ -1,4 +1,4 @@
-name: CI/CD — Build, Lint & Deploy to AWS
+name: CI/CD — Build, Lint & Deploy to AWS  # v1.0
 
 on:
   push:

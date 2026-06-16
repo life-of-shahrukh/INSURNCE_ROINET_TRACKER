@@ -138,6 +138,9 @@ model Posp {
   regionId       String?    @db.NVarChar(50)
   areaId         String?    @db.NVarChar(50)
   districtId     String?    @db.NVarChar(50)
+  /// Cognitensor geography IDs — synced from ListPospData on SSO login
+  stateId        String?    @db.NVarChar(50)
+  cityId         String?    @db.NVarChar(50)
   
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt

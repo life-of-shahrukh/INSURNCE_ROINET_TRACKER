@@ -46,7 +46,7 @@ export class ExternalApiService {
 
   private async fetchLive<T>(
     endpoint: string,
-    body?: Record<string, string>,
+    body?: Record<string, string | number | null>,
   ): Promise<T[]> {
     const res = await fetch(`${COGNITENSOR_BASE}${endpoint}`, {
       method: 'POST',
@@ -122,8 +122,18 @@ export class ExternalApiService {
   async listPospsLive(
     query: ExternalPospQueryDto,
   ): Promise<PaginatedResult<ExternalPospData>> {
+    // Pass ID-based filters directly to Cognitensor so the API does the heavy lifting.
+    // Name-based filters (state/city/search) are applied client-side after the response.
+    const apiBody: Record<string, string | number | null> = {
+      UserId: query.userId ?? null,
+      UserCode: query.userCode ?? null,
+      stateid: query.stateId ? Number(query.stateId) : null,
+      districtid: query.districtId ? Number(query.districtId) : null,
+      cityid: query.cityId ? Number(query.cityId) : null,
+    };
     const data = await this.fetchLive<ExternalPospData>(
       '/Cognitensor/ListPospData',
+      apiBody,
     );
     return this.filterAndPagePosps(data, query);
   }
@@ -169,6 +179,28 @@ export class ExternalApiService {
     const cityFilter = query.city?.trim().toLowerCase();
 
     let filtered = data;
+
+    // Exact ID / code filters
+    if (query.userId) {
+      filtered = filtered.filter((p) => p.UserId === query.userId);
+    }
+    if (query.userCode) {
+      filtered = filtered.filter((p) => p.UserCode === query.userCode);
+    }
+
+    // stateId in snapshot mode: cross-reference states.json to resolve name, then filter by name
+    if (query.stateId && this.useSnapshot) {
+      const states = this.readSnapshot<ExternalState>('states.json');
+      const match = states.find((s) => s.StateId === query.stateId);
+      if (match) {
+        const stateName = match.StateName.toLowerCase();
+        filtered = filtered.filter((p) =>
+          p.ResidenceState.toLowerCase().includes(stateName),
+        );
+      }
+    }
+
+    // Free-text search
     if (search) {
       filtered = filtered.filter(
         (p) =>
@@ -179,6 +211,8 @@ export class ExternalApiService {
           p.HephGcdCode.toLowerCase().includes(search),
       );
     }
+
+    // Name-based filters
     if (stateFilter) {
       filtered = filtered.filter((p) =>
         p.ResidenceState.toLowerCase().includes(stateFilter),

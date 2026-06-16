@@ -89,6 +89,37 @@ export class UserRepository {
     return this.prisma.user.findFirst({ where: { pospId: posp.id } });
   }
 
+  /**
+   * Syncs fresh Cognitensor data into the Posp row identified by `code`.
+   * Called on every SSO login so our DB always reflects the latest external state.
+   * Only updates fields sourced from Cognitensor; name and internal fields are untouched.
+   */
+  async upsertPospFromExternal(
+    code: string,
+    data: {
+      externalId: string;
+      mobile: string;
+      email: string;
+      gcdCode: string;
+      stateId: string;
+      cityId: string;
+      districtId: string;
+    },
+  ): Promise<void> {
+    await this.prisma.posp.update({
+      where: { code },
+      data: {
+        externalId: data.externalId,
+        mobile: data.mobile,
+        email: data.email,
+        gcdCode: data.gcdCode,
+        stateId: data.stateId,
+        cityId: data.cityId,
+        districtId: data.districtId,
+      },
+    });
+  }
+
   async findPospByEmail(email: string): Promise<{ id: string } | null> {
     return this.prisma.posp.findUnique({
       where: { email: email.toLowerCase() },

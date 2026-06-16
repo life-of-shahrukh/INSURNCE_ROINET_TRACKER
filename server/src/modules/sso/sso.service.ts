@@ -75,8 +75,21 @@ export class SsoService {
       );
     }
 
-    // Validate POSP exists in Cognitensor (throws NotFoundException if not found)
-    await this.externalApiService.getPospByUserCode(payload.userCode);
+    // Fetch fresh POSP data from Cognitensor (throws NotFoundException if not found)
+    const pospData = await this.externalApiService.getPospByUserCode(
+      payload.userCode,
+    );
+
+    // Sync Cognitensor fields into our DB so data stays current after every login
+    await this.userRepo.upsertPospFromExternal(payload.userCode, {
+      externalId: pospData.UserId,
+      mobile: pospData.MobileNo,
+      email: pospData.EmailId,
+      gcdCode: pospData.HephGcdCode,
+      stateId: pospData.stateid ?? '',
+      cityId: pospData.cityid ?? '',
+      districtId: pospData.districtid ?? '',
+    });
 
     const user = await this.userRepo.findUserByPospCode(payload.userCode);
     if (!user) {

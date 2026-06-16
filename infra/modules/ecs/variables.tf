@@ -35,6 +35,33 @@ variable "jwt_secret" {
   sensitive = true
 }
 
+# ── SSO ───────────────────────────────────────────────────────────────────────
+# Secrets Manager ARNs — ECS pulls the values at container startup
+variable "sso_api_key_secret_arn" {
+  type        = string
+  description = "Secrets Manager ARN for SSO_API_KEY"
+}
+
+variable "sso_rsa_private_key_secret_arn" {
+  type        = string
+  description = "Secrets Manager ARN for SSO_RSA_PRIVATE_KEY"
+}
+
+variable "sso_rsa_public_key_secret_arn" {
+  type        = string
+  description = "Secrets Manager ARN for SSO_RSA_PUBLIC_KEY"
+}
+
+# Non-sensitive — plain env vars
+variable "sso_token_expiry_seconds" {
+  type    = number
+  default = 300
+}
+
+variable "sso_redirect_base_url" {
+  type = string
+}
+
 variable "frontend_url" {
   type        = string
   description = "Public URL of the frontend (used as FRONTEND_URL for CORS)"

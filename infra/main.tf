@@ -170,6 +170,13 @@ module "ecs" {
 
   jwt_secret = var.jwt_secret
 
+  # SSO — ARNs point to Secrets Manager; ECS injects values at startup
+  sso_api_key_secret_arn         = var.sso_api_key_secret_arn
+  sso_rsa_private_key_secret_arn = var.sso_rsa_private_key_secret_arn
+  sso_rsa_public_key_secret_arn  = var.sso_rsa_public_key_secret_arn
+  sso_token_expiry_seconds       = var.sso_token_expiry_seconds
+  sso_redirect_base_url          = var.sso_redirect_base_url
+
   app_cpu    = var.app_cpu
   app_memory = var.app_memory
 

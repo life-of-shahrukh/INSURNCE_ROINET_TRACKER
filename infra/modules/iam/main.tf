@@ -66,6 +66,16 @@ resource "aws_iam_role_policy" "ecs_execution_ecr" {
         Effect   = "Allow"
         Action   = ["logs:CreateLogStream", "logs:PutLogEvents"]
         Resource = "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:/ecs/${var.project}-${var.env}/*"
+      },
+      # Allow ECS to pull SSO secrets from Secrets Manager at container startup
+      {
+        Sid    = "SsoSecretsRead"
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret"
+        ]
+        Resource = "arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:${var.project}/prod/sso/*"
       }
     ]
   })

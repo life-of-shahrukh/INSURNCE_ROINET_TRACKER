@@ -78,6 +78,37 @@ variable "jwt_secret" {
   default     = ""
 }
 
+# ── SSO (Central Roinet SSO Server) ───────────────────────────────────────────
+# Sensitive values (API key, RSA keys) live in AWS Secrets Manager.
+# Pass the Secrets Manager ARN — ECS injects the value at container startup.
+variable "sso_api_key_secret_arn" {
+  type        = string
+  description = "Secrets Manager ARN for SSO_API_KEY (roinet-crm/prod/sso/api-key)."
+}
+
+variable "sso_rsa_private_key_secret_arn" {
+  type        = string
+  description = "Secrets Manager ARN for SSO_RSA_PRIVATE_KEY (roinet-crm/prod/sso/rsa-private-key)."
+}
+
+variable "sso_rsa_public_key_secret_arn" {
+  type        = string
+  description = "Secrets Manager ARN for SSO_RSA_PUBLIC_KEY (roinet-crm/prod/sso/rsa-public-key)."
+}
+
+# Non-sensitive SSO config — plain env vars are fine
+variable "sso_token_expiry_seconds" {
+  type        = number
+  default     = 300
+  description = "How long (seconds) the short-lived SSO redirect token is valid. Default: 300 (5 min)."
+}
+
+variable "sso_redirect_base_url" {
+  type        = string
+  description = "Frontend base URL the SSO server redirects users to after login."
+  default     = "https://roinetinsurance.in"
+}
+
 # ── ECS ───────────────────────────────────────────────────────────────────────
 variable "image_tag" {
   type        = string

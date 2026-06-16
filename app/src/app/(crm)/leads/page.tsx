@@ -120,9 +120,11 @@ export default function LeadsPage() {
             <Button variant="secondary" onClick={handleExport} disabled={exporting}>
               {exporting ? "Exporting…" : "Export CSV"}
             </Button>
-            <Button onClick={() => { setEditLead(null); setModalOpen(true); }}>
-              + New Lead
-            </Button>
+            {role === "POSP" && (
+              <Button onClick={() => { setEditLead(null); setModalOpen(true); }}>
+                + New Lead
+              </Button>
+            )}
           </div>
         }
       />

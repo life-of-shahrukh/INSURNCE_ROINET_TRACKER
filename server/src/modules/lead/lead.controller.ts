@@ -30,15 +30,7 @@ export class LeadController {
   constructor(private readonly leadService: LeadService) {}
 
   @Post()
-  @Roles(
-    Role.DM,
-    Role.ASM,
-    Role.RH,
-    Role.ZH,
-    Role.NATIONAL_HEAD,
-    Role.SUPER_ADMIN,
-    Role.POSP,
-  )
+  @Roles(Role.POSP)
   create(@Body() createLeadDto: CreateLeadDto) {
     return this.leadService.create(createLeadDto);
   }

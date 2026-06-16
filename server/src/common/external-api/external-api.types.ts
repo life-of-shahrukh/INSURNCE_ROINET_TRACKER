@@ -39,6 +39,23 @@ export interface ExternalPospData {
   CreatedBy: string;
 }
 
+/**
+ * Shape returned by ListPospData when filtering by UserCode for SSO login.
+ * Fields differ from ExternalPospData (which is used for the paginated admin list).
+ */
+export interface ExternalPospLoginData {
+  UserId: string;
+  UserCode: string;
+  MobileNo: string;
+  EmailId: string;
+  districtid: string;
+  stateid: string;
+  cityid: string;
+  HephGcdCode: string;
+  CreatedDate: string;
+  CreatedBy: string;
+}
+
 export interface ExternalHierarchyUser {
   DistrictId: string;
   DistrictName: string;

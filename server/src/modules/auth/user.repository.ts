@@ -83,6 +83,12 @@ export class UserRepository {
     });
   }
 
+  async findUserByPospCode(code: string): Promise<User | null> {
+    const posp = await this.prisma.posp.findUnique({ where: { code } });
+    if (!posp) return null;
+    return this.prisma.user.findFirst({ where: { pospId: posp.id } });
+  }
+
   async findPospByEmail(email: string): Promise<{ id: string } | null> {
     return this.prisma.posp.findUnique({
       where: { email: email.toLowerCase() },

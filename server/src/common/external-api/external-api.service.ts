@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -8,6 +8,7 @@ import type {
   ExternalDistrict,
   ExternalHierarchyUser,
   ExternalPospData,
+  ExternalPospLoginData,
   ExternalState,
 } from './external-api.types';
 
@@ -125,6 +126,38 @@ export class ExternalApiService {
       '/Cognitensor/ListPospData',
     );
     return this.filterAndPagePosps(data, query);
+  }
+
+  /**
+   * Looks up a single POSP by UserCode from the Cognitensor API.
+   * Used during SSO login when isPosp=true.
+   * Snapshot mode: searches posps.json by UserCode.
+   * Live mode: calls ListPospData with { UserCode } filter.
+   */
+  async getPospByUserCode(userCode: string): Promise<ExternalPospLoginData> {
+    if (this.useSnapshot) {
+      const all = this.readSnapshot<ExternalPospData>('posps.json');
+      const match = all.find((p) => p.UserCode === userCode);
+      if (!match) {
+        throw new NotFoundException(
+          `POSP with UserCode "${userCode}" not found in snapshot`,
+        );
+      }
+      return match as unknown as ExternalPospLoginData;
+    }
+
+    const results = await this.fetchLive<ExternalPospLoginData>(
+      '/Cognitensor/ListPospData',
+      { UserCode: userCode },
+    );
+
+    if (!results || results.length === 0) {
+      throw new NotFoundException(
+        `POSP with UserCode "${userCode}" not found in Cognitensor`,
+      );
+    }
+
+    return results[0];
   }
 
   private filterAndPagePosps(

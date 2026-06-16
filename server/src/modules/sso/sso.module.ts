@@ -4,10 +4,12 @@ import { SsoController } from './sso.controller';
 import { SsoService } from './sso.service';
 import { UserRepository } from '../auth/user.repository';
 import { PrismaModule } from '../../prisma/prisma.module';
+import { ExternalApiModule } from '../../common/external-api/external-api.module';
 
 @Module({
   imports: [
     PrismaModule,
+    ExternalApiModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET ?? 'dev-secret-change-me',
       signOptions: { expiresIn: '8h' },

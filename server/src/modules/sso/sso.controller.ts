@@ -50,7 +50,7 @@ export class SsoController {
     @Headers('x-sso-api-key') apiKey: string,
   ): { redirectUri: string } {
     this.validateSsoApiKey(apiKey);
-    return this.ssoService.getRedirectUri(dto.userCode);
+    return this.ssoService.getRedirectUri(dto.userCode, dto.isPosp);
   }
 
   /**
@@ -70,7 +70,7 @@ export class SsoController {
     @Body() dto: VerifySsoTokenDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    return this.ssoService.verifyTokenAndLogin(dto.token, res);
+    return this.ssoService.verifyTokenAndLogin(dto.token, dto.isPosp, res);
   }
 
   // ─── Private ───────────────────────────────────────────────────────────────
@@ -79,7 +79,9 @@ export class SsoController {
     const expected = this.config.get<string>('SSO_API_KEY');
     if (!expected) {
       // Fail secure: if the key is not configured, deny all requests
-      throw new UnauthorizedException('SSO API key is not configured on this server');
+      throw new UnauthorizedException(
+        'SSO API key is not configured on this server',
+      );
     }
     if (!provided || provided !== expected) {
       throw new UnauthorizedException('Invalid SSO API key');

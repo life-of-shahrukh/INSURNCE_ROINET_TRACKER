@@ -106,7 +106,7 @@ variable "sso_token_expiry_seconds" {
 variable "sso_redirect_base_url" {
   type        = string
   description = "Frontend base URL the SSO server redirects users to after login."
-  default     = "https://roinetinsurance.in"
+  default     = "https://insuranceroinet.xyz"
 }
 
 # ── ECS ───────────────────────────────────────────────────────────────────────

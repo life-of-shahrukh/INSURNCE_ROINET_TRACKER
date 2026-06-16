@@ -44,7 +44,7 @@ export class SsoService {
     const token = this.signSsoToken(userCode);
     const base =
       this.config.get<string>('SSO_REDIRECT_BASE_URL') ??
-      'https://roinetinsurance.in';
+      'https://insuranceroinet.xyz';
     const redirectUri = `${base}/sso/callback?token=${encodeURIComponent(token)}&isPosp=${isPosp}`;
     this.logger.log(
       `SSO redirect URI generated for userCode=${userCode} isPosp=${isPosp}`,

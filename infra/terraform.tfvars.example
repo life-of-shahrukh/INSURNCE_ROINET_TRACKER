@@ -23,7 +23,7 @@ sso_api_key_secret_arn         = "arn:aws:secretsmanager:ap-south-1:702527818159
 sso_rsa_private_key_secret_arn = "arn:aws:secretsmanager:ap-south-1:702527818159:secret:roinet-crm/prod/sso/rsa-private-key-kjexhR"
 sso_rsa_public_key_secret_arn  = "arn:aws:secretsmanager:ap-south-1:702527818159:secret:roinet-crm/prod/sso/rsa-public-key-5mvoNx"
 # sso_token_expiry_seconds = 300                        # optional — default 300 s
-# sso_redirect_base_url    = "https://roinetinsurance.in"  # optional — this is the default
+# sso_redirect_base_url    = "https://insuranceroinet.xyz"  # optional — this is the default
 
 # NOTE: After first `terraform apply`, set these GitHub Actions secrets:
 #   AWS_ROLE_TO_ASSUME  → from `terraform output github_actions_role_arn`

@@ -24,7 +24,7 @@ interface AuthContextValue {
   initializing: boolean;
   login: (payload: LoginPayload) => Promise<void>;
   signupPosp: (payload: SignupPospPayload) => Promise<void>;
-  ssoLogin: (token: string) => Promise<void>;
+  ssoLogin: (token: string, isPosp: boolean) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -89,10 +89,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(data);
   }, []);
 
-  const ssoLogin = useCallback(async (token: string) => {
+  const ssoLogin = useCallback(async (token: string, isPosp: boolean) => {
     const data = await apiRequest<AuthUser>("/api/v1/sso/verify-token", {
       method: "POST",
-      body: JSON.stringify({ token }),
+      body: JSON.stringify({ token, isPosp }),
     });
     setUser(data);
   }, []);

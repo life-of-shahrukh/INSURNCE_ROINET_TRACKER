@@ -17,13 +17,14 @@ export default function SsoCallbackPage() {
     attempted.current = true;
 
     const token = searchParams.get("token");
+    const isPosp = searchParams.get("isPosp") === "true";
 
     if (!token) {
       setError("Missing SSO token in redirect URL. Please try again or contact support.");
       return;
     }
 
-    ssoLogin(token)
+    ssoLogin(token, isPosp)
       .then(() => {
         router.replace("/dashboard");
       })

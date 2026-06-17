@@ -79,10 +79,9 @@ export interface PospData {
   UserCode: string;
   MobileNo: string;
   EmailId: string;
-  ResidenceState: string;
-  ResidenceCity: string;
-  CompanyState: string;
-  CompanyCity: string;
+  districtid: string;
+  stateid: string;
+  cityid: string;
   HephGcdCode: string;
   CreatedDate: string;
   CreatedBy: string;

@@ -17,6 +17,8 @@ export function buildPospFilterWhere(
   if (dateBounds) clauses.push({ joined: dateBounds });
   if (query.active === 'true') clauses.push({ active: true });
   if (query.active === 'false') clauses.push({ active: false });
+  if (query.stateId) clauses.push({ stateId: query.stateId });
+  if (query.cityId) clauses.push({ cityId: query.cityId });
 
   if (query.search?.trim()) {
     const term = query.search.trim();

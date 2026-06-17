@@ -15,6 +15,7 @@ import type {
 /** Alias kept for backward compat with sales-team.service */
 export type HierarchyEntry = ExternalHierarchyUser;
 import type { ExternalPospQueryDto } from './dto/external-posp-query.dto';
+import type { ExternalHierarchyQueryDto } from './dto/external-hierarchy-query.dto';
 import type { PaginatedResult } from '../interfaces/paginated-result.interface';
 
 const SNAPSHOT_DIR = path.join(__dirname, '../../../../data/snapshots');
@@ -100,15 +101,34 @@ export class ExternalApiService {
     });
   }
 
-  listHierarchy(): ExternalHierarchyUser[] {
-    if (this.useSnapshot)
-      return this.readSnapshot<ExternalHierarchyUser>('hierarchy.json');
+  listHierarchy(query?: ExternalHierarchyQueryDto): ExternalHierarchyUser[] {
+    if (this.useSnapshot) {
+      let data = this.readSnapshot<ExternalHierarchyUser>('hierarchy.json');
+      if (query?.districtId !== undefined) {
+        data = data.filter((r) => r.DistrictId === String(query.districtId));
+      }
+      if (query?.userCode) {
+        data = data.filter((r) => r.DistrictManagerCode === query.userCode);
+      }
+      if (query?.userId !== undefined) {
+        data = data.filter((r) => r.DistrictManagerId === String(query.userId));
+      }
+      return data;
+    }
     return [];
   }
 
-  async listHierarchyLive(): Promise<ExternalHierarchyUser[]> {
+  async listHierarchyLive(
+    query?: ExternalHierarchyQueryDto,
+  ): Promise<ExternalHierarchyUser[]> {
+    const body: Record<string, string | number | null> = {
+      DistrictId: query?.districtId ?? null,
+      UserCode: query?.userCode ?? null,
+      UserId: query?.userId ?? null,
+    };
     return this.fetchLive<ExternalHierarchyUser>(
       '/Cognitensor/ListHierarchyUserData',
+      body,
     );
   }
 
@@ -117,6 +137,13 @@ export class ExternalApiService {
       ? this.readSnapshot<ExternalPospData>('posps.json')
       : [];
     return this.filterAndPagePosps(data, query);
+  }
+
+  /** Returns every POSP from the snapshot (unpaged) — used by geography sync. */
+  listAllPosps(): ExternalPospData[] {
+    if (this.useSnapshot)
+      return this.readSnapshot<ExternalPospData>('posps.json');
+    return [];
   }
 
   async listPospsLive(
@@ -153,7 +180,7 @@ export class ExternalApiService {
           `POSP with UserCode "${userCode}" not found in snapshot`,
         );
       }
-      return match as unknown as ExternalPospLoginData;
+      return match;
     }
 
     const results = await this.fetchLive<ExternalPospLoginData>(
@@ -175,8 +202,6 @@ export class ExternalApiService {
     query: ExternalPospQueryDto,
   ): PaginatedResult<ExternalPospData> {
     const search = query.search?.trim().toLowerCase();
-    const stateFilter = query.state?.trim().toLowerCase();
-    const cityFilter = query.city?.trim().toLowerCase();
 
     let filtered = data;
 
@@ -188,39 +213,47 @@ export class ExternalApiService {
       filtered = filtered.filter((p) => p.UserCode === query.userCode);
     }
 
-    // stateId in snapshot mode: cross-reference states.json to resolve name, then filter by name
-    if (query.stateId && this.useSnapshot) {
-      const states = this.readSnapshot<ExternalState>('states.json');
-      const match = states.find((s) => s.StateId === query.stateId);
-      if (match) {
-        const stateName = match.StateName.toLowerCase();
-        filtered = filtered.filter((p) =>
-          p.ResidenceState.toLowerCase().includes(stateName),
-        );
-      }
+    // Geography is now ID-based on the POSP record itself.
+    if (query.stateId) {
+      filtered = filtered.filter((p) => p.stateid === query.stateId);
+    }
+    if (query.districtId) {
+      filtered = filtered.filter((p) => p.districtid === query.districtId);
+    }
+    if (query.cityId) {
+      filtered = filtered.filter((p) => p.cityid === query.cityId);
     }
 
-    // Free-text search
+    // Name-based state/city filters map the name to an ID via the snapshots,
+    // since POSP records no longer carry location names.
+    const stateNameFilter = query.state?.trim().toLowerCase();
+    if (stateNameFilter && this.useSnapshot) {
+      const states = this.readSnapshot<ExternalState>('states.json');
+      const match = states.find(
+        (s) => s.StateName.toLowerCase() === stateNameFilter,
+      );
+      if (match) filtered = filtered.filter((p) => p.stateid === match.StateId);
+      else filtered = [];
+    }
+    const cityNameFilter = query.city?.trim().toLowerCase();
+    if (cityNameFilter && this.useSnapshot) {
+      const cities = this.readSnapshot<ExternalCity>('cities-sample.json');
+      const ids = new Set(
+        cities
+          .filter((c) => c.CityName.toLowerCase() === cityNameFilter)
+          .map((c) => c.CityId),
+      );
+      filtered = filtered.filter((p) => ids.has(p.cityid));
+    }
+
+    // Free-text search across code / email / mobile / GCD code
     if (search) {
       filtered = filtered.filter(
         (p) =>
           p.UserCode.toLowerCase().includes(search) ||
           p.EmailId.toLowerCase().includes(search) ||
           p.MobileNo.includes(search) ||
-          p.ResidenceCity.toLowerCase().includes(search) ||
           p.HephGcdCode.toLowerCase().includes(search),
-      );
-    }
-
-    // Name-based filters
-    if (stateFilter) {
-      filtered = filtered.filter((p) =>
-        p.ResidenceState.toLowerCase().includes(stateFilter),
-      );
-    }
-    if (cityFilter) {
-      filtered = filtered.filter((p) =>
-        p.ResidenceCity.toLowerCase().includes(cityFilter),
       );
     }
 

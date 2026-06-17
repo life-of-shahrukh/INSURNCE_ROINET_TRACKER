@@ -25,25 +25,12 @@ export interface ExternalCity {
   CityName: string;
 }
 
-export interface ExternalPospData {
-  UserId: string;
-  UserCode: string;
-  MobileNo: string;
-  EmailId: string;
-  ResidenceState: string;
-  ResidenceCity: string;
-  CompanyState: string;
-  CompanyCity: string;
-  HephGcdCode: string;
-  CreatedDate: string;
-  CreatedBy: string;
-}
-
 /**
- * Shape returned by ListPospData when filtering by UserCode for SSO login.
- * Fields differ from ExternalPospData (which is used for the paginated admin list).
+ * Shape returned by Cognitensor ListPospData. Geography is now first-class:
+ * `districtid`/`stateid`/`cityid` replace the old `ResidenceState`/`ResidenceCity`/
+ * `CompanyState`/`CompanyCity` name fields, so no name-to-ID mapping is needed.
  */
-export interface ExternalPospLoginData {
+export interface ExternalPospData {
   UserId: string;
   UserCode: string;
   MobileNo: string;
@@ -55,6 +42,9 @@ export interface ExternalPospLoginData {
   CreatedDate: string;
   CreatedBy: string;
 }
+
+/** ListPospData login lookup returns the same shape as the admin list. */
+export type ExternalPospLoginData = ExternalPospData;
 
 export interface ExternalHierarchyUser {
   DistrictId: string;

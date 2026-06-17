@@ -230,3 +230,43 @@ model User {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 }
+
+/// District-keyed management chain mirrored from Cognitensor ListHierarchyUserData.
+/// One row per district; a manager covers a district when their code appears in
+/// the column for their level. This is the source of truth for hierarchy scoping:
+/// a POSP belongs to a district (Posp.districtId), and the chain above that
+/// district (DM -> ASM -> RH -> ZH -> NH) determines who can see that POSP.
+model DistrictHierarchy {
+  id           String  @id @default(cuid()) @db.NVarChar(36)
+  districtId   String  @unique @db.NVarChar(50)
+  districtName String? @db.NVarChar(200)
+  stateId      String? @db.NVarChar(50)
+
+  dmId   String? @db.NVarChar(50)
+  dmCode String? @db.NVarChar(100)
+  dmName String? @db.NVarChar(200)
+
+  asmId   String? @db.NVarChar(50)
+  asmCode String? @db.NVarChar(100)
+  asmName String? @db.NVarChar(200)
+
+  rhId   String? @db.NVarChar(50)
+  rhCode String? @db.NVarChar(100)
+  rhName String? @db.NVarChar(200)
+
+  zhId   String? @db.NVarChar(50)
+  zhCode String? @db.NVarChar(100)
+  zhName String? @db.NVarChar(200)
+
+  nhId   String? @db.NVarChar(50)
+  nhCode String? @db.NVarChar(100)
+  nhName String? @db.NVarChar(200)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([dmCode])
+  @@index([asmCode])
+  @@index([rhCode])
+  @@index([zhCode])
+}

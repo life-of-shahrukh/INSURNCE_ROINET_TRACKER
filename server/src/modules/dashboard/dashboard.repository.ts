@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import type { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
+import { ExternalApiService } from '../../common/external-api/external-api.service';
 import {
   buildDealScopeWhere,
   buildPospScopeWhere,
-  collectPospIdsForSubtree,
+  districtIdsForCode,
+  scopeDistrictIds,
   type HierarchyScope,
 } from '../../common/auth/hierarchy-scope.util';
 import {
@@ -15,9 +17,21 @@ import {
 import type { DashboardQueryDto } from './dto/dashboard-query.dto';
 import type { DashboardStats } from './dashboard.types';
 
+/** Maps a subordinate level label to its DistrictHierarchy code column. */
+const LEVEL_TO_DISTRICT_COLUMN: Record<string, string> = {
+  NATIONAL_HEAD: 'nhCode',
+  ZH: 'zhCode',
+  RH: 'rhCode',
+  ASM: 'asmCode',
+  DM: 'dmCode',
+};
+
 @Injectable()
 export class DashboardRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly externalApi: ExternalApiService,
+  ) {}
 
   // ── scope helpers ──────────────────────────────────────────────────────────
 
@@ -52,31 +66,78 @@ export class DashboardRepository {
   }
 
   /**
-   * Resolves the effective scope for a drill-down selection.
-   * Priority: pospId > subordinateId > callerScope.
-   * For subordinateId, resolution is designation-aware (ZH/RH/ASM/DM).
+   * Resolves the effective scope for a drill-down selection (district-based).
+   * Priority: pospId > (subordinateLevel + subordinateCode) > callerScope.
+   *
+   * A subordinate selection narrows to the districts that subordinate covers,
+   * always intersected with the caller's own districts so the drill can only
+   * ever go *down* the caller's territory — never sideways or up.
    */
   private async resolveEffectiveScope(
     callerScope: HierarchyScope,
-    subordinateId: string | undefined,
+    subordinateLevel: string | undefined,
+    subordinateCode: string | undefined,
     pospId: string | undefined,
   ): Promise<HierarchyScope> {
     // Terminal POSP-level drill takes highest priority
     if (pospId) return { pospIds: [pospId] };
 
-    if (!subordinateId) return callerScope;
+    if (!subordinateLevel || !subordinateCode) return callerScope;
 
-    const sub = await this.prisma.salesTeam.findUnique({
-      where: { id: subordinateId },
-      select: { id: true },
-    });
-    if (!sub) return callerScope;
+    const column = LEVEL_TO_DISTRICT_COLUMN[subordinateLevel];
+    if (!column) return callerScope;
 
-    // Uniform rule: the selected member's scope is every POSP owned by their
-    // SalesTeam subtree (themselves + all descendants). This guarantees a
-    // selection only ever narrows to that member's own lower hierarchy.
-    const pospIds = await collectPospIdsForSubtree(this.prisma, sub.id);
-    return { pospIds };
+    let districtIds = await districtIdsForCode(
+      this.prisma,
+      column,
+      subordinateCode,
+    );
+
+    // Intersect with the caller's own districts (null = unrestricted caller).
+    const callerDistricts = scopeDistrictIds(callerScope);
+    if (callerDistricts !== null) {
+      const allowed = new Set(callerDistricts);
+      districtIds = districtIds.filter((id) => allowed.has(id));
+    }
+
+    return { districtIds };
+  }
+
+  /**
+   * Narrows a scope by an explicit geography selection (state / district /
+   * city), translated to a district set and intersected with the scope so it
+   * can only ever reduce what the caller already sees. A POSP-level scope is
+   * left untouched (geography is implied by the POSP).
+   */
+  private async applyGeoNarrowing(
+    scope: HierarchyScope,
+    filters: DashboardQueryDto,
+  ): Promise<HierarchyScope> {
+    const { stateId, districtId, cityId } = filters;
+    if (!stateId && !districtId && !cityId) return scope;
+    if (scope.pospIds !== undefined) return scope; // POSP drill — leave as-is
+
+    let geoDistricts: string[] | null = null;
+    if (districtId) {
+      geoDistricts = [districtId];
+    } else if (cityId) {
+      const city = this.externalApi
+        .listCities('')
+        .find((c) => c.CityId === cityId);
+      geoDistricts = city ? [city.DistrictId] : [];
+    } else if (stateId) {
+      const rows = await this.prisma.districtHierarchy.findMany({
+        where: { stateId },
+        select: { districtId: true },
+      });
+      geoDistricts = rows.map((r) => r.districtId);
+    }
+    if (geoDistricts === null) return scope;
+
+    const callerDistricts = scopeDistrictIds(scope);
+    if (callerDistricts === null) return { districtIds: geoDistricts };
+    const allowed = new Set(callerDistricts);
+    return { districtIds: geoDistricts.filter((id) => allowed.has(id)) };
   }
 
   private buildDealWhere(
@@ -122,11 +183,13 @@ export class DashboardRepository {
     filters: DashboardQueryDto,
     scope: HierarchyScope,
   ): Promise<DashboardStats> {
-    const effectiveScope = await this.resolveEffectiveScope(
+    let effectiveScope = await this.resolveEffectiveScope(
       scope,
-      filters.subordinateId,
+      filters.subordinateLevel,
+      filters.subordinateCode,
       filters.pospId,
     );
+    effectiveScope = await this.applyGeoNarrowing(effectiveScope, filters);
 
     const dealWhere = this.buildDealWhere(filters, effectiveScope);
     const leadWhere = await this.buildLeadWhere(filters, effectiveScope);

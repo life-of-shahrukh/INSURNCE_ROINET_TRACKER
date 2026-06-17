@@ -14,13 +14,19 @@ import { buildPaginatedResult } from '../../common/utils/pagination.util';
 import { Role } from '../../common/constants';
 import { AuthUser } from '../../common/auth/auth-user.interface';
 import { resolvePospScope } from '../../common/auth/posp-scope.util';
-import type { HierarchyScope } from '../../common/auth/hierarchy-scope.util';
+import {
+  districtIdsForCode,
+  scopeDistrictIds,
+  type HierarchyScope,
+} from '../../common/auth/hierarchy-scope.util';
+import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class PospService {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
+    private readonly prisma: PrismaService,
   ) {}
 
   async getAll(
@@ -37,7 +43,40 @@ export class PospService {
       )) as unknown as Posp;
       return buildPaginatedResult([posp], 1, 1, 1);
     }
-    return this.queryBus.execute(new GetAllPospQuery(filters, scope));
+    const effectiveScope = await this.applyManagerFilter(filters, scope);
+    return this.queryBus.execute(new GetAllPospQuery(filters, effectiveScope));
+  }
+
+  /**
+   * If the caller filters by a specific DM/ASM/RH, narrow the scope to the
+   * districts that manager covers — always intersected with the caller's own
+   * territory so the filter can never widen access.
+   */
+  private async applyManagerFilter(
+    filters: PospListQueryDto,
+    scope?: HierarchyScope,
+  ): Promise<HierarchyScope | undefined> {
+    const managerFilter: { column: string; code: string } | null =
+      filters.dmCode
+        ? { column: 'dmCode', code: filters.dmCode }
+        : filters.asmCode
+          ? { column: 'asmCode', code: filters.asmCode }
+          : filters.rhCode
+            ? { column: 'rhCode', code: filters.rhCode }
+            : null;
+    if (!managerFilter) return scope;
+
+    let districtIds = await districtIdsForCode(
+      this.prisma,
+      managerFilter.column,
+      managerFilter.code,
+    );
+    const callerDistricts = scope ? scopeDistrictIds(scope) : null;
+    if (callerDistricts !== null) {
+      const allowed = new Set(callerDistricts);
+      districtIds = districtIds.filter((id) => allowed.has(id));
+    }
+    return { districtIds };
   }
 
   create(dto: CreatePospDto, user: AuthUser): Promise<Posp> {

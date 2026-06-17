@@ -2,6 +2,7 @@ import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ExternalApiService } from './external-api.service';
 import { ExternalPospQueryDto } from './dto/external-posp-query.dto';
+import { ExternalHierarchyQueryDto } from './dto/external-hierarchy-query.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { RolesGuard } from '../guards/roles.guard';
 import { MinRole, Roles } from '../decorators/roles.decorator';
@@ -63,9 +64,11 @@ export class ExternalApiController {
   @MinRole(Role.RH)
   @ApiOperation({
     summary: 'Full district → DM → ASM → ZH → NH hierarchy (RH+)',
+    description:
+      'All params are optional. Pass districtId, userCode, or userId to filter by a specific district manager row.',
   })
-  listHierarchy() {
-    return this.externalApiService.listHierarchy();
+  listHierarchy(@Query() query: ExternalHierarchyQueryDto) {
+    return this.externalApiService.listHierarchy(query);
   }
 
   @Get('posps')

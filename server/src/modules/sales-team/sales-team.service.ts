@@ -93,11 +93,29 @@ export class SalesTeamService {
   }
 
   /**
+   * Canonical chain in ListHierarchyUserData (bottom → top):
+   * DistrictManager → R1 → R2 → R3 → R4. The R-labels are positional, not
+   * role names, so we map them to our roles explicitly.
+   */
+  private static readonly LEVEL_TO_DESIGNATION: Record<number, string> = {
+    1: 'DM', // DistrictManager
+    2: 'ASM', // R1
+    3: 'RH', // R2
+    4: 'ZH', // R3
+    5: 'NATIONAL_HEAD', // R4
+  };
+
+  /**
    * Sync sales team hierarchy from ListHierarchyUserData external API.
    * Creates a placeholder User if none exists for the given employee code,
-   * then upserts the SalesTeam record.
+   * then upserts the SalesTeam record with the correct designation and
+   * manager link derived from the district chain.
    */
-  async syncFromExternalApi(): Promise<{ synced: number }> {
+  async syncFromExternalApi(): Promise<{
+    members: number;
+    districts: number;
+    pospsGeo: number;
+  }> {
     this.logger.log('Starting sales team sync from external API...');
 
     let hierarchyData: HierarchyEntry[];
@@ -110,76 +128,196 @@ export class SalesTeamService {
       );
     }
 
-    // Collect unique users from all R1-R5 levels + DistrictManagers
-    const userMap = new Map<
+    // Collect unique people keyed by employee code, plus child→parent links.
+    const people = new Map<
       string,
-      { id: string; code: string; name: string; level: number }
+      { code: string; name: string; level: number }
     >();
+    const childToParent = new Map<string, string>();
+
+    const addPerson = (code: string, name: string, level: number): void => {
+      if (!code) return;
+      if (!people.has(code))
+        people.set(code, { code, name: name || code, level });
+    };
 
     for (const entry of hierarchyData) {
-      if (entry.DistrictManagerId) {
-        userMap.set(entry.DistrictManagerId, {
-          id: entry.DistrictManagerId,
-          code: entry.DistrictManagerCode,
-          name: entry.DistrictManagerName,
-          level: 1,
-        });
-      }
-      const levels = ['R1', 'R2', 'R3', 'R4', 'R5'] as const;
-      levels.forEach((r, idx) => {
-        const uid = entry[`${r}_UserId` as keyof typeof entry];
-        const ucode = entry[`${r}_UserCode` as keyof typeof entry];
-        const uname = entry[`${r}_UserName` as keyof typeof entry];
-        if (uid && ucode) {
-          userMap.set(uid, {
-            id: uid,
-            code: ucode,
-            name: uname,
-            level: idx + 2,
-          });
-        }
+      addPerson(entry.DistrictManagerCode, entry.DistrictManagerName, 1);
+      const rLevels = ['R1', 'R2', 'R3', 'R4'] as const;
+      rLevels.forEach((r, idx) => {
+        addPerson(
+          entry[`${r}_UserCode` as keyof typeof entry],
+          entry[`${r}_UserName` as keyof typeof entry],
+          idx + 2,
+        );
       });
+
+      // Ordered chain of codes bottom → top; each link is child → its parent.
+      const chain = [
+        entry.DistrictManagerCode,
+        entry.R1_UserCode,
+        entry.R2_UserCode,
+        entry.R3_UserCode,
+        entry.R4_UserCode,
+      ].filter((c): c is string => !!c);
+      for (let i = 0; i < chain.length - 1; i++) {
+        if (!childToParent.has(chain[i])) {
+          childToParent.set(chain[i], chain[i + 1]);
+        }
+      }
     }
 
-    let synced = 0;
-    for (const [, person] of userMap.entries()) {
-      if (!person.code) continue;
+    // Pass 1: upsert each person (designation + placeholder user).
+    let members = 0;
+    for (const person of people.values()) {
+      const designation =
+        SalesTeamService.LEVEL_TO_DESIGNATION[person.level] ?? 'DM';
       try {
-        // Ensure a User record exists (placeholder for sync)
-        let user = await this.prisma.user.findFirst({
-          where: { email: `${person.code.toLowerCase()}@roinet.sync` },
-        });
-
+        const email = `${person.code.toLowerCase()}@roinet.sync`;
+        let user = await this.prisma.user.findFirst({ where: { email } });
         if (!user) {
           user = await this.prisma.user.create({
             data: {
-              email: `${person.code.toLowerCase()}@roinet.sync`,
+              email,
               passwordHash: 'sync-placeholder',
-              role: 'SALES_TEAM',
+              role: designation,
               status: 'ACTIVE',
             },
+          });
+        } else if (user.role !== designation) {
+          await this.prisma.user.update({
+            where: { id: user.id },
+            data: { role: designation },
           });
         }
 
         await this.repository.upsertByEmployeeCode(person.code, {
           user: { connect: { id: user.id } },
-          name: person.name || person.code,
+          name: person.name,
           employeeCode: person.code,
-          designation:
-            person.level === 1 ? 'ASM' : person.level === 2 ? 'RH' : 'ZH',
+          designation,
           mobile: '0000000000',
-          email: `${person.code.toLowerCase()}@roinet.sync`,
+          email,
           joiningDate: new Date(),
         });
-
-        synced++;
+        members++;
       } catch (err) {
         this.logger.warn(`Failed to sync user ${person.code}: ${err}`);
       }
     }
 
-    this.logger.log(`Sync complete. Synced ${synced} team members.`);
-    return { synced };
+    // Pass 2: wire up manager links now that every SalesTeam row exists.
+    const codeToId = new Map<string, string>();
+    const rows = await this.prisma.salesTeam.findMany({
+      select: { id: true, employeeCode: true },
+    });
+    for (const r of rows) codeToId.set(r.employeeCode, r.id);
+    for (const [childCode, parentCode] of childToParent.entries()) {
+      const childId = codeToId.get(childCode);
+      const parentId = codeToId.get(parentCode);
+      if (childId && parentId && childId !== parentId) {
+        await this.prisma.salesTeam
+          .update({ where: { id: childId }, data: { managerId: parentId } })
+          .catch((err) =>
+            this.logger.warn(`Failed to link ${childCode}: ${err}`),
+          );
+      }
+    }
+
+    const districts = await this.syncDistrictHierarchy(hierarchyData);
+    const pospsGeo = await this.syncPospGeography();
+
+    this.logger.log(
+      `Sync complete. members=${members} districts=${districts} pospsGeo=${pospsGeo}`,
+    );
+    return { members, districts, pospsGeo };
+  }
+
+  /**
+   * Upserts one DistrictHierarchy row per ListHierarchyUserData entry. This is
+   * the source of truth for geographic scoping: a manager covers a district
+   * when their code appears in the matching level column.
+   */
+  async syncDistrictHierarchy(
+    hierarchyData?: HierarchyEntry[],
+  ): Promise<number> {
+    const data = hierarchyData ?? this.externalApiService.listHierarchy();
+
+    // districtId → stateId map from the districts snapshot (hierarchy rows
+    // carry no stateId of their own).
+    const stateByDistrict = new Map<string, string>();
+    try {
+      for (const d of this.externalApiService.listDistricts('')) {
+        stateByDistrict.set(d.DistrictId, d.StateId);
+      }
+    } catch {
+      // districts snapshot optional; stateId stays null if unavailable
+    }
+
+    let count = 0;
+    for (const e of data) {
+      if (!e.DistrictId) continue;
+      const payload = {
+        districtName: e.DistrictName || null,
+        stateId: stateByDistrict.get(e.DistrictId) ?? null,
+        dmId: e.DistrictManagerId || null,
+        dmCode: e.DistrictManagerCode || null,
+        dmName: e.DistrictManagerName || null,
+        asmId: e.R1_UserId || null,
+        asmCode: e.R1_UserCode || null,
+        asmName: e.R1_UserName || null,
+        rhId: e.R2_UserId || null,
+        rhCode: e.R2_UserCode || null,
+        rhName: e.R2_UserName || null,
+        zhId: e.R3_UserId || null,
+        zhCode: e.R3_UserCode || null,
+        zhName: e.R3_UserName || null,
+        nhId: e.R4_UserId || null,
+        nhCode: e.R4_UserCode || null,
+        nhName: e.R4_UserName || null,
+      };
+      try {
+        await this.prisma.districtHierarchy.upsert({
+          where: { districtId: e.DistrictId },
+          create: { districtId: e.DistrictId, ...payload },
+          update: payload,
+        });
+        count++;
+      } catch (err) {
+        this.logger.warn(`Failed to upsert district ${e.DistrictId}: ${err}`);
+      }
+    }
+    this.logger.log(`Synced ${count} district hierarchy rows.`);
+    return count;
+  }
+
+  /**
+   * Backfills Posp.districtId/stateId/cityId from ListPospData. SSO login
+   * already populates this per-POSP; this fills in everyone else.
+   */
+  async syncPospGeography(): Promise<number> {
+    let posps;
+    try {
+      posps = this.externalApiService.listAllPosps();
+    } catch (err) {
+      this.logger.warn(`Failed to read POSP snapshot for geo sync: ${err}`);
+      return 0;
+    }
+
+    let count = 0;
+    for (const p of posps) {
+      const res = await this.prisma.posp.updateMany({
+        where: { OR: [{ code: p.UserCode }, { externalId: p.UserId }] },
+        data: {
+          districtId: p.districtid || null,
+          stateId: p.stateid || null,
+          cityId: p.cityid || null,
+        },
+      });
+      count += res.count;
+    }
+    this.logger.log(`Synced geography for ${count} POSPs.`);
+    return count;
   }
 
   /**

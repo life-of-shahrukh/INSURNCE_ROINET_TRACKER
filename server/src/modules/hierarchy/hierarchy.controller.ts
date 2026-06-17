@@ -15,7 +15,7 @@ import { ResolvedScope } from '../../common/decorators/scope.decorator';
 import type { AuthUser } from '../../common/auth/auth-user.interface';
 import type { HierarchyScope } from '../../common/auth/hierarchy-scope.util';
 import { HierarchyScopeInterceptor } from '../../common/interceptors/hierarchy-scope.interceptor';
-import { HierarchyService } from './hierarchy.service';
+import { HierarchyService, type LevelRole } from './hierarchy.service';
 
 @ApiTags('Hierarchy')
 @Controller('hierarchy')
@@ -59,11 +59,15 @@ export class HierarchyController {
   )
   @ApiOperation({
     summary:
-      'Get direct children (SalesTeam members or POSPs) under a specific SalesTeam member',
+      'Drill into a specific manager (by level + code) and get the next level down',
     description:
-      'Returns members (next-level managers) and posps for the given salesTeamId. Used by the cascading drill-down scope bar.',
+      'Returns the next-level managers (or POSPs when drilling into a DM) under the selected person, intersected with the caller scope so siblings and out-of-territory data are never exposed.',
   })
-  getSubordinatesForMember(@Query('salesTeamId') salesTeamId: string) {
-    return this.hierarchyService.getSubordinatesForMember(salesTeamId);
+  getSubordinatesByCode(
+    @Query('level') level: LevelRole,
+    @Query('code') code: string,
+    @ResolvedScope() scope: HierarchyScope,
+  ) {
+    return this.hierarchyService.getSubordinatesByCode(level, code, scope);
   }
 }

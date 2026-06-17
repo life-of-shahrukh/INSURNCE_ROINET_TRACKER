@@ -7,15 +7,25 @@ export interface FilterOptionItem {
 }
 
 export interface HierarchyFilterOptions {
-  zones: FilterOptionItem[];
-  regions: FilterOptionItem[];
-  areas: FilterOptionItem[];
-  districts: FilterOptionItem[];
+  /** Caller's own role */
+  callerRole: string;
+  /** Role label directly below the caller ('POSP' if caller is a DM) */
+  nextLevel: string | null;
+  /** Particular people at `nextLevel` within the caller's scope */
   subordinates: FilterOptionItem[];
-  posps: FilterOptionItem[];
+  /** Geographic dimensions, scoped to the caller's territory */
+  states: FilterOptionItem[];
+  districts: FilterOptionItem[];
+  cities: FilterOptionItem[];
+  /** Manager-level dimensions, scoped to the caller's territory */
+  dms: FilterOptionItem[];
+  asms: FilterOptionItem[];
+  rhs: FilterOptionItem[];
 }
 
 export interface SubordinatesResult {
+  /** Role label of `members` ('POSP' returns `posps` instead) */
+  nextLevel: string | null;
   members: FilterOptionItem[];
   posps: FilterOptionItem[];
 }
@@ -25,9 +35,10 @@ export const hierarchyApi = {
     return request<HierarchyFilterOptions>('/api/hierarchy/filter-options');
   },
 
-  getSubordinates(salesTeamId: string): Promise<SubordinatesResult> {
+  /** Drill into a specific manager (identified by level + external code). */
+  getSubordinates(level: string, code: string): Promise<SubordinatesResult> {
     return request<SubordinatesResult>(
-      `/api/hierarchy/subordinates?salesTeamId=${encodeURIComponent(salesTeamId)}`,
+      `/api/hierarchy/subordinates?level=${encodeURIComponent(level)}&code=${encodeURIComponent(code)}`,
     );
   },
 };

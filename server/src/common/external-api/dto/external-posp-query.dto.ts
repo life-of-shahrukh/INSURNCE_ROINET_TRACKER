@@ -19,22 +19,21 @@ export class ExternalPospQueryDto {
   pageSize?: number = 20;
 
   @ApiPropertyOptional({
-    description:
-      'Free-text search by UserCode, Email, Mobile, City, or HephGcdCode',
+    description: 'Free-text search by UserCode, Email, Mobile, or HephGcdCode',
   })
   @IsOptional()
   @IsString()
   search?: string;
 
   @ApiPropertyOptional({
-    description: 'Filter by ResidenceState name (case-insensitive)',
+    description: 'Filter by state name (resolved to stateId via snapshot)',
   })
   @IsOptional()
   @IsString()
   state?: string;
 
   @ApiPropertyOptional({
-    description: 'Filter by ResidenceCity name (case-insensitive)',
+    description: 'Filter by city name (resolved to cityId via snapshot)',
   })
   @IsOptional()
   @IsString()
@@ -70,9 +69,32 @@ export class ExternalPospQueryDto {
 
   @ApiPropertyOptional({
     description:
-      'Filter by CityId (Cognitensor). Passed to live API only — snapshot data has no city IDs.',
+      'Filter by CityId (Cognitensor). In live mode passed to API; in snapshot mode matched against Posp.cityid.',
   })
   @IsOptional()
   @IsString()
   cityId?: string;
+
+  // ── Manager-level filters (resolved to a district set via DistrictHierarchy) ─
+
+  @ApiPropertyOptional({
+    description: 'Group/filter POSPs by a specific District Manager (code)',
+  })
+  @IsOptional()
+  @IsString()
+  dmCode?: string;
+
+  @ApiPropertyOptional({
+    description: 'Group/filter POSPs by a specific ASM (code)',
+  })
+  @IsOptional()
+  @IsString()
+  asmCode?: string;
+
+  @ApiPropertyOptional({
+    description: 'Group/filter POSPs by a specific RH (code)',
+  })
+  @IsOptional()
+  @IsString()
+  rhCode?: string;
 }

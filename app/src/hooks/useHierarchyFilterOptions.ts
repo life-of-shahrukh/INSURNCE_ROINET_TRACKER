@@ -2,12 +2,15 @@ import { useQuery } from "@tanstack/react-query";
 import { hierarchyApi, type HierarchyFilterOptions } from "@/lib/api/hierarchy-api";
 
 const EMPTY: HierarchyFilterOptions = {
-  zones: [],
-  regions: [],
-  areas: [],
-  districts: [],
+  callerRole: "",
+  nextLevel: null,
   subordinates: [],
-  posps: [],
+  states: [],
+  districts: [],
+  cities: [],
+  dms: [],
+  asms: [],
+  rhs: [],
 };
 
 export function useHierarchyFilterOptions() {

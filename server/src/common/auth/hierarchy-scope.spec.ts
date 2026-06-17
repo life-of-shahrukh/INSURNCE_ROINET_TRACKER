@@ -24,25 +24,22 @@ function mockUser(role: Role, extra: Partial<AuthUser> = {}): AuthUser {
   };
 }
 
-/** Minimal Prisma mock that simulates the database */
+/**
+ * Minimal Prisma mock for the district-based scope model.
+ * A manager's scope is resolved from DistrictHierarchy by their employeeCode.
+ */
 function makePrismaMock(overrides: Record<string, unknown> = {}): unknown {
   return {
     salesTeam: {
-      findUnique: jest.fn().mockResolvedValue({
-        id: 'st-1',
-        zoneId: 'zone-north',
-        regionId: 'region-delhi',
-        areaId: 'area-central',
-        districtId: 'district-cp',
-      }),
+      findUnique: jest.fn().mockResolvedValue({ employeeCode: 'EMP-1' }),
     },
-    posp: {
+    districtHierarchy: {
       findMany: jest
         .fn()
         .mockResolvedValue([
-          { id: 'posp-1' },
-          { id: 'posp-2' },
-          { id: 'posp-3' },
+          { districtId: 'd-1' },
+          { districtId: 'd-2' },
+          { districtId: 'd-3' },
         ]),
     },
     ...overrides,
@@ -81,33 +78,33 @@ describe('resolveHierarchyScope', () => {
     );
   });
 
-  it('ZH gets zoneIds from SalesTeam record', async () => {
+  it('ZH gets districtIds from DistrictHierarchy', async () => {
     const user = mockUser(Role.ZH);
     const prisma = makePrismaMock() as never;
     const scope = await resolveHierarchyScope(user, prisma);
-    expect(scope).toEqual({ zoneIds: ['zone-north'] });
+    expect(scope).toEqual({ districtIds: ['d-1', 'd-2', 'd-3'] });
   });
 
-  it('RH gets regionIds from SalesTeam record', async () => {
+  it('RH gets districtIds from DistrictHierarchy', async () => {
     const user = mockUser(Role.RH);
     const prisma = makePrismaMock() as never;
     const scope = await resolveHierarchyScope(user, prisma);
-    expect(scope).toEqual({ regionIds: ['region-delhi'] });
+    expect(scope).toEqual({ districtIds: ['d-1', 'd-2', 'd-3'] });
   });
 
-  it('ASM gets pospIds of managed POSPs', async () => {
+  it('ASM gets districtIds from DistrictHierarchy', async () => {
     const user = mockUser(Role.ASM);
     const prisma = makePrismaMock() as never;
     const scope = await resolveHierarchyScope(user, prisma);
-    expect(scope).toEqual({ pospIds: ['posp-1', 'posp-2', 'posp-3'] });
+    expect(scope).toEqual({ districtIds: ['d-1', 'd-2', 'd-3'] });
   });
 
-  it('DM gets pospIds in their district', async () => {
+  it('DM gets districtIds in their territory', async () => {
     const user = mockUser(Role.DM);
     const prisma = makePrismaMock() as never;
     const scope = await resolveHierarchyScope(user, prisma);
-    expect(scope.pospIds).toBeDefined();
-    expect(Array.isArray(scope.pospIds)).toBe(true);
+    expect(scope.districtIds).toBeDefined();
+    expect(Array.isArray(scope.districtIds)).toBe(true);
   });
 
   it('ZH/RH/ASM/DM with no SalesTeam record get no access', async () => {
@@ -116,7 +113,7 @@ describe('resolveHierarchyScope', () => {
       salesTeam: { findUnique: jest.fn().mockResolvedValue(null) },
     }) as never;
     const scope = await resolveHierarchyScope(user, prisma);
-    expect(scope).toEqual({ pospIds: [] });
+    expect(scope).toEqual({ districtIds: [] });
   });
 });
 

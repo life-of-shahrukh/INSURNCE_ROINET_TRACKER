@@ -4,13 +4,20 @@ import {
   type SubordinatesResult,
 } from "@/lib/api/hierarchy-api";
 
-const EMPTY: SubordinatesResult = { members: [], posps: [] };
+const EMPTY: SubordinatesResult = { nextLevel: null, members: [], posps: [] };
 
-export function useHierarchyChildren(salesTeamId: string | undefined) {
+/**
+ * Fetches the next level down under a selected manager (by level + code).
+ * Disabled until both `level` and `code` are present.
+ */
+export function useHierarchyChildren(
+  level: string | undefined,
+  code: string | undefined,
+) {
   return useQuery({
-    queryKey: ["hierarchy", "children", salesTeamId],
-    queryFn: () => hierarchyApi.getSubordinates(salesTeamId!),
-    enabled: !!salesTeamId,
+    queryKey: ["hierarchy", "children", level, code],
+    queryFn: () => hierarchyApi.getSubordinates(level!, code!),
+    enabled: !!level && !!code,
     staleTime: 1000 * 60 * 2,
     placeholderData: EMPTY,
   });

@@ -69,14 +69,47 @@ export async function collectPospIdsForSubtree(
 }
 
 /**
- * Resolves which data territory a user can access based on their role
- * and organizational position in the SalesTeam hierarchy.
+ * Maps a management role to the DistrictHierarchy column that holds that
+ * role's code. A manager covers every district where their code appears in
+ * the matching column. SUPER_ADMIN / NATIONAL_HEAD are unrestricted (handled
+ * separately) and POSP is resolved by its own id.
+ */
+const ROLE_TO_DISTRICT_COLUMN: Partial<Record<Role, string>> = {
+  [Role.ZH]: 'zhCode',
+  [Role.RH]: 'rhCode',
+  [Role.ASM]: 'asmCode',
+  [Role.DM]: 'dmCode',
+};
+
+/**
+ * Collects the district ids a manager (identified by their external code)
+ * covers at a given level.
+ */
+export async function districtIdsForCode(
+  prisma: PrismaService,
+  column: string,
+  code: string,
+): Promise<string[]> {
+  const rows = await prisma.districtHierarchy.findMany({
+    where: { [column]: code },
+    select: { districtId: true },
+  });
+  return rows.map((r) => r.districtId);
+}
+
+/**
+ * Resolves which data territory a user can access based on their role.
+ *
+ * The model is geographic: every POSP belongs to a district
+ * (`Posp.districtId`), and the management chain above each district
+ * (DM → ASM → RH → ZH → NH) is stored in `DistrictHierarchy`. A manager's
+ * scope is therefore the set of districts where their code appears in the
+ * column for their role.
  *
  * Rules:
  *  - SUPER_ADMIN / NATIONAL_HEAD → empty scope = all data
- *  - POSP → [user.pospId]
- *  - Every management role (ZH/RH/ASM/DM) → pospIds owned by their SalesTeam
- *    subtree. This uniform rule means each node sees itself + descendants only.
+ *  - POSP → { pospIds: [self] }
+ *  - ZH / RH / ASM / DM → { districtIds } from DistrictHierarchy
  */
 export async function resolveHierarchyScope(
   user: AuthUser,
@@ -94,18 +127,34 @@ export async function resolveHierarchyScope(
     return { pospIds: [user.pospId] };
   }
 
-  // Management roles — resolve POSP ownership via the SalesTeam subtree.
+  const column = ROLE_TO_DISTRICT_COLUMN[role];
+  if (!column) return { districtIds: [] };
+
   const salesTeam = await prisma.salesTeam.findUnique({
     where: { userId: user.userId },
-    select: { id: true },
+    select: { employeeCode: true },
   });
-
   if (!salesTeam) {
-    return { pospIds: [] }; // no salesTeam record = no access
+    return { districtIds: [] }; // no salesTeam record = no access
   }
 
-  const pospIds = await collectPospIdsForSubtree(prisma, salesTeam.id);
-  return { pospIds };
+  const districtIds = await districtIdsForCode(
+    prisma,
+    column,
+    salesTeam.employeeCode,
+  );
+  return { districtIds };
+}
+
+/**
+ * Returns the explicit district id list a scope covers, or `null` for an
+ * unrestricted scope (SUPER_ADMIN / NATIONAL_HEAD). A non-district scope
+ * (e.g. POSP) returns `[]` (no manager-level territory).
+ */
+export function scopeDistrictIds(scope: HierarchyScope): string[] | null {
+  if (!scope || Object.keys(scope).length === 0) return null;
+  if (scope.districtIds) return scope.districtIds;
+  return [];
 }
 
 /**

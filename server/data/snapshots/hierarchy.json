@@ -9814,28 +9814,6 @@
                      "R5_UserName":  ""
                  },
                  {
-                     "DistrictId":  "567",
-                     "DistrictName":  "DARJEELING",
-                     "DistrictManagerId":  "556859",
-                     "DistrictManagerCode":  "SUMIT.ASMWB",
-                     "DistrictManagerName":  "SUMIT KANU ASM WB",
-                     "R1_UserId":  "558275",
-                     "R1_UserCode":  "TAPAS.RHWB",
-                     "R1_UserName":  "TAPAS KARMAKAR RH WB",
-                     "R2_UserId":  "592240",
-                     "R2_UserCode":  "HARI.DUTT",
-                     "R2_UserName":  "Hari Dutt",
-                     "R3_UserId":  "79",
-                     "R3_UserCode":  "VIVEK",
-                     "R3_UserName":  "VIVEK GUPTA",
-                     "R4_UserId":  "",
-                     "R4_UserCode":  "",
-                     "R4_UserName":  "",
-                     "R5_UserId":  "",
-                     "R5_UserCode":  "",
-                     "R5_UserName":  ""
-                 },
-                 {
                      "DistrictId":  "568",
                      "DistrictName":  "JALPAIGURI",
                      "DistrictManagerId":  "556859",

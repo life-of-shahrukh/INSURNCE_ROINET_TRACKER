@@ -51,10 +51,9 @@ interface PospSnapshotRow {
   UserCode: string;
   MobileNo: string;
   EmailId: string;
-  ResidenceState: string;
-  ResidenceCity: string;
-  CompanyState: string;
-  CompanyCity: string;
+  districtid: string;
+  stateid: string;
+  cityid: string;
   HephGcdCode: string;
   CreatedDate: string;
   CreatedBy: string;
@@ -125,14 +124,18 @@ async function seedPosps(): Promise<void> {
           email,
           joined: joinedDate,
           active: true,
-          region: row.ResidenceState,
+          districtId: row.districtid || null,
+          stateId: row.stateid || null,
+          cityId: row.cityid || null,
         },
         update: {
           externalId: row.UserId,
           gcdCode: row.HephGcdCode ?? null,
           mobile: row.MobileNo ?? '',
           email,
-          region: row.ResidenceState,
+          districtId: row.districtid || null,
+          stateId: row.stateid || null,
+          cityId: row.cityid || null,
         },
       });
 
@@ -192,35 +195,35 @@ function extractHierarchyUsers(
         code: row.DistrictManagerCode,
         name: row.DistrictManagerName,
         role: 'DM',
-        designation: 'District Manager',
+        designation: 'DM',
       },
       {
         userId: row.R1_UserId,
         code: row.R1_UserCode,
         name: row.R1_UserName,
         role: 'ASM',
-        designation: 'Area Sales Manager',
+        designation: 'ASM',
       },
       {
         userId: row.R2_UserId,
         code: row.R2_UserCode,
         name: row.R2_UserName,
         role: 'RH',
-        designation: 'Regional Head',
+        designation: 'RH',
       },
       {
         userId: row.R3_UserId,
         code: row.R3_UserCode,
         name: row.R3_UserName,
-        role: 'NATIONAL_HEAD',
-        designation: 'National Head',
+        role: 'ZH',
+        designation: 'ZH',
       },
       {
         userId: row.R4_UserId,
         code: row.R4_UserCode,
         name: row.R4_UserName,
-        role: 'SUPER_ADMIN',
-        designation: 'Super Admin',
+        role: 'NATIONAL_HEAD',
+        designation: 'NATIONAL_HEAD',
       },
     ];
 
@@ -303,12 +306,101 @@ async function seedHierarchyUsers(): Promise<void> {
   console.log(`  ✓ created=${created}  updated=${updated}  errors=${errors}`);
 }
 
+// ── Phase C: District hierarchy + manager links ────────────────────────────
+
+interface DistrictSnapshotRow {
+  StateId: string;
+  DistrictId: string;
+  DistrictName: string;
+}
+
+async function seedDistrictHierarchy(): Promise<void> {
+  const rows = readSnapshot<HierarchySnapshotRow>('hierarchy.json');
+  console.log(`\n🗺️  Phase C: seeding ${rows.length} district hierarchy rows…`);
+
+  const stateByDistrict = new Map<string, string>();
+  try {
+    for (const d of readSnapshot<DistrictSnapshotRow>(
+      'districts-sample.json',
+    )) {
+      stateByDistrict.set(d.DistrictId, d.StateId);
+    }
+  } catch {
+    /* optional */
+  }
+
+  let count = 0;
+  for (const e of rows) {
+    if (!e.DistrictId) continue;
+    const payload = {
+      districtName: e.DistrictName || null,
+      stateId: stateByDistrict.get(e.DistrictId) ?? null,
+      dmId: e.DistrictManagerId || null,
+      dmCode: e.DistrictManagerCode || null,
+      dmName: e.DistrictManagerName || null,
+      asmId: e.R1_UserId || null,
+      asmCode: e.R1_UserCode || null,
+      asmName: e.R1_UserName || null,
+      rhId: e.R2_UserId || null,
+      rhCode: e.R2_UserCode || null,
+      rhName: e.R2_UserName || null,
+      zhId: e.R3_UserId || null,
+      zhCode: e.R3_UserCode || null,
+      zhName: e.R3_UserName || null,
+      nhId: e.R4_UserId || null,
+      nhCode: e.R4_UserCode || null,
+      nhName: e.R4_UserName || null,
+    };
+    await prisma.districtHierarchy.upsert({
+      where: { districtId: e.DistrictId },
+      create: { districtId: e.DistrictId, ...payload },
+      update: payload,
+    });
+    count++;
+  }
+  console.log(`  ✓ upserted=${count}`);
+
+  // Wire SalesTeam.managerId from the district chain (child → parent).
+  const childToParent = new Map<string, string>();
+  for (const e of rows) {
+    const chain = [
+      e.DistrictManagerCode,
+      e.R1_UserCode,
+      e.R2_UserCode,
+      e.R3_UserCode,
+      e.R4_UserCode,
+    ].filter((c): c is string => !!c);
+    for (let i = 0; i < chain.length - 1; i++) {
+      if (!childToParent.has(chain[i]))
+        childToParent.set(chain[i], chain[i + 1]);
+    }
+  }
+  const team = await prisma.salesTeam.findMany({
+    select: { id: true, employeeCode: true },
+  });
+  const codeToId = new Map(team.map((t) => [t.employeeCode, t.id]));
+  let linked = 0;
+  for (const [childCode, parentCode] of childToParent.entries()) {
+    const childId = codeToId.get(childCode);
+    const parentId = codeToId.get(parentCode);
+    if (childId && parentId && childId !== parentId) {
+      await prisma.salesTeam.update({
+        where: { id: childId },
+        data: { managerId: parentId },
+      });
+      linked++;
+    }
+  }
+  console.log(`  ✓ manager links=${linked}`);
+}
+
 // ── main ───────────────────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
   console.log('🚀 sync-from-snapshots — start');
   await seedPosps();
   await seedHierarchyUsers();
+  await seedDistrictHierarchy();
   console.log('\n✅ Done!');
 }
 

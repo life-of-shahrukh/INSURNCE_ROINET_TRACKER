@@ -69,7 +69,7 @@ export default function DashboardPage(): React.ReactElement {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [scopeDrill, setScopeDrill] = useState<DashboardScope>({
-    salesTeamPath: [],
+    path: [],
   });
 
   const { data: filterOptions } = useHierarchyFilterOptions();
@@ -83,13 +83,20 @@ export default function DashboardPage(): React.ReactElement {
     } else {
       p.set("dateRange", period === "day" ? "today" : period);
     }
-    // Cascading drill-down: pospId takes priority, then deepest SalesTeam selection
+    // Cascading drill-down: pospId takes priority, then deepest manager selection
     if (scopeDrill.posp) {
       p.set("pospId", scopeDrill.posp.id);
     } else {
-      const lastSalesTeamId = scopeDrill.salesTeamPath.at(-1)?.id;
-      if (lastSalesTeamId) p.set("subordinateId", lastSalesTeamId);
+      const last = scopeDrill.path.at(-1);
+      if (last) {
+        p.set("subordinateLevel", last.level);
+        p.set("subordinateCode", last.id);
+      }
     }
+    // Scoped geographic narrowing (independent of the manager cascade)
+    if (scopeDrill.geo?.districtId) p.set("districtId", scopeDrill.geo.districtId);
+    else if (scopeDrill.geo?.cityId) p.set("cityId", scopeDrill.geo.cityId);
+    else if (scopeDrill.geo?.stateId) p.set("stateId", scopeDrill.geo.stateId);
     return p;
   }, [period, dateFrom, dateTo, scopeDrill]);
 
@@ -164,7 +171,19 @@ export default function DashboardPage(): React.ReactElement {
 
       <DashboardScopeBar
         role={role}
-        options={filterOptions ?? { zones: [], regions: [], areas: [], districts: [], subordinates: [], posps: [] }}
+        options={
+          filterOptions ?? {
+            callerRole: "",
+            nextLevel: null,
+            subordinates: [],
+            states: [],
+            districts: [],
+            cities: [],
+            dms: [],
+            asms: [],
+            rhs: [],
+          }
+        }
         scope={scopeDrill}
         onChange={setScopeDrill}
       />

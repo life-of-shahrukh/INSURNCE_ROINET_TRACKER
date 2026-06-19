@@ -13,6 +13,7 @@ import { QuickAddCustomerModal } from "@/components/customer/QuickAddCustomerMod
 import { dealFormSchema, type DealFormValues } from "@/lib/schemas";
 import type { Deal, DealInput, DealStatus } from "@/lib/types";
 import type { Customer } from "@/lib/api/customer-api";
+import { formatPospLabel } from "@/lib/posp-display";
 
 interface DealModalProps {
   open: boolean;
@@ -255,7 +256,7 @@ export function DealModal({ open, deal, onClose }: DealModalProps) {
               )}
               {activePosp.map((p) => (
                 <option key={p.id} value={p.id}>
-                  {p.name} ({p.code})
+                  {formatPospLabel(p.name, p.code)}
                 </option>
               ))}
             </select>

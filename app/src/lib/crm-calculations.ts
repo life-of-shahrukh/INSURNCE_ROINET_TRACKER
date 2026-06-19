@@ -1,10 +1,11 @@
 import { CRM_SESSION_DATE } from "./constants";
 import type { Deal, Posp } from "./types";
+import { formatPospLabel, pospLabelFromParts } from "./posp-display";
 
 export function pospName(posp: Posp[], id: string | null): string {
   if (!id) return "—";
   const p = posp.find((x) => x.id === id);
-  return p ? p.name : "–";
+  return p ? formatPospLabel(p.name, p.code) : "–";
 }
 
 /** Prefer API-joined posp on the deal; fall back to roster lookup. */
@@ -12,7 +13,9 @@ export function dealPospLabel(
   deal: Pick<Deal, "pospId" | "posp">,
   roster: Posp[] = [],
 ): string {
-  if (deal.posp?.name) return deal.posp.name;
+  if (deal.posp?.name) {
+    return formatPospLabel(deal.posp.name, deal.posp.code);
+  }
   if (deal.pospId) {
     const fromRoster = pospName(roster, deal.pospId);
     if (fromRoster !== "–") return fromRoster;
@@ -20,6 +23,8 @@ export function dealPospLabel(
   if (!deal.pospId) return "Self";
   return "—";
 }
+
+export { formatPospLabel, pospLabelFromParts };
 
 /** Effective COA in rupees. Prefers the backend-computed coaAmount, falling back to raw coa. */
 export function effectiveCoa(d: Pick<Deal, "coa" | "coaAmount">): number {

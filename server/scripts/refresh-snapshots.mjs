@@ -29,6 +29,10 @@ async function post(endpoint, body) {
 
 function write(filename, data) {
   const file = path.join(SNAPSHOT_DIR, filename);
+  if (!Array.isArray(data) || data.length === 0) {
+    console.warn(`  ⚠ skip ${filename} — live API returned 0 rows (VPN/UAT down?)`);
+    return;
+  }
   fs.writeFileSync(file, JSON.stringify({ Data: data }, null, 2), 'utf-8');
   console.log(`  ✓ ${filename.padEnd(22)} ${data.length} rows`);
 }

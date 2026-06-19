@@ -98,6 +98,7 @@ export class UserRepository {
     code: string,
     data: {
       externalId: string;
+      name: string;
       mobile: string;
       email: string;
       gcdCode: string;
@@ -110,6 +111,7 @@ export class UserRepository {
       where: { code },
       data: {
         externalId: data.externalId,
+        name: data.name,
         mobile: data.mobile,
         email: data.email,
         gcdCode: data.gcdCode,

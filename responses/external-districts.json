@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-06-17T16:02:09.465Z",
+  "capturedAt": "2026-06-19T16:44:35.840Z",
   "method": "GET",
   "path": "/api/external/districts?stateId=25",
   "baseUrl": "http://localhost:8000",
@@ -11,257 +11,461 @@
     {
       "StateId": "25",
       "DistrictId": "270",
-      "DistrictName": "BHOPAL"
+      "DistrictName": "BHOPAL",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "271",
-      "DistrictName": "RAISEN"
+      "DistrictName": "RAISEN",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "272",
-      "DistrictName": "RAJGARH"
+      "DistrictName": "RAJGARH",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "273",
-      "DistrictName": "SEHORE"
+      "DistrictName": "SEHORE",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "274",
-      "DistrictName": "VIDISHA"
+      "DistrictName": "VIDISHA",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "275",
-      "DistrictName": "MORENA"
+      "DistrictName": "MORENA",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "276",
-      "DistrictName": "SHEOPUR"
+      "DistrictName": "SHEOPUR",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "277",
-      "DistrictName": "BHIND"
+      "DistrictName": "BHIND",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "278",
-      "DistrictName": "ASHOKNAGAR"
+      "DistrictName": "ASHOKNAGAR",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "279",
-      "DistrictName": "SHIVPURI"
+      "DistrictName": "SHIVPURI",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "280",
-      "DistrictName": "DATIA"
+      "DistrictName": "DATIA",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "281",
-      "DistrictName": "GUNA"
+      "DistrictName": "GUNA",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "282",
-      "DistrictName": "GWALIOR"
+      "DistrictName": "GWALIOR",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "283",
-      "DistrictName": "ALIRAJPUR"
+      "DistrictName": "ALIRAJPUR",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "284",
-      "DistrictName": "BARWANI"
+      "DistrictName": "BARWANI",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "285",
-      "DistrictName": "BURHANPUR"
+      "DistrictName": "BURHANPUR",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "286",
-      "DistrictName": "DHAR"
+      "DistrictName": "DHAR",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "287",
-      "DistrictName": "INDORE"
+      "DistrictName": "INDORE",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "288",
-      "DistrictName": "JHABUA"
+      "DistrictName": "JHABUA",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "289",
-      "DistrictName": "KHANDWA"
+      "DistrictName": "KHANDWA",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "290",
-      "DistrictName": "KHARGONE"
+      "DistrictName": "KHARGONE",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "291",
-      "DistrictName": "BALAGHAT"
+      "DistrictName": "BALAGHAT",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "292",
-      "DistrictName": "CHHINDWARA"
+      "DistrictName": "CHHINDWARA",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "293",
-      "DistrictName": "JABALPUR"
+      "DistrictName": "JABALPUR",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "294",
-      "DistrictName": "KATNI"
+      "DistrictName": "KATNI",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "295",
-      "DistrictName": "MANDLA"
+      "DistrictName": "MANDLA",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "296",
-      "DistrictName": "NARSINGHPUR"
+      "DistrictName": "NARSINGHPUR",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "297",
-      "DistrictName": "SEONI"
+      "DistrictName": "SEONI",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "298",
-      "DistrictName": "BETUL"
+      "DistrictName": "BETUL",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "299",
-      "DistrictName": "HARDA"
+      "DistrictName": "HARDA",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "300",
-      "DistrictName": "HOSHANGABAD"
+      "DistrictName": "HOSHANGABAD",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "301",
-      "DistrictName": "REWA"
+      "DistrictName": "REWA",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "302",
-      "DistrictName": "SATNA"
+      "DistrictName": "SATNA",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "303",
-      "DistrictName": "SIDHI"
+      "DistrictName": "SIDHI",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "304",
-      "DistrictName": "SINGRAULI"
+      "DistrictName": "SINGRAULI",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "305",
-      "DistrictName": "CHHATARPUR"
+      "DistrictName": "CHHATARPUR",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "306",
-      "DistrictName": "DAMOH"
+      "DistrictName": "DAMOH",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "307",
-      "DistrictName": "PANNA"
+      "DistrictName": "PANNA",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "308",
-      "DistrictName": "SAGAR"
+      "DistrictName": "SAGAR",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "309",
-      "DistrictName": "TIKAMGARH"
+      "DistrictName": "TIKAMGARH",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "310",
-      "DistrictName": "ANUPPUR"
+      "DistrictName": "ANUPPUR",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "311",
-      "DistrictName": "DINDORI"
+      "DistrictName": "DINDORI",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "312",
-      "DistrictName": "SHAHDOL"
+      "DistrictName": "SHAHDOL",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "313",
-      "DistrictName": "UMARIA"
+      "DistrictName": "UMARIA",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "314",
-      "DistrictName": "DEWAS"
+      "DistrictName": "DEWAS",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "315",
-      "DistrictName": "MANDSAUR"
+      "DistrictName": "MANDSAUR",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "316",
-      "DistrictName": "NEEMUCH"
+      "DistrictName": "NEEMUCH",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "317",
-      "DistrictName": "RATLAM"
+      "DistrictName": "RATLAM",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "318",
-      "DistrictName": "SHAJAPUR"
+      "DistrictName": "SHAJAPUR",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "319",
-      "DistrictName": "UJJAIN"
+      "DistrictName": "UJJAIN",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     },
     {
       "StateId": "25",
       "DistrictId": "675",
-      "DistrictName": "EAST NIMAR"
+      "DistrictName": "EAST NIMAR",
+      "regionid": "13",
+      "regionname": "MP",
+      "zoneid": "3",
+      "zonename": "RAJ/GUJ/MP/UT1"
     }
   ]
 }

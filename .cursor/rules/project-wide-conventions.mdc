@@ -50,3 +50,13 @@ fix(auth): handle expired JWT refresh tokens
 - `app/` uses `.env.local` — prefix public vars with `NEXT_PUBLIC_`.
 - `server/` uses `.env` — load via `@nestjs/config`.
 - Never commit `.env` files — keep `.env.example` up to date.
+
+## External master data
+
+POSP and hierarchy users are **not** created inside the CRM. They sync from
+Cognitensor snapshots (`server/data/snapshots/`). See
+[`.cursor/rules/posp-master-data.mdc`](posp-master-data.mdc).
+
+New leads and deals are **created by POSP field agents only** — managers do not
+originate pipeline records. See
+[`.cursor/rules/crm-pipeline-creation.mdc`](crm-pipeline-creation.mdc).

@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-06-17T16:02:09.489Z",
+  "capturedAt": "2026-06-19T16:44:35.865Z",
   "method": "GET",
   "path": "/api/geo/districts/search?q=hyd&limit=5",
   "baseUrl": "http://localhost:8000",
@@ -13,20 +13,20 @@
       "name": "HYDERABAD",
       "stateId": "27",
       "stateName": "ANDHRA PRADESH",
-      "zoneId": null,
-      "zoneName": null,
-      "regionId": null,
-      "regionName": null
+      "zoneId": "9",
+      "zoneName": "AP/TEL",
+      "regionId": "1",
+      "regionName": "Andhra Pradesh"
     },
     {
       "id": "669",
       "name": "HYDERABAD",
       "stateId": "33",
       "stateName": "TELANGANA",
-      "zoneId": null,
-      "zoneName": null,
-      "regionId": null,
-      "regionName": null
+      "zoneId": "9",
+      "zoneName": "AP/TEL",
+      "regionId": "18",
+      "regionName": "Telangana"
     }
   ]
 }

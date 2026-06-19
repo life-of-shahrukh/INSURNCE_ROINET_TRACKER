@@ -80,19 +80,11 @@ export class DealController {
     res.send(csv);
   }
 
-  // POSP creates own deals; ASM+ can create for any POSP
+  // Only POSP field agents create new deals (own pospId enforced in service)
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @Roles(
-    Role.ASM,
-    Role.DM,
-    Role.RH,
-    Role.ZH,
-    Role.NATIONAL_HEAD,
-    Role.SUPER_ADMIN,
-    Role.POSP,
-  )
-  @ApiOperation({ summary: 'Create a new deal' })
+  @Roles(Role.POSP)
+  @ApiOperation({ summary: 'Create a new deal (POSP only)' })
   create(@Body() dto: CreateDealDto, @CurrentUser() user: AuthUser) {
     return this.dealService.create(dto, user);
   }

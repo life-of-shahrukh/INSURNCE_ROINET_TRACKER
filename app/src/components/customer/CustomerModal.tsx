@@ -10,6 +10,8 @@ interface CustomerModalProps {
   open: boolean;
   customer: Customer | null;
   onClose: () => void;
+  /** Name pre-filled (new-customer mode only) from the list search box. */
+  prefillName?: string;
 }
 
 const emptyForm = {
@@ -31,7 +33,12 @@ const emptyForm = {
   kycStatus: "PENDING" as "PENDING" | "VERIFIED" | "REJECTED",
 };
 
-export function CustomerModal({ open, customer, onClose }: CustomerModalProps) {
+export function CustomerModal({
+  open,
+  customer,
+  onClose,
+  prefillName,
+}: CustomerModalProps) {
   const createCustomer = useCreateCustomer();
   const updateCustomer = useUpdateCustomer();
   const [formData, setFormData] = useState(emptyForm);
@@ -64,9 +71,9 @@ export function CustomerModal({ open, customer, onClose }: CustomerModalProps) {
         kycStatus: customer.kycStatus || "PENDING",
       });
     } else {
-      setFormData(emptyForm);
+      setFormData({ ...emptyForm, name: prefillName?.trim() ?? "" });
     }
-  }, [customer, open]);
+  }, [customer, open, prefillName]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

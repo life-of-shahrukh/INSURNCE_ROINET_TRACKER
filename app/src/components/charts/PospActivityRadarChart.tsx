@@ -10,6 +10,7 @@ import {
   Tooltip,
 } from "recharts";
 import type { Deal, Posp } from "@/lib/types";
+import { formatPospLabel } from "@/lib/posp-display";
 
 interface Props {
   deals: Deal[];
@@ -34,7 +35,8 @@ export function PospActivityRadarChart({ deals, posp }: Props): React.ReactEleme
     const issuedCount = pDeals.filter((d) => d.policyNo).length;
     const totalMargin = pDeals.reduce((a, d) => a + (+d.margin || 0), 0);
     const avgMargin = total > 0 ? totalMargin / total : 0;
-    return { name: p.name, total, premium, hotCount, issuedCount, avgMargin };
+    const label = formatPospLabel(p.name, p.code);
+    return { label, total, premium, hotCount, issuedCount, avgMargin };
   });
 
   const maxTotal = Math.max(...pospStats.map((s) => s.total), 1);
@@ -63,7 +65,7 @@ export function PospActivityRadarChart({ deals, posp }: Props): React.ReactEleme
         normalize(p.issuedCount, maxIssued),
         normalize(p.avgMargin, maxMargin),
       ];
-      result[p.name] = values[i];
+      result[p.label] = values[i];
     });
     return result;
   });
@@ -76,9 +78,9 @@ export function PospActivityRadarChart({ deals, posp }: Props): React.ReactEleme
         <PolarRadiusAxis angle={30} domain={[0, 100]} tickCount={5} tick={{ fontSize: 10 }} />
         {top3.map((p, i) => (
           <Radar
-            key={p.name}
-            name={p.name}
-            dataKey={p.name}
+            key={p.label}
+            name={p.label}
+            dataKey={p.label}
             stroke={COLORS[i]}
             fill={COLORS[i]}
             fillOpacity={0.15}

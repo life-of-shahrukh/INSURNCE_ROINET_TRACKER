@@ -1,0 +1,139 @@
+{
+  "capturedAt": "2026-06-19T16:44:49.497Z",
+  "role": "rh",
+  "response": {
+    "callerRole": "RH",
+    "nextLevel": "NATIONAL_HEAD",
+    "subordinates": [
+      {
+        "id": "VIVEK",
+        "name": "VIVEK GUPTA",
+        "designation": "NATIONAL_HEAD"
+      }
+    ],
+    "roleGroups": [
+      {
+        "role": "ASSISTASM",
+        "label": "Assistant Area Sales Manager",
+        "members": [
+          {
+            "id": "JEETENDRA.FOSMAHA",
+            "name": "JEETENDRA AMLANI FOS MAHA",
+            "designation": "ASM"
+          },
+          {
+            "id": "NILKANTH.AASMMAHA",
+            "name": "Nilkanth Suryakant Lokhande",
+            "designation": "ASM"
+          },
+          {
+            "id": "SANTOSH.KUMARAASM",
+            "name": "Santosh Kumar",
+            "designation": "ASM"
+          },
+          {
+            "id": "SOMNATH.FOSMAHA",
+            "name": "SOMNATH GOVIND FOS MAHA",
+            "designation": "ASM"
+          }
+        ]
+      },
+      {
+        "role": "ASM",
+        "label": "Area Sales Manager",
+        "members": [
+          {
+            "id": "ABDUL.ASMMP",
+            "name": "ABDUL TAUSIF SHEKH ASM MP",
+            "designation": "ASM"
+          },
+          {
+            "id": "AMIR.ASMMAHA",
+            "name": "AMIR TEMBE ASM MAHA",
+            "designation": "ASM"
+          },
+          {
+            "id": "ANANDA.ASMMAHA",
+            "name": "ANANDA WANJE ASM MAHA DIRECT",
+            "designation": "ASM"
+          },
+          {
+            "id": "BHAGIRATH.ASMRAJ",
+            "name": "Bhagirath Prajapat",
+            "designation": "ASM"
+          },
+          {
+            "id": "BHIMASHANKAR.ASMMAHA",
+            "name": "BHIMASHANKAR SHETAKAR ASM MAHA DIRECT",
+            "designation": "ASM"
+          },
+          {
+            "id": "GAJANAN.ASMMAHA",
+            "name": "GAJANAN GURAV ASM MAHA",
+            "designation": "ASM"
+          },
+          {
+            "id": "GOVIND.SINGHASMMP",
+            "name": "Govind Singh Baghela",
+            "designation": "ASM"
+          },
+          {
+            "id": "JAY.SURESHASMGUJ",
+            "name": "Jay Sureshchandra Rana",
+            "designation": "ASM"
+          },
+          {
+            "id": "MAHESHKUMAR.ASMGUJ",
+            "name": "MAHESHKUMAR MATHURBHAI MAKWANA ASM GUJ",
+            "designation": "ASM"
+          },
+          {
+            "id": "MANISH.KUMARASMMP",
+            "name": "Manish Kumar Yadav",
+            "designation": "ASM"
+          },
+          {
+            "id": "MOH.SHAMSHADASMMUMB",
+            "name": "Mohammed Shamshad Shaikh",
+            "designation": "ASM"
+          },
+          {
+            "id": "PRADEEP.ASMMP",
+            "name": "PRADEEP GAUTAM ASM MP",
+            "designation": "ASM"
+          },
+          {
+            "id": "RAZIK.KHANASMMP",
+            "name": "Razik Khan",
+            "designation": "ASM"
+          },
+          {
+            "id": "SALIL.ASMMP",
+            "name": "SALIL SAHU ASM MP",
+            "designation": "ASM"
+          },
+          {
+            "id": "SWAPNIL.ASMMAHA",
+            "name": "SWAPNIL MEHKARKAR ASM MAHA DIRECT",
+            "designation": "ASM"
+          },
+          {
+            "id": "UMAR.ASMMP",
+            "name": "UMAR FARUQUE AHMED ASM MP",
+            "designation": "ASM"
+          },
+          {
+            "id": "VIKAS.ASMRAJ",
+            "name": "Vikas",
+            "designation": "ASM"
+          },
+          {
+            "id": "YOGESH.SUTHARASMRAJ",
+            "name": "Yogesh Suthar",
+            "designation": "ASM"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,5 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ExternalApiService } from '../../common/external-api/external-api.service';
+import {
+  scopeDistrictIds,
+  type HierarchyScope,
+} from '../../common/auth/hierarchy-scope.util';
 import type {
   CityItem,
   DistrictItem,
@@ -102,25 +106,71 @@ export class GeoCatalogService {
     return this.cities as CityItem[];
   }
 
+  /** `null` = unrestricted (all India); empty set = no territory. */
+  private allowedDistrictIds(scope?: HierarchyScope): Set<string> | null {
+    if (!scope) return null;
+    const ids = scopeDistrictIds(scope);
+    if (ids === null) return null;
+    return new Set(ids);
+  }
+
+  private scopedDistrictRows(scope?: HierarchyScope): DistrictItem[] {
+    const rows = this.allDistricts();
+    const allowed = this.allowedDistrictIds(scope);
+    if (!allowed) return rows;
+    return rows.filter((d) => allowed.has(d.id));
+  }
+
+  private scopedCityRows(scope?: HierarchyScope): CityItem[] {
+    const rows = this.allCities();
+    const allowed = this.allowedDistrictIds(scope);
+    if (!allowed) return rows;
+    return rows.filter(
+      (c) => c.districtId !== null && allowed.has(c.districtId),
+    );
+  }
+
   // ── public reads ──────────────────────────────────────────────────────────
 
-  /** Small reference lists loaded whole on the client. */
-  getCatalog(): GeoCatalog {
+  /** Small reference lists loaded whole on the client (scoped to territory). */
+  getCatalog(scope?: HierarchyScope): GeoCatalog {
     this.build();
+    const districts = this.scopedDistrictRows(scope);
+    const zoneIds = new Set(
+      districts
+        .map((d) => d.zoneId)
+        .filter((id): id is string => id !== null && id !== ''),
+    );
+    const regionIds = new Set(
+      districts
+        .map((d) => d.regionId)
+        .filter((id): id is string => id !== null && id !== ''),
+    );
+    const stateIds = new Set(
+      districts
+        .map((d) => d.stateId)
+        .filter((id): id is string => id !== null && id !== ''),
+    );
+
     return {
-      zones: this.zones as GeoItem[],
-      regions: this.regions as GeoItem[],
-      states: this.states as GeoItem[],
+      zones: (this.zones as GeoItem[]).filter((z) => zoneIds.has(z.id)),
+      regions: (this.regions as GeoItem[]).filter((r) => regionIds.has(r.id)),
+      states: (this.states as GeoItem[]).filter((s) => stateIds.has(s.id)),
     };
   }
 
   searchDistricts(
     q: string,
     limit = 20,
-    opts: { stateId?: string; zoneId?: string; regionId?: string } = {},
+    opts: {
+      stateId?: string;
+      zoneId?: string;
+      regionId?: string;
+      scope?: HierarchyScope;
+    } = {},
   ): DistrictItem[] {
     const term = q.trim().toLowerCase();
-    let rows = this.allDistricts();
+    let rows = this.scopedDistrictRows(opts.scope);
     if (opts.stateId) rows = rows.filter((d) => d.stateId === opts.stateId);
     if (opts.zoneId) rows = rows.filter((d) => d.zoneId === opts.zoneId);
     if (opts.regionId) rows = rows.filter((d) => d.regionId === opts.regionId);
@@ -131,10 +181,14 @@ export class GeoCatalogService {
   searchCities(
     q: string,
     limit = 20,
-    opts: { districtId?: string; stateId?: string } = {},
+    opts: {
+      districtId?: string;
+      stateId?: string;
+      scope?: HierarchyScope;
+    } = {},
   ): CityItem[] {
     const term = q.trim().toLowerCase();
-    let rows = this.allCities();
+    let rows = this.scopedCityRows(opts.scope);
     if (opts.districtId)
       rows = rows.filter((c) => c.districtId === opts.districtId);
     if (opts.stateId) rows = rows.filter((c) => c.stateId === opts.stateId);
@@ -143,18 +197,28 @@ export class GeoCatalogService {
   }
 
   /** Resolve ids back to items so the client can label selected chips. */
-  districtsByIds(ids: string[]): DistrictItem[] {
+  districtsByIds(ids: string[], scope?: HierarchyScope): DistrictItem[] {
     this.build();
+    const allowed = this.allowedDistrictIds(scope);
     return ids
       .map((id) => this.districtsById.get(id))
-      .filter((d): d is DistrictItem => !!d);
+      .filter((d): d is DistrictItem => {
+        if (!d) return false;
+        if (!allowed) return true;
+        return allowed.has(d.id);
+      });
   }
 
-  citiesByIds(ids: string[]): CityItem[] {
+  citiesByIds(ids: string[], scope?: HierarchyScope): CityItem[] {
     this.build();
+    const allowed = this.allowedDistrictIds(scope);
     return ids
       .map((id) => this.citiesById.get(id))
-      .filter((c): c is CityItem => !!c);
+      .filter((c): c is CityItem => {
+        if (!c) return false;
+        if (!allowed) return true;
+        return c.districtId !== null && allowed.has(c.districtId);
+      });
   }
 
   // ── resolution to districtIds (for scoped filtering) ──────────────────────

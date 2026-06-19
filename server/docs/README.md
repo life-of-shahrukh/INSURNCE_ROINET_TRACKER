@@ -4,6 +4,8 @@
 
 This documentation provides a comprehensive, phase-by-phase guide to the RoiNet Insurance Tracker application. Each phase represents a major milestone in the development process and includes detailed information about features, architecture decisions, and implementation details.
 
+**Product rule:** POSP master data is never created in the CRM — it syncs from Cognitensor only. See [`.cursor/rules/posp-master-data.mdc`](../../.cursor/rules/posp-master-data.mdc). New leads and deals are created by **POSP field agents only** — see [`.cursor/rules/crm-pipeline-creation.mdc`](../../.cursor/rules/crm-pipeline-creation.mdc).
+
 ## Documentation Structure
 
 Each phase is documented in a separate markdown file following the naming convention:
@@ -116,6 +118,7 @@ phase-{number}-{brief-description}.md
 ## Additional Documentation
 
 - **[Developer Login Matrix](./developer-login-matrix.md)** — **start here for local testing**: seed commands, demo + real logins per hierarchy level, scope notes
+- **[Cognitensor External API](./cognitensor-external-api.md)** — upstream UAT endpoints (`ListHierarchyUserData`, `ListPospData`, geo lists), snapshot mode, `usertype` role mapping, and seed/sync
 - [Authentication, Roles & Data Scope](./authentication-roles-and-scope.md) — Roles, login flows (password + SSO), and how data scope is resolved per role
 - [RBAC Decorators Guide](./RBAC_DECORATORS.md) - Detailed guide on role-based access control
 - [Backend Rules](./../.cursor/rules/) - Cursor rules for maintaining code standards

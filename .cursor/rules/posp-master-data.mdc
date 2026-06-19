@@ -1,0 +1,48 @@
+---
+description: POSP master data is read-only in CRM — never manually created by users
+alwaysApply: true
+---
+
+# POSP Master Data — No Manual Creation
+
+**POSPs are never added by anyone in this CRM.** There is no product flow for
+managers, admins, or field agents to register or create POSP profiles.
+
+## Source of truth
+
+POSP roster rows come **only** from the Cognitensor external API:
+
+| Mechanism | What it does |
+|-----------|--------------|
+| `POST /Cognitensor/ListPospData` | Upstream master data |
+| `npm run seed:all` / `sync-from-snapshots` | Seeds `Posp` + linked `@roinet.in` users from `server/data/snapshots/posps.json` |
+| `npm run snapshots:refresh` | Refreshes snapshots from live Cognitensor (VPN) |
+| POSP SSO (`verify-token`, `isPosp=true`) | Upserts an **existing** Cognitensor POSP by `userCode` — not a new registration |
+
+Managers and hierarchy users are synced the same way from `ListHierarchyUserData`.
+
+## What the CRM may do with POSPs
+
+- **List / search / filter** the synced roster (scoped by territory)
+- **Export** CSV
+- **Update** limited profile fields on existing records (where RBAC allows)
+- **Link deals, leads, customers** to an existing synced POSP
+
+## What must NOT be built or re-enabled
+
+- No "Add POSP" / "New POSP" / "Register POSP" buttons or modals
+- No self-signup page that creates new POSP master records
+- No API usage of `POST /api/posp` or `POST /api/auth/signup-posp` for new agents
+- No seed scripts or admin tools that invent POSP rows outside Cognitensor
+
+Legacy code for `POST /api/posp`, `signup-posp`, and `PospModal` ("New POSP")
+may still exist — treat it as **deprecated / out of product scope**. Do not wire
+new UI to it. Prefer removing or hard-disabling if touching that area.
+
+## When a new agent appears in Roinet
+
+1. They are onboarded in Cognitensor (upstream system of record).
+2. Ops/dev runs snapshot refresh + `seed:all` (or the scheduled org sync).
+3. The agent logs in with their synced `@roinet.in` account or POSP SSO.
+
+If asked to "add a POSP", explain this flow — do not implement manual creation.

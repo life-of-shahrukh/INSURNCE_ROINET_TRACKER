@@ -155,14 +155,16 @@ export default function DashboardPage(): React.ReactElement {
             <Button variant="secondary" onClick={() => exportCsv(apiParams)}>
               ⬇ Export Data
             </Button>
-            <Button
-              onClick={() => {
-                setEditDeal(null);
-                setDealModalOpen(true);
-              }}
-            >
-              + New Deal
-            </Button>
+            {role === "POSP" && (
+              <Button
+                onClick={() => {
+                  setEditDeal(null);
+                  setDealModalOpen(true);
+                }}
+              >
+                + New Deal
+              </Button>
+            )}
           </>
         }
       />

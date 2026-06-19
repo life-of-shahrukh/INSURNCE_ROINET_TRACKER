@@ -57,6 +57,7 @@ infra/bootstrap/.terraform.lock.hcl
 
 # ─── API response snapshots (local dev only) ─────────────────────
 api-responses/
+!api-responses/README.md
 api-samples/
 
 # ─── Misc ────────────────────────────────────────────────────────

@@ -199,7 +199,12 @@ export default function CustomersPage(): React.ReactElement {
         </Card>
       </div>
 
-      <CustomerModal open={modalOpen} customer={editCustomer} onClose={() => setModalOpen(false)} />
+      <CustomerModal
+        open={modalOpen}
+        customer={editCustomer}
+        prefillName={editCustomer ? undefined : search}
+        onClose={() => setModalOpen(false)}
+      />
     </>
   );
 }

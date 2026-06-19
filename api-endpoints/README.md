@@ -11,6 +11,12 @@ Sample responses live in [`../responses/`](../responses/). Re-capture anytime:
 node scripts/capture-app-api-responses.mjs
 ```
 
+Raw Cognitensor UAT dumps (gitignored JSON) live in [`../api-responses/`](../api-responses/README.md). Sync into committed snapshots:
+
+```bash
+cd server && npm run snapshots:sync-api-responses
+```
+
 Default login used for capture: `superadmin@roinet.com` / `Admin@1234`
 
 ---
@@ -21,7 +27,7 @@ Default login used for capture: `superadmin@roinet.com` / `Admin@1234`
 |--------|------|------|-------------|
 | POST | `/api/auth/login` | Public | Email/password login; sets `access_token` HttpOnly cookie |
 | POST | `/api/auth/logout` | Cookie | Clears session cookie |
-| POST | `/api/auth/signup-posp` | Public | POSP self-registration |
+| POST | `/api/auth/signup-posp` | Deprecated | Do not use — POSPs sync from Cognitensor |
 | PATCH | `/api/auth/approve-posp/:userId` | Admin | Approve pending POSP user |
 | GET | `/api/auth/me` | Cookie | Current user profile |
 
@@ -83,7 +89,7 @@ never bulk-loads them. Used by every geo filter (dashboard scope bar + list page
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| GET | `/api/geo/catalog` | Cookie | Small reference lists: `{ zones, regions, states }` |
+| GET | `/api/geo/catalog` | Cookie | Scoped `{ zones, regions, states }` derived from caller territory |
 | GET | `/api/geo/districts/search` | Cookie | District typeahead: `?q=&limit=&stateId=&zoneId=&regionId=` |
 | GET | `/api/geo/cities/search` | Cookie | City typeahead: `?q=&limit=&districtId=&stateId=` |
 | GET | `/api/geo/districts/by-ids` | Cookie | Resolve district ids → labels: `?ids=a,b,c` |
@@ -108,6 +114,8 @@ entity's `districtId`. Selecting an out-of-scope geo simply returns no rows.
 
 ## External Cognitensor proxy (`/api/external`)
 
+**Full reference:** [Cognitensor External API](../server/docs/cognitensor-external-api.md) — upstream UAT endpoints, `usertype` mapping, snapshots, and seed/sync flow.
+
 Snapshot mode by default (`USE_EXTERNAL_API_SNAPSHOT=true`).
 
 | Method | Path | Auth | Description |
@@ -117,7 +125,7 @@ Snapshot mode by default (`USE_EXTERNAL_API_SNAPSHOT=true`).
 | GET | `/api/external/cities` | Cookie | `?districtId=` filter |
 | GET | `/api/external/zones` | Cookie | ListZone — all zones (`Zoneid`/`ZoneName`) |
 | GET | `/api/external/hierarchy` | Cookie | ListHierarchyUserData snapshot/live |
-| GET | `/api/external/posps` | Cookie | ListPospData with pagination/filters |
+| GET | `/api/external/posps` | Cookie | `ListPospData` with pagination/filters (`username` + `UserCode`) |
 
 The expanded `ListDistrict` response shape (zone/region now included):
 
@@ -143,7 +151,7 @@ The expanded `ListDistrict` response shape (zone/region now included):
 |--------|------|------|-------------|
 | GET | `/api/posp` | Cookie + scope | Paginated POSP list |
 | GET | `/api/posp/export` | Cookie + scope | CSV export |
-| POST | `/api/posp` | Manager | Create POSP |
+| POST | `/api/posp` | Deprecated | Do not use — POSPs sync from Cognitensor |
 | PATCH | `/api/posp/:id` | Cookie + scope | Update POSP |
 
 ---
@@ -154,7 +162,7 @@ The expanded `ListDistrict` response shape (zone/region now included):
 |--------|------|------|-------------|
 | GET | `/api/deals` | Cookie + scope | Paginated deals |
 | GET | `/api/deals/export` | Cookie + scope | CSV export |
-| POST | `/api/deals` | Cookie + scope | Create deal |
+| POST | `/api/deals` | POSP only | Create deal (field agent) |
 | PATCH | `/api/deals/:id` | Cookie + scope | Update deal |
 | DELETE | `/api/deals/:id` | Cookie + scope | Delete deal |
 
@@ -164,7 +172,7 @@ The expanded `ListDistrict` response shape (zone/region now included):
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| POST | `/api/leads` | Cookie + scope | Create lead |
+| POST | `/api/leads` | POSP only | Create lead (field agent) |
 | GET | `/api/leads` | Cookie + scope | Paginated leads |
 | GET | `/api/leads/export` | Cookie + scope | CSV export |
 | GET | `/api/leads/commitment` | Cookie + scope | Commitment summary |

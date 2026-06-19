@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-06-17T16:02:09.656Z",
+  "capturedAt": "2026-06-19T16:44:35.945Z",
   "method": "GET",
   "path": "/api/customers?page=1&pageSize=3",
   "baseUrl": "http://localhost:8000",
@@ -10,77 +10,33 @@
   "response": {
     "data": [
       {
-        "id": "cmqdxv0980024c2lcmfqi87pc",
-        "name": "Anjali Gupta",
-        "email": "anjali.gupta.59@example.com",
-        "mobile": "9810000059",
+        "id": "cmqicxl6g0000c2swjcyqzqq6",
+        "name": "Ashish Neta",
+        "email": null,
+        "mobile": "9344566750",
         "alternateMobile": null,
         "dateOfBirth": null,
         "panNumber": null,
         "aadharNumber": null,
         "stateId": null,
-        "stateName": "Karnataka",
+        "stateName": null,
         "districtId": null,
         "districtName": null,
         "cityId": null,
-        "cityName": "Bengaluru",
-        "address": null,
-        "pincode": null,
-        "kycStatus": "REJECTED",
-        "source": "CAMPAIGN",
-        "createdAt": "2026-06-14T15:28:05.132Z",
-        "updatedAt": "2026-06-14T15:28:05.132Z"
-      },
-      {
-        "id": "cmqdxv08u0023c2lczl1dwobz",
-        "name": "Vikram Patel",
-        "email": "vikram.patel.58@example.com",
-        "mobile": "9810000058",
-        "alternateMobile": null,
-        "dateOfBirth": null,
-        "panNumber": null,
-        "aadharNumber": null,
-        "stateId": null,
-        "stateName": "Punjab",
-        "districtId": null,
-        "districtName": null,
-        "cityId": null,
-        "cityName": "Chandigarh",
+        "cityName": null,
         "address": null,
         "pincode": null,
         "kycStatus": "PENDING",
-        "source": "ONLINE",
-        "createdAt": "2026-06-14T15:28:05.118Z",
-        "updatedAt": "2026-06-14T15:28:05.118Z"
-      },
-      {
-        "id": "cmqdxv08d0022c2lclzrt4l3b",
-        "name": "Lakshmi Kumar",
-        "email": "lakshmi.kumar.57@example.com",
-        "mobile": "9810000057",
-        "alternateMobile": null,
-        "dateOfBirth": null,
-        "panNumber": null,
-        "aadharNumber": null,
-        "stateId": null,
-        "stateName": "Uttar Pradesh",
-        "districtId": null,
-        "districtName": null,
-        "cityId": null,
-        "cityName": "Lucknow",
-        "address": null,
-        "pincode": null,
-        "kycStatus": "PENDING",
-        "source": "WALK_IN",
-        "createdAt": "2026-06-14T15:28:05.102Z",
-        "updatedAt": "2026-06-14T15:28:05.102Z"
+        "source": null,
+        "createdAt": "2026-06-17T17:41:04.504Z",
+        "updatedAt": "2026-06-17T17:41:04.504Z"
       }
     ],
     "meta": {
       "page": 1,
       "pageSize": 3,
-      "total": 61,
-      "totalPages": 21
+      "total": 1,
+      "totalPages": 1
     }
   }
 }

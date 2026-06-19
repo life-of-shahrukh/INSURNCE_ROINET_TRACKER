@@ -159,14 +159,16 @@ export default function DealsPage(): React.ReactElement {
               <Button variant="secondary" onClick={handleExport} disabled={exporting}>
                 {exporting ? "Exporting…" : "Export CSV"}
               </Button>
-              <Button
-                onClick={() => {
-                  setEditDeal(null);
-                  setModalOpen(true);
-                }}
-              >
-                + New Deal
-              </Button>
+              {role === "POSP" && (
+                <Button
+                  onClick={() => {
+                    setEditDeal(null);
+                    setModalOpen(true);
+                  }}
+                >
+                  + New Deal
+                </Button>
+              )}
             </div>
           }
         />

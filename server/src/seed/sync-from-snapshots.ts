@@ -28,6 +28,7 @@ import {
   appRoleFromOrgRole,
   type OrgRole,
 } from '../common/external-api/user-type.util';
+import { resolvePospDisplayName } from '../common/external-api/posp-display.util';
 
 const prisma = new PrismaClient({ log: ['warn', 'error'] });
 
@@ -59,6 +60,7 @@ function parseDate(raw: string): Date {
 interface PospSnapshotRow {
   UserId: string;
   UserCode: string;
+  username?: string;
   MobileNo: string;
   EmailId: string;
   districtid: string;
@@ -100,13 +102,15 @@ async function seedPosps(): Promise<void> {
         joinedDate = new Date();
       }
 
+      const displayName = resolvePospDisplayName(row);
+
       const posp = await prisma.posp.upsert({
         where: { code },
         create: {
           code,
           externalId: row.UserId,
           gcdCode: row.HephGcdCode ?? null,
-          name: code,
+          name: displayName,
           mobile: row.MobileNo ?? '',
           email,
           joined: joinedDate,
@@ -118,6 +122,7 @@ async function seedPosps(): Promise<void> {
         update: {
           externalId: row.UserId,
           gcdCode: row.HephGcdCode ?? null,
+          name: displayName,
           mobile: row.MobileNo ?? '',
           email,
           districtId: row.districtid || null,

@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-06-17T16:02:09.240Z",
+  "capturedAt": "2026-06-19T16:44:35.651Z",
   "method": "GET",
   "path": "/api/hierarchy/filter-options",
   "baseUrl": "http://localhost:8000",
@@ -9,683 +9,725 @@
   "requestBody": null,
   "response": {
     "callerRole": "SUPER_ADMIN",
-    "nextLevel": "DM",
+    "nextLevel": "NATIONAL_HEAD",
     "subordinates": [
       {
         "id": "VIVEK",
         "name": "VIVEK GUPTA",
-        "designation": "DM"
+        "designation": "NATIONAL_HEAD"
       }
     ],
     "roleGroups": [
       {
-        "role": "UNKNOWN",
-        "label": "Other",
+        "role": "ADMIN",
+        "label": "Admin",
         "members": [
           {
-            "id": "ABDUL.ASMMP",
-            "name": "ABDUL TAUSIF SHEKH ASM MP",
-            "designation": "DM"
-          },
-          {
-            "id": "ABHIJIT.BATABYAL ASM",
-            "name": "Abhijit Batabyal",
-            "designation": "DM"
-          },
-          {
-            "id": "ABHIJIT.ASMUP",
-            "name": "ABHIJIT SRIVASTAVA ASM UP",
-            "designation": "DM"
-          },
-          {
-            "id": "ADESH",
-            "name": "ADESH SINGH(EUP)",
-            "designation": "DM"
-          },
-          {
-            "id": "AKRAM.ASMASSAM",
-            "name": "AKRAM ALI ASM ASSAM",
-            "designation": "DM"
-          },
-          {
-            "id": "AMIR.ASMMAHA",
-            "name": "AMIR TEMBE ASM MAHA",
-            "designation": "DM"
-          },
-          {
-            "id": "AMIT.KUMARASMWB",
-            "name": "Amit Kumar Ghosh",
-            "designation": "DM"
-          },
-          {
-            "id": "AMIT.SAXENAASMWUP",
-            "name": "Amit Kumar Saxena",
-            "designation": "DM"
-          },
-          {
-            "id": "AMIT.YADAVASMUP",
-            "name": "Amit Yadav",
-            "designation": "DM"
-          },
-          {
-            "id": "ANANDA.ASMMAHA",
-            "name": "ANANDA WANJE ASM MAHA DIRECT",
-            "designation": "DM"
-          },
-          {
-            "id": "ANISH.RHJKPBHP",
-            "name": "ANISH DHIMAN RH - PB HP J&K",
-            "designation": "DM"
-          },
-          {
-            "id": "ARUNSINGH.SASMKAR",
-            "name": "Arunsingh S",
-            "designation": "DM"
-          },
-          {
-            "id": "BALRAM.SAHU AASM",
-            "name": "Balram Sahu",
-            "designation": "DM"
-          },
-          {
-            "id": "BAM.ASMPB",
-            "name": "BAM BAHADAR ASM PB ",
-            "designation": "DM"
-          },
-          {
-            "id": "BANAMALI.ASMODI",
-            "name": "BANAMALI BARIK ASM ODI",
-            "designation": "DM"
-          },
-          {
-            "id": "BELLAMKONDA.ASMAP",
-            "name": "BELLAMKONDA MEERA BABU ASM AP",
-            "designation": "DM"
-          },
-          {
-            "id": "BHAGIRATH.ASMRAJ",
-            "name": "Bhagirath Prajapat",
-            "designation": "DM"
-          },
-          {
-            "id": "BHIMASHANKAR.ASMMAHA",
-            "name": "BHIMASHANKAR SHETAKAR ASM MAHA DIRECT",
-            "designation": "DM"
-          },
-          {
-            "id": "BHOOPATHI.RHTN",
-            "name": "BOOPATHI MANOKARAN",
-            "designation": "DM"
-          },
-          {
-            "id": "CHANDAN.ASMBIHAR",
-            "name": "CHANDAN SHUKLA ASM BIHAR",
-            "designation": "DM"
-          },
-          {
-            "id": "CHINTU.ASMBIHAR",
-            "name": "CHINTU KUMAR -ASM BIHAR",
-            "designation": "DM"
-          },
-          {
-            "id": "DEMLAR.FOSNE",
-            "name": "DEMLAR KHUMBONGMAYUM FOS NE",
-            "designation": "DM"
-          },
-          {
-            "id": "DESIKAMANI.ASMTN",
-            "name": "DESIKAMANI ASM TN",
-            "designation": "DM"
-          },
-          {
-            "id": "DEV.RHWUP",
-            "name": "DEV KUMAR RH WUP",
-            "designation": "DM"
-          },
-          {
-            "id": "DEVENDRA.NATH RH CG",
-            "name": "Devendra Nath Pandey",
-            "designation": "DM"
-          },
-          {
-            "id": "DHANANJAY.ASMEUP",
-            "name": "Dhananjay Kumar Singh",
-            "designation": "DM"
-          },
-          {
-            "id": "DIPIN.KV_RHKER",
-            "name": "Dipin KV",
-            "designation": "DM"
-          },
-          {
-            "id": "GAJANAN.ASMMAHA",
-            "name": "GAJANAN GURAV ASM MAHA",
-            "designation": "DM"
-          },
-          {
-            "id": "GANESAN.ASMTN",
-            "name": "GANESAN MADHAPPA-ASM TN DIRECT",
-            "designation": "DM"
-          },
-          {
-            "id": "GANESH.ASMAP",
-            "name": "GANESH ASM AP",
-            "designation": "DM"
-          },
-          {
-            "id": "GOVIND.SINGHASMMP",
-            "name": "Govind Singh Baghela",
-            "designation": "DM"
-          },
-          {
-            "id": "GYANENDRA.ASMWUP",
-            "name": "GYANENDRA KUMAR ASM WUP",
-            "designation": "DM"
-          },
+            "id": "VIVEK",
+            "name": "VIVEK GUPTA",
+            "designation": "NATIONAL_HEAD"
+          }
+        ]
+      },
+      {
+        "role": "NATIONAL_HEAD",
+        "label": "National Head",
+        "members": [
           {
             "id": "HARI.DUTT",
             "name": "Hari Dutt",
-            "designation": "DM"
-          },
-          {
-            "id": "JAHAIRUDDIN.ASMASSAM",
-            "name": "JAHAIRUDDIN ALI ASM ASSAM",
-            "designation": "DM"
-          },
-          {
-            "id": "JAY.SURESHASMGUJ",
-            "name": "Jay Sureshchandra Rana",
-            "designation": "DM"
-          },
-          {
-            "id": "JEETENDRA.FOSMAHA",
-            "name": "JEETENDRA AMLANI FOS MAHA",
-            "designation": "DM"
-          },
-          {
-            "id": "JUZER.RHGUJ",
-            "name": "JUZER MITHAIWALA ASM GUJ",
-            "designation": "DM"
-          },
+            "designation": "NATIONAL_HEAD"
+          }
+        ]
+      },
+      {
+        "role": "SZH",
+        "label": "Super Zonal Head",
+        "members": [
           {
             "id": "KAJAL.BHADRA SZH",
             "name": "Kajal Bhadra",
-            "designation": "DM"
-          },
-          {
-            "id": "KRISHNA.KANTZH",
-            "name": "Krishna Kant Pathak",
-            "designation": "DM"
-          },
-          {
-            "id": "KRISHNA.ASMBIHAR",
-            "name": "KRISHNA KUMAR ASM BIHAR",
-            "designation": "DM"
-          },
-          {
-            "id": "LALAN.ASMCDG",
-            "name": "LALAN KUMAR ASM CDG",
-            "designation": "DM"
-          },
-          {
-            "id": "MAHESHKUMAR.ASMGUJ",
-            "name": "MAHESHKUMAR MATHURBHAI MAKWANA ASM GUJ",
-            "designation": "DM"
-          },
-          {
-            "id": "MANAS.ASMWB",
-            "name": "MANAS MAHATO ASM WB",
-            "designation": "DM"
-          },
-          {
-            "id": "MANISH.KUMARASMMP",
-            "name": "Manish Kumar Yadav",
-            "designation": "DM"
-          },
-          {
-            "id": "MATHESH.FOSTN",
-            "name": "MATHESH FOS TN",
-            "designation": "DM"
-          },
-          {
-            "id": "MAYANK.ASMNCR",
-            "name": "MAYANK NANDAN ASM NCR",
-            "designation": "DM"
-          },
-          {
-            "id": "MEHBUB.ASMASSAM",
-            "name": "MEHBUB MOHAZERIN- ASM ASSAM",
-            "designation": "DM"
-          },
-          {
-            "id": "MIRJAN.ASMASSAM",
-            "name": "MIRJAN ALI ASM ASSAM",
-            "designation": "DM"
-          },
-          {
-            "id": "MOHAMMAD.IMRAN ASM",
-            "name": "Mohammad Imran",
-            "designation": "DM"
-          },
-          {
-            "id": "MOH.SHAMSHADASMMUMB",
-            "name": "Mohammed Shamshad Shaikh",
-            "designation": "DM"
-          },
-          {
-            "id": "MOHAN.CHCDG",
-            "name": "Mohan Dewangan",
-            "designation": "DM"
-          },
-          {
-            "id": "MOHAN.ASMTN",
-            "name": "MOHAN RAM KUMAR- ASM TN DIRECT",
-            "designation": "DM"
-          },
-          {
-            "id": "MOSTOFA.ASMASSAM",
-            "name": "MOSTOFA ISLAM ASM ASSAM",
-            "designation": "DM"
-          },
-          {
-            "id": "MUNDHE.ASMMAHA",
-            "name": "MUNDHE SALABA ASM MAHA DIRECT",
-            "designation": "DM"
-          },
-          {
-            "id": "NARESH.KUMARCH",
-            "name": "Naresh Kumar Tank",
-            "designation": "DM"
-          },
-          {
-            "id": "NASIMULLA.ASMASSAM",
-            "name": "NASIMULLA ANSARI ASM ASSAM",
-            "designation": "DM"
-          },
-          {
-            "id": "NAWENDU.ASMBIHAR",
-            "name": "Nawendu Shekhar Pathak",
-            "designation": "DM"
-          },
-          {
-            "id": "NILESH.KUMAR ASM",
-            "name": "Nilesh Kumar",
-            "designation": "DM"
-          },
-          {
-            "id": "NILESH.ASMMAHA",
-            "name": "NILESH RAKSHIYE ASM MAHA",
-            "designation": "DM"
-          },
-          {
-            "id": "NILKANTH.AASMMAHA",
-            "name": "Nilkanth Suryakant Lokhande",
-            "designation": "DM"
-          },
-          {
-            "id": "NISHIL.ASMKER",
-            "name": "Nishil",
-            "designation": "DM"
-          },
-          {
-            "id": "NURULLA.ASMAP",
-            "name": "NURULLA SYED ASM AP DIRECT",
-            "designation": "DM"
-          },
-          {
-            "id": "PADALA.ASMAP",
-            "name": "PADALA CHARAN TEJA ASM AP",
-            "designation": "DM"
-          },
-          {
-            "id": "PALLAV.KUMAR ZH NCR",
-            "name": "Pallav Kumar",
-            "designation": "DM"
-          },
-          {
-            "id": "PANDIDURAI.ASMTN",
-            "name": "PANDIDURAI ASM TN DIRECT",
-            "designation": "DM"
-          },
-          {
-            "id": "PAPAI.PAUL ASM WB",
-            "name": "Papai Paul",
-            "designation": "DM"
-          },
-          {
-            "id": "PARWEZ.FOSASSAM",
-            "name": "PARWEZ AHMED FOS ASSAM",
-            "designation": "DM"
-          },
-          {
-            "id": "PAVILLA.ASMTEL",
-            "name": "PAVILLA SRINIVAS SURYA ASM TEL",
-            "designation": "DM"
-          },
-          {
-            "id": "PAWAN.KUMARCH",
-            "name": "Pawan Kumar Singh",
-            "designation": "DM"
-          },
-          {
-            "id": "pawan.kumar",
-            "name": "PAWAN KUMAR- BIHAR ASM",
-            "designation": "DM"
-          },
-          {
-            "id": "PRABHAT.RHJKND",
-            "name": "PRABHAT KUMAR RH JKND",
-            "designation": "DM"
-          },
-          {
-            "id": "PRADEEP.ASMMP",
-            "name": "PRADEEP GAUTAM ASM MP",
-            "designation": "DM"
-          },
-          {
-            "id": "PRASENJIT.RHWB",
-            "name": "PRASENJIT MUKHERJEE RH WB",
-            "designation": "DM"
-          },
-          {
-            "id": "PRASHANTJHA.ASMBIHAR",
-            "name": "PRASHANT KUMAR JHA ASM BIHAR",
-            "designation": "DM"
-          },
-          {
-            "id": "PRASHANT.ASMBIHAR",
-            "name": "PRASHANT KUMAR SUNNY ASM BIHAR",
-            "designation": "DM"
-          },
-          {
-            "id": "PRAVEEN.RHTEL",
-            "name": "PRAVEEN PILLI RH TEL",
-            "designation": "DM"
-          },
-          {
-            "id": "PUSPASISH.ASMWB",
-            "name": "PUSPASISH BERA - ASM WB",
-            "designation": "DM"
-          },
-          {
-            "id": "RADHAMOHAN.ASMRAJ",
-            "name": "RADHAMOHAN VYAS ASM RAJ",
-            "designation": "DM"
-          },
-          {
-            "id": "RAHUL.ASMBIHAR",
-            "name": "RAHUL KUMAR- ASM BIHAR",
-            "designation": "DM"
-          },
-          {
-            "id": "RAHUL.SHANTI CH GUJ",
-            "name": "Rahul Shantibhai Parmar",
-            "designation": "DM"
-          },
-          {
-            "id": "RAHUL.ASMMP",
-            "name": "RAHUL VAISHY ASM MP",
-            "designation": "DM"
-          },
-          {
-            "id": "RAIS.AHAMADASMUP",
-            "name": "Rais Ahamad",
-            "designation": "DM"
-          },
-          {
-            "id": "RAJ.ASMTN",
-            "name": "RAJ KUMAR ASM TN DIRECT",
-            "designation": "DM"
-          },
-          {
-            "id": "RAJENDRA.ASMJKND",
-            "name": "RAJENDRA KUMAR JHA ASM JKND",
-            "designation": "DM"
-          },
-          {
-            "id": "RAKESH.GADDAM CH TEL",
-            "name": "Rakesh Gaddam",
-            "designation": "DM"
-          },
-          {
-            "id": "RAKESH.PRASADASMWB",
-            "name": "Rakesh Prasad",
-            "designation": "DM"
-          },
-          {
-            "id": "RAM.OJHA",
-            "name": "RAM.OJHA -ASM MP",
-            "designation": "DM"
-          },
-          {
-            "id": "RAMANUJ.BIHARJHKZM",
-            "name": "RAMANUJ-BIHAR JHARKHAND",
-            "designation": "DM"
+            "designation": "ZH"
           },
           {
             "id": "RAVI.BABUSZH",
             "name": "Ravi Babu Ummadisetty",
-            "designation": "DM"
-          },
-          {
-            "id": "RAVI.TOMARASMWUP",
-            "name": "Ravi Tomar",
-            "designation": "DM"
-          },
-          {
-            "id": "RAZIK.KHANASMMP",
-            "name": "Razik Khan",
-            "designation": "DM"
+            "designation": "ZH"
           },
           {
             "id": "SACHIN.ZHRAJGUJMP",
             "name": "SACHIN PATHKAR(RAJ/GUJ/MP/UT1)",
-            "designation": "DM"
+            "designation": "ZH"
+          }
+        ]
+      },
+      {
+        "role": "ZH",
+        "label": "Zonal Head",
+        "members": [
+          {
+            "id": "KRISHNA.KANTZH",
+            "name": "Krishna Kant Pathak",
+            "designation": "ZH"
+          },
+          {
+            "id": "PALLAV.KUMAR ZH NCR",
+            "name": "Pallav Kumar",
+            "designation": "ZH"
+          },
+          {
+            "id": "RAMANUJ.BIHARJHKZM",
+            "name": "RAMANUJ-BIHAR JHARKHAND",
+            "designation": "ZH"
           },
           {
             "id": "Sagir.Ali",
             "name": "Sagir Ali",
-            "designation": "DM"
+            "designation": "ZH"
+          }
+        ]
+      },
+      {
+        "role": "CH",
+        "label": "Cluster Head",
+        "members": [
+          {
+            "id": "BANAMALI.ASMODI",
+            "name": "BANAMALI BARIK ASM ODI",
+            "designation": "RH"
           },
           {
-            "id": "SALIL.ASMMP",
-            "name": "SALIL SAHU ASM MP",
-            "designation": "DM"
+            "id": "CHINTU.ASMBIHAR",
+            "name": "CHINTU KUMAR -ASM BIHAR",
+            "designation": "RH"
           },
           {
-            "id": "SAMIUL.ASMWB",
-            "name": "SAMIUL ALIM ASM WB",
-            "designation": "DM"
+            "id": "DESIKAMANI.ASMTN",
+            "name": "DESIKAMANI ASM TN",
+            "designation": "RH"
           },
           {
-            "id": "SAMPATH.ASMKAR",
-            "name": "SAMPATH ASM KAR",
-            "designation": "DM"
+            "id": "GANESAN.ASMTN",
+            "name": "GANESAN MADHAPPA-ASM TN DIRECT",
+            "designation": "RH"
+          },
+          {
+            "id": "GYANENDRA.ASMWUP",
+            "name": "GYANENDRA KUMAR ASM WUP",
+            "designation": "RH"
+          },
+          {
+            "id": "JAHAIRUDDIN.ASMASSAM",
+            "name": "JAHAIRUDDIN ALI ASM ASSAM",
+            "designation": "RH"
+          },
+          {
+            "id": "KRISHNA.ASMBIHAR",
+            "name": "KRISHNA KUMAR ASM BIHAR",
+            "designation": "RH"
+          },
+          {
+            "id": "MEHBUB.ASMASSAM",
+            "name": "MEHBUB MOHAZERIN- ASM ASSAM",
+            "designation": "RH"
+          },
+          {
+            "id": "MOHAN.CHCDG",
+            "name": "Mohan Dewangan",
+            "designation": "RH"
+          },
+          {
+            "id": "MOHAN.ASMTN",
+            "name": "MOHAN RAM KUMAR- ASM TN DIRECT",
+            "designation": "RH"
+          },
+          {
+            "id": "MUNDHE.ASMMAHA",
+            "name": "MUNDHE SALABA ASM MAHA DIRECT",
+            "designation": "RH"
+          },
+          {
+            "id": "NARESH.KUMARCH",
+            "name": "Naresh Kumar Tank",
+            "designation": "RH"
+          },
+          {
+            "id": "NILESH.ASMMAHA",
+            "name": "NILESH RAKSHIYE ASM MAHA",
+            "designation": "RH"
+          },
+          {
+            "id": "PANDIDURAI.ASMTN",
+            "name": "PANDIDURAI ASM TN DIRECT",
+            "designation": "RH"
+          },
+          {
+            "id": "PAWAN.KUMARCH",
+            "name": "Pawan Kumar Singh",
+            "designation": "RH"
+          },
+          {
+            "id": "pawan.kumar",
+            "name": "PAWAN KUMAR- BIHAR ASM",
+            "designation": "RH"
+          },
+          {
+            "id": "RADHAMOHAN.ASMRAJ",
+            "name": "RADHAMOHAN VYAS ASM RAJ",
+            "designation": "RH"
+          },
+          {
+            "id": "RAHUL.SHANTI CH GUJ",
+            "name": "Rahul Shantibhai Parmar",
+            "designation": "RH"
+          },
+          {
+            "id": "RAHUL.ASMMP",
+            "name": "RAHUL VAISHY ASM MP",
+            "designation": "RH"
+          },
+          {
+            "id": "RAJ.ASMTN",
+            "name": "RAJ KUMAR ASM TN DIRECT",
+            "designation": "RH"
+          },
+          {
+            "id": "RAJENDRA.ASMJKND",
+            "name": "RAJENDRA KUMAR JHA ASM JKND",
+            "designation": "RH"
+          },
+          {
+            "id": "RAKESH.GADDAM CH TEL",
+            "name": "Rakesh Gaddam",
+            "designation": "RH"
+          },
+          {
+            "id": "RAM.OJHA",
+            "name": "RAM.OJHA -ASM MP",
+            "designation": "RH"
           },
           {
             "id": "SANDEEP.KUMAR CH EUP",
             "name": "Sandeep Kumar Kaushal",
-            "designation": "DM"
+            "designation": "RH"
           },
           {
             "id": "SANDEEP.ASMWUP",
             "name": "SANDEEP MATHURIYA ASM WUP",
-            "designation": "DM"
-          },
-          {
-            "id": "SANDEEP.ASMPB",
-            "name": "SANDEEP SINGH ASM PB",
-            "designation": "DM"
-          },
-          {
-            "id": "SANDRAPATI.ASMAP",
-            "name": "SANDRAPATI IMMANIYELU ASM AP",
-            "designation": "DM"
-          },
-          {
-            "id": "SANTOSH.KUMARAASM",
-            "name": "Santosh Kumar",
-            "designation": "DM"
-          },
-          {
-            "id": "SATHEESHKUMAR.ASMTN ",
-            "name": "Satheeshkumar R",
-            "designation": "DM"
-          },
-          {
-            "id": "SATHISH.RHKAR",
-            "name": "SATHISH NAYAK RH KARNATAKA",
-            "designation": "DM"
-          },
-          {
-            "id": "SATYENDRA.KUMARASMUP",
-            "name": "Satyendra Kumar",
-            "designation": "DM"
-          },
-          {
-            "id": "SHABIHUL.ABRARAASM",
-            "name": "Shabihul Abrar",
-            "designation": "DM"
-          },
-          {
-            "id": "SHAIKH.RHMAHA",
-            "name": "SHAIKH ANWAR RH MAHA",
-            "designation": "DM"
+            "designation": "RH"
           },
           {
             "id": "SHER.ASMHAR",
             "name": "SHER SINGH ASM HAR",
-            "designation": "DM"
-          },
-          {
-            "id": "SHIVRAJ.RH MUM",
-            "name": "Shivraj Gangadhar Wanole",
-            "designation": "DM"
+            "designation": "RH"
           },
           {
             "id": "SHRISHAILA.ASMKAR",
             "name": "SHRISHAILA GOUDA ASM KAR",
-            "designation": "DM"
-          },
-          {
-            "id": "SOMNATH.FOSMAHA",
-            "name": "SOMNATH GOVIND FOS MAHA",
-            "designation": "DM"
-          },
-          {
-            "id": "SONU.ASMBIHAR",
-            "name": "SONU KUMAR SINGH ASM BIHAR",
-            "designation": "DM"
+            "designation": "RH"
           },
           {
             "id": "SRIKRISHNA.CHKAR",
             "name": "Srikrishna A.V",
-            "designation": "DM"
-          },
-          {
-            "id": "SUBHAJIT.PAULASMWB",
-            "name": "Subhajit Paul",
-            "designation": "DM"
+            "designation": "RH"
           },
           {
             "id": "SUBHASH.ASMHAR",
             "name": "SUBHASH ASM HAR",
-            "designation": "DM"
+            "designation": "RH"
           },
           {
             "id": "subhash.asmbihar",
             "name": "SUBHASH KUMAR- ASM BIHAR",
-            "designation": "DM"
-          },
-          {
-            "id": "SUBIR.ASMWB",
-            "name": "SUBIR GHOSH ASM WB",
-            "designation": "DM"
-          },
-          {
-            "id": "SUDIP.KUMARASMNE",
-            "name": "Sudip Kumar Banik",
-            "designation": "DM"
-          },
-          {
-            "id": "SUMIT.ASMWB",
-            "name": "SUMIT KANU ASM WB",
-            "designation": "DM"
-          },
-          {
-            "id": "SUMIT.KUMAR ASMJHD",
-            "name": "Sumit Kumar",
-            "designation": "DM"
-          },
-          {
-            "id": "SWAPNIL.ASMMAHA",
-            "name": "SWAPNIL MEHKARKAR ASM MAHA DIRECT",
-            "designation": "DM"
-          },
-          {
-            "id": "TAPAS.RHWB",
-            "name": "TAPAS KARMAKAR RH WB",
-            "designation": "DM"
-          },
-          {
-            "id": "THANDROTHU.ASMAP",
-            "name": "Thandrothu Damodara Rao",
-            "designation": "DM"
-          },
-          {
-            "id": "THIRUMURUGAN.AASMTN",
-            "name": "Thirumurugan",
-            "designation": "DM"
-          },
-          {
-            "id": "UMAR.ASMMP",
-            "name": "UMAR FARUQUE AHMED ASM MP",
-            "designation": "DM"
-          },
-          {
-            "id": "UMESH.ASMPB",
-            "name": "UMESH.KUMAR ASM PB",
-            "designation": "DM"
-          },
-          {
-            "id": "VIKAS.ASMRAJ",
-            "name": "Vikas",
-            "designation": "DM"
+            "designation": "RH"
           },
           {
             "id": "Vikash.asmbihar",
             "name": "VIKASH KUMAR SINGH- ASM BIHAR",
-            "designation": "DM"
-          },
-          {
-            "id": "VINOD.ASMKAR",
-            "name": "VINOD ASM KAR",
-            "designation": "DM"
-          },
-          {
-            "id": "VINODKUMAR.RHGUJ",
-            "name": "Vinodkumar Bhurmal Bhati",
-            "designation": "DM"
-          },
-          {
-            "id": "VIVEK",
-            "name": "VIVEK GUPTA",
-            "designation": "DM"
-          },
-          {
-            "id": "YERRAMSETTI.ASMAP",
-            "name": "YERRAMSETTI SANTOSH KUMAR ASM AP",
-            "designation": "DM"
-          },
-          {
-            "id": "YOGESH.SUTHARASMRAJ",
-            "name": "Yogesh Suthar",
-            "designation": "DM"
+            "designation": "RH"
           },
           {
             "id": "ZISHAN.ASMEUP",
             "name": "ZISHAN TASLEEM ASM EUP",
-            "designation": "DM"
+            "designation": "RH"
+          }
+        ]
+      },
+      {
+        "role": "RH",
+        "label": "Regional Head",
+        "members": [
+          {
+            "id": "ADESH",
+            "name": "ADESH SINGH(EUP)",
+            "designation": "RH"
+          },
+          {
+            "id": "ANISH.RHJKPBHP",
+            "name": "ANISH DHIMAN RH - PB HP J&K",
+            "designation": "RH"
+          },
+          {
+            "id": "BHOOPATHI.RHTN",
+            "name": "BOOPATHI MANOKARAN",
+            "designation": "RH"
+          },
+          {
+            "id": "DEV.RHWUP",
+            "name": "DEV KUMAR RH WUP",
+            "designation": "RH"
+          },
+          {
+            "id": "DEVENDRA.NATH RH CG",
+            "name": "Devendra Nath Pandey",
+            "designation": "RH"
+          },
+          {
+            "id": "DIPIN.KV_RHKER",
+            "name": "Dipin KV",
+            "designation": "RH"
+          },
+          {
+            "id": "JUZER.RHGUJ",
+            "name": "JUZER MITHAIWALA ASM GUJ",
+            "designation": "RH"
+          },
+          {
+            "id": "NURULLA.ASMAP",
+            "name": "NURULLA SYED ASM AP DIRECT",
+            "designation": "RH"
+          },
+          {
+            "id": "PRABHAT.RHJKND",
+            "name": "PRABHAT KUMAR RH JKND",
+            "designation": "RH"
+          },
+          {
+            "id": "PRASENJIT.RHWB",
+            "name": "PRASENJIT MUKHERJEE RH WB",
+            "designation": "RH"
+          },
+          {
+            "id": "PRAVEEN.RHTEL",
+            "name": "PRAVEEN PILLI RH TEL",
+            "designation": "RH"
+          },
+          {
+            "id": "SATHISH.RHKAR",
+            "name": "SATHISH NAYAK RH KARNATAKA",
+            "designation": "RH"
+          },
+          {
+            "id": "SHAIKH.RHMAHA",
+            "name": "SHAIKH ANWAR RH MAHA",
+            "designation": "RH"
+          },
+          {
+            "id": "SHIVRAJ.RH MUM",
+            "name": "Shivraj Gangadhar Wanole",
+            "designation": "RH"
+          },
+          {
+            "id": "TAPAS.RHWB",
+            "name": "TAPAS KARMAKAR RH WB",
+            "designation": "RH"
+          },
+          {
+            "id": "VINODKUMAR.RHGUJ",
+            "name": "Vinodkumar Bhurmal Bhati",
+            "designation": "RH"
+          }
+        ]
+      },
+      {
+        "role": "ASSISTASM",
+        "label": "Assistant Area Sales Manager",
+        "members": [
+          {
+            "id": "BALRAM.SAHU AASM",
+            "name": "Balram Sahu",
+            "designation": "ASM"
+          },
+          {
+            "id": "DEMLAR.FOSNE",
+            "name": "DEMLAR KHUMBONGMAYUM FOS NE",
+            "designation": "ASM"
+          },
+          {
+            "id": "JEETENDRA.FOSMAHA",
+            "name": "JEETENDRA AMLANI FOS MAHA",
+            "designation": "ASM"
+          },
+          {
+            "id": "MATHESH.FOSTN",
+            "name": "MATHESH FOS TN",
+            "designation": "ASM"
+          },
+          {
+            "id": "NILKANTH.AASMMAHA",
+            "name": "Nilkanth Suryakant Lokhande",
+            "designation": "ASM"
+          },
+          {
+            "id": "PARWEZ.FOSASSAM",
+            "name": "PARWEZ AHMED FOS ASSAM",
+            "designation": "ASM"
+          },
+          {
+            "id": "SANDRAPATI.ASMAP",
+            "name": "SANDRAPATI IMMANIYELU ASM AP",
+            "designation": "ASM"
+          },
+          {
+            "id": "SANTOSH.KUMARAASM",
+            "name": "Santosh Kumar",
+            "designation": "ASM"
+          },
+          {
+            "id": "SHABIHUL.ABRARAASM",
+            "name": "Shabihul Abrar",
+            "designation": "ASM"
+          },
+          {
+            "id": "SOMNATH.FOSMAHA",
+            "name": "SOMNATH GOVIND FOS MAHA",
+            "designation": "ASM"
+          },
+          {
+            "id": "THIRUMURUGAN.AASMTN",
+            "name": "Thirumurugan",
+            "designation": "ASM"
+          }
+        ]
+      },
+      {
+        "role": "ASM",
+        "label": "Area Sales Manager",
+        "members": [
+          {
+            "id": "ABDUL.ASMMP",
+            "name": "ABDUL TAUSIF SHEKH ASM MP",
+            "designation": "ASM"
+          },
+          {
+            "id": "ABHIJIT.BATABYAL ASM",
+            "name": "Abhijit Batabyal",
+            "designation": "ASM"
+          },
+          {
+            "id": "ABHIJIT.ASMUP",
+            "name": "ABHIJIT SRIVASTAVA ASM UP",
+            "designation": "ASM"
+          },
+          {
+            "id": "AKRAM.ASMASSAM",
+            "name": "AKRAM ALI ASM ASSAM",
+            "designation": "ASM"
+          },
+          {
+            "id": "AMIR.ASMMAHA",
+            "name": "AMIR TEMBE ASM MAHA",
+            "designation": "ASM"
+          },
+          {
+            "id": "AMIT.KUMARASMWB",
+            "name": "Amit Kumar Ghosh",
+            "designation": "ASM"
+          },
+          {
+            "id": "AMIT.SAXENAASMWUP",
+            "name": "Amit Kumar Saxena",
+            "designation": "ASM"
+          },
+          {
+            "id": "AMIT.YADAVASMUP",
+            "name": "Amit Yadav",
+            "designation": "ASM"
+          },
+          {
+            "id": "ANANDA.ASMMAHA",
+            "name": "ANANDA WANJE ASM MAHA DIRECT",
+            "designation": "ASM"
+          },
+          {
+            "id": "ARUNSINGH.SASMKAR",
+            "name": "Arunsingh S",
+            "designation": "ASM"
+          },
+          {
+            "id": "BAM.ASMPB",
+            "name": "BAM BAHADAR ASM PB ",
+            "designation": "ASM"
+          },
+          {
+            "id": "BELLAMKONDA.ASMAP",
+            "name": "BELLAMKONDA MEERA BABU ASM AP",
+            "designation": "ASM"
+          },
+          {
+            "id": "BHAGIRATH.ASMRAJ",
+            "name": "Bhagirath Prajapat",
+            "designation": "ASM"
+          },
+          {
+            "id": "BHIMASHANKAR.ASMMAHA",
+            "name": "BHIMASHANKAR SHETAKAR ASM MAHA DIRECT",
+            "designation": "ASM"
+          },
+          {
+            "id": "CHANDAN.ASMBIHAR",
+            "name": "CHANDAN SHUKLA ASM BIHAR",
+            "designation": "ASM"
+          },
+          {
+            "id": "DHANANJAY.ASMEUP",
+            "name": "Dhananjay Kumar Singh",
+            "designation": "ASM"
+          },
+          {
+            "id": "GAJANAN.ASMMAHA",
+            "name": "GAJANAN GURAV ASM MAHA",
+            "designation": "ASM"
+          },
+          {
+            "id": "GANESH.ASMAP",
+            "name": "GANESH ASM AP",
+            "designation": "ASM"
+          },
+          {
+            "id": "GOVIND.SINGHASMMP",
+            "name": "Govind Singh Baghela",
+            "designation": "ASM"
+          },
+          {
+            "id": "JAY.SURESHASMGUJ",
+            "name": "Jay Sureshchandra Rana",
+            "designation": "ASM"
+          },
+          {
+            "id": "LALAN.ASMCDG",
+            "name": "LALAN KUMAR ASM CDG",
+            "designation": "ASM"
+          },
+          {
+            "id": "MAHESHKUMAR.ASMGUJ",
+            "name": "MAHESHKUMAR MATHURBHAI MAKWANA ASM GUJ",
+            "designation": "ASM"
+          },
+          {
+            "id": "MANAS.ASMWB",
+            "name": "MANAS MAHATO ASM WB",
+            "designation": "ASM"
+          },
+          {
+            "id": "MANISH.KUMARASMMP",
+            "name": "Manish Kumar Yadav",
+            "designation": "ASM"
+          },
+          {
+            "id": "MAYANK.ASMNCR",
+            "name": "MAYANK NANDAN ASM NCR",
+            "designation": "ASM"
+          },
+          {
+            "id": "MIRJAN.ASMASSAM",
+            "name": "MIRJAN ALI ASM ASSAM",
+            "designation": "ASM"
+          },
+          {
+            "id": "MOHAMMAD.IMRAN ASM",
+            "name": "Mohammad Imran",
+            "designation": "ASM"
+          },
+          {
+            "id": "MOH.SHAMSHADASMMUMB",
+            "name": "Mohammed Shamshad Shaikh",
+            "designation": "ASM"
+          },
+          {
+            "id": "MOSTOFA.ASMASSAM",
+            "name": "MOSTOFA ISLAM ASM ASSAM",
+            "designation": "ASM"
+          },
+          {
+            "id": "NASIMULLA.ASMASSAM",
+            "name": "NASIMULLA ANSARI ASM ASSAM",
+            "designation": "ASM"
+          },
+          {
+            "id": "NAWENDU.ASMBIHAR",
+            "name": "Nawendu Shekhar Pathak",
+            "designation": "ASM"
+          },
+          {
+            "id": "NILESH.KUMAR ASM",
+            "name": "Nilesh Kumar",
+            "designation": "ASM"
+          },
+          {
+            "id": "NISHIL.ASMKER",
+            "name": "Nishil",
+            "designation": "ASM"
+          },
+          {
+            "id": "PADALA.ASMAP",
+            "name": "PADALA CHARAN TEJA ASM AP",
+            "designation": "ASM"
+          },
+          {
+            "id": "PAPAI.PAUL ASM WB",
+            "name": "Papai Paul",
+            "designation": "ASM"
+          },
+          {
+            "id": "PAVILLA.ASMTEL",
+            "name": "PAVILLA SRINIVAS SURYA ASM TEL",
+            "designation": "ASM"
+          },
+          {
+            "id": "PRADEEP.ASMMP",
+            "name": "PRADEEP GAUTAM ASM MP",
+            "designation": "ASM"
+          },
+          {
+            "id": "PRASHANTJHA.ASMBIHAR",
+            "name": "PRASHANT KUMAR JHA ASM BIHAR",
+            "designation": "ASM"
+          },
+          {
+            "id": "PRASHANT.ASMBIHAR",
+            "name": "PRASHANT KUMAR SUNNY ASM BIHAR",
+            "designation": "ASM"
+          },
+          {
+            "id": "PUSPASISH.ASMWB",
+            "name": "PUSPASISH BERA - ASM WB",
+            "designation": "ASM"
+          },
+          {
+            "id": "RAHUL.ASMBIHAR",
+            "name": "RAHUL KUMAR- ASM BIHAR",
+            "designation": "ASM"
+          },
+          {
+            "id": "RAIS.AHAMADASMUP",
+            "name": "Rais Ahamad",
+            "designation": "ASM"
+          },
+          {
+            "id": "RAKESH.PRASADASMWB",
+            "name": "Rakesh Prasad",
+            "designation": "ASM"
+          },
+          {
+            "id": "RAVI.TOMARASMWUP",
+            "name": "Ravi Tomar",
+            "designation": "ASM"
+          },
+          {
+            "id": "RAZIK.KHANASMMP",
+            "name": "Razik Khan",
+            "designation": "ASM"
+          },
+          {
+            "id": "SALIL.ASMMP",
+            "name": "SALIL SAHU ASM MP",
+            "designation": "ASM"
+          },
+          {
+            "id": "SAMIUL.ASMWB",
+            "name": "SAMIUL ALIM ASM WB",
+            "designation": "ASM"
+          },
+          {
+            "id": "SAMPATH.ASMKAR",
+            "name": "SAMPATH ASM KAR",
+            "designation": "ASM"
+          },
+          {
+            "id": "SANDEEP.ASMPB",
+            "name": "SANDEEP SINGH ASM PB",
+            "designation": "ASM"
+          },
+          {
+            "id": "SATHEESHKUMAR.ASMTN ",
+            "name": "Satheeshkumar R",
+            "designation": "ASM"
+          },
+          {
+            "id": "SATYENDRA.KUMARASMUP",
+            "name": "Satyendra Kumar",
+            "designation": "ASM"
+          },
+          {
+            "id": "SONU.ASMBIHAR",
+            "name": "SONU KUMAR SINGH ASM BIHAR",
+            "designation": "ASM"
+          },
+          {
+            "id": "SUBHAJIT.PAULASMWB",
+            "name": "Subhajit Paul",
+            "designation": "ASM"
+          },
+          {
+            "id": "SUBIR.ASMWB",
+            "name": "SUBIR GHOSH ASM WB",
+            "designation": "ASM"
+          },
+          {
+            "id": "SUDIP.KUMARASMNE",
+            "name": "Sudip Kumar Banik",
+            "designation": "ASM"
+          },
+          {
+            "id": "SUMIT.ASMWB",
+            "name": "SUMIT KANU ASM WB",
+            "designation": "ASM"
+          },
+          {
+            "id": "SUMIT.KUMAR ASMJHD",
+            "name": "Sumit Kumar",
+            "designation": "ASM"
+          },
+          {
+            "id": "SWAPNIL.ASMMAHA",
+            "name": "SWAPNIL MEHKARKAR ASM MAHA DIRECT",
+            "designation": "ASM"
+          },
+          {
+            "id": "THANDROTHU.ASMAP",
+            "name": "Thandrothu Damodara Rao",
+            "designation": "ASM"
+          },
+          {
+            "id": "UMAR.ASMMP",
+            "name": "UMAR FARUQUE AHMED ASM MP",
+            "designation": "ASM"
+          },
+          {
+            "id": "UMESH.ASMPB",
+            "name": "UMESH.KUMAR ASM PB",
+            "designation": "ASM"
+          },
+          {
+            "id": "VIKAS.ASMRAJ",
+            "name": "Vikas",
+            "designation": "ASM"
+          },
+          {
+            "id": "VINOD.ASMKAR",
+            "name": "VINOD ASM KAR",
+            "designation": "ASM"
+          },
+          {
+            "id": "YERRAMSETTI.ASMAP",
+            "name": "YERRAMSETTI SANTOSH KUMAR ASM AP",
+            "designation": "ASM"
+          },
+          {
+            "id": "YOGESH.SUTHARASMRAJ",
+            "name": "Yogesh Suthar",
+            "designation": "ASM"
           }
         ]
       }

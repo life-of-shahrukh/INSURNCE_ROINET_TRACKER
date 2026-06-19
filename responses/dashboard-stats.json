@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-06-17T16:02:09.124Z",
+  "capturedAt": "2026-06-19T16:44:35.559Z",
   "method": "GET",
   "path": "/api/dashboard/stats",
   "baseUrl": "http://localhost:8000",
@@ -9,228 +9,58 @@
   "requestBody": null,
   "response": {
     "deals": {
-      "totalPremium": 2155000,
-      "totalMargin": 1750400,
-      "totalCoa": 13000,
-      "count": 120,
-      "avgPremium": 17958,
-      "hotCount": 39,
-      "warmCount": 41,
-      "coldCount": 40,
-      "issuedCount": 30,
-      "conversionRate": 25,
-      "costPerIssuedPolicy": 433,
-      "avgDaysToIssue": -380,
+      "totalPremium": 11343554,
+      "totalMargin": 0,
+      "totalCoa": 0,
+      "count": 2,
+      "avgPremium": 5671777,
+      "hotCount": 1,
+      "warmCount": 1,
+      "coldCount": 0,
+      "issuedCount": 0,
+      "conversionRate": 0,
+      "costPerIssuedPolicy": 0,
+      "avgDaysToIssue": 0,
       "byPolicy": [
         {
-          "policy": "ULIP",
-          "premium": 390000,
-          "count": 12
-        },
-        {
-          "policy": "Home",
-          "premium": 360000,
-          "count": 12
-        },
-        {
-          "policy": "Travel",
-          "premium": 330000,
-          "count": 12
-        },
-        {
-          "policy": "Term",
-          "premium": 287500,
-          "count": 11
-        },
-        {
-          "policy": "Motor",
-          "premium": 275000,
-          "count": 12
-        },
-        {
           "policy": "Life",
-          "premium": 260000,
-          "count": 13
-        },
-        {
-          "policy": "Health",
-          "premium": 252500,
-          "count": 12
-        },
-        {
-          "policy": "Business Loan",
-          "premium": 0,
-          "count": 12
-        },
-        {
-          "policy": "Home Loan",
-          "premium": 0,
-          "count": 12
-        },
-        {
-          "policy": "Personal Loan",
-          "premium": 0,
-          "count": 12
+          "premium": 11343554,
+          "count": 2
         }
       ],
       "topPosps": [
         {
-          "pospId": "cmqdxv0io002sc2lc1qg314p6",
-          "name": "Sameer Pillai",
-          "premium": 145000,
-          "count": 7
-        },
-        {
-          "pospId": "cmqdxv0do002ec2lc8pu0uzcn",
-          "name": "Meera Menon",
-          "premium": 125000,
-          "count": 5
-        },
-        {
-          "pospId": "cmqdxv0eg002gc2lcirdfmfyq",
-          "name": "Ritu Mehta",
-          "premium": 125000,
-          "count": 5
-        },
-        {
-          "pospId": "cmqdrphp40001c2kwzws5x4zt",
-          "name": "Arjun Sharma",
-          "premium": 115000,
-          "count": 5
-        },
-        {
-          "pospId": "cmqdxv0bh0028c2lcxyx4t5yh",
-          "name": "Kavita Malhotra",
-          "premium": 100000,
-          "count": 5
-        },
-        {
-          "pospId": "cmqdxv0cb002ac2lcizc19yf4",
-          "name": "Sneha Mishra",
-          "premium": 100000,
-          "count": 5
-        },
-        {
-          "pospId": "cmqdxv0f4002ic2lc4sto3fqa",
-          "name": "Pooja Bhatt",
-          "premium": 100000,
-          "count": 5
-        },
-        {
-          "pospId": "cmqdxv0cz002cc2lc1v5x72at",
-          "name": "Deepika Singh",
-          "premium": 100000,
-          "count": 5
-        },
-        {
-          "pospId": "cmqdxv0fs002kc2lcppk2qjux",
-          "name": "Geeta Khanna",
-          "premium": 95000,
-          "count": 4
-        },
-        {
-          "pospId": "cmqdxv0gh002mc2lc87upaauu",
-          "name": "Lakshmi Kumar",
-          "premium": 90000,
-          "count": 4
+          "pospId": "cmqi23qr00000c224nyg5y0rz",
+          "name": "SHIVRAJ GANGADHARRAO WANOLE",
+          "premium": 11343554,
+          "count": 2
         }
       ],
       "monthlyPremium": [
         {
           "month": "2026-06",
-          "premium": 2155000,
-          "count": 120
+          "premium": 11343554,
+          "count": 2
         }
       ]
     },
     "leads": {
-      "total": 60,
-      "activeCount": 40,
-      "byStatus": [
-        {
-          "status": "CONTACTED",
-          "count": 10
-        },
-        {
-          "status": "LOST",
-          "count": 10
-        },
-        {
-          "status": "NEW",
-          "count": 10
-        },
-        {
-          "status": "PROPOSAL_SENT",
-          "count": 10
-        },
-        {
-          "status": "QUALIFIED",
-          "count": 10
-        },
-        {
-          "status": "WON",
-          "count": 10
-        }
-      ],
-      "byTimeline": [
-        {
-          "timeline": "LATER",
-          "count": 15
-        },
-        {
-          "timeline": "T_PLUS_1",
-          "count": 15
-        },
-        {
-          "timeline": "T_PLUS_2",
-          "count": 15
-        },
-        {
-          "timeline": "THIS_MONTH",
-          "count": 15
-        }
-      ],
-      "bySource": [
-        {
-          "source": "CAMPAIGN",
-          "count": 15
-        },
-        {
-          "source": "ONLINE",
-          "count": 15
-        },
-        {
-          "source": "WALK_IN",
-          "count": 15
-        },
-        {
-          "source": "REFERRAL",
-          "count": 14
-        },
-        {
-          "source": "API Test",
-          "count": 1
-        }
-      ]
+      "total": 0,
+      "activeCount": 0,
+      "byStatus": [],
+      "byTimeline": [],
+      "bySource": []
     },
     "posps": {
       "total": 414,
       "active": 389
     },
     "customers": {
-      "total": 61,
+      "total": 1,
       "byKycStatus": [
         {
           "kycStatus": "PENDING",
-          "count": 21
-        },
-        {
-          "kycStatus": "REJECTED",
-          "count": 10
-        },
-        {
-          "kycStatus": "VERIFIED",
-          "count": 30
+          "count": 1
         }
       ]
     }

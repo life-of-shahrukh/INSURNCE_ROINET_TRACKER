@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-06-17T16:02:09.577Z",
+  "capturedAt": "2026-06-19T16:44:35.877Z",
   "method": "GET",
   "path": "/api/hierarchy/members/search?q=a&limit=5",
   "baseUrl": "http://localhost:8000",
@@ -11,27 +11,27 @@
     {
       "id": "ABDUL.ASMMP",
       "name": "ABDUL TAUSIF SHEKH ASM MP",
-      "designation": "DM"
+      "designation": "ASM"
     },
     {
       "id": "ABHIJIT.BATABYAL ASM",
       "name": "Abhijit Batabyal",
-      "designation": "DM"
+      "designation": "ASM"
     },
     {
       "id": "ABHIJIT.ASMUP",
       "name": "ABHIJIT SRIVASTAVA ASM UP",
-      "designation": "DM"
+      "designation": "ASM"
     },
     {
       "id": "ADESH",
       "name": "ADESH SINGH(EUP)",
-      "designation": "DM"
+      "designation": "RH"
     },
     {
       "id": "AKRAM.ASMASSAM",
       "name": "AKRAM ALI ASM ASSAM",
-      "designation": "DM"
+      "designation": "ASM"
     }
   ]
 }

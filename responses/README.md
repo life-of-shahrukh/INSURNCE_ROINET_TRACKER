@@ -2,11 +2,13 @@
 
 Live snapshots captured from the local NestJS server. Each file includes HTTP status, path, and the JSON body returned.
 
-**Last captured:** see `capturedAt` inside each file, or run:
+**Last captured:** see `capturedAt` inside each file.
 
-```bash
-node scripts/capture-app-api-responses.mjs
-```
+| Source | Command |
+|--------|---------|
+| CRM proxy (`responses/*.json`) | `node scripts/capture-app-api-responses.mjs` (server on `:8000`) |
+| Cognitensor UAT → snapshots | `cd server && npm run snapshots:sync-api-responses` (from [`api-responses/`](../api-responses/README.md)) |
+| Cognitensor UAT live (VPN) | `cd server && npm run snapshots:refresh` |
 
 Endpoint catalog: [`../api-endpoints/README.md`](../api-endpoints/README.md)
 
@@ -29,6 +31,8 @@ Endpoint catalog: [`../api-endpoints/README.md`](../api-endpoints/README.md)
 | [external-cities.json](./external-cities.json) | GET | `/api/external/cities?districtId=1` | 200 |
 | [external-zones.json](./external-zones.json) | GET | `/api/external/zones` | 200 |
 | [geo-catalog.json](./geo-catalog.json) | GET | `/api/geo/catalog` | 200 |
+| [geo-catalog-rh.json](./geo-catalog-rh.json) | GET | `/api/geo/catalog` (RH login, scoped) | 200 |
+| [hierarchy-filter-options-rh.json](./hierarchy-filter-options-rh.json) | GET | `/api/hierarchy/filter-options` (RH login) | 200 |
 | [geo-districts-search.json](./geo-districts-search.json) | GET | `/api/geo/districts/search?q=hyd&limit=5` | 200 |
 | [geo-cities-search.json](./geo-cities-search.json) | GET | `/api/geo/cities/search?q=ban&limit=5` | 200 |
 | [hierarchy-members-search.json](./hierarchy-members-search.json) | GET | `/api/hierarchy/members/search?q=a&limit=5` | 200 |

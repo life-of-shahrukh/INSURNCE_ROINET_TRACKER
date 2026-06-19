@@ -1,0 +1,22 @@
+UserType {
+    ADMIN = 0,
+    CMF = 1,
+    CSF = 2,
+    CSP = 3,
+    ASM = 4,
+    RH = 6,
+    ZH = 10,
+    ASSISTASM = 11,
+    CH = 12,
+    SZH = 14
+}
+
+CSP- CSP
+CMF - CMF
+CSF - CSF
+ASM - Area Sales Manager
+ASSISTASM - Assistant Area Sales Manager
+RH - Regional Head
+ZH - Zonal Head
+CH - Cluster Head
+SZH - Super Zonal Head

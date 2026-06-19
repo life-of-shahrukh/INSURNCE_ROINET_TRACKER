@@ -1,0 +1,68 @@
+{
+  "capturedAt": "2026-06-19T16:44:49.497Z",
+  "role": "rh",
+  "response": {
+    "zones": [
+      {
+        "id": "3",
+        "name": "RAJ/GUJ/MP/UT1"
+      },
+      {
+        "id": "4",
+        "name": "MAH/GOA"
+      }
+    ],
+    "regions": [
+      {
+        "id": "22",
+        "name": "Goa"
+      },
+      {
+        "id": "8",
+        "name": "GUJ/UT1"
+      },
+      {
+        "id": "6",
+        "name": "Maharashtra"
+      },
+      {
+        "id": "13",
+        "name": "MP"
+      },
+      {
+        "id": "11",
+        "name": "Rajasthan"
+      }
+    ],
+    "states": [
+      {
+        "id": "6",
+        "name": "RAJASTHAN"
+      },
+      {
+        "id": "23",
+        "name": "GOA"
+      },
+      {
+        "id": "24",
+        "name": "GUJARAT"
+      },
+      {
+        "id": "25",
+        "name": "MADHYA PRADESH"
+      },
+      {
+        "id": "26",
+        "name": "MAHARASHTRA"
+      },
+      {
+        "id": "35",
+        "name": "Daman Diu"
+      },
+      {
+        "id": "36",
+        "name": "Dadra And Nagar Haveli"
+      }
+    ]
+  }
+}

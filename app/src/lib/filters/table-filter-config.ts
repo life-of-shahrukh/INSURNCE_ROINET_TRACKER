@@ -100,7 +100,6 @@ const GEO_FIELDS: FilterFieldRef[] = [
   { type: "state", key: "zone", label: "Zone" },
   { type: "state", key: "region", label: "Region" },
   { type: "state", key: "state", label: "State" },
-  { type: "state", key: "area", label: "Area" },
   { type: "state", key: "district", label: "District" },
   { type: "state", key: "city", label: "City" },
 ];
@@ -200,7 +199,7 @@ export const TABLE_FILTER_CONFIG: Record<ListViewId, ListViewFilterConfig> = {
       { type: "query", key: "territory", label: "Territory" },
       { type: "state", key: "zone", label: "Zone" },
       { type: "state", key: "region", label: "Region" },
-      { type: "state", key: "area", label: "Area" },
+      { type: "state", key: "state", label: "State" },
     ],
   },
 };

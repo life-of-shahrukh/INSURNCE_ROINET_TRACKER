@@ -19,7 +19,8 @@ export class ExternalPospQueryDto {
   pageSize?: number = 20;
 
   @ApiPropertyOptional({
-    description: 'Free-text search by UserCode, Email, Mobile, or HephGcdCode',
+    description:
+      'Free-text search by username, UserCode, Email, Mobile, or HephGcdCode',
   })
   @IsOptional()
   @IsString()

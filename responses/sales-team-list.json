@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-06-17T16:02:09.690Z",
+  "capturedAt": "2026-06-19T16:44:35.961Z",
   "method": "GET",
   "path": "/api/sales-team?page=1&pageSize=3",
   "baseUrl": "http://localhost:8000",
@@ -28,7 +28,7 @@
         "areaName": null,
         "status": "ACTIVE",
         "createdAt": "2026-06-14T15:28:04.250Z",
-        "updatedAt": "2026-06-17T09:58:58.000Z",
+        "updatedAt": "2026-06-17T17:17:57.336Z",
         "manager": {
           "id": "cmqdxuzjo0008c2lckoil9lmv",
           "name": "Ravi National",
@@ -37,7 +37,7 @@
         "pospsManaged": [],
         "_count": {
           "subordinates": 2,
-          "leadsAssigned": 12
+          "leadsAssigned": 0
         }
       },
       {

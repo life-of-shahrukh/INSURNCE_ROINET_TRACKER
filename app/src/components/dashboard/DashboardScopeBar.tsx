@@ -9,6 +9,10 @@ import type {
   SubordinatesResult,
 } from "@/lib/api/hierarchy-api";
 import type { UserRole } from "@/lib/auth-types";
+import {
+  isGeoFilterVisible,
+  isManagerRoleGroupVisible,
+} from "@/lib/filters/filter-visibility";
 import { ScopeAsyncSelect, type GeoOption } from "./ScopeAsyncSelect";
 
 // ── public types ─────────────────────────────────────────────────────────────
@@ -328,6 +332,10 @@ export function DashboardScopeBar({
     );
   }
 
+  const visibleRoleGroups = options.roleGroups.filter((g) =>
+    isManagerRoleGroupVisible(role, g.role),
+  );
+
   return (
     <div className="scope-bar">
       <span className="scope-bar__label">Viewing:</span>
@@ -337,39 +345,46 @@ export function DashboardScopeBar({
       {levelDropdown(3)}
       {levelDropdown(4)}
 
-      {options.roleGroups.length > 0 && (
+      {visibleRoleGroups.length > 0 && (
         <>
           <span className="scope-bar__label">By role:</span>
-          {options.roleGroups.map((g) =>
+          {visibleRoleGroups.map((g) =>
             roleDropdown(g.role, g.label, g.members),
           )}
         </>
       )}
 
       <span className="scope-bar__label">Filter:</span>
-      {geoSelect("Zones", catalog?.zones ?? [], geo?.zoneId, (v) =>
-        setGeo({ zoneId: v }),
+      {isGeoFilterVisible(role, "zone") &&
+        geoSelect("Zones", catalog?.zones ?? [], geo?.zoneId, (v) =>
+          setGeo({ zoneId: v }),
+        )}
+      {isGeoFilterVisible(role, "region") &&
+        geoSelect("Regions", catalog?.regions ?? [], geo?.regionId, (v) =>
+          setGeo({ regionId: v }),
+        )}
+      {isGeoFilterVisible(role, "state") &&
+        geoSelect("States", catalog?.states ?? [], geo?.stateId, (v) =>
+          setGeo({ stateId: v }),
+        )}
+      {isGeoFilterVisible(role, "district") && (
+        <ScopeAsyncSelect
+          placeholder="Search districts…"
+          selectedId={geo?.districtId}
+          onSearch={(q) => districtOptions(q)}
+          onSelect={(item) =>
+            setGeo({ ...geo, districtId: item?.id, cityId: undefined })
+          }
+        />
       )}
-      {geoSelect("Regions", catalog?.regions ?? [], geo?.regionId, (v) =>
-        setGeo({ regionId: v }),
+      {isGeoFilterVisible(role, "city") && (
+        <ScopeAsyncSelect
+          placeholder="Search cities…"
+          selectedId={geo?.cityId}
+          onSearch={(q) => cityOptions(q)}
+          onSelect={(item) => setGeo({ ...geo, cityId: item?.id })}
+        />
       )}
-      {geoSelect("States", catalog?.states ?? [], geo?.stateId, (v) =>
-        setGeo({ stateId: v }),
-      )}
-      <ScopeAsyncSelect
-        placeholder="Search districts…"
-        selectedId={geo?.districtId}
-        onSearch={(q) => districtOptions(q)}
-        onSelect={(item) =>
-          setGeo({ ...geo, districtId: item?.id, cityId: undefined })
-        }
-      />
-      <ScopeAsyncSelect
-        placeholder="Search cities…"
-        selectedId={geo?.cityId}
-        onSearch={(q) => cityOptions(q)}
-        onSelect={(item) => setGeo({ ...geo, cityId: item?.id })}
-      />
 
       {(hasDrill || hasRole || hasGeo) && (
         <button

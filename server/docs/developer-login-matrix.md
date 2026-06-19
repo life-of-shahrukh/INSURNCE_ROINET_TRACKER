@@ -41,11 +41,11 @@ testing.
 | System | `SUPER_ADMIN` | `superadmin@roinet.com` | `Admin@1234` | — | — | — | All data | Full tree |
 | Admin | `NATIONAL_HEAD` | — | — | `vivek@roinet.in` | `VIVEK` | Admin | All data | Full tree |
 | National Head | `NATIONAL_HEAD` | `national@roinet.com` | `National@123` | `hari.dutt@roinet.in` | `HARI.DUTT` | National Head | All data | Focus on self |
-| Zonal | `ZH` | `zonal@roinet.com` | `Zonal@1234` | `ramanuj.biharjhkzm@roinet.in` | `RAMANUJ.BIHARJHKZM` | Zonal Head | Scoped | Scoped subtree |
+| Zonal | `ZH` | `zonal@roinet.com` | `Zonal@1234` | `ramanuj.biharjhkzm@roinet.in` | `RAMANUJ.BIHARJHKZM` | Zonal Head | ~43 districts | Scoped subtree |
 | Super Zonal | `ZH` | — | — | `sachin.zhrajgujmp@roinet.in` | `SACHIN.ZHRAJGUJMP` | Super Zonal Head | ~132 districts | Scoped subtree |
 | Regional | `RH` | `regional@roinet.com` | `Regional@123` | `shaikh.rhmaha@roinet.in` | `SHAIKH.RHMAHA` | Regional Head | ~38 districts | Scoped subtree |
-| Area | `ASM` | `asm@roinet.com` | `Asm@12345` | `shaikh.rhmaha@roinet.in` | `SHAIKH.RHMAHA` | Area Sales Manager | ~38 districts | Scoped subtree |
-| District | `DM` | `dm@roinet.com` | `Dm@123456` | `mundhe.asmmaha@roinet.in` | `MUNDHE.ASMMAHA` | District Manager | ~13 districts | Scoped subtree |
+| Area | `ASM` | `asm@roinet.com` | `Asm@12345` | `rahul.asmbihar@roinet.in` | `RAHUL.ASMBIHAR` | Area Sales Manager | ~4 districts | Scoped subtree |
+| District | `DM` | `dm@roinet.com` | `Dm@123456` | — (no real DM tier) | — | District Manager | 1 district (demo only) | Scoped subtree |
 | Field agent | `POSP` | `posp@roinet.com` | `Posp@1234` | `shivraj.wanole@roinet.in` | `CSP023057` | Self only | N/A (leaf node) |
 
 ### Demo manager scope aliasing
@@ -54,12 +54,18 @@ Demo `@roinet.com` managers use synthetic `employeeCode`s (`EMP-Z001`, etc.) tha
 are **not** in the Cognitensor org graph. Scope is aliased in code to a real
 chain so lists and org chart still work:
 
-| Demo role | `employeeCode` | Aliased to real `UserCode` |
-|-----------|----------------|----------------------------|
-| ZH | `EMP-Z001` | `RAMANUJ.BIHARJHKZM` |
-| RH | `EMP-R001` | `SACHIN.ZHRAJGUJMP` (SZH org label) |
-| ASM | `EMP-A001` | `SHAIKH.RHMAHA` |
-| DM | `EMP-D001` | `MUNDHE.ASMMAHA` |
+All four targets sit in one zone (RAMANUJ / Bihar-Jharkhand) and each `usertype`
+matches the demo role, so scopes nest with distinct sizes:
+
+| Demo role | `employeeCode` | Aliased to real `UserCode` | Org `usertype` | Approx. scope |
+|-----------|----------------|----------------------------|----------------|---------------|
+| ZH | `EMP-Z001` | `RAMANUJ.BIHARJHKZM` | 10 (ZH) | ~43 districts |
+| RH | `EMP-R001` | `PRABHAT.RHJKND` | 6 (RH) | ~15 districts |
+| ASM | `EMP-A001` | `RAHUL.ASMBIHAR` | 4 (ASM) | ~4 districts |
+| DM | `EMP-D001` | `PRASHANTJHA.ASMBIHAR` | 4 (ASM) | 1 district |
+
+The org graph's lowest manager tier is ASM (usertype 4) — CSP/CSF/CMF are field
+POSPs, not managers — so the `DM` demo borrows the smallest ASM territory.
 
 Source: `server/src/common/auth/hierarchy-scope.util.ts` → `DEMO_EMPLOYEE_CODE_ALIASES`.
 
@@ -74,8 +80,9 @@ Source: `server/src/common/auth/hierarchy-scope.util.ts` → `DEMO_EMPLOYEE_CODE
 | National Head | `hari.dutt@roinet.in` | Org chart card **National Head**; all data; chart opens on own card |
 | Super Zonal Head | `sachin.zhrajgujmp@roinet.in` | Org chart card **Super Zonal Head**; ~132 districts |
 | Zonal Head | `ramanuj.biharjhkzm@roinet.in` or `zonal@roinet.com` | Scoped lists; org chart focused on self |
-| ASM | `shaikh.rhmaha@roinet.in` | Further reduced scope |
-| DM | `mundhe.asmmaha@roinet.in` | Smallest manager territory (~13 districts) |
+| Regional Head | `shaikh.rhmaha@roinet.in` or `regional@roinet.com` | Reduced scope (~38 districts) |
+| ASM | `rahul.asmbihar@roinet.in` or `asm@roinet.com` | Area-level scope (~4 districts) |
+| DM | `dm@roinet.com` (demo only — no real DM tier) | Smallest scope (1 district) |
 | POSP | `shivraj.wanole@roinet.in` | Only own deals; no org-chart page access |
 
 After `seed:crm`, **customers, leads, and deals are empty** — add them via the app

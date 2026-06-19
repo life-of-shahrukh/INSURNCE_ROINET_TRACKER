@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-06-17T16:02:09.647Z",
+  "capturedAt": "2026-06-19T16:44:35.938Z",
   "method": "GET",
   "path": "/api/leads/commitment",
   "baseUrl": "http://localhost:8000",
@@ -8,7 +8,7 @@
   "note": null,
   "requestBody": null,
   "response": {
-    "total": 279000,
-    "count": 10
+    "total": 0,
+    "count": 0
   }
 }

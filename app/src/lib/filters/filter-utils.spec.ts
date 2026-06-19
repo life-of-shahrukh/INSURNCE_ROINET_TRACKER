@@ -55,14 +55,32 @@ describe("getVisibleDimensions", () => {
     expect(keys).toContain("productLine");
   });
 
-  it("SUPER_ADMIN sees zone, region, area, district, posp dimensions", () => {
+  it("SUPER_ADMIN sees zone, region, state, district, posp dimensions", () => {
     const dims = getVisibleDimensions("SUPER_ADMIN", EMPTY_FILTERS);
     const keys = dims.map((d) => d.key);
     expect(keys).toContain("zone");
     expect(keys).toContain("region");
-    expect(keys).toContain("area");
+    expect(keys).toContain("state");
     expect(keys).toContain("district");
     expect(keys).toContain("posp");
+    expect(keys).not.toContain("area");
+  });
+
+  it("RH sees state through posp but not zone or region", () => {
+    const keys = getVisibleDimensions("RH", EMPTY_FILTERS).map((d) => d.key);
+    expect(keys).toContain("state");
+    expect(keys).toContain("district");
+    expect(keys).toContain("posp");
+    expect(keys).not.toContain("zone");
+    expect(keys).not.toContain("region");
+  });
+
+  it("DM sees district, city, and posp", () => {
+    const keys = getVisibleDimensions("DM", EMPTY_FILTERS).map((d) => d.key);
+    expect(keys).toContain("district");
+    expect(keys).toContain("city");
+    expect(keys).toContain("posp");
+    expect(keys).not.toContain("state");
   });
 
   it("productSubType options are populated when productLine is selected", () => {

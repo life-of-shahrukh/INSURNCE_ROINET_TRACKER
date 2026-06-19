@@ -2,11 +2,12 @@ import { Injectable } from '@nestjs/common';
 import type { OrgMember, Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import {
+  resolveOrgMemberCode,
   scopeDistrictIds,
   type HierarchyScope,
 } from '../../common/auth/hierarchy-scope.util';
 import type { AuthUser } from '../../common/auth/auth-user.interface';
-import { Role } from '../../common/constants';
+import { Role, ROLE_RANK } from '../../common/constants';
 import {
   OrgRole,
   appRoleFromOrgRole,
@@ -79,8 +80,10 @@ export class HierarchyService {
       select: { employeeCode: true },
     });
     if (!team) return null;
+    // Demo logins use synthetic employeeCodes aliased onto real org members.
+    const code = resolveOrgMemberCode(team.employeeCode);
     const member = await this.prisma.orgMember.findFirst({
-      where: { userCode: team.employeeCode },
+      where: { userCode: code },
       select: { id: true },
     });
     return member?.id ?? null;
@@ -158,16 +161,28 @@ export class HierarchyService {
             where: { id: { in: memberIds } },
           })
         : [];
-    const roleGroups = this.groupMembersByRole(members);
+    const roleGroups = this.filterRoleGroupsForCaller(
+      this.groupMembersByRole(members),
+      user.role,
+    );
 
     // Cascade: the people directly below the caller in the org graph.
     let nextLevel: string | null = null;
     let subordinates: FilterOptionItem[] = [];
     if (user.role !== Role.POSP) {
       const callerId = await this.callerMemberId(user);
-      const reports = callerId
-        ? await this.directReports(callerId)
-        : await this.rootMembers();
+
+      // Roots (top of the tree) are only valid for an unrestricted caller
+      // (SUPER_ADMIN / NATIONAL_HEAD). A scoped manager we can't match must
+      // never fall back to global roots — they'd see people above them.
+      let reports: OrgMember[];
+      if (callerId) {
+        reports = await this.directReports(callerId);
+      } else if (scopeDistrictIds(scope) === null) {
+        reports = await this.rootMembers();
+      } else {
+        reports = [];
+      }
 
       if (reports.length > 0) {
         nextLevel = this.representativeLevel(reports);
@@ -252,6 +267,18 @@ export class HierarchyService {
         (a, b) =>
           orgRoleRank(b.role as OrgRole) - orgRoleRank(a.role as OrgRole),
       );
+  }
+
+  /** Only expose org-role groups strictly below the caller's app-role rank. */
+  private filterRoleGroupsForCaller(
+    groups: RoleGroup[],
+    callerRole: Role,
+  ): RoleGroup[] {
+    const callerRank = ROLE_RANK[callerRole] ?? 0;
+    return groups.filter((g) => {
+      const groupAppRole = appRoleFromOrgRole(g.role as OrgRole) as Role;
+      return (ROLE_RANK[groupAppRole] ?? 0) < callerRank;
+    });
   }
 
   /**

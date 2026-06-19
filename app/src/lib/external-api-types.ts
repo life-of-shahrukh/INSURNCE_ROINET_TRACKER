@@ -77,6 +77,8 @@ export interface HierarchyUser {
 export interface PospData {
   UserId: string;
   UserCode: string;
+  /** POSP full name from Cognitensor (`username` key). */
+  username?: string;
   MobileNo: string;
   EmailId: string;
   districtid: string;

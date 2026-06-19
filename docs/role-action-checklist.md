@@ -4,7 +4,9 @@
 > A single master list of **every action** the system can perform, **independent of who can do it today**.
 > The product team uses the checklist grid to confirm — for each role — whether that role *should* be able to perform the action.
 >
-> Example of how to read a row: `Add POSP → ASM ✅`, `Add Quote (Deal) → POSP ✅`.
+> Example of how to read a row: `Add customer → DM+ ✅`, `Create deal → POSP ✅`.
+> POSPs are **never** added in the CRM — roster syncs from Cognitensor only.
+> **Only POSPs** create new leads and deals.
 
 ---
 
@@ -79,9 +81,9 @@ A row is "done" only when **business** has decided the rule **and** tech has con
 | A1 | Login | Sign in to the CRM | `POST /api/auth/login` (sets HttpOnly JWT cookie) | Public (all) |
 | A2 | Logout | End session | `POST /api/auth/logout` | Public (all) |
 | A3 | View own session | Read who am I / role / status | `GET /api/auth/me` | All authenticated |
-| A4 | POSP self-signup | New agent registers themselves | `POST /api/auth/signup-posp` (`/signup` page) — creates POSP in `PENDING` | Public |
-| A5 | Approve POSP account | Activate a pending POSP signup | `PATCH /api/auth/approve-posp/:id` | ASM+ |
-| A6 | Inactivate / reactivate POSP account | Suspend or restore an agent | `PATCH /api/auth/approve-posp/:id` (status field) | ASM+ |
+| A4 | POSP self-signup | ~~New agent registers themselves~~ | `POST /api/auth/signup-posp` — **deprecated**; POSPs sync from Cognitensor | ❌ none |
+| A5 | Approve POSP account | ~~Activate a pending signup~~ | `PATCH /api/auth/approve-posp/:id` — **deprecated** | ❌ none |
+| A6 | Inactivate / reactivate POSP account | ~~Suspend or restore an agent~~ | `PATCH /api/auth/approve-posp/:id` — **deprecated** | ❌ none |
 | A7 | View own profile | See own personal details | `GET /api/profile` + `/profile` page | All authenticated |
 
 ### B. Dashboard & Analytics
@@ -90,7 +92,7 @@ A row is "done" only when **business** has decided the rule **and** tech has con
 |:-:|--------|------------------|----------------------------------|-----------------|
 | B1 | View dashboard KPIs & charts | Headline numbers & trends | `GET /api/dashboard/stats` + `/dashboard` | All (scoped) |
 | B2 | View financial metrics (COA, margin, cost-per-issued policy) | Profitability figures | `dashboard/stats` (financial fields stripped for non-SA) | **SA only** |
-| B3 | Apply geo / hierarchy filters | Filter dashboard & lists by zone→district→POSP | `GET /api/hierarchy/filter-options` | All (scoped options) |
+| B3 | Apply geo / hierarchy filters | Filter options match the role's data scope (geo starts at role level; role groups exclude seniors). | `GET /api/hierarchy/filter-options`, `GET /api/geo/catalog` | All (scoped options) |
 | B4 | Drill-down scope bar (subordinates) | Cascade into a manager's team | `GET /api/hierarchy/subordinates` | DM+ |
 | B5 | Reports & analytics page | Deeper analytics + CSV | `/reports` page | ASM+ (UI) |
 | B6 | Commissions page | COA & margin per POSP | `/commissions` page | ASM+ (UI) |
@@ -101,7 +103,7 @@ A row is "done" only when **business** has decided the rule **and** tech has con
 | # | Action | Business purpose | Tech detail (endpoint / surface) | Current default |
 |:-:|--------|------------------|----------------------------------|-----------------|
 | C1 | List leads | View pipeline | `GET /api/leads` | DM+ & POSP (scoped) |
-| C2 | Create lead | Log a new prospect | `POST /api/leads` | DM+ & POSP |
+| C2 | Create lead | Log a new prospect | `POST /api/leads` | **POSP only** |
 | C3 | Update lead | Edit a prospect | `PATCH /api/leads/:id` | DM+ & POSP |
 | C4 | Export leads CSV | Download pipeline | `GET /api/leads/export` | DM+ & POSP (scoped) |
 | C5 | View monthly commitment | Lead targets per month | `GET /api/leads/commitment` | DM+ & POSP |
@@ -113,11 +115,11 @@ A row is "done" only when **business** has decided the rule **and** tech has con
 | # | Action | Business purpose | Tech detail (endpoint / surface) | Current default |
 |:-:|--------|------------------|----------------------------------|-----------------|
 | D1 | List deals | View all working deals/quotes | `GET /api/deals` | DM+ & POSP (scoped) |
-| D2 | Create deal / quote | Add a new quote/deal | `POST /api/deals` | DM+, ASM+ & POSP |
+| D2 | Create deal / quote | Add a new quote/deal | `POST /api/deals` | **POSP only** |
 | D3 | Update deal | Edit deal (status H/W/C, premium, etc.) | `PATCH /api/deals/:id` | DM+, ASM+ & POSP |
 | D4 | Delete deal | Remove a deal | `DELETE /api/deals/:id` | ASM+ |
 | D5 | Export deals CSV | Download deals | `GET /api/deals/export` | DM+ & POSP (scoped) |
-| D6 | Assign deal to **any** POSP | Create on behalf of any agent (POSP picker) | UI deal modal POSP picker | **SA only** |
+| D6 | Assign deal to **any** POSP | ~~Create on behalf of any agent~~ | UI deal modal POSP picker on create | **Not in product** — POSP-only create |
 | D7 | Access Deals page (UI) | Open the Deals Tracker screen | `/deals` page | DM+ (POSP blocked in UI) |
 
 ### E. Customers
@@ -133,13 +135,15 @@ A row is "done" only when **business** has decided the rule **and** tech has con
 
 ### F. POSP Roster
 
+> **No manual POSP creation.** Roster is Cognitensor-synced only (`npm run seed:all`).
+
 | # | Action | Business purpose | Tech detail (endpoint / surface) | Current default |
 |:-:|--------|------------------|----------------------------------|-----------------|
 | F1 | List POSPs | View agent roster | `GET /api/posp` | DM+ (scoped) & POSP (own) |
-| F2 | Register new POSP (API) | Onboard an agent | `POST /api/posp` | ASM+ |
+| F2 | Register new POSP | ~~Onboard an agent~~ | `POST /api/posp` — **deprecated**; not in product | ❌ none |
 | F3 | Update POSP profile | Edit an agent's record | `PATCH /api/posp/:id` | ASM+ & POSP (own) |
 | F4 | Export POSP CSV | Download roster | `GET /api/posp/export` | DM+ (scoped) |
-| F5 | "Add POSP" button (UI) | Onboarding shortcut on roster screen | `/posp` page button | SA, ASM, DM (per UI) |
+| F5 | "Add POSP" button (UI) | ~~Onboarding shortcut~~ | `/posp` page — **not in product** | ❌ none |
 | F6 | Access POSP page (UI) | Open the POSP Roster screen | `/posp` page | DM+ (POSP blocked in UI) |
 
 ### G. Sales Team & Org Chart
@@ -186,9 +190,9 @@ A row is "done" only when **business** has decided the rule **and** tech has con
 | A1 | Login | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
 | A2 | Logout | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
 | A3 | View own session | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
-| A4 | POSP self-signup | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ❓ Should self-signup stay open to the public, or be invite-only by a manager? |
-| A5 | Approve POSP account | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ❓ Should DM (who recruits locally) also approve, or stay ASM+ only? |
-| A6 | Inactivate / reactivate POSP | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ❓ Same approver as A5? Any audit/reason-code needed on suspend? |
+| A4 | POSP self-signup | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | **Resolved:** not in product — Cognitensor sync only. |
+| A5 | Approve POSP account | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | **Resolved:** deprecated with signup. |
+| A6 | Inactivate / reactivate POSP | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | **Resolved:** deprecated with signup. |
 | A7 | View own profile | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
 
 ### B. Dashboard & Analytics
@@ -208,7 +212,7 @@ A row is "done" only when **business** has decided the rule **and** tech has con
 | # | Action | SA | NH | ZH | RH | ASM | DM | POSP | Business ✓ | Tech ✓ | Notes / Doubt |
 |:-:|--------|:--:|:--:|:--:|:--:|:---:|:--:|:----:|:----------:|:------:|---------------|
 | C1 | List leads | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
-| C2 | Create lead | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
+| C2 | Create lead | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | **Resolved:** POSP only. |
 | C3 | Update lead | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ❓ Can a manager edit a lead they don't own, or only reassign it? |
 | C4 | Export leads CSV | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ❓ Should POSP be able to export data at all? |
 | C5 | Monthly commitment view | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
@@ -220,11 +224,11 @@ A row is "done" only when **business** has decided the rule **and** tech has con
 | # | Action | SA | NH | ZH | RH | ASM | DM | POSP | Business ✓ | Tech ✓ | Notes / Doubt |
 |:-:|--------|:--:|:--:|:--:|:--:|:---:|:--:|:----:|:----------:|:------:|---------------|
 | D1 | List deals | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
-| D2 | Create deal / quote | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
+| D2 | Create deal / quote | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | **Resolved:** POSP only. |
 | D3 | Update deal | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ❓ Can status be moved freely (H→W→C) by all, or only certain roles can mark "C" (closed/issued)? |
 | D4 | Delete deal | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ❓ Hard delete vs soft delete? Who, and is a reason required? |
 | D5 | Export deals CSV | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ❓ Should POSP export deals? |
-| D6 | Assign deal to **any** POSP | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ❓ Currently SA-only. Should a manager assign within their own team? |
+| D6 | Assign deal to **any** POSP | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | **Resolved:** no manager create — POSP-only. |
 | D7 | Access Deals page (UI) | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ❓ POSP is API-allowed but UI-blocked — intended? |
 
 ### E. Customers
@@ -243,13 +247,13 @@ A row is "done" only when **business** has decided the rule **and** tech has con
 | # | Action | SA | NH | ZH | RH | ASM | DM | POSP | Business ✓ | Tech ✓ | Notes / Doubt |
 |:-:|--------|:--:|:--:|:--:|:--:|:---:|:--:|:----:|:----------:|:------:|---------------|
 | F1 | List POSPs | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
-| F2 | Register new POSP (API) | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ⚠️ Mismatch with F5 — see note below. |
+| F2 | Register new POSP | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | **Resolved:** not in product — Cognitensor sync only. |
 | F3 | Update POSP profile | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ❓ Which POSP fields can a POSP edit on their own profile vs manager-only fields? |
 | F4 | Export POSP CSV | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
-| F5 | "Add POSP" button (UI) | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ⚠️ Must match F2. Today UI shows it to DM but API needs ASM+. |
+| F5 | "Add POSP" button (UI) | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | **Resolved:** not in product. |
 | F6 | Access POSP page (UI) | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
 
-> ⚠️ **F2 vs F5 conflict:** the API requires ASM+ to register a POSP, but the "Add POSP" button is shown to DM in the UI. Decide one rule for both.
+> **POSP onboarding:** agents are provisioned in Cognitensor, then appear via `seed:all` / snapshot refresh. No CRM registration flow.
 
 ### G. Sales Team & Org Chart
 
@@ -283,8 +287,8 @@ The same actions, ordered the way a real sales lifecycle runs. Use this to confi
 STEP 0 — Setup / Onboarding
   0.1  Org structure synced from Cognitensor ............ G7, H4
   0.2  Sales-team managers created (DM/ASM/RH/ZH/NH) .... G2, G3
-  0.3  POSP self-signs up (PENDING) .................... A4
-  0.4  Manager approves / activates POSP ............... A5, A6
+  0.3  POSP provisioned in Cognitensor + seed:all .... (no CRM signup)
+  0.4  ~~Manager approves POSP~~ .................... deprecated
   0.5  POSP profile maintained ......................... F3, F1
 
 STEP 1 — Login & context
@@ -300,7 +304,7 @@ STEP 2 — Lead capture
 
 STEP 3 — Quote / Deal
   3.1  Lead converted to deal (ASM sign-off) ......... C6
-  3.2  Deal / quote created .......................... D2  (SA can assign any POSP — D6)
+  3.2  Deal / quote created by POSP ................ D2
   3.3  Deal status progressed H → W → C ............. D3
   3.4  Bad deal removed .............................. D4
 
@@ -323,11 +327,11 @@ STEP 5 — Reporting & Oversight
 
 1. **POSP UI access** — POSP can use leads/deals/customers via API but is blocked from those pages in the app. Should POSP get those screens, or should the API be locked to match the UI? (C7, D7, E6, F6)
 2. **Customer scoping** — All roles currently see all customers (no territory filter). Should customers be scoped like deals/leads? (E1–E5)
-3. **Add POSP — DM vs ASM** — UI shows the button to DM, but the API requires ASM+. Which is correct? (F2 vs F5)
+3. **Add POSP** — **Resolved:** not in product. POSPs sync from Cognitensor only. (F2, F5)
 4. **Financial visibility** — COA/margin is SUPER_ADMIN only. Should NH or ZH also see profitability? (B2)
-5. **Deal assignment** — Only SUPER_ADMIN can assign a deal to any POSP. Should managers (ASM/RH) assign within their team? (D6)
+5. **Deal assignment on create** — **Resolved:** POSP-only create; no manager assignment. (D6)
 6. **Delete permissions** — Only deals can be deleted (ASM+). Should leads / customers / POSPs ever be deletable, and by whom?
-7. **POSP self-signup** — Should agents keep self-registering publicly, or should onboarding be invite-only by a manager? (A4)
+7. **POSP onboarding** — **Resolved:** Cognitensor + `seed:all`; no CRM self-signup. (A4)
 8. **External POSP list scope** — `GET /api/external/posps` returns all-India data; should it be scoped to the caller's territory? (H5)
 9. **Sync vs manual team edits** — Sales team is both auto-synced from Cognitensor (G7) and manually editable (G2/G3). Confirm which is the source of truth to avoid duplicates.
 10. **Status transition rights** — Should every editor be able to mark a deal Closed/Issued (status `C`), or only specific roles? (D3)

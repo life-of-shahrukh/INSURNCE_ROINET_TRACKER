@@ -1,18 +1,18 @@
 {
-  "capturedAt": "2026-06-17T16:02:10.201Z",
+  "capturedAt": "2026-06-19T16:44:36.139Z",
   "method": "GET",
-  "path": "/api/hierarchy/subordinates?level=DM&code=VIVEK",
+  "path": "/api/hierarchy/subordinates?level=NATIONAL_HEAD&code=VIVEK",
   "baseUrl": "http://localhost:8000",
   "status": 200,
   "statusText": "OK",
   "note": "Drill into first subordinate: VIVEK GUPTA (VIVEK)",
   "response": {
-    "nextLevel": "DM",
+    "nextLevel": "NATIONAL_HEAD",
     "members": [
       {
         "id": "HARI.DUTT",
         "name": "Hari Dutt",
-        "designation": "DM"
+        "designation": "NATIONAL_HEAD"
       }
     ],
     "posps": []

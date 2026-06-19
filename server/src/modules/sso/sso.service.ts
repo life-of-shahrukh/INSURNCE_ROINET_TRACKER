@@ -13,6 +13,7 @@ import { UserRepository } from '../auth/user.repository';
 import { Role, UserStatus } from '../../common/constants';
 import { AuthUserPayload } from '../auth/auth.service';
 import { ExternalApiService } from '../../common/external-api/external-api.service';
+import { resolvePospDisplayName } from '../../common/external-api/posp-display.util';
 
 const COOKIE_NAME = 'access_token';
 
@@ -83,6 +84,7 @@ export class SsoService {
     // Sync Cognitensor fields into our DB so data stays current after every login
     await this.userRepo.upsertPospFromExternal(payload.userCode, {
       externalId: pospData.UserId,
+      name: resolvePospDisplayName(pospData),
       mobile: pospData.MobileNo,
       email: pospData.EmailId,
       gcdCode: pospData.HephGcdCode,

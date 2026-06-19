@@ -32,7 +32,8 @@
     "db:validate": "prisma validate",
     "seed:all": "ts-node -r tsconfig-paths/register src/seed/sync-from-snapshots.ts",
     "seed:crm": "ts-node -r tsconfig-paths/register src/seed/seed-transactional.ts",
-    "snapshots:refresh": "node scripts/refresh-snapshots.mjs"
+    "snapshots:refresh": "node scripts/refresh-snapshots.mjs",
+    "snapshots:sync-api-responses": "node scripts/sync-snapshots-from-api-responses.mjs"
   },
   "dependencies": {
     "@nestjs/bull": "^11.0.4",

@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-06-17T16:02:09.767Z",
+  "capturedAt": "2026-06-19T16:44:36.028Z",
   "method": "GET",
   "path": "/api/sales-team/hierarchy",
   "baseUrl": "http://localhost:8000",
@@ -27,7 +27,7 @@
       "areaName": null,
       "status": "ACTIVE",
       "createdAt": "2026-06-14T15:28:04.211Z",
-      "updatedAt": "2026-06-17T09:58:57.785Z",
+      "updatedAt": "2026-06-17T17:17:57.310Z",
       "subordinates": [
         {
           "id": "cmqdxuzkp000ac2lc6kg0ksnw",
@@ -48,7 +48,7 @@
           "areaName": null,
           "status": "ACTIVE",
           "createdAt": "2026-06-14T15:28:04.250Z",
-          "updatedAt": "2026-06-17T09:58:58.000Z",
+          "updatedAt": "2026-06-17T17:17:57.336Z",
           "subordinates": [
             {
               "id": "cmqdxuzl9000cc2lcm90qsdgc",
@@ -69,7 +69,7 @@
               "areaName": null,
               "status": "ACTIVE",
               "createdAt": "2026-06-14T15:28:04.269Z",
-              "updatedAt": "2026-06-17T09:58:58.017Z",
+              "updatedAt": "2026-06-17T17:17:57.357Z",
               "subordinates": [
                 {
                   "id": "cmqdxuzlq000ec2lc5ap4pdg0",
@@ -90,7 +90,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-14T15:28:04.286Z",
-                  "updatedAt": "2026-06-17T09:58:58.031Z",
+                  "updatedAt": "2026-06-17T17:17:57.371Z",
                   "pospsManaged": []
                 },
                 {
@@ -517,7 +517,7 @@
       "userId": "cmqi24naa00moc2246zhkghj9",
       "name": "VIVEK GUPTA",
       "employeeCode": "VIVEK",
-      "designation": "NATIONAL_HEAD",
+      "designation": "ADMIN",
       "managerId": null,
       "territory": null,
       "mobile": "",
@@ -531,14 +531,14 @@
       "areaName": null,
       "status": "ACTIVE",
       "createdAt": "2026-06-17T12:38:38.072Z",
-      "updatedAt": "2026-06-17T14:24:16.080Z",
+      "updatedAt": "2026-06-19T16:08:14.097Z",
       "subordinates": [
         {
           "id": "cmqi24n5r00mnc2247ui6zw5r",
           "userId": "cmqi24n5100mlc224arpqmomc",
           "name": "Hari Dutt",
           "employeeCode": "HARI.DUTT",
-          "designation": "ZH",
+          "designation": "NATIONAL_HEAD",
           "managerId": "cmqi24naw00mqc224z1n1ips8",
           "territory": null,
           "mobile": "",
@@ -552,14 +552,14 @@
           "areaName": null,
           "status": "ACTIVE",
           "createdAt": "2026-06-17T12:38:37.887Z",
-          "updatedAt": "2026-06-17T14:24:48.637Z",
+          "updatedAt": "2026-06-19T16:08:26.998Z",
           "subordinates": [
             {
               "id": "cmqi24n0x00mkc2241n3yebgk",
               "userId": "cmqi24n0d00mic224nmcvlsga",
               "name": "Ravi Babu Ummadisetty",
               "employeeCode": "RAVI.BABUSZH",
-              "designation": "RH",
+              "designation": "SZH",
               "managerId": "cmqi24n5r00mnc2247ui6zw5r",
               "territory": null,
               "mobile": "",
@@ -573,14 +573,14 @@
               "areaName": null,
               "status": "ACTIVE",
               "createdAt": "2026-06-17T12:38:37.714Z",
-              "updatedAt": "2026-06-17T14:24:48.603Z",
+              "updatedAt": "2026-06-19T16:08:26.986Z",
               "subordinates": [
                 {
                   "id": "cmqi24mvs00mhc2240ur45s32",
                   "userId": "cmqi24mv400mfc224aulnhugx",
                   "name": "PRAVEEN PILLI RH TEL",
                   "employeeCode": "PRAVEEN.RHTEL",
-                  "designation": "ASM",
+                  "designation": "RH",
                   "managerId": "cmqi24n0x00mkc2241n3yebgk",
                   "territory": null,
                   "mobile": "",
@@ -594,7 +594,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:37.528Z",
-                  "updatedAt": "2026-06-17T14:24:48.570Z",
+                  "updatedAt": "2026-06-19T16:08:26.974Z",
                   "pospsManaged": []
                 },
                 {
@@ -602,7 +602,7 @@
                   "userId": "cmqi24nk400muc224v7yve0oz",
                   "name": "NURULLA SYED ASM AP DIRECT",
                   "employeeCode": "NURULLA.ASMAP",
-                  "designation": "ASM",
+                  "designation": "RH",
                   "managerId": "cmqi24n0x00mkc2241n3yebgk",
                   "territory": null,
                   "mobile": "",
@@ -616,7 +616,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:38.430Z",
-                  "updatedAt": "2026-06-17T14:24:48.710Z",
+                  "updatedAt": "2026-06-19T16:08:27.023Z",
                   "pospsManaged": []
                 },
                 {
@@ -638,7 +638,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:40.330Z",
-                  "updatedAt": "2026-06-17T14:24:48.957Z",
+                  "updatedAt": "2026-06-19T16:08:27.125Z",
                   "pospsManaged": []
                 },
                 {
@@ -646,7 +646,7 @@
                   "userId": "cmqi24q6g00o9c224jswanfdn",
                   "name": "Dipin KV",
                   "employeeCode": "DIPIN.KV_RHKER",
-                  "designation": "ASM",
+                  "designation": "RH",
                   "managerId": "cmqi24n0x00mkc2241n3yebgk",
                   "territory": null,
                   "mobile": "",
@@ -660,7 +660,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:41.834Z",
-                  "updatedAt": "2026-06-17T14:24:49.222Z",
+                  "updatedAt": "2026-06-19T16:08:27.223Z",
                   "pospsManaged": []
                 },
                 {
@@ -668,7 +668,7 @@
                   "userId": "cmqi24ybk00tdc224hdpfj5hz",
                   "name": "SATHISH NAYAK RH KARNATAKA",
                   "employeeCode": "SATHISH.RHKAR",
-                  "designation": "ASM",
+                  "designation": "RH",
                   "managerId": "cmqi24n0x00mkc2241n3yebgk",
                   "territory": null,
                   "mobile": "",
@@ -682,7 +682,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:52.387Z",
-                  "updatedAt": "2026-06-17T14:24:51.433Z",
+                  "updatedAt": "2026-06-19T16:08:27.959Z",
                   "pospsManaged": []
                 }
               ],
@@ -693,7 +693,7 @@
               "userId": "cmqi24qtm00olc2242rkm29ys",
               "name": "Kajal Bhadra",
               "employeeCode": "KAJAL.BHADRA SZH",
-              "designation": "ZH",
+              "designation": "SZH",
               "managerId": "cmqi24n5r00mnc2247ui6zw5r",
               "territory": null,
               "mobile": "",
@@ -707,14 +707,14 @@
               "areaName": null,
               "status": "ACTIVE",
               "createdAt": "2026-06-17T12:38:42.651Z",
-              "updatedAt": "2026-06-17T14:24:49.432Z",
+              "updatedAt": "2026-06-19T16:08:27.271Z",
               "subordinates": [
                 {
                   "id": "cmqi24qpz00okc224sokxzb23",
                   "userId": "cmqi24qp700oic224n3ij7506",
                   "name": "RAMANUJ-BIHAR JHARKHAND",
                   "employeeCode": "RAMANUJ.BIHARJHKZM",
-                  "designation": "RH",
+                  "designation": "ZH",
                   "managerId": "cmqi24qu300onc224s36df1qt",
                   "territory": null,
                   "mobile": "",
@@ -728,7 +728,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:42.503Z",
-                  "updatedAt": "2026-06-17T14:24:49.382Z",
+                  "updatedAt": "2026-06-19T16:08:27.259Z",
                   "pospsManaged": []
                 },
                 {
@@ -736,7 +736,7 @@
                   "userId": "cmqi24s2d00pkc224hysnetd8",
                   "name": "Devendra Nath Pandey",
                   "employeeCode": "DEVENDRA.NATH RH CG",
-                  "designation": "ASM",
+                  "designation": "RH",
                   "managerId": "cmqi24qu300onc224s36df1qt",
                   "territory": null,
                   "mobile": "",
@@ -750,7 +750,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:44.261Z",
-                  "updatedAt": "2026-06-17T14:24:50.013Z",
+                  "updatedAt": "2026-06-19T16:08:27.410Z",
                   "pospsManaged": []
                 },
                 {
@@ -758,7 +758,7 @@
                   "userId": "cmqi253tf00xac2244kkw9nnm",
                   "name": "BANAMALI BARIK ASM ODI",
                   "employeeCode": "BANAMALI.ASMODI",
-                  "designation": "DM",
+                  "designation": "CH",
                   "managerId": "cmqi24qu300onc224s36df1qt",
                   "territory": null,
                   "mobile": "",
@@ -772,7 +772,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:59.500Z",
-                  "updatedAt": "2026-06-17T14:24:52.724Z",
+                  "updatedAt": "2026-06-19T16:08:28.512Z",
                   "pospsManaged": []
                 }
               ],
@@ -783,7 +783,7 @@
               "userId": "cmqi24t0w00q8c2243hz6wux5",
               "name": "DEV KUMAR RH WUP",
               "employeeCode": "DEV.RHWUP",
-              "designation": "ASM",
+              "designation": "RH",
               "managerId": "cmqi24n5r00mnc2247ui6zw5r",
               "territory": null,
               "mobile": "",
@@ -797,14 +797,14 @@
               "areaName": null,
               "status": "ACTIVE",
               "createdAt": "2026-06-17T12:38:45.515Z",
-              "updatedAt": "2026-06-17T14:24:50.264Z",
+              "updatedAt": "2026-06-19T16:08:27.506Z",
               "subordinates": [
                 {
                   "id": "cmqi24sxq00q7c2248m0e2r8c",
                   "userId": "cmqi24sxa00q5c224crwufeeq",
                   "name": "Amit Kumar Saxena",
                   "employeeCode": "AMIT.SAXENAASMWUP",
-                  "designation": "DM",
+                  "designation": "ASM",
                   "managerId": "cmqi24t1n00qac2248n293fl9",
                   "territory": null,
                   "mobile": "",
@@ -818,7 +818,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:45.375Z",
-                  "updatedAt": "2026-06-17T14:24:50.231Z",
+                  "updatedAt": "2026-06-19T16:08:27.494Z",
                   "pospsManaged": []
                 },
                 {
@@ -826,7 +826,7 @@
                   "userId": "cmqi250n100v4c224tmpuk3ej",
                   "name": "Ravi Tomar",
                   "employeeCode": "RAVI.TOMARASMWUP",
-                  "designation": "DM",
+                  "designation": "ASM",
                   "managerId": "cmqi24t1n00qac2248n293fl9",
                   "territory": null,
                   "mobile": "",
@@ -840,7 +840,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:55.375Z",
-                  "updatedAt": "2026-06-17T14:24:52.022Z",
+                  "updatedAt": "2026-06-19T16:08:28.208Z",
                   "pospsManaged": []
                 },
                 {
@@ -848,7 +848,7 @@
                   "userId": "cmqi250u200vac2244ytwznif",
                   "name": "GYANENDRA KUMAR ASM WUP",
                   "employeeCode": "GYANENDRA.ASMWUP",
-                  "designation": "DM",
+                  "designation": "CH",
                   "managerId": "cmqi24t1n00qac2248n293fl9",
                   "territory": null,
                   "mobile": "",
@@ -862,7 +862,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:55.626Z",
-                  "updatedAt": "2026-06-17T14:24:52.076Z",
+                  "updatedAt": "2026-06-19T16:08:28.231Z",
                   "pospsManaged": []
                 }
               ],
@@ -873,7 +873,7 @@
               "userId": "cmqi24t8l00qec224rerst5im",
               "name": "ADESH SINGH(EUP)",
               "employeeCode": "ADESH",
-              "designation": "ASM",
+              "designation": "RH",
               "managerId": "cmqi24n5r00mnc2247ui6zw5r",
               "territory": null,
               "mobile": "",
@@ -887,14 +887,14 @@
               "areaName": null,
               "status": "ACTIVE",
               "createdAt": "2026-06-17T12:38:45.786Z",
-              "updatedAt": "2026-06-17T14:24:50.323Z",
+              "updatedAt": "2026-06-19T16:08:27.527Z",
               "subordinates": [
                 {
                   "id": "cmqi24t5a00qdc224b8djxn37",
                   "userId": "cmqi24t4u00qbc224sdg88isp",
                   "name": "Sandeep Kumar Kaushal",
                   "employeeCode": "SANDEEP.KUMAR CH EUP",
-                  "designation": "DM",
+                  "designation": "CH",
                   "managerId": "cmqi24t9600qgc2248cdnuxap",
                   "territory": null,
                   "mobile": "",
@@ -908,7 +908,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:45.646Z",
-                  "updatedAt": "2026-06-17T14:24:50.293Z",
+                  "updatedAt": "2026-06-19T16:08:27.516Z",
                   "pospsManaged": []
                 },
                 {
@@ -916,7 +916,7 @@
                   "userId": "cmqi24th600qkc224r7f4i7tp",
                   "name": "ZISHAN TASLEEM ASM EUP",
                   "employeeCode": "ZISHAN.ASMEUP",
-                  "designation": "ASM",
+                  "designation": "CH",
                   "managerId": "cmqi24t9600qgc2248cdnuxap",
                   "territory": null,
                   "mobile": "",
@@ -930,7 +930,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:46.094Z",
-                  "updatedAt": "2026-06-17T14:24:50.388Z",
+                  "updatedAt": "2026-06-19T16:08:27.550Z",
                   "pospsManaged": []
                 },
                 {
@@ -938,7 +938,7 @@
                   "userId": "cmqi24tlc00qnc224a24l36li",
                   "name": "Amit Yadav",
                   "employeeCode": "AMIT.YADAVASMUP",
-                  "designation": "DM",
+                  "designation": "ASM",
                   "managerId": "cmqi24t9600qgc2248cdnuxap",
                   "territory": null,
                   "mobile": "",
@@ -952,7 +952,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:46.241Z",
-                  "updatedAt": "2026-06-17T14:24:50.422Z",
+                  "updatedAt": "2026-06-19T16:08:27.562Z",
                   "pospsManaged": []
                 },
                 {
@@ -960,7 +960,7 @@
                   "userId": "cmqi24tpu00qqc22402kj3e9g",
                   "name": "Rais Ahamad",
                   "employeeCode": "RAIS.AHAMADASMUP",
-                  "designation": "DM",
+                  "designation": "ASM",
                   "managerId": "cmqi24t9600qgc2248cdnuxap",
                   "territory": null,
                   "mobile": "",
@@ -974,7 +974,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:46.404Z",
-                  "updatedAt": "2026-06-17T14:24:50.460Z",
+                  "updatedAt": "2026-06-19T16:08:27.574Z",
                   "pospsManaged": []
                 },
                 {
@@ -982,7 +982,7 @@
                   "userId": "cmqi24tth00qtc224hmbgyr5g",
                   "name": "Satyendra Kumar",
                   "employeeCode": "SATYENDRA.KUMARASMUP",
-                  "designation": "DM",
+                  "designation": "ASM",
                   "managerId": "cmqi24t9600qgc2248cdnuxap",
                   "territory": null,
                   "mobile": "",
@@ -996,7 +996,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:46.536Z",
-                  "updatedAt": "2026-06-17T14:24:50.496Z",
+                  "updatedAt": "2026-06-19T16:08:27.585Z",
                   "pospsManaged": []
                 },
                 {
@@ -1004,7 +1004,7 @@
                   "userId": "cmqi24tww00qwc224ugp4v1d9",
                   "name": "ABHIJIT SRIVASTAVA ASM UP",
                   "employeeCode": "ABHIJIT.ASMUP",
-                  "designation": "DM",
+                  "designation": "ASM",
                   "managerId": "cmqi24t9600qgc2248cdnuxap",
                   "territory": null,
                   "mobile": "",
@@ -1018,7 +1018,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:46.655Z",
-                  "updatedAt": "2026-06-17T14:24:50.534Z",
+                  "updatedAt": "2026-06-19T16:08:27.596Z",
                   "pospsManaged": []
                 },
                 {
@@ -1026,7 +1026,7 @@
                   "userId": "cmqi24u0800qzc224vwl9x4mj",
                   "name": "Dhananjay Kumar Singh",
                   "employeeCode": "DHANANJAY.ASMEUP",
-                  "designation": "DM",
+                  "designation": "ASM",
                   "managerId": "cmqi24t9600qgc2248cdnuxap",
                   "territory": null,
                   "mobile": "",
@@ -1040,7 +1040,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:46.784Z",
-                  "updatedAt": "2026-06-17T14:24:50.574Z",
+                  "updatedAt": "2026-06-19T16:08:27.607Z",
                   "pospsManaged": []
                 },
                 {
@@ -1048,7 +1048,7 @@
                   "userId": "cmqi250qt00v7c2247l9a1k7g",
                   "name": "SANDEEP MATHURIYA ASM WUP",
                   "employeeCode": "SANDEEP.ASMWUP",
-                  "designation": "DM",
+                  "designation": "CH",
                   "managerId": "cmqi24t9600qgc2248cdnuxap",
                   "territory": null,
                   "mobile": "",
@@ -1062,7 +1062,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:55.509Z",
-                  "updatedAt": "2026-06-17T14:24:52.050Z",
+                  "updatedAt": "2026-06-19T16:08:28.219Z",
                   "pospsManaged": []
                 }
               ],
@@ -1073,7 +1073,7 @@
               "userId": "cmqi24u6y00r5c224z6ak4cwb",
               "name": "ANISH DHIMAN RH - PB HP J&K",
               "employeeCode": "ANISH.RHJKPBHP",
-              "designation": "ASM",
+              "designation": "RH",
               "managerId": "cmqi24n5r00mnc2247ui6zw5r",
               "territory": null,
               "mobile": "",
@@ -1087,14 +1087,14 @@
               "areaName": null,
               "status": "ACTIVE",
               "createdAt": "2026-06-17T12:38:47.022Z",
-              "updatedAt": "2026-06-17T14:24:50.644Z",
+              "updatedAt": "2026-06-19T16:08:27.631Z",
               "subordinates": [
                 {
                   "id": "cmqi24u4800r4c22458kvirc8",
                   "userId": "cmqi24u3s00r2c224eza3ex5j",
                   "name": "BAM BAHADAR ASM PB ",
                   "employeeCode": "BAM.ASMPB",
-                  "designation": "DM",
+                  "designation": "ASM",
                   "managerId": "cmqi24u7i00r7c224x3um216e",
                   "territory": null,
                   "mobile": "",
@@ -1108,7 +1108,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:46.904Z",
-                  "updatedAt": "2026-06-17T14:24:50.608Z",
+                  "updatedAt": "2026-06-19T16:08:27.619Z",
                   "pospsManaged": []
                 },
                 {
@@ -1116,7 +1116,7 @@
                   "userId": "cmqi24uam00r8c2247mjqf1au",
                   "name": "UMESH.KUMAR ASM PB",
                   "employeeCode": "UMESH.ASMPB",
-                  "designation": "DM",
+                  "designation": "ASM",
                   "managerId": "cmqi24u7i00r7c224x3um216e",
                   "territory": null,
                   "mobile": "",
@@ -1130,7 +1130,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:47.149Z",
-                  "updatedAt": "2026-06-17T14:24:50.685Z",
+                  "updatedAt": "2026-06-19T16:08:27.641Z",
                   "pospsManaged": []
                 },
                 {
@@ -1138,7 +1138,7 @@
                   "userId": "cmqi24ueb00rbc2241w17ikp8",
                   "name": "SANDEEP SINGH ASM PB",
                   "employeeCode": "SANDEEP.ASMPB",
-                  "designation": "DM",
+                  "designation": "ASM",
                   "managerId": "cmqi24u7i00r7c224x3um216e",
                   "territory": null,
                   "mobile": "",
@@ -1152,7 +1152,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:47.288Z",
-                  "updatedAt": "2026-06-17T14:24:50.715Z",
+                  "updatedAt": "2026-06-19T16:08:27.653Z",
                   "pospsManaged": []
                 }
               ],
@@ -1163,7 +1163,7 @@
               "userId": "cmqi24ulz00rgc2244tgws0h5",
               "name": "SACHIN PATHKAR(RAJ/GUJ/MP/UT1)",
               "employeeCode": "SACHIN.ZHRAJGUJMP",
-              "designation": "ASM",
+              "designation": "SZH",
               "managerId": "cmqi24n5r00mnc2247ui6zw5r",
               "territory": null,
               "mobile": "",
@@ -1177,14 +1177,14 @@
               "areaName": null,
               "status": "ACTIVE",
               "createdAt": "2026-06-17T12:38:47.567Z",
-              "updatedAt": "2026-06-17T14:24:50.769Z",
+              "updatedAt": "2026-06-19T16:08:27.678Z",
               "subordinates": [
                 {
                   "id": "cmqi24uj700rfc224tmqwkpmp",
                   "userId": "cmqi23t91001nc224458ld7lr",
                   "name": "RAM.OJHA -ASM MP",
                   "employeeCode": "RAM.OJHA",
-                  "designation": "DM",
+                  "designation": "CH",
                   "managerId": "cmqi24umm00ric224e5dmwzbw",
                   "territory": null,
                   "mobile": "",
@@ -1198,7 +1198,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:47.444Z",
-                  "updatedAt": "2026-06-17T14:24:50.743Z",
+                  "updatedAt": "2026-06-19T16:08:27.664Z",
                   "pospsManaged": []
                 },
                 {
@@ -1206,7 +1206,7 @@
                   "userId": "cmqi24v3g00rsc2248i49zh72",
                   "name": "RAHUL VAISHY ASM MP",
                   "employeeCode": "RAHUL.ASMMP",
-                  "designation": "ASM",
+                  "designation": "CH",
                   "managerId": "cmqi24umm00ric224e5dmwzbw",
                   "territory": null,
                   "mobile": "",
@@ -1220,7 +1220,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:48.189Z",
-                  "updatedAt": "2026-06-17T14:24:50.900Z",
+                  "updatedAt": "2026-06-19T16:08:27.731Z",
                   "pospsManaged": []
                 },
                 {
@@ -1228,7 +1228,7 @@
                   "userId": "cmqi24w5q00sac2242gtz0ytq",
                   "name": "SHAIKH ANWAR RH MAHA",
                   "employeeCode": "SHAIKH.RHMAHA",
-                  "designation": "ASM",
+                  "designation": "RH",
                   "managerId": "cmqi24umm00ric224e5dmwzbw",
                   "territory": null,
                   "mobile": "",
@@ -1242,7 +1242,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:49.567Z",
-                  "updatedAt": "2026-06-17T14:24:51.086Z",
+                  "updatedAt": "2026-06-19T16:08:27.806Z",
                   "pospsManaged": []
                 },
                 {
@@ -1250,7 +1250,7 @@
                   "userId": "cmqi24zkv00uac2245s1aa3ck",
                   "name": "Krishna Kant Pathak",
                   "employeeCode": "KRISHNA.KANTZH",
-                  "designation": "RH",
+                  "designation": "ZH",
                   "managerId": "cmqi24umm00ric224e5dmwzbw",
                   "territory": null,
                   "mobile": "",
@@ -1264,7 +1264,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:53.999Z",
-                  "updatedAt": "2026-06-17T14:24:51.735Z",
+                  "updatedAt": "2026-06-19T16:08:28.089Z",
                   "pospsManaged": []
                 },
                 {
@@ -1272,7 +1272,7 @@
                   "userId": "cmqi2502c00upc224f5gk2mox",
                   "name": "Vinodkumar Bhurmal Bhati",
                   "employeeCode": "VINODKUMAR.RHGUJ",
-                  "designation": "DM",
+                  "designation": "RH",
                   "managerId": "cmqi24umm00ric224e5dmwzbw",
                   "territory": null,
                   "mobile": "",
@@ -1286,7 +1286,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:54.628Z",
-                  "updatedAt": "2026-06-17T14:24:51.871Z",
+                  "updatedAt": "2026-06-19T16:08:28.151Z",
                   "pospsManaged": []
                 }
               ],
@@ -1297,7 +1297,7 @@
               "userId": "cmqi24z2c00tvc2247qstl4er",
               "name": "Pallav Kumar",
               "employeeCode": "PALLAV.KUMAR ZH NCR",
-              "designation": "ASM",
+              "designation": "ZH",
               "managerId": "cmqi24n5r00mnc2247ui6zw5r",
               "territory": null,
               "mobile": "",
@@ -1311,14 +1311,14 @@
               "areaName": null,
               "status": "ACTIVE",
               "createdAt": "2026-06-17T12:38:53.344Z",
-              "updatedAt": "2026-06-17T14:24:51.594Z",
+              "updatedAt": "2026-06-19T16:08:28.034Z",
               "subordinates": [
                 {
                   "id": "cmqi24yzj00tuc224psg3y31m",
                   "userId": "cmqi24yz300tsc224f6ey10jc",
                   "name": "SUBHASH ASM HAR",
                   "employeeCode": "SUBHASH.ASMHAR",
-                  "designation": "DM",
+                  "designation": "CH",
                   "managerId": "cmqi24z3400txc2249cai6hll",
                   "territory": null,
                   "mobile": "",
@@ -1332,7 +1332,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:53.216Z",
-                  "updatedAt": "2026-06-17T14:24:51.569Z",
+                  "updatedAt": "2026-06-19T16:08:28.022Z",
                   "pospsManaged": []
                 },
                 {
@@ -1340,7 +1340,7 @@
                   "userId": "cmqi24z6400tyc2243hbwihw9",
                   "name": "SHER SINGH ASM HAR",
                   "employeeCode": "SHER.ASMHAR",
-                  "designation": "DM",
+                  "designation": "CH",
                   "managerId": "cmqi24z3400txc2249cai6hll",
                   "territory": null,
                   "mobile": "",
@@ -1354,7 +1354,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:53.468Z",
-                  "updatedAt": "2026-06-17T14:24:51.618Z",
+                  "updatedAt": "2026-06-19T16:08:28.045Z",
                   "pospsManaged": []
                 },
                 {
@@ -1362,7 +1362,7 @@
                   "userId": "cmqi24z9c00u1c2244vulnxac",
                   "name": "MAYANK NANDAN ASM NCR",
                   "employeeCode": "MAYANK.ASMNCR",
-                  "designation": "DM",
+                  "designation": "ASM",
                   "managerId": "cmqi24z3400txc2249cai6hll",
                   "territory": null,
                   "mobile": "",
@@ -1376,7 +1376,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:53.583Z",
-                  "updatedAt": "2026-06-17T14:24:51.641Z",
+                  "updatedAt": "2026-06-19T16:08:28.056Z",
                   "pospsManaged": []
                 }
               ],
@@ -1387,7 +1387,7 @@
               "userId": "cmqi2514h00vjc224iiwcuroz",
               "name": "Sagir Ali",
               "employeeCode": "Sagir.Ali",
-              "designation": "ASM",
+              "designation": "ZH",
               "managerId": "cmqi24n5r00mnc2247ui6zw5r",
               "territory": null,
               "mobile": "",
@@ -1401,14 +1401,14 @@
               "areaName": null,
               "status": "ACTIVE",
               "createdAt": "2026-06-17T12:38:56.002Z",
-              "updatedAt": "2026-06-17T14:24:52.148Z",
+              "updatedAt": "2026-06-19T16:08:28.271Z",
               "subordinates": [
                 {
                   "id": "cmqi2511b00vic224y532jpca",
                   "userId": "cmqi2510w00vgc2240cc4yizs",
                   "name": "MOSTOFA ISLAM ASM ASSAM",
                   "employeeCode": "MOSTOFA.ASMASSAM",
-                  "designation": "DM",
+                  "designation": "ASM",
                   "managerId": "cmqi2514y00vlc224of6xhw4t",
                   "territory": null,
                   "mobile": "",
@@ -1422,7 +1422,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:55.871Z",
-                  "updatedAt": "2026-06-17T14:24:52.124Z",
+                  "updatedAt": "2026-06-19T16:08:28.258Z",
                   "pospsManaged": []
                 },
                 {
@@ -1430,7 +1430,7 @@
                   "userId": "cmqi2517t00vmc224o34d4dpo",
                   "name": "JAHAIRUDDIN ALI ASM ASSAM",
                   "employeeCode": "JAHAIRUDDIN.ASMASSAM",
-                  "designation": "DM",
+                  "designation": "CH",
                   "managerId": "cmqi2514y00vlc224of6xhw4t",
                   "territory": null,
                   "mobile": "",
@@ -1444,7 +1444,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:56.120Z",
-                  "updatedAt": "2026-06-17T14:24:52.174Z",
+                  "updatedAt": "2026-06-19T16:08:28.282Z",
                   "pospsManaged": []
                 },
                 {
@@ -1452,7 +1452,7 @@
                   "userId": "cmqi251bc00vpc224w5bdh4i3",
                   "name": "MEHBUB MOHAZERIN- ASM ASSAM",
                   "employeeCode": "MEHBUB.ASMASSAM",
-                  "designation": "DM",
+                  "designation": "CH",
                   "managerId": "cmqi2514y00vlc224of6xhw4t",
                   "territory": null,
                   "mobile": "",
@@ -1466,7 +1466,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:56.250Z",
-                  "updatedAt": "2026-06-17T14:24:52.199Z",
+                  "updatedAt": "2026-06-19T16:08:28.293Z",
                   "pospsManaged": []
                 },
                 {
@@ -1474,7 +1474,7 @@
                   "userId": "cmqi251if00vvc224tkecqt1d",
                   "name": "MIRJAN ALI ASM ASSAM",
                   "employeeCode": "MIRJAN.ASMASSAM",
-                  "designation": "DM",
+                  "designation": "ASM",
                   "managerId": "cmqi2514y00vlc224of6xhw4t",
                   "territory": null,
                   "mobile": "",
@@ -1488,7 +1488,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:56.507Z",
-                  "updatedAt": "2026-06-17T14:24:52.262Z",
+                  "updatedAt": "2026-06-19T16:08:28.316Z",
                   "pospsManaged": []
                 },
                 {
@@ -1496,7 +1496,7 @@
                   "userId": "cmqi251m100vyc224c76hkm3g",
                   "name": "NASIMULLA ANSARI ASM ASSAM",
                   "employeeCode": "NASIMULLA.ASMASSAM",
-                  "designation": "DM",
+                  "designation": "ASM",
                   "managerId": "cmqi2514y00vlc224of6xhw4t",
                   "territory": null,
                   "mobile": "",
@@ -1510,7 +1510,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:56.634Z",
-                  "updatedAt": "2026-06-17T14:24:52.286Z",
+                  "updatedAt": "2026-06-19T16:08:28.328Z",
                   "pospsManaged": []
                 },
                 {
@@ -1518,7 +1518,7 @@
                   "userId": "cmqi253na00x7c224i5sgmass",
                   "name": "Sudip Kumar Banik",
                   "employeeCode": "SUDIP.KUMARASMNE",
-                  "designation": "DM",
+                  "designation": "ASM",
                   "managerId": "cmqi2514y00vlc224of6xhw4t",
                   "territory": null,
                   "mobile": "",
@@ -1532,7 +1532,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:59.280Z",
-                  "updatedAt": "2026-06-17T14:24:52.700Z",
+                  "updatedAt": "2026-06-19T16:08:28.495Z",
                   "pospsManaged": []
                 }
               ],
@@ -1543,7 +1543,7 @@
               "userId": "cmqi2520400wac224ydmsaxg2",
               "name": "TAPAS KARMAKAR RH WB",
               "employeeCode": "TAPAS.RHWB",
-              "designation": "ASM",
+              "designation": "RH",
               "managerId": "cmqi24n5r00mnc2247ui6zw5r",
               "territory": null,
               "mobile": "",
@@ -1557,14 +1557,14 @@
               "areaName": null,
               "status": "ACTIVE",
               "createdAt": "2026-06-17T12:38:57.141Z",
-              "updatedAt": "2026-06-17T14:24:52.410Z",
+              "updatedAt": "2026-06-19T16:08:28.370Z",
               "subordinates": [
                 {
                   "id": "cmqi251ww00w9c224i7t1ushj",
                   "userId": "cmqi251w700w7c224cd6ldhhy",
                   "name": "SUMIT KANU ASM WB",
                   "employeeCode": "SUMIT.ASMWB",
-                  "designation": "DM",
+                  "designation": "ASM",
                   "managerId": "cmqi2520k00wcc2248jfi8564",
                   "territory": null,
                   "mobile": "",
@@ -1578,7 +1578,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:57.009Z",
-                  "updatedAt": "2026-06-17T14:24:52.378Z",
+                  "updatedAt": "2026-06-19T16:08:28.360Z",
                   "pospsManaged": []
                 },
                 {
@@ -1600,7 +1600,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:57.390Z",
-                  "updatedAt": "2026-06-17T14:24:52.459Z",
+                  "updatedAt": "2026-06-19T16:08:28.392Z",
                   "pospsManaged": []
                 },
                 {
@@ -1608,7 +1608,7 @@
                   "userId": "cmqi252am00wjc224jc7mq6ac",
                   "name": "Rakesh Prasad",
                   "employeeCode": "RAKESH.PRASADASMWB",
-                  "designation": "DM",
+                  "designation": "ASM",
                   "managerId": "cmqi2520k00wcc2248jfi8564",
                   "territory": null,
                   "mobile": "",
@@ -1622,7 +1622,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:57.526Z",
-                  "updatedAt": "2026-06-17T14:24:52.489Z",
+                  "updatedAt": "2026-06-19T16:08:28.404Z",
                   "pospsManaged": []
                 }
               ],
@@ -1633,7 +1633,7 @@
               "userId": "cmqi252j700wpc224k5qsj5db",
               "name": "PRASENJIT MUKHERJEE RH WB",
               "employeeCode": "PRASENJIT.RHWB",
-              "designation": "ASM",
+              "designation": "RH",
               "managerId": "cmqi24n5r00mnc2247ui6zw5r",
               "territory": null,
               "mobile": "",
@@ -1647,14 +1647,14 @@
               "areaName": null,
               "status": "ACTIVE",
               "createdAt": "2026-06-17T12:38:57.843Z",
-              "updatedAt": "2026-06-17T14:24:52.549Z",
+              "updatedAt": "2026-06-19T16:08:28.426Z",
               "subordinates": [
                 {
                   "id": "cmqi252ew00woc224sq41r24c",
                   "userId": "cmqi252eh00wmc224qm6q2kyd",
                   "name": "Amit Kumar Ghosh",
                   "employeeCode": "AMIT.KUMARASMWB",
-                  "designation": "DM",
+                  "designation": "ASM",
                   "managerId": "cmqi252k300wrc224ikbrilku",
                   "territory": null,
                   "mobile": "",
@@ -1668,7 +1668,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:57.657Z",
-                  "updatedAt": "2026-06-17T14:24:52.522Z",
+                  "updatedAt": "2026-06-19T16:08:28.415Z",
                   "pospsManaged": []
                 },
                 {
@@ -1676,7 +1676,7 @@
                   "userId": "cmqi252q700wsc224atoiu75w",
                   "name": "Abhijit Batabyal",
                   "employeeCode": "ABHIJIT.BATABYAL ASM",
-                  "designation": "DM",
+                  "designation": "ASM",
                   "managerId": "cmqi252k300wrc224ikbrilku",
                   "territory": null,
                   "mobile": "",
@@ -1690,7 +1690,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:58.091Z",
-                  "updatedAt": "2026-06-17T14:24:52.576Z",
+                  "updatedAt": "2026-06-19T16:08:28.438Z",
                   "pospsManaged": []
                 },
                 {
@@ -1698,7 +1698,7 @@
                   "userId": "cmqi252wk00wvc22402b34lsq",
                   "name": "MANAS MAHATO ASM WB",
                   "employeeCode": "MANAS.ASMWB",
-                  "designation": "DM",
+                  "designation": "ASM",
                   "managerId": "cmqi252k300wrc224ikbrilku",
                   "territory": null,
                   "mobile": "",
@@ -1712,7 +1712,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:58.329Z",
-                  "updatedAt": "2026-06-17T14:24:52.600Z",
+                  "updatedAt": "2026-06-19T16:08:28.449Z",
                   "pospsManaged": []
                 },
                 {
@@ -1720,7 +1720,7 @@
                   "userId": "cmqi2533900wyc224i3mtn1hw",
                   "name": "SUBIR GHOSH ASM WB",
                   "employeeCode": "SUBIR.ASMWB",
-                  "designation": "DM",
+                  "designation": "ASM",
                   "managerId": "cmqi252k300wrc224ikbrilku",
                   "territory": null,
                   "mobile": "",
@@ -1734,7 +1734,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:58.565Z",
-                  "updatedAt": "2026-06-17T14:24:52.625Z",
+                  "updatedAt": "2026-06-19T16:08:28.460Z",
                   "pospsManaged": []
                 },
                 {
@@ -1742,7 +1742,7 @@
                   "userId": "cmqi253a200x1c2244qmjbhdm",
                   "name": "PUSPASISH BERA - ASM WB",
                   "employeeCode": "PUSPASISH.ASMWB",
-                  "designation": "DM",
+                  "designation": "ASM",
                   "managerId": "cmqi252k300wrc224ikbrilku",
                   "territory": null,
                   "mobile": "",
@@ -1756,7 +1756,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:58.812Z",
-                  "updatedAt": "2026-06-17T14:24:52.651Z",
+                  "updatedAt": "2026-06-19T16:08:28.473Z",
                   "pospsManaged": []
                 },
                 {
@@ -1764,7 +1764,7 @@
                   "userId": "cmqi253gp00x4c2249vuy7hto",
                   "name": "Subhajit Paul",
                   "employeeCode": "SUBHAJIT.PAULASMWB",
-                  "designation": "DM",
+                  "designation": "ASM",
                   "managerId": "cmqi252k300wrc224ikbrilku",
                   "territory": null,
                   "mobile": "",
@@ -1778,7 +1778,7 @@
                   "areaName": null,
                   "status": "ACTIVE",
                   "createdAt": "2026-06-17T12:38:59.047Z",
-                  "updatedAt": "2026-06-17T14:24:52.677Z",
+                  "updatedAt": "2026-06-19T16:08:28.484Z",
                   "pospsManaged": []
                 }
               ],

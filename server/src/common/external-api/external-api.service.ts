@@ -267,6 +267,7 @@ export class ExternalApiService {
       filtered = filtered.filter(
         (p) =>
           p.UserCode.toLowerCase().includes(search) ||
+          (p.username?.toLowerCase().includes(search) ?? false) ||
           p.EmailId.toLowerCase().includes(search) ||
           p.MobileNo.includes(search) ||
           p.HephGcdCode.toLowerCase().includes(search),

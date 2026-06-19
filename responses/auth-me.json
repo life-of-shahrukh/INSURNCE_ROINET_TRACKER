@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-06-17T16:02:08.993Z",
+  "capturedAt": "2026-06-19T16:44:35.529Z",
   "method": "GET",
   "path": "/api/auth/me",
   "baseUrl": "http://localhost:8000",

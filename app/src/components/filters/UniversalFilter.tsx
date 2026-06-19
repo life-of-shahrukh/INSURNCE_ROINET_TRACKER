@@ -5,6 +5,7 @@ import { FilterPopover } from "@/components/filters/FilterPopover";
 import type { UserRole } from "@/lib/auth-types";
 import type { ListQueryParams } from "@/lib/api/list-query-params";
 import { crmApi } from "@/lib/api";
+import { formatPospLabel } from "@/lib/posp-display";
 import { geoCatalogApi } from "@/lib/api/geo-catalog-api";
 import { useGeoCatalog } from "@/hooks/useGeoCatalog";
 import type { FilterOption, FilterState, GeoDimensionOptions } from "@/lib/filters/filter-utils";
@@ -176,7 +177,10 @@ export function UniversalFilter({
   const handlePospSearch = useCallback(async (searchTerm: string): Promise<FilterOption[]> => {
     const params = new URLSearchParams({ search: searchTerm, pageSize: "20", page: "1" });
     const result = await crmApi.listPosp(params);
-    return result.data.map((p) => ({ value: p.id, label: p.name }));
+    return result.data.map((p) => ({
+      value: p.id,
+      label: formatPospLabel(p.name, p.code),
+    }));
   }, []);
 
   const handleDistrictSearch = useCallback(async (searchTerm: string): Promise<FilterOption[]> => {

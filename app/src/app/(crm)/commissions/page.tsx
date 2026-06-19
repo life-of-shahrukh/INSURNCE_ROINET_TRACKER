@@ -15,6 +15,7 @@ import type { ColumnConfig } from "@/hooks/useColumnManager";
 import { useDealsList } from "@/hooks/useDealsList";
 import { computeCommissions, marginPercent, downloadCsv } from "@/lib/crm-calculations";
 import { fmtINR } from "@/lib/formatters";
+import { formatPospLabel } from "@/lib/posp-display";
 import { useCrm } from "@/providers/crm-provider";
 import { useAuth } from "@/providers/auth-provider";
 
@@ -44,7 +45,11 @@ function renderCommissionCell(
 ): React.ReactNode {
   switch (col.key) {
     case "posp":
-      return <td key={col.key}><strong>{r.posp.name}</strong></td>;
+      return (
+        <td key={col.key}>
+          <strong>{formatPospLabel(r.posp.name, r.posp.code)}</strong>
+        </td>
+      );
     case "deals":
       return <td key={col.key}>{r.dealCount}</td>;
     case "issued":
@@ -141,7 +146,7 @@ export default function CommissionsPage(): React.ReactElement {
                 const csv = [
                   headers,
                   ...rows.map((r) => [
-                    r.posp.name,
+                    formatPospLabel(r.posp.name, r.posp.code),
                     String(r.dealCount),
                     String(r.issued),
                     String(r.premium),

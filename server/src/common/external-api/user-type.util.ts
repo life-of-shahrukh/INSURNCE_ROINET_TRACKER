@@ -7,7 +7,7 @@
  * app auth `Role` enum — login/RBAC keeps the auth role, the org chart and
  * dashboard rollups use the org label resolved here.
  *
- * Source: api-responses/user-type.txt
+ * Source: server/data/reference/user-type.txt (from api-responses/user-type.txt)
  */
 
 /** Org role labels derived from Cognitensor usertype. */

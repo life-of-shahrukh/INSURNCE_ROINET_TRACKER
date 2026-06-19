@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-06-17T16:02:09.487Z",
+  "capturedAt": "2026-06-19T16:44:35.861Z",
   "method": "GET",
   "path": "/api/geo/catalog",
   "baseUrl": "http://localhost:8000",
@@ -48,12 +48,84 @@
     ],
     "regions": [
       {
+        "id": "1",
+        "name": "Andhra Pradesh"
+      },
+      {
         "id": "2",
         "name": "Bihar"
       },
       {
+        "id": "14",
+        "name": "Chhattisgarh"
+      },
+      {
+        "id": "22",
+        "name": "Goa"
+      },
+      {
+        "id": "8",
+        "name": "GUJ/UT1"
+      },
+      {
+        "id": "5",
+        "name": "J&K/PB/HP"
+      },
+      {
+        "id": "17",
+        "name": "Jharkhand"
+      },
+      {
+        "id": "21",
+        "name": "Karnataka"
+      },
+      {
+        "id": "20",
+        "name": "Kerala/UT3"
+      },
+      {
+        "id": "6",
+        "name": "Maharashtra"
+      },
+      {
+        "id": "13",
+        "name": "MP"
+      },
+      {
         "id": "7",
         "name": "NCR HAR"
+      },
+      {
+        "id": "15",
+        "name": "North East"
+      },
+      {
+        "id": "16",
+        "name": "ODISHA"
+      },
+      {
+        "id": "11",
+        "name": "Rajasthan"
+      },
+      {
+        "id": "19",
+        "name": "Tamil Nadu/UT2"
+      },
+      {
+        "id": "18",
+        "name": "Telangana"
+      },
+      {
+        "id": "12",
+        "name": "UTT"
+      },
+      {
+        "id": "3",
+        "name": "UTTAR PRADESH"
+      },
+      {
+        "id": "10",
+        "name": "West Bengal"
       }
     ],
     "states": [

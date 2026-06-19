@@ -1,0 +1,47 @@
+---
+description: Only POSP field agents may create new leads and deals
+alwaysApply: true
+---
+
+# Lead & Deal Creation — POSP Only
+
+**Only POSP users may create new leads and new deals.** Managers (DM, ASM, RH,
+ZH, National Head, Super Admin) may **view, filter, export, and update** pipeline
+records in their territory — but they do not originate leads or deals on behalf of
+agents.
+
+## Allowed
+
+| Action | Who |
+|--------|-----|
+| `POST /api/leads` — create lead | **POSP only** |
+| `POST /api/deals` — create deal / quote | **POSP only** |
+| `GET/PATCH` leads & deals | Managers + POSP (scoped) |
+| `POST /api/leads/:id/convert` | ASM+ (promotes an existing lead — not a blank create) |
+| `DELETE /api/deals/:id` | ASM+ |
+
+## POSP create rules
+
+- A POSP deal is always tied to **their own** `pospId` (server-enforced via
+  `resolvePospScope`).
+- POSP creates leads for customers in their book; managers do not log prospects
+  for agents.
+
+## What must NOT be built or re-enabled
+
+- No "+ New Lead" / "+ New Deal" buttons for manager roles
+- No manager "issue on behalf of POSP" or "Self" deal creation flows
+- No Super Admin POSP picker on **create** deal modal
+- Do not widen `POST /api/deals` or `POST /api/leads` to `@MinRole(DM)` or ASM+
+
+Managers coach and review pipeline data; **field agents own creation**.
+
+## UI surfaces
+
+| Surface | Create button |
+|---------|---------------|
+| `/leads` | POSP only |
+| `/deals` | POSP only |
+| `/dashboard` | POSP only (`+ New Deal`) |
+
+If asked to let managers create leads/deals, explain this rule — do not implement it.

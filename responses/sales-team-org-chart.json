@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-06-17T16:02:10.161Z",
+  "capturedAt": "2026-06-19T16:44:36.108Z",
   "method": "GET",
   "path": "/api/sales-team/org-chart",
   "baseUrl": "http://localhost:8000",
@@ -7,5 +7,2900 @@
   "statusText": "OK",
   "note": null,
   "requestBody": null,
-  "response": []
+  "response": [
+    {
+      "id": "618469",
+      "parentId": "439037",
+      "name": "Rakesh Gaddam",
+      "employeeCode": "RAKESH.GADDAM CH TEL",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "ADILABAD"
+    },
+    {
+      "id": "439037",
+      "parentId": "609460",
+      "name": "PRAVEEN PILLI RH TEL",
+      "employeeCode": "PRAVEEN.RHTEL",
+      "level": 60,
+      "designation": "RH",
+      "districtName": "KHAMMAM"
+    },
+    {
+      "id": "609460",
+      "parentId": "592240",
+      "name": "Ravi Babu Ummadisetty",
+      "employeeCode": "RAVI.BABUSZH",
+      "level": 90,
+      "designation": "SZH"
+    },
+    {
+      "id": "592240",
+      "parentId": "79",
+      "name": "Hari Dutt",
+      "employeeCode": "HARI.DUTT",
+      "level": 95,
+      "designation": "NATIONAL_HEAD"
+    },
+    {
+      "id": "79",
+      "parentId": null,
+      "name": "VIVEK GUPTA",
+      "employeeCode": "VIVEK",
+      "level": 100,
+      "designation": "ADMIN"
+    },
+    {
+      "id": "484323",
+      "parentId": "73267",
+      "name": "BELLAMKONDA MEERA BABU ASM AP",
+      "employeeCode": "BELLAMKONDA.ASMAP",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "ANANTAPUR"
+    },
+    {
+      "id": "73267",
+      "parentId": "609460",
+      "name": "NURULLA SYED ASM AP DIRECT",
+      "employeeCode": "NURULLA.ASMAP",
+      "level": 60,
+      "designation": "RH"
+    },
+    {
+      "id": "406583",
+      "parentId": "73267",
+      "name": "YERRAMSETTI SANTOSH KUMAR ASM AP",
+      "employeeCode": "YERRAMSETTI.ASMAP",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "EAST GODAWARI"
+    },
+    {
+      "id": "517185",
+      "parentId": "73267",
+      "name": "PADALA CHARAN TEJA ASM AP",
+      "employeeCode": "PADALA.ASMAP",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "GUNTUR"
+    },
+    {
+      "id": "517510",
+      "parentId": "439037",
+      "name": "PAVILLA SRINIVAS SURYA ASM TEL",
+      "employeeCode": "PAVILLA.ASMTEL",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "HYDERABAD"
+    },
+    {
+      "id": "266581",
+      "parentId": "73267",
+      "name": "GANESH ASM AP",
+      "employeeCode": "GANESH.ASMAP",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "KADAPA"
+    },
+    {
+      "id": "538541",
+      "parentId": "266581",
+      "name": "SANDRAPATI IMMANIYELU ASM AP",
+      "employeeCode": "SANDRAPATI.ASMAP",
+      "level": 45,
+      "designation": "ASSISTASM",
+      "districtName": "PRAKASAM"
+    },
+    {
+      "id": "609553",
+      "parentId": "73267",
+      "name": "Thandrothu Damodara Rao",
+      "employeeCode": "THANDROTHU.ASMAP",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "SRIKAKULAM"
+    },
+    {
+      "id": "598242",
+      "parentId": "87633",
+      "name": "Thirumurugan",
+      "employeeCode": "THIRUMURUGAN.AASMTN",
+      "level": 45,
+      "designation": "ASSISTASM",
+      "districtName": "ARIYALUR"
+    },
+    {
+      "id": "87633",
+      "parentId": "57682",
+      "name": "PANDIDURAI ASM TN DIRECT",
+      "employeeCode": "PANDIDURAI.ASMTN",
+      "level": 70,
+      "designation": "CH"
+    },
+    {
+      "id": "57682",
+      "parentId": "609460",
+      "name": "BOOPATHI MANOKARAN",
+      "employeeCode": "BHOOPATHI.RHTN",
+      "level": 60,
+      "designation": "RH"
+    },
+    {
+      "id": "84389",
+      "parentId": "57682",
+      "name": "RAJ KUMAR ASM TN DIRECT",
+      "employeeCode": "RAJ.ASMTN",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "CHENNAI"
+    },
+    {
+      "id": "45",
+      "parentId": "57682",
+      "name": "MOHAN RAM KUMAR- ASM TN DIRECT",
+      "employeeCode": "MOHAN.ASMTN",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "COIMBATORE"
+    },
+    {
+      "id": "73265",
+      "parentId": "57682",
+      "name": "GANESAN MADHAPPA-ASM TN DIRECT",
+      "employeeCode": "GANESAN.ASMTN",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "DHARMAPURI"
+    },
+    {
+      "id": "618504",
+      "parentId": "45",
+      "name": "Satheeshkumar R",
+      "employeeCode": "SATHEESHKUMAR.ASMTN ",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "DINDIGUL"
+    },
+    {
+      "id": "269175",
+      "parentId": "57682",
+      "name": "DESIKAMANI ASM TN",
+      "employeeCode": "DESIKAMANI.ASMTN",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "NAGAPATTINAM"
+    },
+    {
+      "id": "443800",
+      "parentId": "73265",
+      "name": "MATHESH FOS TN",
+      "employeeCode": "MATHESH.FOSTN",
+      "level": 45,
+      "designation": "ASSISTASM",
+      "districtName": "NAMAKKAL"
+    },
+    {
+      "id": "563332",
+      "parentId": "607162",
+      "name": "Nishil",
+      "employeeCode": "NISHIL.ASMKER",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "MALAPPURAM"
+    },
+    {
+      "id": "607162",
+      "parentId": "609460",
+      "name": "Dipin KV",
+      "employeeCode": "DIPIN.KV_RHKER",
+      "level": 60,
+      "designation": "RH"
+    },
+    {
+      "id": "70748",
+      "parentId": "33981",
+      "name": "RAHUL KUMAR- ASM BIHAR",
+      "employeeCode": "RAHUL.ASMBIHAR",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "ARARIA"
+    },
+    {
+      "id": "33981",
+      "parentId": "57654",
+      "name": "SUBHASH KUMAR- ASM BIHAR",
+      "employeeCode": "subhash.asmbihar",
+      "level": 70,
+      "designation": "CH"
+    },
+    {
+      "id": "57654",
+      "parentId": "620619",
+      "name": "RAMANUJ-BIHAR JHARKHAND",
+      "employeeCode": "RAMANUJ.BIHARJHKZM",
+      "level": 80,
+      "designation": "ZH",
+      "districtName": "Kodarma"
+    },
+    {
+      "id": "620619",
+      "parentId": "592240",
+      "name": "Kajal Bhadra",
+      "employeeCode": "KAJAL.BHADRA SZH",
+      "level": 90,
+      "designation": "SZH"
+    },
+    {
+      "id": "250516",
+      "parentId": "57654",
+      "name": "KRISHNA KUMAR ASM BIHAR",
+      "employeeCode": "KRISHNA.ASMBIHAR",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "ARWAL"
+    },
+    {
+      "id": "619052",
+      "parentId": "41",
+      "name": "Nilesh Kumar",
+      "employeeCode": "NILESH.KUMAR ASM",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "BEGUSARAI"
+    },
+    {
+      "id": "41",
+      "parentId": "57654",
+      "name": "PAWAN KUMAR- BIHAR ASM",
+      "employeeCode": "pawan.kumar",
+      "level": 70,
+      "designation": "CH"
+    },
+    {
+      "id": "344213",
+      "parentId": "41",
+      "name": "PRASHANT KUMAR SUNNY ASM BIHAR",
+      "employeeCode": "PRASHANT.ASMBIHAR",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "DARBHANGA"
+    },
+    {
+      "id": "33983",
+      "parentId": "71019",
+      "name": "CHANDAN SHUKLA ASM BIHAR",
+      "employeeCode": "CHANDAN.ASMBIHAR",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "EAST CHAMPARAN"
+    },
+    {
+      "id": "71019",
+      "parentId": "57654",
+      "name": "CHINTU KUMAR -ASM BIHAR",
+      "employeeCode": "CHINTU.ASMBIHAR",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "SHEOHAR"
+    },
+    {
+      "id": "33984",
+      "parentId": "57654",
+      "name": "VIKASH KUMAR SINGH- ASM BIHAR",
+      "employeeCode": "Vikash.asmbihar",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "GOPALGANJ"
+    },
+    {
+      "id": "589215",
+      "parentId": "57654",
+      "name": "Nawendu Shekhar Pathak",
+      "employeeCode": "NAWENDU.ASMBIHAR",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "JAMUI"
+    },
+    {
+      "id": "477967",
+      "parentId": "71019",
+      "name": "PRASHANT KUMAR JHA ASM BIHAR",
+      "employeeCode": "PRASHANTJHA.ASMBIHAR",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "MADHUBANI"
+    },
+    {
+      "id": "436602",
+      "parentId": "33984",
+      "name": "SONU KUMAR SINGH ASM BIHAR",
+      "employeeCode": "SONU.ASMBIHAR",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "SARAN"
+    },
+    {
+      "id": "575791",
+      "parentId": "620621",
+      "name": "Mohan Dewangan",
+      "employeeCode": "MOHAN.CHCDG",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "BALOD"
+    },
+    {
+      "id": "620621",
+      "parentId": "620619",
+      "name": "Devendra Nath Pandey",
+      "employeeCode": "DEVENDRA.NATH RH CG",
+      "level": 60,
+      "designation": "RH"
+    },
+    {
+      "id": "620823",
+      "parentId": "439728",
+      "name": "Balram Sahu",
+      "employeeCode": "BALRAM.SAHU AASM",
+      "level": 45,
+      "designation": "ASSISTASM",
+      "districtName": "BALODA BAZAR"
+    },
+    {
+      "id": "439728",
+      "parentId": "575791",
+      "name": "LALAN KUMAR ASM CDG",
+      "employeeCode": "LALAN.ASMCDG",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "BEMETARA"
+    },
+    {
+      "id": "613012",
+      "parentId": "477943",
+      "name": "Pawan Kumar Singh",
+      "employeeCode": "PAWAN.KUMARCH",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "RANCHI"
+    },
+    {
+      "id": "477943",
+      "parentId": "57654",
+      "name": "PRABHAT KUMAR RH JKND",
+      "employeeCode": "PRABHAT.RHJKND",
+      "level": 60,
+      "designation": "RH"
+    },
+    {
+      "id": "534646",
+      "parentId": "477943",
+      "name": "RAJENDRA KUMAR JHA ASM JKND",
+      "employeeCode": "RAJENDRA.ASMJKND",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "DUMKA"
+    },
+    {
+      "id": "619937",
+      "parentId": "477943",
+      "name": "Sumit Kumar",
+      "employeeCode": "SUMIT.KUMAR ASMJHD",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "KODERMA"
+    },
+    {
+      "id": "603203",
+      "parentId": "90064",
+      "name": "Amit Kumar Saxena",
+      "employeeCode": "AMIT.SAXENAASMWUP",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "BADAUN"
+    },
+    {
+      "id": "90064",
+      "parentId": "592240",
+      "name": "DEV KUMAR RH WUP",
+      "employeeCode": "DEV.RHWUP",
+      "level": 60,
+      "designation": "RH",
+      "districtName": "MAHAMAYA NAGAR"
+    },
+    {
+      "id": "621062",
+      "parentId": "50",
+      "name": "Sandeep Kumar Kaushal",
+      "employeeCode": "SANDEEP.KUMAR CH EUP",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "SHAHJAHANPUR"
+    },
+    {
+      "id": "50",
+      "parentId": "592240",
+      "name": "ADESH SINGH(EUP)",
+      "employeeCode": "ADESH",
+      "level": 60,
+      "designation": "RH"
+    },
+    {
+      "id": "564467",
+      "parentId": "118334",
+      "name": "Shabihul Abrar",
+      "employeeCode": "SHABIHUL.ABRARAASM",
+      "level": 45,
+      "designation": "ASSISTASM",
+      "districtName": "SULTANPUR"
+    },
+    {
+      "id": "118334",
+      "parentId": "50",
+      "name": "ZISHAN TASLEEM ASM EUP",
+      "employeeCode": "ZISHAN.ASMEUP",
+      "level": 70,
+      "designation": "CH"
+    },
+    {
+      "id": "576310",
+      "parentId": "50",
+      "name": "Amit Yadav",
+      "employeeCode": "AMIT.YADAVASMUP",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "MIRZAPUR"
+    },
+    {
+      "id": "600696",
+      "parentId": "50",
+      "name": "Rais Ahamad",
+      "employeeCode": "RAIS.AHAMADASMUP",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "ETAWAH"
+    },
+    {
+      "id": "605692",
+      "parentId": "50",
+      "name": "Satyendra Kumar",
+      "employeeCode": "SATYENDRA.KUMARASMUP",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "MAHOBA"
+    },
+    {
+      "id": "473514",
+      "parentId": "50",
+      "name": "ABHIJIT SRIVASTAVA ASM UP",
+      "employeeCode": "ABHIJIT.ASMUP",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "AMBEDKAR NAGAR"
+    },
+    {
+      "id": "617586",
+      "parentId": "50",
+      "name": "Dhananjay Kumar Singh",
+      "employeeCode": "DHANANJAY.ASMEUP",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "DEORIA"
+    },
+    {
+      "id": "386688",
+      "parentId": "53",
+      "name": "BAM BAHADAR ASM PB ",
+      "employeeCode": "BAM.ASMPB",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "KATHUA"
+    },
+    {
+      "id": "53",
+      "parentId": "592240",
+      "name": "ANISH DHIMAN RH - PB HP J&K",
+      "employeeCode": "ANISH.RHJKPBHP",
+      "level": 60,
+      "designation": "RH"
+    },
+    {
+      "id": "71556",
+      "parentId": "53",
+      "name": "UMESH.KUMAR ASM PB",
+      "employeeCode": "UMESH.ASMPB",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "SHUPIYAN"
+    },
+    {
+      "id": "209601",
+      "parentId": "53",
+      "name": "SANDEEP SINGH ASM PB",
+      "employeeCode": "SANDEEP.ASMPB",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "BARNALA"
+    },
+    {
+      "id": "37",
+      "parentId": "57068",
+      "name": "RAM.OJHA -ASM MP",
+      "employeeCode": "RAM.OJHA",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "RAJGARH"
+    },
+    {
+      "id": "57068",
+      "parentId": "592240",
+      "name": "SACHIN PATHKAR(RAJ/GUJ/MP/UT1)",
+      "employeeCode": "SACHIN.ZHRAJGUJMP",
+      "level": 90,
+      "designation": "SZH"
+    },
+    {
+      "id": "583737",
+      "parentId": "37",
+      "name": "Razik Khan",
+      "employeeCode": "RAZIK.KHANASMMP",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "ALIRAJPUR"
+    },
+    {
+      "id": "558290",
+      "parentId": "37",
+      "name": "UMAR FARUQUE AHMED ASM MP",
+      "employeeCode": "UMAR.ASMMP",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "BURHANPUR"
+    },
+    {
+      "id": "486794",
+      "parentId": "252171",
+      "name": "ABDUL TAUSIF SHEKH ASM MP",
+      "employeeCode": "ABDUL.ASMMP",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "BALAGHAT"
+    },
+    {
+      "id": "252171",
+      "parentId": "57068",
+      "name": "RAHUL VAISHY ASM MP",
+      "employeeCode": "RAHUL.ASMMP",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "ANUPPUR"
+    },
+    {
+      "id": "262075",
+      "parentId": "252171",
+      "name": "SALIL SAHU ASM MP",
+      "employeeCode": "SALIL.ASMMP",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "CHHINDWARA"
+    },
+    {
+      "id": "606588",
+      "parentId": "252171",
+      "name": "Manish Kumar Yadav",
+      "employeeCode": "MANISH.KUMARASMMP",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "KATNI"
+    },
+    {
+      "id": "473510",
+      "parentId": "252171",
+      "name": "PRADEEP GAUTAM ASM MP",
+      "employeeCode": "PRADEEP.ASMMP",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "SIDHI"
+    },
+    {
+      "id": "608831",
+      "parentId": "37",
+      "name": "Govind Singh Baghela",
+      "employeeCode": "GOVIND.SINGHASMMP",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "DEWAS"
+    },
+    {
+      "id": "90089",
+      "parentId": "338478",
+      "name": "NILESH RAKSHIYE ASM MAHA",
+      "employeeCode": "NILESH.ASMMAHA",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "AKOLA"
+    },
+    {
+      "id": "338478",
+      "parentId": "57068",
+      "name": "SHAIKH ANWAR RH MAHA",
+      "employeeCode": "SHAIKH.RHMAHA",
+      "level": 60,
+      "designation": "RH",
+      "districtName": "PANAJI"
+    },
+    {
+      "id": "450255",
+      "parentId": "618417",
+      "name": "GAJANAN GURAV ASM MAHA",
+      "employeeCode": "GAJANAN.ASMMAHA",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "BULDHANA"
+    },
+    {
+      "id": "618417",
+      "parentId": "338478",
+      "name": "Shivraj Gangadhar Wanole",
+      "employeeCode": "SHIVRAJ.RH MUM",
+      "level": 60,
+      "designation": "RH"
+    },
+    {
+      "id": "73268",
+      "parentId": "338478",
+      "name": "SWAPNIL MEHKARKAR ASM MAHA DIRECT",
+      "employeeCode": "SWAPNIL.ASMMAHA",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "YAVATMAL"
+    },
+    {
+      "id": "90095",
+      "parentId": "338478",
+      "name": "BHIMASHANKAR SHETAKAR ASM MAHA DIRECT",
+      "employeeCode": "BHIMASHANKAR.ASMMAHA",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "WASHIM"
+    },
+    {
+      "id": "252177",
+      "parentId": "90098",
+      "name": "SOMNATH GOVIND FOS MAHA",
+      "employeeCode": "SOMNATH.FOSMAHA",
+      "level": 45,
+      "designation": "ASSISTASM",
+      "districtName": "BEED"
+    },
+    {
+      "id": "90098",
+      "parentId": "338478",
+      "name": "MUNDHE SALABA ASM MAHA DIRECT",
+      "employeeCode": "MUNDHE.ASMMAHA",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "OSMANABAD"
+    },
+    {
+      "id": "84400",
+      "parentId": "338478",
+      "name": "ANANDA WANJE ASM MAHA DIRECT",
+      "employeeCode": "ANANDA.ASMMAHA",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "NANDED"
+    },
+    {
+      "id": "617587",
+      "parentId": "73268",
+      "name": "Nilkanth Suryakant Lokhande",
+      "employeeCode": "NILKANTH.AASMMAHA",
+      "level": 45,
+      "designation": "ASSISTASM",
+      "districtName": "PARBHANI"
+    },
+    {
+      "id": "600756",
+      "parentId": "618417",
+      "name": "Mohammed Shamshad Shaikh",
+      "employeeCode": "MOH.SHAMSHADASMMUMB",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "MUMBAI"
+    },
+    {
+      "id": "378488",
+      "parentId": "618417",
+      "name": "JEETENDRA AMLANI FOS MAHA",
+      "employeeCode": "JEETENDRA.FOSMAHA",
+      "level": 45,
+      "designation": "ASSISTASM",
+      "districtName": "MUMBAI SUBURBAN DISTRICT"
+    },
+    {
+      "id": "446709",
+      "parentId": "618417",
+      "name": "AMIR TEMBE ASM MAHA",
+      "employeeCode": "AMIR.ASMMAHA",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "RAIGAD"
+    },
+    {
+      "id": "138278",
+      "parentId": "57684",
+      "name": "SHRISHAILA GOUDA ASM KAR",
+      "employeeCode": "SHRISHAILA.ASMKAR",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "BELLARY"
+    },
+    {
+      "id": "57684",
+      "parentId": "609460",
+      "name": "SATHISH NAYAK RH KARNATAKA",
+      "employeeCode": "SATHISH.RHKAR",
+      "level": 60,
+      "designation": "RH"
+    },
+    {
+      "id": "377239",
+      "parentId": "577188",
+      "name": "VINOD ASM KAR",
+      "employeeCode": "VINOD.ASMKAR",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "CHAMARAJANAGAR"
+    },
+    {
+      "id": "577188",
+      "parentId": "57684",
+      "name": "Srikrishna A.V",
+      "employeeCode": "SRIKRISHNA.CHKAR",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "KOLAR"
+    },
+    {
+      "id": "563427",
+      "parentId": "577188",
+      "name": "Arunsingh S",
+      "employeeCode": "ARUNSINGH.SASMKAR",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "CHIKMAGALUR"
+    },
+    {
+      "id": "266455",
+      "parentId": "138278",
+      "name": "SAMPATH ASM KAR",
+      "employeeCode": "SAMPATH.ASMKAR",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "GADAG"
+    },
+    {
+      "id": "252179",
+      "parentId": "619049",
+      "name": "SUBHASH ASM HAR",
+      "employeeCode": "SUBHASH.ASMHAR",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "AMBALA"
+    },
+    {
+      "id": "619049",
+      "parentId": "592240",
+      "name": "Pallav Kumar",
+      "employeeCode": "PALLAV.KUMAR ZH NCR",
+      "level": 80,
+      "designation": "ZH",
+      "districtName": "BHIWANI"
+    },
+    {
+      "id": "484821",
+      "parentId": "619049",
+      "name": "SHER SINGH ASM HAR",
+      "employeeCode": "SHER.ASMHAR",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "FATEHABAD"
+    },
+    {
+      "id": "561465",
+      "parentId": "619049",
+      "name": "MAYANK NANDAN ASM NCR",
+      "employeeCode": "MAYANK.ASMNCR",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "GURGAON"
+    },
+    {
+      "id": "599789",
+      "parentId": "246408",
+      "name": "Bhagirath Prajapat",
+      "employeeCode": "BHAGIRATH.ASMRAJ",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "AJMER"
+    },
+    {
+      "id": "246408",
+      "parentId": "615023",
+      "name": "RADHAMOHAN VYAS ASM RAJ",
+      "employeeCode": "RADHAMOHAN.ASMRAJ",
+      "level": 70,
+      "designation": "CH"
+    },
+    {
+      "id": "615023",
+      "parentId": "57068",
+      "name": "Krishna Kant Pathak",
+      "employeeCode": "KRISHNA.KANTZH",
+      "level": 80,
+      "designation": "ZH"
+    },
+    {
+      "id": "615024",
+      "parentId": "615023",
+      "name": "Naresh Kumar Tank",
+      "employeeCode": "NARESH.KUMARCH",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "ALWAR"
+    },
+    {
+      "id": "617004",
+      "parentId": "246408",
+      "name": "Vikas",
+      "employeeCode": "VIKAS.ASMRAJ",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "BARAN"
+    },
+    {
+      "id": "613551",
+      "parentId": "615024",
+      "name": "Santosh Kumar",
+      "employeeCode": "SANTOSH.KUMARAASM",
+      "level": 45,
+      "designation": "ASSISTASM",
+      "districtName": "BARMER"
+    },
+    {
+      "id": "616553",
+      "parentId": "246408",
+      "name": "Yogesh Suthar",
+      "employeeCode": "YOGESH.SUTHARASMRAJ",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "SIROHI"
+    },
+    {
+      "id": "609680",
+      "parentId": "57068",
+      "name": "Vinodkumar Bhurmal Bhati",
+      "employeeCode": "VINODKUMAR.RHGUJ",
+      "level": 60,
+      "designation": "RH",
+      "districtName": "AHMEDABAD"
+    },
+    {
+      "id": "467525",
+      "parentId": "247015",
+      "name": "MAHESHKUMAR MATHURBHAI MAKWANA ASM GUJ",
+      "employeeCode": "MAHESHKUMAR.ASMGUJ",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "AMRELI"
+    },
+    {
+      "id": "247015",
+      "parentId": "609680",
+      "name": "JUZER MITHAIWALA ASM GUJ",
+      "employeeCode": "JUZER.RHGUJ",
+      "level": 60,
+      "designation": "RH",
+      "districtName": "ARAVALLI"
+    },
+    {
+      "id": "587829",
+      "parentId": "247015",
+      "name": "Jay Sureshchandra Rana",
+      "employeeCode": "JAY.SURESHASMGUJ",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "ANAND"
+    },
+    {
+      "id": "618513",
+      "parentId": "247015",
+      "name": "Rahul Shantibhai Parmar",
+      "employeeCode": "RAHUL.SHANTI CH GUJ",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "NARMADA"
+    },
+    {
+      "id": "594288",
+      "parentId": "90064",
+      "name": "Ravi Tomar",
+      "employeeCode": "RAVI.TOMARASMWUP",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "Shamli"
+    },
+    {
+      "id": "209609",
+      "parentId": "50",
+      "name": "SANDEEP MATHURIYA ASM WUP",
+      "employeeCode": "SANDEEP.ASMWUP",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "BULANDSHAHAR"
+    },
+    {
+      "id": "209610",
+      "parentId": "90064",
+      "name": "GYANENDRA KUMAR ASM WUP",
+      "employeeCode": "GYANENDRA.ASMWUP",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "BIJNOR"
+    },
+    {
+      "id": "620637",
+      "parentId": "209609",
+      "name": "Mohammad Imran",
+      "employeeCode": "MOHAMMAD.IMRAN ASM",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "ETAH"
+    },
+    {
+      "id": "265507",
+      "parentId": "618413",
+      "name": "MOSTOFA ISLAM ASM ASSAM",
+      "employeeCode": "MOSTOFA.ASMASSAM",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "DHUBRI"
+    },
+    {
+      "id": "618413",
+      "parentId": "592240",
+      "name": "Sagir Ali",
+      "employeeCode": "Sagir.Ali",
+      "level": 80,
+      "designation": "ZH",
+      "districtName": "KOLASIB"
+    },
+    {
+      "id": "188742",
+      "parentId": "618413",
+      "name": "JAHAIRUDDIN ALI ASM ASSAM",
+      "employeeCode": "JAHAIRUDDIN.ASMASSAM",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "BONGAIGAON"
+    },
+    {
+      "id": "85620",
+      "parentId": "618413",
+      "name": "MEHBUB MOHAZERIN- ASM ASSAM",
+      "employeeCode": "MEHBUB.ASMASSAM",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "GOALPARA"
+    },
+    {
+      "id": "84406",
+      "parentId": "188742",
+      "name": "AKRAM ALI ASM ASSAM",
+      "employeeCode": "AKRAM.ASMASSAM",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "KAMRUP"
+    },
+    {
+      "id": "84407",
+      "parentId": "618413",
+      "name": "MIRJAN ALI ASM ASSAM",
+      "employeeCode": "MIRJAN.ASMASSAM",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "MORIGAON"
+    },
+    {
+      "id": "339576",
+      "parentId": "618413",
+      "name": "NASIMULLA ANSARI ASM ASSAM",
+      "employeeCode": "NASIMULLA.ASMASSAM",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "JORHAT"
+    },
+    {
+      "id": "335247",
+      "parentId": "188742",
+      "name": "PARWEZ AHMED FOS ASSAM",
+      "employeeCode": "PARWEZ.FOSASSAM",
+      "level": 45,
+      "designation": "ASSISTASM",
+      "districtName": "TINKSUKIA"
+    },
+    {
+      "id": "474776",
+      "parentId": "188742",
+      "name": "DEMLAR KHUMBONGMAYUM FOS NE",
+      "employeeCode": "DEMLAR.FOSNE",
+      "level": 45,
+      "designation": "ASSISTASM",
+      "districtName": "BISHNUPUR"
+    },
+    {
+      "id": "556859",
+      "parentId": "558275",
+      "name": "SUMIT KANU ASM WB",
+      "employeeCode": "SUMIT.ASMWB",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "JALPAIGURI"
+    },
+    {
+      "id": "558275",
+      "parentId": "592240",
+      "name": "TAPAS KARMAKAR RH WB",
+      "employeeCode": "TAPAS.RHWB",
+      "level": 60,
+      "designation": "RH"
+    },
+    {
+      "id": "618505",
+      "parentId": "558288",
+      "name": "Papai Paul",
+      "employeeCode": "PAPAI.PAUL ASM WB",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "NORTH DINAJPUR"
+    },
+    {
+      "id": "558288",
+      "parentId": "558275",
+      "name": "SAMIUL ALIM ASM WB",
+      "employeeCode": "SAMIUL.ASMWB",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "MALDA"
+    },
+    {
+      "id": "616558",
+      "parentId": "558275",
+      "name": "Rakesh Prasad",
+      "employeeCode": "RAKESH.PRASADASMWB",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "BIRBHUM"
+    },
+    {
+      "id": "587828",
+      "parentId": "344597",
+      "name": "Amit Kumar Ghosh",
+      "employeeCode": "AMIT.KUMARASMWB",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "BARDHAMAN"
+    },
+    {
+      "id": "344597",
+      "parentId": "592240",
+      "name": "PRASENJIT MUKHERJEE RH WB",
+      "employeeCode": "PRASENJIT.RHWB",
+      "level": 60,
+      "designation": "RH"
+    },
+    {
+      "id": "620657",
+      "parentId": "344597",
+      "name": "Abhijit Batabyal",
+      "employeeCode": "ABHIJIT.BATABYAL ASM",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "PURULIA"
+    },
+    {
+      "id": "189686",
+      "parentId": "344597",
+      "name": "MANAS MAHATO ASM WB",
+      "employeeCode": "MANAS.ASMWB",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "HOOGHLY"
+    },
+    {
+      "id": "331184",
+      "parentId": "344597",
+      "name": "SUBIR GHOSH ASM WB",
+      "employeeCode": "SUBIR.ASMWB",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "NORTH 24 PARGANAS"
+    },
+    {
+      "id": "71620",
+      "parentId": "344597",
+      "name": "PUSPASISH BERA - ASM WB",
+      "employeeCode": "PUSPASISH.ASMWB",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "South 24 Parganas"
+    },
+    {
+      "id": "593332",
+      "parentId": "344597",
+      "name": "Subhajit Paul",
+      "employeeCode": "SUBHAJIT.PAULASMWB",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "HOWRAH"
+    },
+    {
+      "id": "602656",
+      "parentId": "618413",
+      "name": "Sudip Kumar Banik",
+      "employeeCode": "SUDIP.KUMARASMNE",
+      "level": 40,
+      "designation": "ASM",
+      "districtName": "DHALAI"
+    },
+    {
+      "id": "167285",
+      "parentId": "620619",
+      "name": "BANAMALI BARIK ASM ODI",
+      "employeeCode": "BANAMALI.ASMODI",
+      "level": 70,
+      "designation": "CH",
+      "districtName": "BHADRAK"
+    },
+    {
+      "id": "247694",
+      "parentId": "594288",
+      "name": "AARTI SAINI",
+      "employeeCode": "CSP121008",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "MUZAFFARNAGAR"
+    },
+    {
+      "id": "315398",
+      "parentId": "602656",
+      "name": "AISRANG DEBBARMA",
+      "employeeCode": "CSP164208",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "WEST TRIPURA"
+    },
+    {
+      "id": "102893",
+      "parentId": "90089",
+      "name": "AKASH HIVRAJ BALGE",
+      "employeeCode": "CSP029223",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "GONDIYA"
+    },
+    {
+      "id": "267929",
+      "parentId": "265507",
+      "name": "AKIDUL HOQUE",
+      "employeeCode": "CSP139249",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "DHUBRI"
+    },
+    {
+      "id": "255728",
+      "parentId": "439728",
+      "name": "AKSHAY KADVE",
+      "employeeCode": "CSP128272",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "RAIPUR"
+    },
+    {
+      "id": "35256",
+      "parentId": "252177",
+      "name": "AKSHAY RAMCHANDRA GANBOTE",
+      "employeeCode": "CSP014746",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SATARA"
+    },
+    {
+      "id": "87607",
+      "parentId": "609553",
+      "name": "AKULA SRINIVAS",
+      "employeeCode": "CSP024703",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "VIZIANAGARAM"
+    },
+    {
+      "id": "311143",
+      "parentId": "71620",
+      "name": "ALINUR  ISLAM",
+      "employeeCode": "CSP160419",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "South 24 Parganas"
+    },
+    {
+      "id": "103211",
+      "parentId": "262075",
+      "name": "AMAR SONI",
+      "employeeCode": "CSP029524",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "JABALPUR"
+    },
+    {
+      "id": "88808",
+      "parentId": "73268",
+      "name": "AMBHORE NAMDEV JANARDHAN",
+      "employeeCode": "CSP025702",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "AURANGABAD"
+    },
+    {
+      "id": "275114",
+      "parentId": "70748",
+      "name": "AMIT KUMAR SINGH",
+      "employeeCode": "CSP145768",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "KATIHAR"
+    },
+    {
+      "id": "269515",
+      "parentId": "589215",
+      "name": "AMLESH KUMAR",
+      "employeeCode": "CSP140706",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "LAKHISARAI"
+    },
+    {
+      "id": "213827",
+      "parentId": "73268",
+      "name": "AMOL BHASKARRAO CHAVAN",
+      "employeeCode": "CSP090598",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "AURANGABAD"
+    },
+    {
+      "id": "213160",
+      "parentId": "90089",
+      "name": "ANAND BHASKAR WAGDHRE",
+      "employeeCode": "CSP089990",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "NAGPUR"
+    },
+    {
+      "id": "206783",
+      "parentId": "84389",
+      "name": "ANAND KISHORE GIRIDHARILAL",
+      "employeeCode": "CSP084339",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "VELLORE"
+    },
+    {
+      "id": "85767",
+      "parentId": "84400",
+      "name": "ANANDA KISHORRAO WANJE",
+      "employeeCode": "CSP023130",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "NANDED"
+    },
+    {
+      "id": "272167",
+      "parentId": "90089",
+      "name": "ANIL SHALIKRAM CHATAP",
+      "employeeCode": "CSP143108",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "NAGPUR"
+    },
+    {
+      "id": "121259",
+      "parentId": "250516",
+      "name": "ANKIT KUMAR",
+      "employeeCode": "CSP036642",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "KAIMUR"
+    },
+    {
+      "id": "217329",
+      "parentId": "558288",
+      "name": "ANNAFIUR RAHMAN",
+      "employeeCode": "CSP093749",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "MALDA"
+    },
+    {
+      "id": "74179",
+      "parentId": "593332",
+      "name": "ARGHYA MONDAL",
+      "employeeCode": "CSP021797",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "HOWRAH"
+    },
+    {
+      "id": "33952",
+      "parentId": "617004",
+      "name": "ASHISH KUMAR",
+      "employeeCode": "CSP013766",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "JHALAWAR"
+    },
+    {
+      "id": "315953",
+      "parentId": "621062",
+      "name": "ASHISH KUMAR VERMA",
+      "employeeCode": "CSP164717",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "RAEBARELI"
+    },
+    {
+      "id": "237583",
+      "parentId": "473514",
+      "name": "BALAVANT  KUMAR",
+      "employeeCode": "CSP111879",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SANT KABIR NAGAR"
+    },
+    {
+      "id": "33638",
+      "parentId": "33984",
+      "name": "BALRAM  KUMAR",
+      "employeeCode": "CSP013559",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "GOPALGANJ"
+    },
+    {
+      "id": "260352",
+      "parentId": "439728",
+      "name": "BALRAM  SAHU",
+      "employeeCode": "CSP132395",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "RAIPUR"
+    },
+    {
+      "id": "242000",
+      "parentId": "209601",
+      "name": "BANITA  RANI",
+      "employeeCode": "CSP115798",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "BARNALA"
+    },
+    {
+      "id": "171052",
+      "parentId": "583737",
+      "name": "BANWARI AVCHARE",
+      "employeeCode": "CSP061726",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "KHARGONE"
+    },
+    {
+      "id": "254875",
+      "parentId": "609553",
+      "name": "BARRI SURYA  PRAKASH",
+      "employeeCode": "CSP127501",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "VISHAKHAPATNAM"
+    },
+    {
+      "id": "149823",
+      "parentId": "564467",
+      "name": "BHARAT JEE  TRIPATHI",
+      "employeeCode": "CSP044032",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "ALLAHABAD"
+    },
+    {
+      "id": "251630",
+      "parentId": "583737",
+      "name": "BHODU SINGH MOURYA",
+      "employeeCode": "CSP124558",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "ALIRAJPUR"
+    },
+    {
+      "id": "71179",
+      "parentId": "209610",
+      "name": "BHUPENDRA SINGH RAWAT",
+      "employeeCode": "CSP019422",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "PITHORAGARH"
+    },
+    {
+      "id": "313107",
+      "parentId": "436602",
+      "name": "BITTU  KUMAR",
+      "employeeCode": "CSP162156",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SARAN"
+    },
+    {
+      "id": "115269",
+      "parentId": "618469",
+      "name": "BODDU GEETHA",
+      "employeeCode": "CSP031400",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "KARIMNAGAR"
+    },
+    {
+      "id": "151940",
+      "parentId": "85620",
+      "name": "BUDHESWAR BORA",
+      "employeeCode": "CSP045914",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "GOLAGHAT"
+    },
+    {
+      "id": "88261",
+      "parentId": "70748",
+      "name": "CHANDAN KUMAR  SAH",
+      "employeeCode": "CSP025262",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "ARARIA"
+    },
+    {
+      "id": "179026",
+      "parentId": "609680",
+      "name": "CHAUHAN ALPABEN",
+      "employeeCode": "CSP068619",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "AHMEDABAD"
+    },
+    {
+      "id": "238293",
+      "parentId": "247015",
+      "name": "DAVE RAJESH DURGADASBHAI",
+      "employeeCode": "CSP112525",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "BHAVNAGAR"
+    },
+    {
+      "id": "258493",
+      "parentId": "558290",
+      "name": "DEEPAK KUMAR LOVANSHI",
+      "employeeCode": "CSP130738",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "EAST NIMAR"
+    },
+    {
+      "id": "205054",
+      "parentId": "269175",
+      "name": "DESIKAMANI N",
+      "employeeCode": "CSP082781",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "PUDUKKOTTAI"
+    },
+    {
+      "id": "305623",
+      "parentId": "617004",
+      "name": "DHANRAJ  BAIRWA",
+      "employeeCode": "CSP155398",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "KOTA"
+    },
+    {
+      "id": "228758",
+      "parentId": "138278",
+      "name": "DHARAMARAJ DHARAMARAJ",
+      "employeeCode": "CSP103902",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "YADGIR"
+    },
+    {
+      "id": "33745",
+      "parentId": "250516",
+      "name": "DHARMENDRA KUMAR",
+      "employeeCode": "CSP013625",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "ARWAL"
+    },
+    {
+      "id": "243724",
+      "parentId": "564467",
+      "name": "DHARMENDRA KUMAR TIWARI",
+      "employeeCode": "CSP117349",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "ALLAHABAD"
+    },
+    {
+      "id": "86813",
+      "parentId": "443800",
+      "name": "DHINESH S",
+      "employeeCode": "CSP024023",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SALEM"
+    },
+    {
+      "id": "185336",
+      "parentId": "167285",
+      "name": "DILLIP KUMAR SAHOO",
+      "employeeCode": "CSP074223",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "BALESWAR"
+    },
+    {
+      "id": "246722",
+      "parentId": "73265",
+      "name": "DINESHKUMAR PERIYASAMY",
+      "employeeCode": "CSP120103",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "ERODE"
+    },
+    {
+      "id": "102275",
+      "parentId": "90095",
+      "name": "DNYANESHWAR SHIVAJIRAO KANKAL",
+      "employeeCode": "CSP028694",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "HINGOLI"
+    },
+    {
+      "id": "283880",
+      "parentId": "439728",
+      "name": "FATIMA FIRDOUS",
+      "employeeCode": "CSP153814",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "RAIPUR"
+    },
+    {
+      "id": "72999",
+      "parentId": "618469",
+      "name": "GADDAM RAKESH",
+      "employeeCode": "CSP020833",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "KARIMNAGAR"
+    },
+    {
+      "id": "115938",
+      "parentId": "37",
+      "name": "GAJENDRA KUSHWAH",
+      "employeeCode": "CSP031997",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SHIVPURI"
+    },
+    {
+      "id": "73005",
+      "parentId": "73265",
+      "name": "GANESAN MADHAPPA",
+      "employeeCode": "CSP020839",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "DHARMAPURI"
+    },
+    {
+      "id": "277490",
+      "parentId": "167285",
+      "name": "GANESH BAGARTTI",
+      "employeeCode": "CSP147947",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SONEPUR"
+    },
+    {
+      "id": "229823",
+      "parentId": "209610",
+      "name": "GAURAV KUMAR",
+      "employeeCode": "CSP104867",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "BIJNOR"
+    },
+    {
+      "id": "247560",
+      "parentId": "209610",
+      "name": "GAURAV KUMAR",
+      "employeeCode": "CSP120882",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "BIJNOR"
+    },
+    {
+      "id": "221601",
+      "parentId": "209610",
+      "name": "GIRIRAJ SINGH",
+      "employeeCode": "CSP097526",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "Moradabad"
+    },
+    {
+      "id": "84854",
+      "parentId": "406583",
+      "name": "GOMPA APPARAO",
+      "employeeCode": "CSP022358",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "EAST GODAWARI"
+    },
+    {
+      "id": "305721",
+      "parentId": "558288",
+      "name": "GOUR CHANDRA  BASAK",
+      "employeeCode": "CSP155488",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "MALDA"
+    },
+    {
+      "id": "257777",
+      "parentId": "209610",
+      "name": "HARIOM HARIOM",
+      "employeeCode": "CSP130109",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "Moradabad"
+    },
+    {
+      "id": "311876",
+      "parentId": "71620",
+      "name": "HASIFUL SEKH",
+      "employeeCode": "CSP161065",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "South 24 Parganas"
+    },
+    {
+      "id": "32649",
+      "parentId": "439728",
+      "name": "HEMANT  POORNA",
+      "employeeCode": "CSP012884",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "KABIRDHAM"
+    },
+    {
+      "id": "19893",
+      "parentId": "37",
+      "name": "HEMRAJ RATHORE",
+      "employeeCode": "CSP011201",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "RAJGARH"
+    },
+    {
+      "id": "177563",
+      "parentId": "617587",
+      "name": "HIMMAT BALIRAM KHILLARE",
+      "employeeCode": "CSP067339",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "PARBHANI"
+    },
+    {
+      "id": "208627",
+      "parentId": "90095",
+      "name": "HONRAO AMAR SAMBHAJI",
+      "employeeCode": "CSP085959",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "LATUR"
+    },
+    {
+      "id": "212568",
+      "parentId": "33984",
+      "name": "HRIDAY NARAYAN SINGH",
+      "employeeCode": "CSP089459",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SIWAN"
+    },
+    {
+      "id": "151744",
+      "parentId": "265507",
+      "name": "IMDADUL HOQUE",
+      "employeeCode": "CSP045746",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "KOKRAJHAR"
+    },
+    {
+      "id": "158530",
+      "parentId": "603203",
+      "name": "IMRAN ALI",
+      "employeeCode": "CSP051462",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "BAREILLY"
+    },
+    {
+      "id": "268675",
+      "parentId": "71556",
+      "name": "ISHA  ISHA",
+      "employeeCode": "CSP139938",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "FATEHGARH SAHIB"
+    },
+    {
+      "id": "72082",
+      "parentId": "33983",
+      "name": "JAMSHED ALAM",
+      "employeeCode": "CSP020087",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "EAST CHAMPARAN"
+    },
+    {
+      "id": "253744",
+      "parentId": "209610",
+      "name": "JEETENDRA SINGH  NEGI",
+      "employeeCode": "CSP126476",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "Moradabad"
+    },
+    {
+      "id": "276934",
+      "parentId": "621062",
+      "name": "JITENDRA KUMAR",
+      "employeeCode": "CSP147430",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "AMETHI"
+    },
+    {
+      "id": "69885",
+      "parentId": "209610",
+      "name": "JULFKAR ALI",
+      "employeeCode": "CSP018378",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "Moradabad"
+    },
+    {
+      "id": "279988",
+      "parentId": "436602",
+      "name": "KAMENDRA KUMAR",
+      "employeeCode": "CSP150169",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SARAN"
+    },
+    {
+      "id": "217194",
+      "parentId": "564467",
+      "name": "KAMLESH KUMAR  SINGH",
+      "employeeCode": "CSP093629",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SULTANPUR"
+    },
+    {
+      "id": "204587",
+      "parentId": "406583",
+      "name": "KASIREDDY KIRAN KUMAR",
+      "employeeCode": "CSP082373",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "EAST GODAWARI"
+    },
+    {
+      "id": "220617",
+      "parentId": "599789",
+      "name": "KHUSHAL KUMAWAT",
+      "employeeCode": "CSP096698",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "NAGAUR"
+    },
+    {
+      "id": "89945",
+      "parentId": "609553",
+      "name": "KOPPAKA VENKATA NAGA  AYYAPPA LAKSHMANA RAO",
+      "employeeCode": "CSP026649",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "VISHAKHAPATNAM"
+    },
+    {
+      "id": "34844",
+      "parentId": "621062",
+      "name": "LALIT KUMAR",
+      "employeeCode": "CSP014412",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "HARDOI"
+    },
+    {
+      "id": "137613",
+      "parentId": "583737",
+      "name": "LOKENDRA MALAKAR",
+      "employeeCode": "CSP042136",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "KHARGONE"
+    },
+    {
+      "id": "200962",
+      "parentId": "618504",
+      "name": "M LOURTHURAJ",
+      "employeeCode": "CSP079187",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "TIRUNELVELI"
+    },
+    {
+      "id": "13537",
+      "parentId": "37",
+      "name": "MAHENDRA PRAJAPATI",
+      "employeeCode": "CSP007166",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SHEOPUR"
+    },
+    {
+      "id": "14324",
+      "parentId": "33984",
+      "name": "MAHESH KUMAR BARNWAL",
+      "employeeCode": "CSP007654",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "GOPALGANJ"
+    },
+    {
+      "id": "14948",
+      "parentId": "615024",
+      "name": "MAMTA  RANI",
+      "employeeCode": "CSP008082",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "ALWAR"
+    },
+    {
+      "id": "228173",
+      "parentId": "167285",
+      "name": "MANAS RANJAN SHANDHA",
+      "employeeCode": "CSP103367",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "Subarnapur"
+    },
+    {
+      "id": "158771",
+      "parentId": "252177",
+      "name": "MANGESH RAJU CHAUDHARI",
+      "employeeCode": "CSP051668",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "JALGAON"
+    },
+    {
+      "id": "211799",
+      "parentId": "576310",
+      "name": "MANISH KUMAR",
+      "employeeCode": "CSP088773",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SONBHADRA"
+    },
+    {
+      "id": "246732",
+      "parentId": "575791",
+      "name": "MANISH KUMAR SAHU",
+      "employeeCode": "CSP120113",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "DURG"
+    },
+    {
+      "id": "238152",
+      "parentId": "558290",
+      "name": "MANISH RATHOR",
+      "employeeCode": "CSP112393",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "BURHANPUR"
+    },
+    {
+      "id": "276824",
+      "parentId": "617586",
+      "name": "MANOJ KUMAR",
+      "employeeCode": "CSP147333",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "MAHARAJGANJ"
+    },
+    {
+      "id": "84811",
+      "parentId": "406583",
+      "name": "MANYAM ARJUNARAO",
+      "employeeCode": "CSP022321",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "EAST GODAWARI"
+    },
+    {
+      "id": "155451",
+      "parentId": "250516",
+      "name": "MD AMJAD ANSARI",
+      "employeeCode": "CSP048885",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "BUXAR"
+    },
+    {
+      "id": "308102",
+      "parentId": "439728",
+      "name": "MD TAJAMMUL  ANSARI",
+      "employeeCode": "CSP157675",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "RAIPUR"
+    },
+    {
+      "id": "88958",
+      "parentId": "33984",
+      "name": "MITHILESH KUMAR",
+      "employeeCode": "CSP025821",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SIWAN"
+    },
+    {
+      "id": "279974",
+      "parentId": "620637",
+      "name": "MOHAMMAD FURQAN",
+      "employeeCode": "CSP150158",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "KASGANJ"
+    },
+    {
+      "id": "204646",
+      "parentId": "250516",
+      "name": "MOHAMMAD GULAM QADIR",
+      "employeeCode": "CSP082425",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "NAWADA"
+    },
+    {
+      "id": "187439",
+      "parentId": "600696",
+      "name": "MOHAMMAD SARTAJ",
+      "employeeCode": "CSP076087",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "KANNAUJ"
+    },
+    {
+      "id": "69839",
+      "parentId": "617586",
+      "name": "MOHAMMAD ZAHID",
+      "employeeCode": "CSP018337",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "KUSHINAGAR"
+    },
+    {
+      "id": "10013",
+      "parentId": "37",
+      "name": "MOHAN MALAKAR",
+      "employeeCode": "CSP004988",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "RAJGARH"
+    },
+    {
+      "id": "72994",
+      "parentId": "45",
+      "name": "MOHAN RAMKUMAR KRISHNAKUMAR",
+      "employeeCode": "CSP020828",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "TIRUPPUR"
+    },
+    {
+      "id": "218364",
+      "parentId": "209610",
+      "name": "MOHD ZISHAN",
+      "employeeCode": "CSP094709",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "BIJNOR"
+    },
+    {
+      "id": "223388",
+      "parentId": "517510",
+      "name": "MOHMAD IMRAN",
+      "employeeCode": "CSP099108",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "MAHBUBNAGAR"
+    },
+    {
+      "id": "154430",
+      "parentId": "265507",
+      "name": "MRINMOY ROY",
+      "employeeCode": "CSP048017",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "DHUBRI"
+    },
+    {
+      "id": "89552",
+      "parentId": "617587",
+      "name": "MUNDHE SALABA SAMBHAJI",
+      "employeeCode": "CSP026316",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "PARBHANI"
+    },
+    {
+      "id": "184088",
+      "parentId": "269175",
+      "name": "MURUKANANTHAM C",
+      "employeeCode": "CSP073128",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "PUDUKKOTTAI"
+    },
+    {
+      "id": "276854",
+      "parentId": "621062",
+      "name": "MUSTAFA MUSTAFA",
+      "employeeCode": "CSP147361",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SHAHJAHANPUR"
+    },
+    {
+      "id": "259605",
+      "parentId": "600696",
+      "name": "NAIBA  KHATUN",
+      "employeeCode": "CSP131723",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "KANNAUJ"
+    },
+    {
+      "id": "871",
+      "parentId": "406583",
+      "name": "NAND KISHOR",
+      "employeeCode": "CSP000647",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "EAST GODAWARI"
+    },
+    {
+      "id": "273156",
+      "parentId": "576310",
+      "name": "NANHKU RAM",
+      "employeeCode": "CSP143994",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SANT RAVIDAS NAGAR"
+    },
+    {
+      "id": "169261",
+      "parentId": "250516",
+      "name": "NARESH KUMAR",
+      "employeeCode": "CSP060158",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "GAYA"
+    },
+    {
+      "id": "266",
+      "parentId": "386688",
+      "name": "NAVDEEP JERATH",
+      "employeeCode": "CSP000174",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "HOSHIARPUR"
+    },
+    {
+      "id": "205555",
+      "parentId": "436602",
+      "name": "NEHA KUMARI",
+      "employeeCode": "CSP083226",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SARAN"
+    },
+    {
+      "id": "257496",
+      "parentId": "618505",
+      "name": "NIBARAN SUTRADHAR",
+      "employeeCode": "CSP129845",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "NORTH DINAJPUR"
+    },
+    {
+      "id": "89359",
+      "parentId": "90089",
+      "name": "NILESH RAKSHIYE",
+      "employeeCode": "CSP026150",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "NAGPUR"
+    },
+    {
+      "id": "203722",
+      "parentId": "70748",
+      "name": "NITISH  KUMAR  YADAV",
+      "employeeCode": "CSP081629",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "KATIHAR"
+    },
+    {
+      "id": "179023",
+      "parentId": "406583",
+      "name": "NUDURUMATI SATYA  BHASKARA HARISH GUPTA",
+      "employeeCode": "CSP068616",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "EAST GODAWARI"
+    },
+    {
+      "id": "305941",
+      "parentId": "406583",
+      "name": "PAIPURI SAIBABU",
+      "employeeCode": "CSP155689",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "EAST GODAWARI"
+    },
+    {
+      "id": "181289",
+      "parentId": "436602",
+      "name": "PANKAJ KUMAR SINGH",
+      "employeeCode": "CSP070604",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SARAN"
+    },
+    {
+      "id": "312186",
+      "parentId": "90095",
+      "name": "PAVAN VITTHALRAO  SHINDE",
+      "employeeCode": "CSP161353",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "HINGOLI"
+    },
+    {
+      "id": "84247",
+      "parentId": "406583",
+      "name": "PEMMANABOINA SRINU",
+      "employeeCode": "CSP021858",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "EAST GODAWARI"
+    },
+    {
+      "id": "90290",
+      "parentId": "84400",
+      "name": "PETHKAR SACHIN TANAJIRAO",
+      "employeeCode": "CSP026938",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "NANDED"
+    },
+    {
+      "id": "204291",
+      "parentId": "331184",
+      "name": "POPI BOSE",
+      "employeeCode": "CSP082116",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "NORTH 24 PARGANAS"
+    },
+    {
+      "id": "220849",
+      "parentId": "71620",
+      "name": "PRADIPTA DAS",
+      "employeeCode": "CSP096888",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "South 24 Parganas"
+    },
+    {
+      "id": "216444",
+      "parentId": "209610",
+      "name": "PRAMOD PRAMOD",
+      "employeeCode": "CSP092954",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "BIJNOR"
+    },
+    {
+      "id": "218407",
+      "parentId": "583737",
+      "name": "PRAVIN GOHIL",
+      "employeeCode": "CSP094747",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "ALIRAJPUR"
+    },
+    {
+      "id": "215512",
+      "parentId": "209601",
+      "name": "PREM SINGH",
+      "employeeCode": "CSP092123",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "BATHINDA"
+    },
+    {
+      "id": "88421",
+      "parentId": "583737",
+      "name": "PREMLAL PREMLAL",
+      "employeeCode": "CSP025389",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "KHARGONE"
+    },
+    {
+      "id": "306958",
+      "parentId": "576310",
+      "name": "PRIYA SINGH",
+      "employeeCode": "CSP156627",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "MIRZAPUR"
+    },
+    {
+      "id": "207420",
+      "parentId": "517185",
+      "name": "PUTTY REGINA RAJENDRA KUMAR",
+      "employeeCode": "CSP084913",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "GUNTUR"
+    },
+    {
+      "id": "246075",
+      "parentId": "615024",
+      "name": "RADHA MOHAN VYAS",
+      "employeeCode": "CSP119512",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "JAIPUR"
+    },
+    {
+      "id": "313986",
+      "parentId": "344213",
+      "name": "RAHUL KUMAR MISHRA",
+      "employeeCode": "CSP162960",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "DARBHANGA"
+    },
+    {
+      "id": "241937",
+      "parentId": "564467",
+      "name": "RAJ KAMAL KANAUJIYA",
+      "employeeCode": "CSP115740",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SULTANPUR"
+    },
+    {
+      "id": "123712",
+      "parentId": "33984",
+      "name": "RAJEEV KUMAR",
+      "employeeCode": "CSP038742",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SIWAN"
+    },
+    {
+      "id": "12606",
+      "parentId": "558290",
+      "name": "RAJKUMAR RATHORE",
+      "employeeCode": "CSP006591",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "EAST NIMAR"
+    },
+    {
+      "id": "73435",
+      "parentId": "71556",
+      "name": "RAJNEESH CHOUDHARY",
+      "employeeCode": "CSP021188",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "Mohali"
+    },
+    {
+      "id": "204589",
+      "parentId": "621062",
+      "name": "RAM JEE",
+      "employeeCode": "CSP082375",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "HARDOI"
+    },
+    {
+      "id": "535",
+      "parentId": "561465",
+      "name": "RAMANUJ KUMAR",
+      "employeeCode": "CSP000401",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "GURGAON"
+    },
+    {
+      "id": "273423",
+      "parentId": "609553",
+      "name": "RAMARAO CHIPPADA",
+      "employeeCode": "CSP144236",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "VISHAKHAPATNAM"
+    },
+    {
+      "id": "6189",
+      "parentId": "37",
+      "name": "RAMDULARE OJHA",
+      "employeeCode": "CSP003152",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "MORENA"
+    },
+    {
+      "id": "182799",
+      "parentId": "70748",
+      "name": "RAMESH KUMAR SAH",
+      "employeeCode": "CSP071964",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "ARARIA"
+    },
+    {
+      "id": "306444",
+      "parentId": "575791",
+      "name": "RAMLAL CHATARU CHAKRADHARI",
+      "employeeCode": "CSP156143",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "DURG"
+    },
+    {
+      "id": "213161",
+      "parentId": "209609",
+      "name": "RAVENDRA KUMAR",
+      "employeeCode": "CSP089991",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "ALIGARH"
+    },
+    {
+      "id": "72997",
+      "parentId": "517185",
+      "name": "RAVI BABU UMMADISETTY",
+      "employeeCode": "CSP020831",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "KRISHNA"
+    },
+    {
+      "id": "232300",
+      "parentId": "621062",
+      "name": "RAVI SHANKAR",
+      "employeeCode": "CSP107123",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "AMETHI"
+    },
+    {
+      "id": "262212",
+      "parentId": "71620",
+      "name": "ROBINDRA NATH HALDER",
+      "employeeCode": "CSP134083",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "South 24 Parganas"
+    },
+    {
+      "id": "219187",
+      "parentId": "209601",
+      "name": "ROHIT GARG",
+      "employeeCode": "CSP095448",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "BARNALA"
+    },
+    {
+      "id": "251870",
+      "parentId": "250516",
+      "name": "ROHIT KUMAR",
+      "employeeCode": "CSP124776",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "GAYA"
+    },
+    {
+      "id": "116094",
+      "parentId": "71019",
+      "name": "ROHIT KUMAR",
+      "employeeCode": "CSP032130",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SITAMARHI"
+    },
+    {
+      "id": "218734",
+      "parentId": "266455",
+      "name": "ROSHAN DATTARAJ JADHAV",
+      "employeeCode": "CSP095043",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "HAVERI"
+    },
+    {
+      "id": "209072",
+      "parentId": "167285",
+      "name": "ROSHAN KUMAR  SAHU",
+      "employeeCode": "CSP086360",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "Subarnapur"
+    },
+    {
+      "id": "102756",
+      "parentId": "473510",
+      "name": "RUKMANI PRASAD GUPTA",
+      "employeeCode": "CSP029096",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SIDHI"
+    },
+    {
+      "id": "101911",
+      "parentId": "90089",
+      "name": "SACHIN GOVARDHAN NAGDEVATE",
+      "employeeCode": "CSP028361",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "NAGPUR"
+    },
+    {
+      "id": "121170",
+      "parentId": "84400",
+      "name": "SACHINN SHIDDESHWAR MUDDAPPAWAR",
+      "employeeCode": "CSP036567",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "NANDED"
+    },
+    {
+      "id": "262238",
+      "parentId": "262075",
+      "name": "SALIL KUMAR SAHU",
+      "employeeCode": "CSP134107",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "JABALPUR"
+    },
+    {
+      "id": "201652",
+      "parentId": "45",
+      "name": "SANTHOSH RAJA",
+      "employeeCode": "CSP079786",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "COIMBATORE"
+    },
+    {
+      "id": "138418",
+      "parentId": "609553",
+      "name": "SANTOSH MAHA PATRO",
+      "employeeCode": "CSP042804",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "VIZIANAGARAM"
+    },
+    {
+      "id": "103943",
+      "parentId": "558288",
+      "name": "SARIFUL HUDA",
+      "employeeCode": "CSP030212",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "MALDA"
+    },
+    {
+      "id": "312090",
+      "parentId": "71620",
+      "name": "SASANKA BANERJEE",
+      "employeeCode": "CSP161261",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "South 24 Parganas"
+    },
+    {
+      "id": "122947",
+      "parentId": "443800",
+      "name": "SASIREKHA RAMANATHAN",
+      "employeeCode": "CSP038090",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "NAMAKKAL"
+    },
+    {
+      "id": "16765",
+      "parentId": "37",
+      "name": "SATISH YADAV",
+      "employeeCode": "CSP009219",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "DATIA"
+    },
+    {
+      "id": "313710",
+      "parentId": "618505",
+      "name": "SELIM SARKAR",
+      "employeeCode": "CSP162701",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SOUTH DINAJPUR"
+    },
+    {
+      "id": "273257",
+      "parentId": "209610",
+      "name": "SHADAB ALI",
+      "employeeCode": "CSP144084",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "Moradabad"
+    },
+    {
+      "id": "69981",
+      "parentId": "262075",
+      "name": "SHANT  JAIN",
+      "employeeCode": "CSP018457",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "JABALPUR"
+    },
+    {
+      "id": "209806",
+      "parentId": "621062",
+      "name": "SHELENDRA SHELENDRA",
+      "employeeCode": "CSP087005",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "HARDOI"
+    },
+    {
+      "id": "269755",
+      "parentId": "209609",
+      "name": "SHER SINGH",
+      "employeeCode": "CSP140920",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "ALIGARH"
+    },
+    {
+      "id": "57393",
+      "parentId": "467525",
+      "name": "SHETANIYA RANJITBHAI HAMIRBHAI",
+      "employeeCode": "CSP016409",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "MORBI"
+    },
+    {
+      "id": "227035",
+      "parentId": "167285",
+      "name": "SHIBAJI PARIDA",
+      "employeeCode": "CSP102353",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "BALESWAR"
+    },
+    {
+      "id": "85687",
+      "parentId": "84400",
+      "name": "SHIVRAJ GANGADHARRAO WANOLE",
+      "employeeCode": "CSP023057",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "NANDED"
+    },
+    {
+      "id": "279855",
+      "parentId": "439728",
+      "name": "SHRIKANT SINHA",
+      "employeeCode": "CSP150050",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "RAIPUR"
+    },
+    {
+      "id": "73587",
+      "parentId": "33984",
+      "name": "SHYAM BABU VERMA",
+      "employeeCode": "CSP021315",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SIWAN"
+    },
+    {
+      "id": "308087",
+      "parentId": "406583",
+      "name": "SIDDALA NAGENDRA RAO",
+      "employeeCode": "CSP157660",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "EAST GODAWARI"
+    },
+    {
+      "id": "89722",
+      "parentId": "609553",
+      "name": "SIKHA RAMU",
+      "employeeCode": "CSP026458",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "VISHAKHAPATNAM"
+    },
+    {
+      "id": "57980",
+      "parentId": "250516",
+      "name": "SONU  GUPTA",
+      "employeeCode": "CSP016867",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "KAIMUR"
+    },
+    {
+      "id": "101442",
+      "parentId": "436602",
+      "name": "SUMESH KUMAR SINGH",
+      "employeeCode": "CSP027954",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SARAN"
+    },
+    {
+      "id": "308348",
+      "parentId": "575791",
+      "name": "SURAJ KUMAR PARWANI",
+      "employeeCode": "CSP157902",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "DURG"
+    },
+    {
+      "id": "270688",
+      "parentId": "71620",
+      "name": "SURAJIT SAMANTA",
+      "employeeCode": "CSP141783",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "South 24 Parganas"
+    },
+    {
+      "id": "167",
+      "parentId": "262075",
+      "name": "SUSHIL MODI",
+      "employeeCode": "CSP000101",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "JABALPUR"
+    },
+    {
+      "id": "118328",
+      "parentId": "558288",
+      "name": "TANBIR AZAM",
+      "employeeCode": "CSP034075",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "MALDA"
+    },
+    {
+      "id": "311893",
+      "parentId": "443800",
+      "name": "THANGADURAI MARIMUTHU",
+      "employeeCode": "CSP161079",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SALEM"
+    },
+    {
+      "id": "212626",
+      "parentId": "90089",
+      "name": "UMESH TARACHAND CHOUKSEY",
+      "employeeCode": "CSP089514",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "NAGPUR"
+    },
+    {
+      "id": "103240",
+      "parentId": "406583",
+      "name": "V T MURTY KOPPISETTI",
+      "employeeCode": "CSP029551",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "EAST GODAWARI"
+    },
+    {
+      "id": "88661",
+      "parentId": "406583",
+      "name": "VANAPARTHI  RAJAPRASAD",
+      "employeeCode": "CSP025578",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "EAST GODAWARI"
+    },
+    {
+      "id": "211596",
+      "parentId": "406583",
+      "name": "VANKAYALA NAGA RAMA PRASAD",
+      "employeeCode": "CSP088598",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "WEST GODAWARI"
+    },
+    {
+      "id": "88645",
+      "parentId": "609553",
+      "name": "VASIPILLI  YERNAMMA",
+      "employeeCode": "CSP025567",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "VISHAKHAPATNAM"
+    },
+    {
+      "id": "224936",
+      "parentId": "443800",
+      "name": "VETRIVEL TAMILRAJA",
+      "employeeCode": "CSP100477",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SALEM"
+    },
+    {
+      "id": "260923",
+      "parentId": "250516",
+      "name": "VIJAY PRASAD",
+      "employeeCode": "CSP132898",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "GAYA"
+    },
+    {
+      "id": "33097",
+      "parentId": "33984",
+      "name": "VIKAS KUMAR SINGH",
+      "employeeCode": "CSP013192",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "SIWAN"
+    },
+    {
+      "id": "84513",
+      "parentId": "603203",
+      "name": "VIRESH KUMAR",
+      "employeeCode": "CSP022065",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "BAREILLY"
+    },
+    {
+      "id": "276061",
+      "parentId": "450255",
+      "name": "VISHAL EKNATH SHINDE",
+      "employeeCode": "CSP146637",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "JALNA"
+    },
+    {
+      "id": "209012",
+      "parentId": "621062",
+      "name": "VISHAL KUMAR",
+      "employeeCode": "CSP086305",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "RAEBARELI"
+    },
+    {
+      "id": "259975",
+      "parentId": "477967",
+      "name": "VISHNUDEO YADAV",
+      "employeeCode": "CSP132048",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "MADHUBANI"
+    },
+    {
+      "id": "277822",
+      "parentId": "266455",
+      "name": "YASHODHA SATISHA NUGGIHALLI",
+      "employeeCode": "CSP148248",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "HAVERI"
+    },
+    {
+      "id": "267617",
+      "parentId": "406583",
+      "name": "YERRAMSETTI SANTOSH KUMAR",
+      "employeeCode": "CSP138965",
+      "level": 0,
+      "designation": "POSP",
+      "districtName": "EAST GODAWARI"
+    }
+  ]
 }

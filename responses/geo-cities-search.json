@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-06-17T16:02:09.494Z",
+  "capturedAt": "2026-06-19T16:44:35.870Z",
   "method": "GET",
   "path": "/api/geo/cities/search?q=ban&limit=5",
   "baseUrl": "http://localhost:8000",

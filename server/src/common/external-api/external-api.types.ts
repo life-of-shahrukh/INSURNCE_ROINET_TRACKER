@@ -43,6 +43,8 @@ export interface ExternalCity {
 export interface ExternalPospData {
   UserId: string;
   UserCode: string;
+  /** POSP full name from Cognitensor (ListPospData `username` key). */
+  username?: string;
   MobileNo: string;
   EmailId: string;
   districtid: string;

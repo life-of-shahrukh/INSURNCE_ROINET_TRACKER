@@ -28,7 +28,8 @@ SUPER_ADMIN (100)
 | DM | District Manager | `dm@roinet.com` | `Dm@123456` |
 | POSP | POSP Agent | `posp@roinet.com` | `Posp@1234` |
 
-Public signup is also available at `/signup` (creates a **POSP** user in `PENDING` status until approved).
+Public signup at `/signup` is **deprecated** — POSPs are synced from Cognitensor,
+not registered in the CRM. See [POSP master data rule](../.cursor/rules/posp-master-data.mdc).
 
 ---
 
@@ -54,7 +55,7 @@ Deals, leads, and POSP lists are filtered server-side by territory. Customers ar
 
 | Page | Min role | Notes |
 |------|----------|-------|
-| Dashboard | All | KPIs, charts, create deal, export |
+| Dashboard | All | KPIs, charts, export (create deal — POSP only) |
 | Renewals | All | Policies due in next 90 days |
 | Leads Pipeline | DM | Blocked for POSP in UI |
 | Deals Tracker | DM | Blocked for POSP in UI |
@@ -71,14 +72,19 @@ Deals, leads, and POSP lists are filtered server-side by territory. Customers ar
 
 ## Filter dimensions (dashboard / list pages)
 
+Geo and hierarchy filters start at each role's level — parent dimensions are hidden because the backend already scopes data there. List-page filters use the same rules via `UniversalFilter`.
+
+| Role | Geo filters shown | Manager "By role" groups |
+|------|-------------------|--------------------------|
+| SUPER_ADMIN / NATIONAL_HEAD | Zone → Region → State → District → City → POSP | All subordinate org roles |
+| ZH | Region → State → District → City → POSP | Below ZH (RH, ASM, DM, …) |
+| RH | State → District → City → POSP | Below RH (ASM, DM, …) |
+| ASM / DM | District → City → POSP | Below caller only |
+| POSP | None | None |
+
 | Filter | Visible to |
 |--------|------------|
 | Date range, deal status, product line, sub-type | All roles |
-| Zone | SUPER_ADMIN, NATIONAL_HEAD |
-| Region | SUPER_ADMIN, NATIONAL_HEAD, ZH |
-| Area | SUPER_ADMIN, NATIONAL_HEAD, ZH, RH |
-| District | SUPER_ADMIN, NATIONAL_HEAD, ZH, RH, ASM |
-| POSP picker | SUPER_ADMIN, NATIONAL_HEAD, ZH, RH, ASM, DM |
 | Insurer, premium range, policy status, KYC, source | ASM and above |
 
 ---
@@ -102,8 +108,8 @@ Legend: ✅ Full access · 🔒 Scoped to territory · 👤 Own records only · 
 |---------|:-----------:|:-------------:|:--:|:--:|:---:|:--:|:----:|
 | Dashboard KPIs & charts | 🔒→✅ all | 🔒→✅ all | 🔒 | 🔒 | 🔒 | 🔒 | 👤 |
 | Export deals CSV | 🔒→✅ all | 🔒→✅ all | 🔒 | 🔒 | 🔒 | 🔒 | 👤 |
-| Create / edit deals (UI) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 👤 (dashboard modal) |
-| Assign deal to any POSP | ✅ only | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Create deals | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Edit deals | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 👤 own |
 | Delete deals | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
 | Renewals page | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Commissions page | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
@@ -114,7 +120,8 @@ Legend: ✅ Full access · 🔒 Scoped to territory · 👤 Own records only · 
 | Feature | SUPER_ADMIN | NATIONAL_HEAD | ZH | RH | ASM | DM | POSP |
 |---------|:-----------:|:-------------:|:--:|:--:|:---:|:--:|:----:|
 | List leads | 🔒→✅ | 🔒→✅ | 🔒 | 🔒 | 🔒 | 🔒 | 👤 (API) |
-| Create / update leads | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 👤 (API) |
+| Create leads | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Update leads | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 👤 own |
 | Monthly commitment view | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 👤 (API) |
 | Convert lead → deal | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
 | Leads page (UI) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
@@ -124,7 +131,8 @@ Legend: ✅ Full access · 🔒 Scoped to territory · 👤 Own records only · 
 | Feature | SUPER_ADMIN | NATIONAL_HEAD | ZH | RH | ASM | DM | POSP |
 |---------|:-----------:|:-------------:|:--:|:--:|:---:|:--:|:----:|
 | List / export deals | 🔒→✅ | 🔒→✅ | 🔒 | 🔒 | 🔒 | 🔒 | 👤 (API) |
-| Create / update deals | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 👤 |
+| Create deals | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Update deals | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 👤 own |
 | Delete deals | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
 | Deals page (UI) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
 
@@ -138,11 +146,13 @@ Legend: ✅ Full access · 🔒 Scoped to territory · 👤 Own records only · 
 
 ### POSP roster
 
+> **No manual POSP creation.** Roster rows sync from Cognitensor (`ListPospData`).
+> Nobody adds POSPs in the CRM — list, export, and scoped view only.
+
 | Feature | SUPER_ADMIN | NATIONAL_HEAD | ZH | RH | ASM | DM | POSP |
 |---------|:-----------:|:-------------:|:--:|:--:|:---:|:--:|:----:|
 | List POSPs | 🔒→✅ | 🔒→✅ | 🔒 | 🔒 | 🔒 | 🔒 | 👤 own profile |
-| Register new POSP (API) | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
-| Add POSP button (UI) | ✅ | ❌ | ❌ | ❌ | ✅ | ✅ | ❌ |
+| Add / register POSP | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Update POSP profile | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 👤 own |
 | POSP page (UI) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
 
@@ -163,13 +173,13 @@ Legend: ✅ Full access · 🔒 Scoped to territory · 👤 Own records only · 
 ### SUPER_ADMIN
 - Full system access; bypasses all explicit role checks.
 - Sees **all** data with no territory filter.
-- Only role that can **pick any POSP** when creating a deal in the UI.
-- Can sync sales team from external API, manage org structure, approve POSPs, delete deals.
+- Can sync sales team from external API, manage org structure, delete deals.
+- **Cannot create** new leads or deals — creation is POSP-only.
 
 ### NATIONAL_HEAD
 - National-wide view — same data scope as Super Admin.
-- Cannot use Super-Admin-only UI shortcuts (e.g. POSP picker on deals is Super Admin only).
 - Full access to sales team, org chart, reports, commissions, and all CRM modules in the UI.
+- **Cannot create** new leads or deals — creation is POSP-only.
 
 ### ZH (Zonal Head)
 - Sees deals, leads, and POSPs in their **zone**.
@@ -185,21 +195,22 @@ Legend: ✅ Full access · 🔒 Scoped to territory · 👤 Own records only · 
 
 ### ASM (Area Sales Manager)
 - Sees deals/leads/POSPs for POSPs they **manage** (`asmId` link).
-- Can **register POSPs**, **approve pending POSP signups**, **delete deals**, and **convert leads to deals**.
+- Can **delete deals** and **convert leads to deals**.
 - Access to commissions and reports.
 - Cannot access sales team or org chart pages (RH+ in UI).
+- **Cannot add POSPs** — roster is Cognitensor-synced only.
 
 ### DM (District Manager)
 - Sees deals/leads/POSPs in their **area** territory.
 - Full CRM UI access (leads, deals, customers, POSP roster).
-- Can add POSPs via UI button (with Super Admin and ASM).
-- Cannot delete deals, convert leads, approve POSP accounts, or access sales team / reports / commissions.
+- Cannot delete deals, convert leads, or access sales team / reports / commissions.
+- **Cannot add POSPs** — roster is Cognitensor-synced only.
 
 ### POSP (Point of Sales Person)
 - **API:** own deals/leads, own POSP profile, customer CRUD (all customers — no scope yet).
 - **UI:** Dashboard + Renewals only; other pages redirect to dashboard.
-- Creates deals for **self only** (server enforces `pospId`).
-- Can self-register via `/signup` (starts as `PENDING` until ASM+ approves).
+- **Only role that creates** new leads and deals (always tied to own `pospId`).
+- Account is provisioned via Cognitensor sync or POSP SSO — **not** self-registration in CRM.
 
 ---
 
@@ -208,11 +219,13 @@ Legend: ✅ Full access · 🔒 Scoped to territory · 👤 Own records only · 
 | Endpoint | Allowed roles |
 |----------|---------------|
 | `POST /api/auth/login` | Public |
-| `POST /api/auth/signup-posp` | Public |
-| `PATCH /api/auth/approve-posp/:id` | ASM+ |
-| `GET/POST/PATCH /api/deals` | DM+ and POSP (scoped) |
+| `POST /api/auth/signup-posp` | Deprecated — do not use; POSPs sync from Cognitensor |
+| `PATCH /api/auth/approve-posp/:id` | Deprecated with signup flow |
+| `POST /api/deals` | **POSP only** (create) |
+| `PATCH /api/deals/:id` | DM+ and POSP (scoped) |
 | `DELETE /api/deals/:id` | ASM+ |
-| `GET/POST/PATCH /api/leads` | DM+ and POSP (scoped) |
+| `POST /api/leads` | **POSP only** (create) |
+| `PATCH /api/leads/:id` | DM+ and POSP (scoped) |
 | `POST /api/leads/:id/convert` | ASM+ |
 | `GET/POST/PATCH /api/customers` | DM+ and POSP (no scope) |
 | `GET /api/posp` | DM+ and POSP (scoped) |

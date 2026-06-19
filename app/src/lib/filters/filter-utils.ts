@@ -3,6 +3,11 @@ import type { ListQueryParams } from "@/lib/api/list-query-params";
 import type { Deal } from "@/lib/types";
 import { PRODUCT_LINE_OPTIONS, getSubTypes, INSURER_OPTIONS } from "./insurance-products";
 import { getCachedOptionLabel } from "./option-label-cache";
+import {
+  GEO_FILTER_ORDER,
+  isGeoFilterVisible,
+  type GeoFilterKey,
+} from "./filter-visibility";
 
 export interface FilterOption {
   value: string;
@@ -181,7 +186,6 @@ export function getVisibleDimensions(
       label: "Zone",
       type: "multi-autocomplete",
       options: geoOptions.zones,
-      visibleToRoles: ["SUPER_ADMIN", "NATIONAL_HEAD"],
       placeholder: "All Zones",
     },
     {
@@ -189,7 +193,6 @@ export function getVisibleDimensions(
       label: "Region",
       type: "multi-autocomplete",
       options: geoOptions.regions,
-      visibleToRoles: ["SUPER_ADMIN", "NATIONAL_HEAD", "ZH"],
       placeholder: "All Regions",
     },
     {
@@ -197,23 +200,13 @@ export function getVisibleDimensions(
       label: "State",
       type: "multi-autocomplete",
       options: geoOptions.states,
-      visibleToRoles: ["SUPER_ADMIN", "NATIONAL_HEAD", "ZH", "RH"],
       placeholder: "All States",
-    },
-    {
-      key: "area",
-      label: "Area",
-      type: "multi-autocomplete",
-      options: [],
-      visibleToRoles: ["SUPER_ADMIN", "NATIONAL_HEAD", "ZH", "RH"],
-      placeholder: "All Areas",
     },
     {
       key: "district",
       label: "District",
       type: "multi-autocomplete",
       options: [],
-      visibleToRoles: ["SUPER_ADMIN", "NATIONAL_HEAD", "ZH", "RH", "ASM"],
       placeholder: "All Districts",
     },
     {
@@ -221,7 +214,6 @@ export function getVisibleDimensions(
       label: "City",
       type: "multi-autocomplete",
       options: [],
-      visibleToRoles: ["SUPER_ADMIN", "NATIONAL_HEAD", "ZH", "RH", "ASM"],
       placeholder: "All Cities",
     },
     {
@@ -229,7 +221,6 @@ export function getVisibleDimensions(
       label: "POSP",
       type: "multi-autocomplete",
       options: [],
-      visibleToRoles: ["SUPER_ADMIN", "NATIONAL_HEAD", "ZH", "RH", "ASM", "DM"],
       placeholder: "All POSPs",
     },
     {
@@ -319,7 +310,9 @@ export function getVisibleDimensions(
   ];
 
   return all.filter((dim) => {
-    if (dim.visibleToRoles) return dim.visibleToRoles.includes(role);
+    if ((GEO_FILTER_ORDER as readonly string[]).includes(dim.key)) {
+      return isGeoFilterVisible(role, dim.key as GeoFilterKey);
+    }
     if (dim.minRole) return hasMinRole(role, dim.minRole);
     return true;
   });

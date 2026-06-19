@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-06-17T16:02:09.597Z",
+  "capturedAt": "2026-06-19T16:44:35.903Z",
   "method": "GET",
   "path": "/api/external/hierarchy?districtId=1",
   "baseUrl": "http://localhost:8000",
@@ -14,21 +14,35 @@
       "DistrictManagerId": "618469",
       "DistrictManagerCode": "RAKESH.GADDAM CH TEL",
       "DistrictManagerName": "Rakesh Gaddam",
+      "usertype": "12",
       "R1_UserId": "439037",
       "R1_UserCode": "PRAVEEN.RHTEL",
       "R1_UserName": "PRAVEEN PILLI RH TEL",
+      "R1_usertype": "6",
       "R2_UserId": "609460",
       "R2_UserCode": "RAVI.BABUSZH",
       "R2_UserName": "Ravi Babu Ummadisetty",
+      "R2_usertype": "14",
       "R3_UserId": "592240",
       "R3_UserCode": "HARI.DUTT",
       "R3_UserName": "Hari Dutt",
+      "R3_usertype": "0",
       "R4_UserId": "79",
       "R4_UserCode": "VIVEK",
       "R4_UserName": "VIVEK GUPTA",
+      "R4_usertype": "0",
       "R5_UserId": "",
       "R5_UserCode": "",
-      "R5_UserName": ""
+      "R5_UserName": "",
+      "R5_usertype": "",
+      "R6_UserId": "",
+      "R6_UserCode": "",
+      "R6_UserName": "",
+      "R6_usertype": "",
+      "R7_UserId": "",
+      "R7_UserCode": "",
+      "R7_UserName": "",
+      "R7_usertype": ""
     }
   ]
 }

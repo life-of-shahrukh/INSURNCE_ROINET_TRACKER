@@ -26,18 +26,32 @@ export interface HierarchyScope {
  * synthetic `SalesTeam.employeeCode`s that are not part of the Cognitensor org
  * graph, so they would otherwise resolve to an empty territory (and an empty
  * org chart). We alias each placeholder code onto a real `OrgMember.userCode`
- * drawn from a single nested chain, giving every demo role a non-empty,
- * properly nested scope. Real accounts — whose `employeeCode` already matches
- * an `OrgMember` — never hit this map. This lives in code (not seed data) so it
- * cannot collide with the unique `employeeCode` constraint and survives the
- * weekly org-graph sync.
+ * whose org `usertype` actually matches the demo role, all drawn from a single
+ * zone (RAMANUJ / Bihar-Jharkhand) so every demo role gets a non-empty scope
+ * that nests inside the one above it with a distinct size. Real accounts —
+ * whose `employeeCode` already matches an `OrgMember` — never hit this map.
+ * This lives in code (not seed data) so it cannot collide with the unique
+ * `employeeCode` constraint and survives the weekly org-graph sync.
+ *
+ * Note: the org graph's lowest manager tier is ASM (usertype 4); CSP/CSF/CMF
+ * (usertype 3/2/1) are field POSPs, not managers, so there is no real "DM"
+ * node. The DM demo therefore borrows the smallest available ASM territory.
  */
 const DEMO_EMPLOYEE_CODE_ALIASES: Record<string, string> = {
-  'EMP-Z001': 'RAMANUJ.BIHARJHKZM', // Zonal Head demo → true ZH usertype (10)
-  'EMP-R001': 'SACHIN.ZHRAJGUJMP', // Regional Head demo → SZH (~132 districts)
-  'EMP-A001': 'SHAIKH.RHMAHA', // ASM demo          → ~38 districts
-  'EMP-D001': 'MUNDHE.ASMMAHA', // DM demo           → ~13 districts
+  'EMP-Z001': 'RAMANUJ.BIHARJHKZM', // Zonal Head demo → ZH  usertype 10 (~43 districts)
+  'EMP-R001': 'PRABHAT.RHJKND', // Regional Head demo → RH  usertype 6  (~15 districts)
+  'EMP-A001': 'RAHUL.ASMBIHAR', // ASM demo           → ASM usertype 4  (~4 districts)
+  'EMP-D001': 'PRASHANTJHA.ASMBIHAR', // DM demo       → smallest ASM    (1 district)
 };
+
+/**
+ * Maps a SalesTeam.employeeCode to the org-graph UserCode used for scope and
+ * cascade resolution. Real accounts pass through unchanged; seeded demo logins
+ * are aliased onto a real `OrgMember.userCode`.
+ */
+export function resolveOrgMemberCode(employeeCode: string): string {
+  return DEMO_EMPLOYEE_CODE_ALIASES[employeeCode] ?? employeeCode;
+}
 
 /**
  * Collects the district ids a member (identified by their Cognitensor
@@ -106,9 +120,7 @@ export async function resolveHierarchyScope(
   }
 
   // Real accounts resolve directly; seeded demo accounts fall back to an alias.
-  const code =
-    DEMO_EMPLOYEE_CODE_ALIASES[salesTeam.employeeCode] ??
-    salesTeam.employeeCode;
+  const code = resolveOrgMemberCode(salesTeam.employeeCode);
   const districtIds = await districtIdsForCode(prisma, code);
   return { districtIds };
 }

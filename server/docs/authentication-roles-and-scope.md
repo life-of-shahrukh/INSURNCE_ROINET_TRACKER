@@ -58,9 +58,9 @@ Flow (`auth.service.ts → login`):
 Related endpoints:
 - `POST /api/auth/logout` — clears the cookie.
 - `GET /api/auth/me` — returns the current session user (reads cookie).
-- `POST /api/auth/signup-posp` — POSP self-registration (creates a `User` +
-  `Posp`, immediately `ACTIVE`, sets the cookie).
-- `PATCH /api/auth/approve-posp/:userId` — ASM+ approves/inactivates a POSP user.
+- `POST /api/auth/signup-posp` — **deprecated.** POSPs sync from Cognitensor;
+  do not use for new agents.
+- `PATCH /api/auth/approve-posp/:userId` — **deprecated** with self-signup flow.
 
 ### 2.2 SSO login (Cognitensor → frontend)
 
@@ -151,14 +151,16 @@ The seeded demo manager logins (`zonal@`, `regional@`, `asm@`, `dm@roinet.com`)
 use **synthetic** `employeeCode`s (`EMP-Z001`, etc.) that are not part of the
 Cognitensor org graph, so they would otherwise resolve to an empty territory
 (and an empty org chart). `resolveHierarchyScope` therefore aliases each
-placeholder code onto a real `OrgMember.userCode` from a single nested chain:
+placeholder code onto a real `OrgMember.userCode` whose org `usertype` matches
+the demo role, all drawn from one zone (RAMANUJ / Bihar-Jharkhand) so scopes nest
+with distinct sizes:
 
-| Demo `employeeCode` | Aliased to real code | Approx. district coverage |
-|---------------------|----------------------|---------------------------|
-| `EMP-Z001` (ZH)  | `RAMANUJ.BIHARJHKZM` | Scoped (true ZH usertype) |
-| `EMP-R001` (RH)  | `SACHIN.ZHRAJGUJMP` | ~132 (SZH org label) |
-| `EMP-A001` (ASM) | `SHAIKH.RHMAHA` | ~38 |
-| `EMP-D001` (DM)  | `MUNDHE.ASMMAHA` | ~13 |
+| Demo `employeeCode` | Aliased to real code | Org `usertype` | Approx. district coverage |
+|---------------------|----------------------|----------------|---------------------------|
+| `EMP-Z001` (ZH)  | `RAMANUJ.BIHARJHKZM` | 10 (ZH) | ~43 |
+| `EMP-R001` (RH)  | `PRABHAT.RHJKND` | 6 (RH) | ~15 |
+| `EMP-A001` (ASM) | `RAHUL.ASMBIHAR` | 4 (ASM) | ~4 |
+| `EMP-D001` (DM)  | `PRASHANTJHA.ASMBIHAR` | 4 (ASM) | 1 (smallest; no real DM tier) |
 
 This alias lives in code (`DEMO_EMPLOYEE_CODE_ALIASES`), not seed data, so it
 cannot collide with the unique `employeeCode` constraint and survives the weekly
@@ -208,10 +210,10 @@ Summary below; see that doc for copy-paste logins and testing notes.
 |-------|-------|----------|-------|---------------|
 | Super Admin | `superadmin@roinet.com` | `Admin@1234` | All data | Full lists, all filters, org chart |
 | National Head | `national@roinet.com` | `National@123` | All data | Same as above |
-| Zonal Head | `zonal@roinet.com` | `Zonal@1234` | Scoped (aliased → `RAMANUJ.BIHARJHKZM`) | Dashboard + scoped lists |
-| Regional Head | `regional@roinet.com` | `Regional@123` | ~132 districts (aliased → `SACHIN.ZHRAJGUJMP`) | Smaller subtree |
-| ASM | `asm@roinet.com` | `Asm@12345` | ~38 districts (aliased → `SHAIKH.RHMAHA`) | |
-| DM | `dm@roinet.com` | `Dm@123456` | ~13 districts (aliased → `MUNDHE.ASMMAHA`) | Smallest manager scope |
+| Zonal Head | `zonal@roinet.com` | `Zonal@1234` | ~43 districts (aliased → `RAMANUJ.BIHARJHKZM`, ZH) | Dashboard + scoped lists |
+| Regional Head | `regional@roinet.com` | `Regional@123` | ~15 districts (aliased → `PRABHAT.RHJKND`, RH) | Smaller subtree |
+| ASM | `asm@roinet.com` | `Asm@12345` | ~4 districts (aliased → `RAHUL.ASMBIHAR`, ASM) | Area-level scope |
+| DM | `dm@roinet.com` | `Dm@123456` | 1 district (aliased → `PRASHANTJHA.ASMBIHAR`, smallest ASM) | Smallest manager scope |
 | POSP (demo) | `posp@roinet.com` | `Posp@1234` | No POSP link when all CSPs are taken | Use real POSP row below |
 
 ### Real synced accounts (`@roinet.in`) — password = UserCode (case-sensitive)
@@ -221,9 +223,9 @@ Summary below; see that doc for copy-paste logins and testing notes.
 | Admin | `vivek@roinet.in` | `VIVEK` | All data | Org chart card **Admin** |
 | National Head | `hari.dutt@roinet.in` | `HARI.DUTT` | All data | Org chart card **National Head** |
 | Super Zonal Head | `sachin.zhrajgujmp@roinet.in` | `SACHIN.ZHRAJGUJMP` | ~132 districts | Org chart card **Super Zonal Head** |
-| Zonal Head | `ramanuj.biharjhkzm@roinet.in` | `RAMANUJ.BIHARJHKZM` | Scoped | True ZH usertype |
-| ASM | `shaikh.rhmaha@roinet.in` | `SHAIKH.RHMAHA` | ~38 districts | |
-| DM | `mundhe.asmmaha@roinet.in` | `MUNDHE.ASMMAHA` | ~13 districts | Smallest manager territory |
+| Zonal Head | `ramanuj.biharjhkzm@roinet.in` | `RAMANUJ.BIHARJHKZM` | ~43 districts | True ZH usertype (10) |
+| Regional Head | `shaikh.rhmaha@roinet.in` | `SHAIKH.RHMAHA` | ~38 districts | usertype 6 (RH) — app role **RH** |
+| ASM | `rahul.asmbihar@roinet.in` | `RAHUL.ASMBIHAR` | ~4 districts | usertype 4 (ASM) — app role **ASM** |
 | POSP | `shivraj.wanole@roinet.in` | `CSP023057` | Self only (district 330) | Real POSP; same CSP as demo `posp@` |
 
 **Tester notes:**
@@ -235,6 +237,10 @@ Summary below; see that doc for copy-paste logins and testing notes.
 - Roles are derived from Cognitensor **`usertype`**, not R-column position. Org
   chart labels (Admin, National Head, SZH, etc.) come from `OrgMember.role`.
   **Scope follows geography** (`employeeCode` → `DistrictChain`).
+- The org graph's lowest manager tier is **ASM** (usertype 4). CSP/CSF/CMF
+  (usertype 3/2/1) are field POSPs, not managers, so there is **no real `DM`
+  account** to sync — the `dm@roinet.com` demo borrows the smallest ASM
+  territory (`PRASHANTJHA.ASMBIHAR`, 1 district) to exercise the narrowest scope.
 
 ---
 
@@ -244,8 +250,8 @@ Summary below; see that doc for copy-paste logins and testing notes.
 |--------|------|------|---------|
 | POST | `/api/auth/login` | Public | Password login → cookie |
 | POST | `/api/auth/logout` | Public | Clear cookie |
-| POST | `/api/auth/signup-posp` | Public | POSP self-signup → cookie |
-| PATCH | `/api/auth/approve-posp/:userId` | ASM+ | Approve/inactivate POSP |
+| POST | `/api/auth/signup-posp` | Deprecated | Do not use — POSPs sync from Cognitensor |
+| PATCH | `/api/auth/approve-posp/:userId` | Deprecated | Was tied to self-signup flow |
 | GET | `/api/auth/me` | Cookie | Current session user |
 | POST | `/api/v1/sso/get-redirect-uri` | `x-sso-api-key` | SSO server → signed redirect URI |
 | POST | `/api/v1/sso/verify-token` | Public | Frontend → verify token, set cookie |

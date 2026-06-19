@@ -31,7 +31,7 @@ import {
 
 const prisma = new PrismaClient({ log: ['warn', 'error'] });
 
-const SNAPSHOT_DIR = path.join(__dirname, '../../data/snapshots');
+const SNAPSHOT_DIR = path.join(process.cwd(), 'data', 'snapshots');
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
@@ -67,29 +67,6 @@ interface PospSnapshotRow {
   HephGcdCode: string;
   CreatedDate: string;
   CreatedBy: string;
-}
-
-interface HierarchySnapshotRow {
-  DistrictId: string;
-  DistrictName: string;
-  DistrictManagerId: string;
-  DistrictManagerCode: string;
-  DistrictManagerName: string;
-  R1_UserId: string;
-  R1_UserCode: string;
-  R1_UserName: string;
-  R2_UserId: string;
-  R2_UserCode: string;
-  R2_UserName: string;
-  R3_UserId: string;
-  R3_UserCode: string;
-  R3_UserName: string;
-  R4_UserId: string;
-  R4_UserCode: string;
-  R4_UserName: string;
-  R5_UserId: string;
-  R5_UserCode: string;
-  R5_UserName: string;
 }
 
 interface HierarchyUserFlat {

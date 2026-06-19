@@ -63,7 +63,7 @@ USER nestjs
 EXPOSE 3001
 
 # On startup:
-#   1. Apply any pending Prisma migrations (creates the DB if it doesn't exist).
-#   2. Run the seed script (idempotent — uses upsert / count checks internally).
-#   3. Start the NestJS application.
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/prisma/seed.js && exec node dist/src/main"]
+#   1. Apply pending Prisma migrations.
+#   2. Start NestJS immediately so ALB health checks pass.
+#   3. Run idempotent seeds in the background (demo users + Cognitensor sync).
+CMD ["sh", "-c", "npx prisma migrate deploy && (node dist/prisma/seed.js && node dist/src/seed/sync-from-snapshots.js &) && exec node dist/src/main"]

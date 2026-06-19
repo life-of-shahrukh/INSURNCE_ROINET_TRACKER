@@ -28,7 +28,6 @@ describe('orgRoleFromUserType', () => {
 describe('refineAdminRoles', () => {
   const vivekId = '79';
   const hariId = '592240';
-  const sachinId = '57068';
 
   it('keeps VIVEK as Admin and promotes HARI.DUTT to National Head', () => {
     const members = [

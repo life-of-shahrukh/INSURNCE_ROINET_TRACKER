@@ -23,7 +23,11 @@ import {
   loadDistrictOwnersByDistrictId,
   loadPospsForOrgChart,
 } from '../../common/org-graph/org-chart-posp.util';
-import { OrgRole, orgRoleRank, appRoleFromOrgRole } from '../../common/external-api/user-type.util';
+import {
+  OrgRole,
+  orgRoleRank,
+  appRoleFromOrgRole,
+} from '../../common/external-api/user-type.util';
 import { buildOrgGraph } from '../../common/org-graph/org-graph-builder';
 
 export interface OrgNode {

@@ -97,7 +97,8 @@ phase-{number}-{brief-description}.md
 1. Start with **Phase 1** to understand the foundation
 2. Read **Phase 2** to understand the architecture patterns
 3. Review **Phase 3** for authentication and authorization
-4. Read the current phase you'll be working on
+4. Use the **[Developer Login Matrix](./developer-login-matrix.md)** to log in and test each hierarchy level locally
+5. Read the current phase you'll be working on
 
 ### For Feature Development
 1. Read the relevant phase documentation
@@ -114,6 +115,8 @@ phase-{number}-{brief-description}.md
 
 ## Additional Documentation
 
+- **[Developer Login Matrix](./developer-login-matrix.md)** — **start here for local testing**: seed commands, demo + real logins per hierarchy level, scope notes
+- [Authentication, Roles & Data Scope](./authentication-roles-and-scope.md) — Roles, login flows (password + SSO), and how data scope is resolved per role
 - [RBAC Decorators Guide](./RBAC_DECORATORS.md) - Detailed guide on role-based access control
 - [Backend Rules](./../.cursor/rules/) - Cursor rules for maintaining code standards
 - [API Documentation](http://localhost:3001/api/docs) - Swagger/OpenAPI docs (when server is running)
@@ -207,8 +210,12 @@ cd ../server && npm install
 docker compose up -d
 
 # Run database migrations
-cd server && npm run db:push
-npm run db:seed
+cd server && npm run db:migrate:deploy
+
+# Seed (see Developer Login Matrix for full order)
+npm run seed:all      # Cognitensor root: org graph + POSPs
+npm run db:seed         # Demo @roinet.com accounts
+npm run seed:crm        # Wipe customers, leads, deals (all empty)
 
 # Start backend
 npm run start:dev

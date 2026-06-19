@@ -60,6 +60,21 @@ export class ExternalApiController {
     return this.externalApiService.listCities(districtId ?? '');
   }
 
+  @Get('zones')
+  @Roles(
+    Role.POSP,
+    Role.DM,
+    Role.ASM,
+    Role.RH,
+    Role.ZH,
+    Role.NATIONAL_HEAD,
+    Role.SUPER_ADMIN,
+  )
+  @ApiOperation({ summary: 'List all zones from Cognitensor' })
+  listZones() {
+    return this.externalApiService.listZones();
+  }
+
   @Get('hierarchy')
   @MinRole(Role.RH)
   @ApiOperation({

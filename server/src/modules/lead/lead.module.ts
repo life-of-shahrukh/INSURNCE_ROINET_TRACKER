@@ -11,6 +11,7 @@ import { GetAllLeadsHandler } from './queries/get-all-leads.handler';
 import { GetMonthlyCommitmentHandler } from './queries/get-monthly-commitment.handler';
 import { ExportLeadsCsvHandler } from './queries/export-leads-csv.handler';
 import { LeadEventsListener } from './listeners/lead-events.listener';
+import { GeoModule } from '../geo/geo.module';
 
 const CommandHandlers = [
   CreateLeadHandler,
@@ -25,7 +26,7 @@ const QueryHandlers = [
 const EventListeners = [LeadEventsListener];
 
 @Module({
-  imports: [CqrsModule, PrismaModule],
+  imports: [CqrsModule, PrismaModule, GeoModule],
   controllers: [LeadController],
   providers: [
     LeadService,

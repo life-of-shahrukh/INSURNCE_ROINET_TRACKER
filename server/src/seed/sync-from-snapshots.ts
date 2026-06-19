@@ -18,10 +18,20 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as bcrypt from 'bcrypt';
 import { PrismaClient } from '@prisma/client';
+import type { ExternalHierarchyUser } from '../common/external-api/external-api.types';
+import {
+  buildOrgGraph,
+  type DistrictGeo,
+} from '../common/org-graph/org-graph-builder';
+import { persistOrgGraph } from '../common/org-graph/org-graph.repository';
+import {
+  appRoleFromOrgRole,
+  type OrgRole,
+} from '../common/external-api/user-type.util';
 
 const prisma = new PrismaClient({ log: ['warn', 'error'] });
 
-const SNAPSHOT_DIR = path.join(__dirname, '../../../data/snapshots');
+const SNAPSHOT_DIR = path.join(__dirname, '../../data/snapshots');
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
@@ -178,74 +188,24 @@ async function seedPosps(): Promise<void> {
 // ── Phase B: Seed Hierarchy Users ─────────────────────────────────────────
 
 function extractHierarchyUsers(
-  rows: HierarchySnapshotRow[],
+  rows: ExternalHierarchyUser[],
 ): HierarchyUserFlat[] {
-  const seen = new Map<string, HierarchyUserFlat>();
-
-  for (const row of rows) {
-    const levels: Array<{
-      userId: string;
-      code: string;
-      name: string;
-      role: string;
-      designation: string;
-    }> = [
-      {
-        userId: row.DistrictManagerId,
-        code: row.DistrictManagerCode,
-        name: row.DistrictManagerName,
-        role: 'DM',
-        designation: 'DM',
-      },
-      {
-        userId: row.R1_UserId,
-        code: row.R1_UserCode,
-        name: row.R1_UserName,
-        role: 'ASM',
-        designation: 'ASM',
-      },
-      {
-        userId: row.R2_UserId,
-        code: row.R2_UserCode,
-        name: row.R2_UserName,
-        role: 'RH',
-        designation: 'RH',
-      },
-      {
-        userId: row.R3_UserId,
-        code: row.R3_UserCode,
-        name: row.R3_UserName,
-        role: 'ZH',
-        designation: 'ZH',
-      },
-      {
-        userId: row.R4_UserId,
-        code: row.R4_UserCode,
-        name: row.R4_UserName,
-        role: 'NATIONAL_HEAD',
-        designation: 'NATIONAL_HEAD',
-      },
-    ];
-
-    for (const level of levels) {
-      if (!level.userId || !level.code) continue;
-      if (!seen.has(level.userId)) {
-        seen.set(level.userId, {
-          userId: level.userId,
-          userCode: level.code,
-          userName: level.name || level.code,
-          role: level.role,
-          designation: level.designation,
-        });
-      }
-    }
-  }
-
-  return Array.from(seen.values());
+  const seed = buildOrgGraph(rows);
+  return seed.members.map((m) => {
+    const orgRole = m.role as OrgRole;
+    const appRole = appRoleFromOrgRole(orgRole);
+    return {
+      userId: m.userId,
+      userCode: m.userCode,
+      userName: m.userName || m.userCode,
+      role: appRole,
+      designation: orgRole,
+    };
+  });
 }
 
 async function seedHierarchyUsers(): Promise<void> {
-  const rows = readSnapshot<HierarchySnapshotRow>('hierarchy.json');
+  const rows = readSnapshot<ExternalHierarchyUser>('hierarchy.json');
   const users = extractHierarchyUsers(rows);
   console.log(`\n🏢 Phase B: seeding ${users.length} hierarchy users…`);
 
@@ -312,55 +272,46 @@ interface DistrictSnapshotRow {
   StateId: string;
   DistrictId: string;
   DistrictName: string;
+  zoneid?: string;
+  zonename?: string;
+  regionid?: string;
+  regionname?: string;
 }
 
-async function seedDistrictHierarchy(): Promise<void> {
-  const rows = readSnapshot<HierarchySnapshotRow>('hierarchy.json');
-  console.log(`\n🗺️  Phase C: seeding ${rows.length} district hierarchy rows…`);
+async function seedOrgGraph(): Promise<void> {
+  const rows = readSnapshot<ExternalHierarchyUser>('hierarchy.json');
+  console.log(
+    `\n🗺️  Phase C: building org graph from ${rows.length} hierarchy rows…`,
+  );
 
-  const stateByDistrict = new Map<string, string>();
+  const geoByDistrict = new Map<string, DistrictGeo>();
   try {
     for (const d of readSnapshot<DistrictSnapshotRow>(
       'districts-sample.json',
     )) {
-      stateByDistrict.set(d.DistrictId, d.StateId);
+      geoByDistrict.set(d.DistrictId, {
+        stateId: d.StateId ?? null,
+        zoneId: d.zoneid ?? null,
+        zoneName: d.zonename ?? null,
+        regionId: d.regionid ?? null,
+        regionName: d.regionname ?? null,
+      });
     }
   } catch {
     /* optional */
   }
 
-  let count = 0;
-  for (const e of rows) {
-    if (!e.DistrictId) continue;
-    const payload = {
-      districtName: e.DistrictName || null,
-      stateId: stateByDistrict.get(e.DistrictId) ?? null,
-      dmId: e.DistrictManagerId || null,
-      dmCode: e.DistrictManagerCode || null,
-      dmName: e.DistrictManagerName || null,
-      asmId: e.R1_UserId || null,
-      asmCode: e.R1_UserCode || null,
-      asmName: e.R1_UserName || null,
-      rhId: e.R2_UserId || null,
-      rhCode: e.R2_UserCode || null,
-      rhName: e.R2_UserName || null,
-      zhId: e.R3_UserId || null,
-      zhCode: e.R3_UserCode || null,
-      zhName: e.R3_UserName || null,
-      nhId: e.R4_UserId || null,
-      nhCode: e.R4_UserCode || null,
-      nhName: e.R4_UserName || null,
-    };
-    await prisma.districtHierarchy.upsert({
-      where: { districtId: e.DistrictId },
-      create: { districtId: e.DistrictId, ...payload },
-      update: payload,
-    });
-    count++;
-  }
-  console.log(`  ✓ upserted=${count}`);
+  const seed = buildOrgGraph(rows, geoByDistrict);
+  const counts = await prisma.$transaction((tx) => persistOrgGraph(tx, seed), {
+    maxWait: 15_000,
+    timeout: 120_000,
+  });
+  console.log(
+    `  ✓ members=${counts.members} edges=${counts.edges} closures=${counts.closures} districtChains=${counts.districtChains}`,
+  );
 
-  // Wire SalesTeam.managerId from the district chain (child → parent).
+  // Wire SalesTeam.managerId from the district chain (child → parent) — kept
+  // only for the internal CRM tree view; it no longer drives data scoping.
   const childToParent = new Map<string, string>();
   for (const e of rows) {
     const chain = [
@@ -400,7 +351,7 @@ async function main(): Promise<void> {
   console.log('🚀 sync-from-snapshots — start');
   await seedPosps();
   await seedHierarchyUsers();
-  await seedDistrictHierarchy();
+  await seedOrgGraph();
   console.log('\n✅ Done!');
 }
 

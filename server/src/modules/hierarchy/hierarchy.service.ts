@@ -1,14 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import type { Prisma } from '@prisma/client';
+import type { OrgMember, Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import {
-  buildPospScopeWhere,
   scopeDistrictIds,
   type HierarchyScope,
 } from '../../common/auth/hierarchy-scope.util';
 import type { AuthUser } from '../../common/auth/auth-user.interface';
 import { Role } from '../../common/constants';
-import { ExternalApiService } from '../../common/external-api/external-api.service';
+import {
+  OrgRole,
+  appRoleFromOrgRole,
+  orgRoleLabel,
+  orgRoleRank,
+} from '../../common/external-api/user-type.util';
+import {
+  loadDistrictOwnersByDistrictId,
+  loadPospsForOrgChart,
+} from '../../common/org-graph/org-chart-posp.util';
 
 export interface FilterOptionItem {
   id: string;
@@ -16,21 +24,24 @@ export interface FilterOptionItem {
   designation?: string;
 }
 
+/** Managers in scope grouped by their real org role (senior-first). */
+export interface RoleGroup {
+  /** Org role code (ADMIN | SZH | ZH | CH | RH | ASSISTASM | ASM | CSP | ...) */
+  role: string;
+  /** Human-readable label ('Super Zonal Head', 'Cluster Head', ...) */
+  label: string;
+  members: FilterOptionItem[];
+}
+
 export interface HierarchyFilterOptions {
   /** Caller's own role */
   callerRole: string;
-  /** Role label directly below the caller ('POSP' if caller is a DM) */
+  /** Role label directly below the caller ('POSP' if caller is a leaf manager) */
   nextLevel: string | null;
   /** Particular people at `nextLevel` within the caller's scope */
   subordinates: FilterOptionItem[];
-  /** Geographic dimensions, scoped to the caller's territory */
-  states: FilterOptionItem[];
-  districts: FilterOptionItem[];
-  cities: FilterOptionItem[];
-  /** Manager-level dimensions, scoped to the caller's territory */
-  dms: FilterOptionItem[];
-  asms: FilterOptionItem[];
-  rhs: FilterOptionItem[];
+  /** Managers in scope grouped by real org role, ordered senior-first. */
+  roleGroups: RoleGroup[];
 }
 
 export interface SubordinatesResult {
@@ -40,138 +51,89 @@ export interface SubordinatesResult {
   posps: FilterOptionItem[];
 }
 
-/** Selectable level role labels (used for the drill-down `level` param). */
-export type LevelRole = 'NATIONAL_HEAD' | 'ZH' | 'RH' | 'ASM' | 'DM';
-
-interface LevelDef {
-  role: LevelRole;
+/** A node in the rendered org chart. `id`/`parentId` are external UserCodes. */
+export interface OrgChartNode {
+  id: string;
+  parentId: string | null;
+  userId: string;
+  name: string;
+  /** Org-graph role label (ADMIN | ZH | RH | ...). */
+  role: string;
+  /** Best-effort app-role bucket (NATIONAL_HEAD | ZH | RH | ASM | DM). */
+  appRole: string;
 }
 
-/** Management chain, top → bottom. POSP is the terminal level below DM. */
-const LEVELS: LevelDef[] = [
-  { role: 'NATIONAL_HEAD' },
-  { role: 'ZH' },
-  { role: 'RH' },
-  { role: 'ASM' },
-  { role: 'DM' },
-];
-
-/** Columns selected from DistrictHierarchy for scope/drill resolution. */
-const DH_SELECT = {
-  districtId: true,
-  districtName: true,
-  stateId: true,
-  dmCode: true,
-  dmName: true,
-  asmCode: true,
-  asmName: true,
-  rhCode: true,
-  rhName: true,
-  zhCode: true,
-  zhName: true,
-  nhCode: true,
-  nhName: true,
-} as const;
-
-type DhRow = Prisma.DistrictHierarchyGetPayload<{ select: typeof DH_SELECT }>;
+/** Kept for the controller's `level` query param (now advisory only). */
+export type LevelRole = string;
 
 @Injectable()
 export class HierarchyService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly externalApi: ExternalApiService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  // ── name lookups (cached per request via the snapshot service) ───────────
+  // ── org-graph helpers ─────────────────────────────────────────────────────
 
-  private stateNameMap(): Map<string, string> {
-    const map = new Map<string, string>();
-    try {
-      for (const s of this.externalApi.listStates())
-        map.set(s.StateId, s.StateName);
-    } catch {
-      /* snapshot optional */
-    }
-    return map;
+  /** Resolves the caller's OrgMember id via their SalesTeam employeeCode. */
+  private async callerMemberId(user: AuthUser): Promise<string | null> {
+    const team = await this.prisma.salesTeam.findUnique({
+      where: { userId: user.userId },
+      select: { employeeCode: true },
+    });
+    if (!team) return null;
+    const member = await this.prisma.orgMember.findFirst({
+      where: { userCode: team.employeeCode },
+      select: { id: true },
+    });
+    return member?.id ?? null;
   }
 
-  private cityNameMap(): Map<string, string> {
-    const map = new Map<string, string>();
-    try {
-      for (const c of this.externalApi.listCities(''))
-        map.set(c.CityId, c.CityName);
-    } catch {
-      /* snapshot optional */
-    }
-    return map;
+  /** Direct reports of a manager (one step down the graph). */
+  private async directReports(managerId: string): Promise<OrgMember[]> {
+    const edges = await this.prisma.orgEdge.findMany({
+      where: { managerId },
+      select: { memberId: true },
+    });
+    const ids = edges.map((e) => e.memberId);
+    if (ids.length === 0) return [];
+    return this.prisma.orgMember.findMany({ where: { id: { in: ids } } });
   }
 
-  // ── helpers ──────────────────────────────────────────────────────────────
-
-  /** Extracts the (code, name) pair for a given level from a hierarchy row. */
-  private levelOf(
-    row: DhRow,
-    role: LevelRole,
-  ): { code: string | null; name: string | null } {
-    switch (role) {
-      case 'NATIONAL_HEAD':
-        return { code: row.nhCode, name: row.nhName };
-      case 'ZH':
-        return { code: row.zhCode, name: row.zhName };
-      case 'RH':
-        return { code: row.rhCode, name: row.rhName };
-      case 'ASM':
-        return { code: row.asmCode, name: row.asmName };
-      case 'DM':
-        return { code: row.dmCode, name: row.dmName };
-    }
+  /** Members with no manager edge — the roots of the graph (for admins). */
+  private async rootMembers(): Promise<OrgMember[]> {
+    const [members, edges] = await Promise.all([
+      this.prisma.orgMember.findMany(),
+      this.prisma.orgEdge.findMany({ select: { memberId: true } }),
+    ]);
+    const children = new Set(edges.map((e) => e.memberId));
+    return members.filter((m) => !children.has(m.id));
   }
 
-  /** Builds a typed where-clause matching a single level's code. */
-  private whereForLevelCode(
-    role: LevelRole,
-    code: string,
-  ): Prisma.DistrictHierarchyWhereInput {
-    switch (role) {
-      case 'NATIONAL_HEAD':
-        return { nhCode: code };
-      case 'ZH':
-        return { zhCode: code };
-      case 'RH':
-        return { rhCode: code };
-      case 'ASM':
-        return { asmCode: code };
-      case 'DM':
-        return { dmCode: code };
-    }
-  }
-
-  /** Distinct people at `role` across the supplied rows (deduped by code). */
-  private distinctLevel(rows: DhRow[], role: LevelRole): FilterOptionItem[] {
-    const seen = new Map<string, FilterOptionItem>();
-    for (const r of rows) {
-      const { code, name } = this.levelOf(r, role);
-      if (code && !seen.has(code)) {
-        seen.set(code, { id: code, name: name ?? code, designation: role });
-      }
-    }
-    return [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
-  }
-
-  /** Fetches the DistrictHierarchy rows inside the caller's scope. */
-  private async scopedRows(scope: HierarchyScope): Promise<DhRow[]> {
+  /** Distinct DistrictChain rows inside the caller's scope. */
+  private scopedDistrictChains(
+    scope: HierarchyScope,
+  ): Promise<Array<{ districtId: string; memberId: string }>> {
     const ids = scopeDistrictIds(scope);
-    return this.prisma.districtHierarchy.findMany({
+    return this.prisma.districtChain.findMany({
       where: ids === null ? undefined : { districtId: { in: ids } },
-      select: DH_SELECT,
+      select: { districtId: true, memberId: true },
     });
   }
 
-  /** Index of the level directly below the caller; LEVELS.length ⇒ POSP. */
-  private nextLevelIndex(role: string): number {
-    if (role === Role.SUPER_ADMIN) return 0;
-    const own = LEVELS.findIndex((l) => l.role === role);
-    return own + 1; // NATIONAL_HEAD(0)→1 … DM(4)→5(=POSP)
+  private toItem(member: OrgMember): FilterOptionItem {
+    const appRole = appRoleFromOrgRole(member.role as OrgRole);
+    return {
+      id: member.userCode,
+      name: member.userName ?? member.userCode,
+      designation: appRole,
+    };
+  }
+
+  /** App-role label of the most senior member, for the cascade dropdown. */
+  private representativeLevel(members: OrgMember[]): string | null {
+    if (members.length === 0) return null;
+    const senior = members.reduce((a, b) =>
+      orgRoleRank(b.role as OrgRole) > orgRoleRank(a.role as OrgRole) ? b : a,
+    );
+    return appRoleFromOrgRole(senior.role as OrgRole);
   }
 
   // ── public API ─────────────────────────────────────────────────────────
@@ -180,58 +142,40 @@ export class HierarchyService {
     user: AuthUser,
     scope: HierarchyScope,
   ): Promise<HierarchyFilterOptions> {
-    const rows = await this.scopedRows(scope);
+    const chains = await this.scopedDistrictChains(scope);
 
-    // Geographic + manager dimensions within scope
-    const districts = dedupe(
-      rows.map((r) => ({
-        id: r.districtId,
-        name: r.districtName ?? r.districtId,
-      })),
-    );
-    const dms = this.distinctLevel(rows, 'DM');
-    const asms = this.distinctLevel(rows, 'ASM');
-    const rhs = this.distinctLevel(rows, 'RH');
+    // Geo dimensions are now served by the cached Geo Catalog (GET /geo/catalog
+    // + server-side search), so this endpoint only returns people dimensions.
+    const districtIds = [...new Set(chains.map((c) => c.districtId))];
 
-    const stateNames = this.stateNameMap();
-    const states = dedupe(
-      rows
-        .filter((r) => r.stateId)
-        .map((r) => ({
-          id: r.stateId as string,
-          name: stateNames.get(r.stateId as string) ?? (r.stateId as string),
-        })),
-    );
+    // Manager-level dimensions: distinct members covering scope, grouped by
+    // their real org role (senior-first), so higher roles like Cluster Head /
+    // Zonal Head / Super Zonal Head surface as their own filter dropdowns.
+    const memberIds = [...new Set(chains.map((c) => c.memberId))];
+    const members =
+      memberIds.length > 0
+        ? await this.prisma.orgMember.findMany({
+            where: { id: { in: memberIds } },
+          })
+        : [];
+    const roleGroups = this.groupMembersByRole(members);
 
-    // Cities come from the POSPs actually in scope
-    const pospWhere = buildPospScopeWhere(scope) as Prisma.PospWhereInput;
-    const posps = await this.prisma.posp.findMany({
-      where: Object.keys(pospWhere).length > 0 ? pospWhere : undefined,
-      select: { cityId: true },
-    });
-    const cityNames = this.cityNameMap();
-    const cities = dedupe(
-      posps
-        .filter((p) => p.cityId)
-        .map((p) => ({
-          id: p.cityId as string,
-          name: cityNames.get(p.cityId as string) ?? (p.cityId as string),
-        })),
-    );
-
-    // Cascade: the level directly below the caller
+    // Cascade: the people directly below the caller in the org graph.
     let nextLevel: string | null = null;
     let subordinates: FilterOptionItem[] = [];
     if (user.role !== Role.POSP) {
-      const idx = this.nextLevelIndex(user.role);
-      if (idx < LEVELS.length) {
-        nextLevel = LEVELS[idx].role;
-        subordinates = this.distinctLevel(rows, LEVELS[idx].role);
+      const callerId = await this.callerMemberId(user);
+      const reports = callerId
+        ? await this.directReports(callerId)
+        : await this.rootMembers();
+
+      if (reports.length > 0) {
+        nextLevel = this.representativeLevel(reports);
+        subordinates = sortItems(reports.map((m) => this.toItem(m)));
       } else {
+        // Leaf manager (or unmatched) → terminal POSP level.
         nextLevel = Role.POSP;
-        subordinates = await this.pospsInDistricts(
-          rows.map((r) => r.districtId),
-        );
+        subordinates = await this.pospsInDistricts(districtIds);
       }
     }
 
@@ -239,31 +183,100 @@ export class HierarchyService {
       callerRole: user.role,
       nextLevel,
       subordinates,
-      states,
-      districts,
-      cities,
-      dms,
-      asms,
-      rhs,
+      roleGroups,
     };
   }
 
   /**
-   * Drill into a specific person (identified by `level` + `code`) and return
-   * the next level down, always intersected with the caller's scope so a
-   * manager can never see siblings or anyone outside their territory.
+   * Server-side typeahead over members within the caller's scope, matched by
+   * name or user code. Used by filter autocompletes so the client never pulls
+   * the full member list.
+   */
+  async searchMembers(
+    q: string,
+    scope: HierarchyScope,
+    limit = 20,
+    role?: string,
+  ): Promise<FilterOptionItem[]> {
+    const term = q.trim();
+    const scopeIds = scopeDistrictIds(scope);
+
+    let memberIds: string[] | null = null;
+    if (scopeIds !== null) {
+      if (scopeIds.length === 0) return [];
+      const chains = await this.prisma.districtChain.findMany({
+        where: { districtId: { in: scopeIds } },
+        select: { memberId: true },
+        distinct: ['memberId'],
+      });
+      memberIds = chains.map((c) => c.memberId);
+      if (memberIds.length === 0) return [];
+    }
+
+    const where: Prisma.OrgMemberWhereInput = {};
+    if (memberIds !== null) where.id = { in: memberIds };
+    if (role) where.role = role;
+    if (term) {
+      where.OR = [
+        { userName: { contains: term } },
+        { userCode: { contains: term } },
+      ];
+    }
+
+    const members = await this.prisma.orgMember.findMany({
+      where,
+      take: limit,
+      orderBy: { userName: 'asc' },
+    });
+    return sortItems(members.map((m) => this.toItem(m)));
+  }
+
+  /**
+   * Groups members by their real org role, sorted members by name, with groups
+   * ordered senior-first (by org-role rank). Roles with no members are omitted.
+   */
+  private groupMembersByRole(members: OrgMember[]): RoleGroup[] {
+    const byRole = new Map<string, FilterOptionItem[]>();
+    for (const m of members) {
+      const role = m.role;
+      if (!byRole.has(role)) byRole.set(role, []);
+      byRole.get(role)!.push(this.toItem(m));
+    }
+    return [...byRole.entries()]
+      .map(([role, items]) => ({
+        role,
+        label: orgRoleLabel(role),
+        members: sortItems(dedupeItems(items)),
+      }))
+      .sort(
+        (a, b) =>
+          orgRoleRank(b.role as OrgRole) - orgRoleRank(a.role as OrgRole),
+      );
+  }
+
+  /**
+   * Drill into a specific person (identified by `code`) and return the next
+   * level down, always intersected with the caller's scope so a manager can
+   * never see siblings or anyone outside their territory. `level` is advisory.
    */
   async getSubordinatesByCode(
-    level: LevelRole,
+    _level: LevelRole,
     code: string,
     scope: HierarchyScope,
   ): Promise<SubordinatesResult> {
-    // Districts the selected person covers, intersected with caller scope.
-    const ownRows = await this.prisma.districtHierarchy.findMany({
-      where: this.whereForLevelCode(level, code),
-      select: { districtId: true },
+    const member = await this.prisma.orgMember.findFirst({
+      where: { userCode: code },
+      select: { id: true },
     });
-    let districtIds = ownRows.map((r) => r.districtId);
+    if (!member) return { nextLevel: null, members: [], posps: [] };
+
+    // Districts the selected person covers, intersected with caller scope.
+    const ownChains = await this.prisma.districtChain.findMany({
+      where: { memberId: member.id },
+      select: { districtId: true },
+      distinct: ['districtId'],
+    });
+    let districtIds = ownChains.map((c) => c.districtId);
     const scopeIds = scopeDistrictIds(scope);
     if (scopeIds !== null) {
       const allowed = new Set(scopeIds);
@@ -273,27 +286,131 @@ export class HierarchyService {
       return { nextLevel: null, members: [], posps: [] };
     }
 
-    const idx = LEVELS.findIndex((l) => l.role === level);
-    const childIdx = idx + 1;
-
-    if (childIdx < LEVELS.length) {
-      const rows = await this.prisma.districtHierarchy.findMany({
-        where: { districtId: { in: districtIds } },
-        select: DH_SELECT,
-      });
+    const reports = await this.directReports(member.id);
+    if (reports.length > 0) {
+      // Keep only reports whose territory overlaps the allowed districts.
+      const allowed = new Set(districtIds);
+      const filtered = await this.filterMembersByDistricts(reports, allowed);
+      const visible = filtered.length > 0 ? filtered : reports;
       return {
-        nextLevel: LEVELS[childIdx].role,
-        members: this.distinctLevel(rows, LEVELS[childIdx].role),
+        nextLevel: this.representativeLevel(visible),
+        members: sortItems(visible.map((m) => this.toItem(m))),
         posps: [],
       };
     }
 
-    // Selected node is a DM → return its POSPs.
+    // Selected node is a leaf manager → return its POSPs.
     return {
       nextLevel: Role.POSP,
       members: [],
       posps: await this.pospsInDistricts(districtIds),
     };
+  }
+
+  /**
+   * Org chart for the caller's territory. Builds nodes from OrgMember +
+   * OrgEdge restricted to members that cover the scoped districts (all members
+   * for an unrestricted caller). Parent links are kept inside the node set so
+   * the chart renders as a self-contained tree.
+   */
+  async getOrgChart(scope: HierarchyScope): Promise<OrgChartNode[]> {
+    const scopeIds = scopeDistrictIds(scope);
+
+    let members: OrgMember[];
+    if (scopeIds === null) {
+      members = await this.prisma.orgMember.findMany();
+    } else {
+      const chains = await this.prisma.districtChain.findMany({
+        where: { districtId: { in: scopeIds } },
+        select: { memberId: true },
+        distinct: ['memberId'],
+      });
+      const ids = chains.map((c) => c.memberId);
+      members =
+        ids.length > 0
+          ? await this.prisma.orgMember.findMany({ where: { id: { in: ids } } })
+          : [];
+    }
+    if (members.length === 0) return [];
+
+    const inScope = new Set(members.map((m) => m.id));
+    const codeById = new Map(members.map((m) => [m.id, m.userCode]));
+
+    const edges = await this.prisma.orgEdge.findMany({
+      where: { memberId: { in: [...inScope] } },
+      select: { memberId: true, managerId: true },
+    });
+    // First in-scope manager wins as the rendered parent.
+    const parentOf = new Map<string, string>();
+    for (const e of edges) {
+      if (!inScope.has(e.managerId)) continue;
+      if (!parentOf.has(e.memberId)) parentOf.set(e.memberId, e.managerId);
+    }
+
+    const managerNodes = members.map((m) => {
+      const parentId = parentOf.get(m.id);
+      return {
+        id: m.userCode,
+        parentId: parentId ? (codeById.get(parentId) ?? null) : null,
+        userId: m.userId,
+        name: m.userName ?? m.userCode,
+        role: m.role,
+        appRole: appRoleFromOrgRole(m.role as OrgRole),
+      };
+    });
+
+    const pospNodes = await this.buildPospChartNodes(
+      scopeIds,
+      new Set(managerNodes.map((n) => n.id)),
+    );
+    return [...managerNodes, ...pospNodes];
+  }
+
+  /**
+   * POSPs attach to the district owner (chainLevel 0) for their `districtId`.
+   * Node ids use UserCode so the chart stays consistent with manager nodes.
+   */
+  private async buildPospChartNodes(
+    scopeDistrictIds: string[] | null,
+    managerCodesInChart: Set<string>,
+  ): Promise<OrgChartNode[]> {
+    const owners = await loadDistrictOwnersByDistrictId(this.prisma);
+    const districtIds = scopeDistrictIds ?? [...owners.keys()];
+    const posps = await loadPospsForOrgChart(this.prisma, districtIds);
+
+    const nodes: OrgChartNode[] = [];
+    for (const p of posps) {
+      const owner = owners.get(p.districtId);
+      if (!owner || !managerCodesInChart.has(owner.userCode)) continue;
+
+      nodes.push({
+        id: p.code,
+        parentId: owner.userCode,
+        userId: p.externalId ?? p.id,
+        name: p.name || p.code,
+        role: Role.POSP,
+        appRole: Role.POSP,
+      });
+    }
+    return nodes;
+  }
+
+  // ── private helpers ───────────────────────────────────────────────────────
+
+  private async filterMembersByDistricts(
+    members: OrgMember[],
+    allowed: Set<string>,
+  ): Promise<OrgMember[]> {
+    if (members.length === 0) return [];
+    const chains = await this.prisma.districtChain.findMany({
+      where: { memberId: { in: members.map((m) => m.id) } },
+      select: { memberId: true, districtId: true },
+    });
+    const coversAllowed = new Set<string>();
+    for (const c of chains) {
+      if (allowed.has(c.districtId)) coversAllowed.add(c.memberId);
+    }
+    return members.filter((m) => coversAllowed.has(m.id));
   }
 
   private async pospsInDistricts(
@@ -313,9 +430,12 @@ export class HierarchyService {
   }
 }
 
-/** Deduplicates filter items by id and sorts by name. */
-function dedupe(items: FilterOptionItem[]): FilterOptionItem[] {
+function dedupeItems(items: FilterOptionItem[]): FilterOptionItem[] {
   const seen = new Map<string, FilterOptionItem>();
   for (const it of items) if (!seen.has(it.id)) seen.set(it.id, it);
-  return [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
+  return [...seen.values()];
+}
+
+function sortItems(items: FilterOptionItem[]): FilterOptionItem[] {
+  return [...items].sort((a, b) => a.name.localeCompare(b.name));
 }

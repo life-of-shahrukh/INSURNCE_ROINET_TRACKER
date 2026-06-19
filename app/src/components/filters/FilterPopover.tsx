@@ -10,6 +10,7 @@ import {
   isMultiFilterKey,
   type FilterOption,
   type FilterState,
+  type GeoDimensionOptions,
 } from "@/lib/filters/filter-utils";
 import {
   getViewFilterDimensions,
@@ -24,11 +25,14 @@ interface FilterPopoverProps {
   role: UserRole;
   filters: FilterState;
   queryValues: Record<QueryFilterKey, string | undefined>;
+  geoOptions?: GeoDimensionOptions;
   onApply: (
     filters: FilterState,
     queryValues: Record<QueryFilterKey, string | undefined>,
   ) => void;
   onPospSearch?: (query: string) => Promise<FilterOption[]>;
+  onDistrictSearch?: (query: string) => Promise<FilterOption[]>;
+  onCitySearch?: (query: string) => Promise<FilterOption[]>;
 }
 
 export const FilterPopover = forwardRef<HTMLDivElement, FilterPopoverProps>(
@@ -39,8 +43,11 @@ export const FilterPopover = forwardRef<HTMLDivElement, FilterPopoverProps>(
       role,
       filters,
       queryValues,
+      geoOptions,
       onApply,
       onPospSearch,
+      onDistrictSearch,
+      onCitySearch,
     },
     ref,
   ): React.ReactElement | null {
@@ -58,8 +65,9 @@ export const FilterPopover = forwardRef<HTMLDivElement, FilterPopoverProps>(
     }, [open, filters, queryValues]);
 
     const dimensions = useMemo(
-      (): ViewFilterDimension[] => getViewFilterDimensions(view, role, draftFilters),
-      [view, role, draftFilters],
+      (): ViewFilterDimension[] =>
+        getViewFilterDimensions(view, role, draftFilters, geoOptions),
+      [view, role, draftFilters, geoOptions],
     );
 
     const firstId = dimensions.length > 0 ? getDimensionId(dimensions[0]) : "";
@@ -126,6 +134,8 @@ export const FilterPopover = forwardRef<HTMLDivElement, FilterPopoverProps>(
               onFilterChange={handleDraftFilterChange}
               onQueryChange={handleDraftQueryChange}
               onPospSearch={onPospSearch}
+              onDistrictSearch={onDistrictSearch}
+              onCitySearch={onCitySearch}
             />
           </div>
         </div>

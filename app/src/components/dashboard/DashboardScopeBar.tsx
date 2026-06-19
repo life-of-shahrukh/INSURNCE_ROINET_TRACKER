@@ -1,12 +1,15 @@
 "use client";
 
 import { useHierarchyChildren } from "@/hooks/useHierarchyChildren";
+import { useGeoCatalog } from "@/hooks/useGeoCatalog";
+import { geoCatalogApi } from "@/lib/api/geo-catalog-api";
 import type {
   FilterOptionItem,
   HierarchyFilterOptions,
   SubordinatesResult,
 } from "@/lib/api/hierarchy-api";
 import type { UserRole } from "@/lib/auth-types";
+import { ScopeAsyncSelect, type GeoOption } from "./ScopeAsyncSelect";
 
 // ── public types ─────────────────────────────────────────────────────────────
 
@@ -19,6 +22,8 @@ export interface DrillItem {
 }
 
 export interface GeoFilter {
+  zoneId?: string;
+  regionId?: string;
   stateId?: string;
   districtId?: string;
   cityId?: string;
@@ -34,6 +39,11 @@ export interface DashboardScope {
   path: DrillItem[];
   posp?: { id: string; name: string };
   geo?: GeoFilter;
+  /**
+   * Direct role-based selection (mutually exclusive with `path`/`posp`).
+   * `id` is the person's userCode, `role` their org-role code.
+   */
+  manager?: { id: string; name: string; role: string };
 }
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -84,7 +94,7 @@ export function DashboardScopeBar({
   scope,
   onChange,
 }: Props): React.ReactElement | null {
-  const { path, posp, geo } = scope;
+  const { path, posp, geo, manager } = scope;
 
   const lv = (d: number): string | undefined => path[d]?.level;
   const id = (d: number): string | undefined => path[d]?.id;
@@ -97,19 +107,31 @@ export function DashboardScopeBar({
   const { data: c5 = EMPTY_CHILDREN } = useHierarchyChildren(lv(4), id(4));
   const children = [c1, c2, c3, c4, c5];
 
+  const { data: catalog } = useGeoCatalog();
+
   if (!role || role === "POSP") return null;
   if (!options.nextLevel) return null;
 
   const hasDrill = path.length > 0 || !!posp;
-  const hasGeo = !!(geo?.stateId || geo?.districtId || geo?.cityId);
+  const hasRole = !!manager;
+  const hasGeo = !!(
+    geo?.zoneId ||
+    geo?.regionId ||
+    geo?.stateId ||
+    geo?.districtId ||
+    geo?.cityId
+  );
 
   // ── event handlers ──────────────────────────────────────────────────────────
+  // Cascade and role selection are mutually exclusive, so picking one clears the
+  // other to avoid an ambiguous scope.
 
   function selectManager(item: FilterOptionItem, depth: number, level: string): void {
     onChange({
       ...scope,
       path: [...path.slice(0, depth), { id: item.id, name: item.name, level }],
       posp: undefined,
+      manager: undefined,
     });
   }
 
@@ -118,11 +140,24 @@ export function DashboardScopeBar({
   }
 
   function selectPosp(item: FilterOptionItem): void {
-    onChange({ ...scope, posp: { id: item.id, name: item.name } });
+    onChange({ ...scope, posp: { id: item.id, name: item.name }, manager: undefined });
   }
 
   function clearPosp(): void {
     onChange({ ...scope, posp: undefined });
+  }
+
+  function selectByRole(item: FilterOptionItem, role: string): void {
+    onChange({
+      ...scope,
+      manager: { id: item.id, name: item.name, role },
+      path: [],
+      posp: undefined,
+    });
+  }
+
+  function clearRole(): void {
+    onChange({ ...scope, manager: undefined });
   }
 
   function setGeo(next: GeoFilter): void {
@@ -130,7 +165,30 @@ export function DashboardScopeBar({
   }
 
   function reset(): void {
-    onChange({ path: [], posp: undefined, geo: undefined });
+    onChange({ path: [], posp: undefined, geo: undefined, manager: undefined });
+  }
+
+  async function districtOptions(q: string): Promise<GeoOption[]> {
+    const results = await geoCatalogApi.searchDistricts(q, {
+      stateId: geo?.stateId,
+      zoneId: geo?.zoneId,
+      regionId: geo?.regionId,
+    });
+    return results.map((d) => ({
+      id: d.id,
+      name: d.stateName ? `${d.name} (${d.stateName})` : d.name,
+    }));
+  }
+
+  async function cityOptions(q: string): Promise<GeoOption[]> {
+    const results = await geoCatalogApi.searchCities(q, {
+      districtId: geo?.districtId,
+      stateId: geo?.stateId,
+    });
+    return results.map((c) => ({
+      id: c.id,
+      name: c.districtName ? `${c.name} (${c.districtName})` : c.name,
+    }));
   }
 
   // ── render helpers ──────────────────────────────────────────────────────────
@@ -240,6 +298,36 @@ export function DashboardScopeBar({
     );
   }
 
+  function roleDropdown(
+    role: string,
+    label: string,
+    items: FilterOptionItem[],
+  ): React.ReactElement {
+    const selectedId = manager?.role === role ? manager.id : "";
+    return (
+      <select
+        key={`role-${role}`}
+        className="scope-bar__select"
+        value={selectedId}
+        onChange={(e) => {
+          if (!e.target.value) clearRole();
+          else {
+            const found = items.find((i) => i.id === e.target.value);
+            if (found) selectByRole(found, role);
+          }
+        }}
+        aria-label={`All ${label}`}
+      >
+        <option value="">{`All ${label}`}</option>
+        {items.map((m) => (
+          <option key={m.id} value={m.id}>
+            {m.name}
+          </option>
+        ))}
+      </select>
+    );
+  }
+
   return (
     <div className="scope-bar">
       <span className="scope-bar__label">Viewing:</span>
@@ -249,18 +337,41 @@ export function DashboardScopeBar({
       {levelDropdown(3)}
       {levelDropdown(4)}
 
-      <span className="scope-bar__label">Filter:</span>
-      {geoSelect("States", options.states, geo?.stateId, (v) =>
-        setGeo({ stateId: v }),
-      )}
-      {geoSelect("Districts", options.districts, geo?.districtId, (v) =>
-        setGeo({ ...geo, districtId: v, cityId: undefined }),
-      )}
-      {geoSelect("Cities", options.cities, geo?.cityId, (v) =>
-        setGeo({ ...geo, cityId: v, districtId: undefined }),
+      {options.roleGroups.length > 0 && (
+        <>
+          <span className="scope-bar__label">By role:</span>
+          {options.roleGroups.map((g) =>
+            roleDropdown(g.role, g.label, g.members),
+          )}
+        </>
       )}
 
-      {(hasDrill || hasGeo) && (
+      <span className="scope-bar__label">Filter:</span>
+      {geoSelect("Zones", catalog?.zones ?? [], geo?.zoneId, (v) =>
+        setGeo({ zoneId: v }),
+      )}
+      {geoSelect("Regions", catalog?.regions ?? [], geo?.regionId, (v) =>
+        setGeo({ regionId: v }),
+      )}
+      {geoSelect("States", catalog?.states ?? [], geo?.stateId, (v) =>
+        setGeo({ stateId: v }),
+      )}
+      <ScopeAsyncSelect
+        placeholder="Search districts…"
+        selectedId={geo?.districtId}
+        onSearch={(q) => districtOptions(q)}
+        onSelect={(item) =>
+          setGeo({ ...geo, districtId: item?.id, cityId: undefined })
+        }
+      />
+      <ScopeAsyncSelect
+        placeholder="Search cities…"
+        selectedId={geo?.cityId}
+        onSearch={(q) => cityOptions(q)}
+        onSelect={(item) => setGeo({ ...geo, cityId: item?.id })}
+      />
+
+      {(hasDrill || hasRole || hasGeo) && (
         <button
           type="button"
           className="scope-bar__reset"

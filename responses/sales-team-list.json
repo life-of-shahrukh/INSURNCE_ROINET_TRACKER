@@ -1,0 +1,113 @@
+{
+  "capturedAt": "2026-06-17T16:02:09.690Z",
+  "method": "GET",
+  "path": "/api/sales-team?page=1&pageSize=3",
+  "baseUrl": "http://localhost:8000",
+  "status": 200,
+  "statusText": "OK",
+  "note": null,
+  "requestBody": null,
+  "response": {
+    "data": [
+      {
+        "id": "cmqdxuzkp000ac2lc6kg0ksnw",
+        "userId": "cmqdxuz4l0002c2lc1ke1yc5w",
+        "name": "Zonal Head West",
+        "employeeCode": "EMP-Z001",
+        "designation": "ZH",
+        "managerId": "cmqdxuzjo0008c2lckoil9lmv",
+        "territory": "West Zone",
+        "mobile": "9100000002",
+        "email": "zonal@roinet.com",
+        "joiningDate": "2022-01-15T00:00:00.000Z",
+        "zoneId": "zone-west",
+        "zoneName": "West Zone",
+        "regionId": null,
+        "regionName": null,
+        "areaId": null,
+        "areaName": null,
+        "status": "ACTIVE",
+        "createdAt": "2026-06-14T15:28:04.250Z",
+        "updatedAt": "2026-06-17T09:58:58.000Z",
+        "manager": {
+          "id": "cmqdxuzjo0008c2lckoil9lmv",
+          "name": "Ravi National",
+          "designation": "NATIONAL_HEAD"
+        },
+        "pospsManaged": [],
+        "_count": {
+          "subordinates": 2,
+          "leadsAssigned": 12
+        }
+      },
+      {
+        "id": "cmqhwfbch0009c228235wi1zj",
+        "userId": "cmqhwfbbs0007c228hx96fjf6",
+        "name": "Zonal Head South",
+        "employeeCode": "EMP-Z002",
+        "designation": "ZH",
+        "managerId": "cmqdxuzjo0008c2lckoil9lmv",
+        "territory": "South Zone",
+        "mobile": "9100000012",
+        "email": "zh-south@seed.roinet.com",
+        "joiningDate": "2023-01-01T00:00:00.000Z",
+        "zoneId": "zone-south",
+        "zoneName": "South Zone",
+        "regionId": null,
+        "regionName": null,
+        "areaId": null,
+        "areaName": null,
+        "status": "ACTIVE",
+        "createdAt": "2026-06-17T09:58:58.097Z",
+        "updatedAt": "2026-06-17T09:58:58.097Z",
+        "manager": {
+          "id": "cmqdxuzjo0008c2lckoil9lmv",
+          "name": "Ravi National",
+          "designation": "NATIONAL_HEAD"
+        },
+        "pospsManaged": [],
+        "_count": {
+          "subordinates": 2,
+          "leadsAssigned": 0
+        }
+      },
+      {
+        "id": "cmqhwfbnq001ic228w3bnbs8o",
+        "userId": "cmqhwfbnd001gc228huyg51gg",
+        "name": "Zonal Head North",
+        "employeeCode": "EMP-Z003",
+        "designation": "ZH",
+        "managerId": "cmqdxuzjo0008c2lckoil9lmv",
+        "territory": "North Zone",
+        "mobile": "9100000013",
+        "email": "zh-north@seed.roinet.com",
+        "joiningDate": "2023-01-01T00:00:00.000Z",
+        "zoneId": "zone-north",
+        "zoneName": "North Zone",
+        "regionId": null,
+        "regionName": null,
+        "areaId": null,
+        "areaName": null,
+        "status": "ACTIVE",
+        "createdAt": "2026-06-17T09:58:58.502Z",
+        "updatedAt": "2026-06-17T09:58:58.502Z",
+        "manager": {
+          "id": "cmqdxuzjo0008c2lckoil9lmv",
+          "name": "Ravi National",
+          "designation": "NATIONAL_HEAD"
+        },
+        "pospsManaged": [],
+        "_count": {
+          "subordinates": 2,
+          "leadsAssigned": 0
+        }
+      }
+    ],
+    "meta": {
+      "page": 1,
+      "pageSize": 3,
+      "total": 179,
+      "totalPages": 60
+    }
+  }
+}

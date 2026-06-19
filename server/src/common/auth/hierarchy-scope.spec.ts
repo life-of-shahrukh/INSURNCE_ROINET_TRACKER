@@ -25,15 +25,19 @@ function mockUser(role: Role, extra: Partial<AuthUser> = {}): AuthUser {
 }
 
 /**
- * Minimal Prisma mock for the district-based scope model.
- * A manager's scope is resolved from DistrictHierarchy by their employeeCode.
+ * Minimal Prisma mock for the org-graph scope model.
+ * A manager's code resolves to an OrgMember, whose DistrictChain rows give the
+ * districts they cover.
  */
 function makePrismaMock(overrides: Record<string, unknown> = {}): unknown {
   return {
     salesTeam: {
       findUnique: jest.fn().mockResolvedValue({ employeeCode: 'EMP-1' }),
     },
-    districtHierarchy: {
+    orgMember: {
+      findFirst: jest.fn().mockResolvedValue({ id: 'member-1' }),
+    },
+    districtChain: {
       findMany: jest
         .fn()
         .mockResolvedValue([
@@ -78,21 +82,21 @@ describe('resolveHierarchyScope', () => {
     );
   });
 
-  it('ZH gets districtIds from DistrictHierarchy', async () => {
+  it('ZH gets districtIds from the org graph', async () => {
     const user = mockUser(Role.ZH);
     const prisma = makePrismaMock() as never;
     const scope = await resolveHierarchyScope(user, prisma);
     expect(scope).toEqual({ districtIds: ['d-1', 'd-2', 'd-3'] });
   });
 
-  it('RH gets districtIds from DistrictHierarchy', async () => {
+  it('RH gets districtIds from the org graph', async () => {
     const user = mockUser(Role.RH);
     const prisma = makePrismaMock() as never;
     const scope = await resolveHierarchyScope(user, prisma);
     expect(scope).toEqual({ districtIds: ['d-1', 'd-2', 'd-3'] });
   });
 
-  it('ASM gets districtIds from DistrictHierarchy', async () => {
+  it('ASM gets districtIds from the org graph', async () => {
     const user = mockUser(Role.ASM);
     const prisma = makePrismaMock() as never;
     const scope = await resolveHierarchyScope(user, prisma);

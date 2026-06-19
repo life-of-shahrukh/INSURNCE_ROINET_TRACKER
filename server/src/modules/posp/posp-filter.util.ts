@@ -8,8 +8,9 @@ import {
 
 export function buildPospFilterWhere(
   query: PospListQueryDto,
+  districtIds?: string[] | null,
 ): Prisma.PospWhereInput {
-  const geo = buildGeoFilterWhere(query);
+  const geo = buildGeoFilterWhere(query, districtIds);
   const dateBounds = resolveDateRange(query);
   const clauses: Prisma.PospWhereInput[] = [];
 

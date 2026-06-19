@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { customerApi, CreateCustomerInput } from '../lib/api/customer-api';
 import { LIST_QUERY_OPTIONS } from '@/lib/query/list-query-options';
+import { dashboardStatKeys } from '@/hooks/useDashboardStats';
 
 export const customerKeys = {
   all: ['customers'] as const,
@@ -31,7 +32,11 @@ export function useCreateCustomer() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: CreateCustomerInput) => customerApi.create(data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: customerKeys.all }),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: customerKeys.all }),
+        queryClient.invalidateQueries({ queryKey: dashboardStatKeys.all }),
+      ]),
   });
 }
 
@@ -40,6 +45,10 @@ export function useUpdateCustomer() {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<CreateCustomerInput> }) =>
       customerApi.update(id, data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: customerKeys.all }),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: customerKeys.all }),
+        queryClient.invalidateQueries({ queryKey: dashboardStatKeys.all }),
+      ]),
   });
 }

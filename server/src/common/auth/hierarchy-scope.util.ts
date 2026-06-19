@@ -22,77 +22,47 @@ export interface HierarchyScope {
 }
 
 /**
- * Walks the SalesTeam hierarchy (`managerId` tree) starting at `rootId` and
- * returns the root plus every descendant SalesTeam id.
- *
- * This is the single source of truth for "who is under me". Resolving POSP
- * ownership against this subtree guarantees every role sees exactly itself
- * and its lower hierarchy — no cross-level leakage, no collisions.
+ * The seeded demo manager logins (zonal@/regional@/asm@/dm@roinet.com) use
+ * synthetic `SalesTeam.employeeCode`s that are not part of the Cognitensor org
+ * graph, so they would otherwise resolve to an empty territory (and an empty
+ * org chart). We alias each placeholder code onto a real `OrgMember.userCode`
+ * drawn from a single nested chain, giving every demo role a non-empty,
+ * properly nested scope. Real accounts — whose `employeeCode` already matches
+ * an `OrgMember` — never hit this map. This lives in code (not seed data) so it
+ * cannot collide with the unique `employeeCode` constraint and survives the
+ * weekly org-graph sync.
  */
-export async function collectSalesTeamSubtree(
-  prisma: PrismaService,
-  rootId: string,
-): Promise<string[]> {
-  const all: string[] = [rootId];
-  let frontier: string[] = [rootId];
-
-  // Breadth-first; bounded by hierarchy depth (5–6 levels max).
-  while (frontier.length > 0) {
-    const children = await prisma.salesTeam.findMany({
-      where: { managerId: { in: frontier } },
-      select: { id: true },
-    });
-    const childIds = children.map((c) => c.id);
-    if (childIds.length === 0) break;
-    all.push(...childIds);
-    frontier = childIds;
-  }
-
-  return all;
-}
-
-/**
- * Returns the ids of every POSP owned by any SalesTeam member in the subtree
- * rooted at `rootSalesTeamId`. POSP ownership is the `asmId` foreign key
- * (the directly-managing SalesTeam member — a DM, or an ASM with no DM layer).
- */
-export async function collectPospIdsForSubtree(
-  prisma: PrismaService,
-  rootSalesTeamId: string,
-): Promise<string[]> {
-  const subtreeIds = await collectSalesTeamSubtree(prisma, rootSalesTeamId);
-  const posps = await prisma.posp.findMany({
-    where: { asmId: { in: subtreeIds } },
-    select: { id: true },
-  });
-  return posps.map((p) => p.id);
-}
-
-/**
- * Maps a management role to the DistrictHierarchy column that holds that
- * role's code. A manager covers every district where their code appears in
- * the matching column. SUPER_ADMIN / NATIONAL_HEAD are unrestricted (handled
- * separately) and POSP is resolved by its own id.
- */
-const ROLE_TO_DISTRICT_COLUMN: Partial<Record<Role, string>> = {
-  [Role.ZH]: 'zhCode',
-  [Role.RH]: 'rhCode',
-  [Role.ASM]: 'asmCode',
-  [Role.DM]: 'dmCode',
+const DEMO_EMPLOYEE_CODE_ALIASES: Record<string, string> = {
+  'EMP-Z001': 'RAMANUJ.BIHARJHKZM', // Zonal Head demo → true ZH usertype (10)
+  'EMP-R001': 'SACHIN.ZHRAJGUJMP', // Regional Head demo → SZH (~132 districts)
+  'EMP-A001': 'SHAIKH.RHMAHA', // ASM demo          → ~38 districts
+  'EMP-D001': 'MUNDHE.ASMMAHA', // DM demo           → ~13 districts
 };
 
 /**
- * Collects the district ids a manager (identified by their external code)
- * covers at a given level.
+ * Collects the district ids a member (identified by their Cognitensor
+ * UserCode) covers. The org graph is role-agnostic: a member covers a district
+ * whenever they appear anywhere in that district's chain, recorded once per
+ * (district, member) in `DistrictChain`. Because `DistrictChain` already
+ * encodes transitive coverage, this is a single indexed lookup — no closure
+ * walk needed for scoping.
  */
 export async function districtIdsForCode(
   prisma: PrismaService,
-  column: string,
   code: string,
 ): Promise<string[]> {
-  const rows = await prisma.districtHierarchy.findMany({
-    where: { [column]: code },
+  if (!code) return [];
+
+  const member = await prisma.orgMember.findFirst({
+    where: { userCode: code },
+    select: { id: true },
+  });
+  if (!member) return [];
+
+  const rows = await prisma.districtChain.findMany({
+    where: { memberId: member.id },
     select: { districtId: true },
+    distinct: ['districtId'],
   });
   return rows.map((r) => r.districtId);
 }
@@ -101,15 +71,14 @@ export async function districtIdsForCode(
  * Resolves which data territory a user can access based on their role.
  *
  * The model is geographic: every POSP belongs to a district
- * (`Posp.districtId`), and the management chain above each district
- * (DM → ASM → RH → ZH → NH) is stored in `DistrictHierarchy`. A manager's
- * scope is therefore the set of districts where their code appears in the
- * column for their role.
+ * (`Posp.districtId`), and the org graph (`OrgMember` + `DistrictChain`)
+ * records every district a member covers transitively. A manager's scope is
+ * therefore the set of districts their `OrgMember` is linked to.
  *
  * Rules:
  *  - SUPER_ADMIN / NATIONAL_HEAD → empty scope = all data
  *  - POSP → { pospIds: [self] }
- *  - ZH / RH / ASM / DM → { districtIds } from DistrictHierarchy
+ *  - everyone else → { districtIds } resolved via OrgMember/DistrictChain
  */
 export async function resolveHierarchyScope(
   user: AuthUser,
@@ -127,9 +96,7 @@ export async function resolveHierarchyScope(
     return { pospIds: [user.pospId] };
   }
 
-  const column = ROLE_TO_DISTRICT_COLUMN[role];
-  if (!column) return { districtIds: [] };
-
+  // Resolve the caller's external code, then their districts via the org graph.
   const salesTeam = await prisma.salesTeam.findUnique({
     where: { userId: user.userId },
     select: { employeeCode: true },
@@ -138,11 +105,11 @@ export async function resolveHierarchyScope(
     return { districtIds: [] }; // no salesTeam record = no access
   }
 
-  const districtIds = await districtIdsForCode(
-    prisma,
-    column,
-    salesTeam.employeeCode,
-  );
+  // Real accounts resolve directly; seeded demo accounts fall back to an alias.
+  const code =
+    DEMO_EMPLOYEE_CODE_ALIASES[salesTeam.employeeCode] ??
+    salesTeam.employeeCode;
+  const districtIds = await districtIdsForCode(prisma, code);
   return { districtIds };
 }
 

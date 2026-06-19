@@ -10,6 +10,7 @@ import { GetAllCustomersHandler } from './queries/get-all-customers.handler';
 import { SearchCustomersHandler } from './queries/search-customers.handler';
 import { ExportCustomersCsvHandler } from './queries/export-customers-csv.handler';
 import { CustomerEventsListener } from './listeners/customer-events.listener';
+import { GeoModule } from '../geo/geo.module';
 
 const CommandHandlers = [CreateCustomerHandler, UpdateCustomerHandler];
 const QueryHandlers = [
@@ -20,7 +21,7 @@ const QueryHandlers = [
 const EventListeners = [CustomerEventsListener];
 
 @Module({
-  imports: [CqrsModule, PrismaModule],
+  imports: [CqrsModule, PrismaModule, GeoModule],
   controllers: [CustomerController],
   providers: [
     CustomerService,

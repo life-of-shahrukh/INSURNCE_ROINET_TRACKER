@@ -1,0 +1,13 @@
+{
+  "capturedAt": "2026-06-17T16:02:08.878Z",
+  "method": "GET",
+  "path": "/health",
+  "baseUrl": "http://localhost:8000",
+  "status": 200,
+  "statusText": "OK",
+  "note": null,
+  "requestBody": null,
+  "response": {
+    "status": "ok"
+  }
+}

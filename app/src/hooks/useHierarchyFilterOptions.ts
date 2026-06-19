@@ -5,12 +5,7 @@ const EMPTY: HierarchyFilterOptions = {
   callerRole: "",
   nextLevel: null,
   subordinates: [],
-  states: [],
-  districts: [],
-  cities: [],
-  dms: [],
-  asms: [],
-  rhs: [],
+  roleGroups: [],
 };
 
 export function useHierarchyFilterOptions() {

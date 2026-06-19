@@ -7,6 +7,20 @@ export function pospName(posp: Posp[], id: string | null): string {
   return p ? p.name : "–";
 }
 
+/** Prefer API-joined posp on the deal; fall back to roster lookup. */
+export function dealPospLabel(
+  deal: Pick<Deal, "pospId" | "posp">,
+  roster: Posp[] = [],
+): string {
+  if (deal.posp?.name) return deal.posp.name;
+  if (deal.pospId) {
+    const fromRoster = pospName(roster, deal.pospId);
+    if (fromRoster !== "–") return fromRoster;
+  }
+  if (!deal.pospId) return "Self";
+  return "—";
+}
+
 /** Effective COA in rupees. Prefers the backend-computed coaAmount, falling back to raw coa. */
 export function effectiveCoa(d: Pick<Deal, "coa" | "coaAmount">): number {
   return +(d.coaAmount ?? d.coa) || 0;
@@ -119,7 +133,7 @@ export function buildDealsCsv(deals: Deal[], posp: Posp[]): string {
     "Remarks",
   ];
   const rows = deals.map((d) => [
-    pospName(posp, d.pospId),
+    dealPospLabel(d, posp),
     d.customer,
     d.policy,
     d.sum,

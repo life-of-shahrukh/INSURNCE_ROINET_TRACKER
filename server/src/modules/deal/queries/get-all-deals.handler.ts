@@ -8,10 +8,14 @@ import { resolvePagination } from '../../../common/utils/pagination.util';
 import type { PaginatedResult } from '../../../common/interfaces/paginated-result.interface';
 import { Deal } from '@prisma/client';
 import type { Prisma } from '@prisma/client';
+import { GeoCatalogService } from '../../geo/geo-catalog.service';
 
 @QueryHandler(GetAllDealsQuery)
 export class GetAllDealsHandler implements IQueryHandler<GetAllDealsQuery> {
-  constructor(private readonly dealRepo: DealRepository) {}
+  constructor(
+    private readonly dealRepo: DealRepository,
+    private readonly geo: GeoCatalogService,
+  ) {}
 
   async execute(query: GetAllDealsQuery): Promise<PaginatedResult<Deal>> {
     const { filters, hierarchyScope, pospId } = query;
@@ -24,7 +28,8 @@ export class GetAllDealsHandler implements IQueryHandler<GetAllDealsQuery> {
       scopeWhere = buildDealScopeWhere(hierarchyScope);
     }
 
-    const filterWhere = buildDealFilterWhere(filters);
+    const districtIds = this.geo.districtIdsForQuery(filters);
+    const filterWhere = buildDealFilterWhere(filters, districtIds);
     const where = mergeWhereClauses(
       scopeWhere,
       filterWhere,

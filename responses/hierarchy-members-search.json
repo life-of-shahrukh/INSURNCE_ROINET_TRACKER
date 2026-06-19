@@ -1,0 +1,37 @@
+{
+  "capturedAt": "2026-06-17T16:02:09.577Z",
+  "method": "GET",
+  "path": "/api/hierarchy/members/search?q=a&limit=5",
+  "baseUrl": "http://localhost:8000",
+  "status": 200,
+  "statusText": "OK",
+  "note": "Scoped member/user typeahead by name or code",
+  "requestBody": null,
+  "response": [
+    {
+      "id": "ABDUL.ASMMP",
+      "name": "ABDUL TAUSIF SHEKH ASM MP",
+      "designation": "DM"
+    },
+    {
+      "id": "ABHIJIT.BATABYAL ASM",
+      "name": "Abhijit Batabyal",
+      "designation": "DM"
+    },
+    {
+      "id": "ABHIJIT.ASMUP",
+      "name": "ABHIJIT SRIVASTAVA ASM UP",
+      "designation": "DM"
+    },
+    {
+      "id": "ADESH",
+      "name": "ADESH SINGH(EUP)",
+      "designation": "DM"
+    },
+    {
+      "id": "AKRAM.ASMASSAM",
+      "name": "AKRAM ALI ASM ASSAM",
+      "designation": "DM"
+    }
+  ]
+}

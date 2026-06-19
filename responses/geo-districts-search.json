@@ -1,0 +1,32 @@
+{
+  "capturedAt": "2026-06-17T16:02:09.489Z",
+  "method": "GET",
+  "path": "/api/geo/districts/search?q=hyd&limit=5",
+  "baseUrl": "http://localhost:8000",
+  "status": 200,
+  "statusText": "OK",
+  "note": "Server-side district typeahead (big dataset, never bulk-loaded)",
+  "requestBody": null,
+  "response": [
+    {
+      "id": "6",
+      "name": "HYDERABAD",
+      "stateId": "27",
+      "stateName": "ANDHRA PRADESH",
+      "zoneId": null,
+      "zoneName": null,
+      "regionId": null,
+      "regionName": null
+    },
+    {
+      "id": "669",
+      "name": "HYDERABAD",
+      "stateId": "33",
+      "stateName": "TELANGANA",
+      "zoneId": null,
+      "zoneName": null,
+      "regionId": null,
+      "regionName": null
+    }
+  ]
+}

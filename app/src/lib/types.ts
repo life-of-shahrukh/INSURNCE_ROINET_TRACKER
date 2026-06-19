@@ -85,9 +85,17 @@ export type DealStatus = 'H' | 'W' | 'C';
 // COA entry mode: PERCENT (of premium) | AMOUNT (rupees)
 export type CoaType = 'PERCENT' | 'AMOUNT';
 
+export interface DealPospSummary {
+  id: string;
+  name: string;
+  code: string;
+}
+
 export interface Deal {
   id: string;
   pospId: string | null;
+  /** Joined from API when listing deals — avoids roster lookup limits */
+  posp?: DealPospSummary | null;
   customerId: string | null;
   customer: string;
   policy: string;

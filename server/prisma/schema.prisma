@@ -231,42 +231,85 @@ model User {
   updatedAt    DateTime   @updatedAt
 }
 
-/// District-keyed management chain mirrored from Cognitensor ListHierarchyUserData.
-/// One row per district; a manager covers a district when their code appears in
-/// the column for their level. This is the source of truth for hierarchy scoping:
-/// a POSP belongs to a district (Posp.districtId), and the chain above that
-/// district (DM -> ASM -> RH -> ZH -> NH) determines who can see that POSP.
-model DistrictHierarchy {
-  id           String  @id @default(cuid()) @db.NVarChar(36)
-  districtId   String  @unique @db.NVarChar(50)
-  districtName String? @db.NVarChar(200)
-  stateId      String? @db.NVarChar(50)
-
-  dmId   String? @db.NVarChar(50)
-  dmCode String? @db.NVarChar(100)
-  dmName String? @db.NVarChar(200)
-
-  asmId   String? @db.NVarChar(50)
-  asmCode String? @db.NVarChar(100)
-  asmName String? @db.NVarChar(200)
-
-  rhId   String? @db.NVarChar(50)
-  rhCode String? @db.NVarChar(100)
-  rhName String? @db.NVarChar(200)
-
-  zhId   String? @db.NVarChar(50)
-  zhCode String? @db.NVarChar(100)
-  zhName String? @db.NVarChar(200)
-
-  nhId   String? @db.NVarChar(50)
-  nhCode String? @db.NVarChar(100)
-  nhName String? @db.NVarChar(200)
+/// One row per distinct person across all Cognitensor ListHierarchyUserData
+/// district chains. Keyed by Cognitensor UserId. `role` is a label derived from
+/// `userType` (see user-type.util.ts) and is NOT tied to a column position —
+/// the same person can sit at different chain depths in different districts.
+model OrgMember {
+  id       String  @id @default(cuid()) @db.NVarChar(36)
+  /// Cognitensor UserId — stable strong key for a person.
+  userId   String  @unique @db.NVarChar(50)
+  /// Cognitensor UserCode — matches SalesTeam.employeeCode / Posp.code.
+  userCode String  @db.NVarChar(100)
+  userName String? @db.NVarChar(200)
+  /// Raw Cognitensor usertype (0=ADMIN,4=ASM,6=RH,10=ZH,11=ASSISTASM,12=CH,14=SZH,...).
+  userType Int?
+  /// Derived role label: ADMIN | CMF | CSF | CSP | ASM | RH | ZH | ASSISTASM | CH | SZH | UNKNOWN
+  role     String  @db.NVarChar(20)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([dmCode])
-  @@index([asmCode])
-  @@index([rhCode])
-  @@index([zhCode])
+  @@index([userCode])
+  @@index([role])
+}
+
+/// Adjacency list: `memberId` reports to `managerId` (one step up the chain).
+/// Deduplicated — a person reporting to the same manager across many districts
+/// collapses to a single edge.
+model OrgEdge {
+  id        String @id @default(cuid()) @db.NVarChar(36)
+  memberId  String @db.NVarChar(36)
+  managerId String @db.NVarChar(36)
+
+  createdAt DateTime @default(now())
+
+  @@unique([memberId, managerId])
+  @@index([managerId])
+  @@index([memberId])
+}
+
+/// Transitive closure of OrgEdge. `ancestorId` sits above `descendantId` at
+/// `depth` steps (depth 0 = self). Enables O(1)-ish subtree reads and org-chart
+/// rendering without recursion. Rebuilt weekly alongside the rest of the graph.
+model OrgClosure {
+  id           String @id @default(cuid()) @db.NVarChar(36)
+  ancestorId   String @db.NVarChar(36)
+  descendantId String @db.NVarChar(36)
+  depth        Int
+
+  createdAt DateTime @default(now())
+
+  @@unique([ancestorId, descendantId])
+  @@index([ancestorId])
+  @@index([descendantId])
+}
+
+/// Bridge from the people-graph to geography/business. One row per (district,
+/// member) for every member that appears anywhere in that district's chain
+/// (owner + all R-levels). A manager's scope is every district they cover here,
+/// which already encodes transitive coverage — no closure walk needed.
+model DistrictChain {
+  id           String  @id @default(cuid()) @db.NVarChar(36)
+  districtId   String  @db.NVarChar(50)
+  districtName String? @db.NVarChar(200)
+  stateId      String? @db.NVarChar(50)
+  /// Cognitensor zone/region the district belongs to (from ListDistrict).
+  zoneId       String? @db.NVarChar(50)
+  zoneName     String? @db.NVarChar(200)
+  regionId     String? @db.NVarChar(50)
+  regionName   String? @db.NVarChar(200)
+  memberId     String  @db.NVarChar(36)
+  /// 0 = district owner (DistrictManager), 1 = R1, 2 = R2, ...
+  chainLevel   Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([districtId, memberId])
+  @@index([memberId])
+  @@index([districtId])
+  @@index([stateId])
+  @@index([zoneId])
+  @@index([regionId])
 }

@@ -5,10 +5,14 @@ import { buildDealScopeWhere } from '../../../common/auth/hierarchy-scope.util';
 import { buildDealFilterWhere } from '../deal-filter.util';
 import { mergeWhereClauses } from '../../../common/utils/filter.util';
 import type { Prisma } from '@prisma/client';
+import { GeoCatalogService } from '../../geo/geo-catalog.service';
 
 @QueryHandler(ExportDealsCsvQuery)
 export class ExportDealsCsvHandler implements IQueryHandler<ExportDealsCsvQuery> {
-  constructor(private readonly dealRepo: DealRepository) {}
+  constructor(
+    private readonly dealRepo: DealRepository,
+    private readonly geo: GeoCatalogService,
+  ) {}
 
   async execute(query: ExportDealsCsvQuery): Promise<string> {
     const { filters, hierarchyScope, pospId } = query;
@@ -20,7 +24,8 @@ export class ExportDealsCsvHandler implements IQueryHandler<ExportDealsCsvQuery>
       scopeWhere = buildDealScopeWhere(hierarchyScope);
     }
 
-    const filterWhere = buildDealFilterWhere(filters);
+    const districtIds = this.geo.districtIdsForQuery(filters);
+    const filterWhere = buildDealFilterWhere(filters, districtIds);
     const where = mergeWhereClauses(
       scopeWhere,
       filterWhere,

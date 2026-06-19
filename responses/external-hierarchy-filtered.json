@@ -1,0 +1,34 @@
+{
+  "capturedAt": "2026-06-17T16:02:09.597Z",
+  "method": "GET",
+  "path": "/api/external/hierarchy?districtId=1",
+  "baseUrl": "http://localhost:8000",
+  "status": 200,
+  "statusText": "OK",
+  "note": null,
+  "requestBody": null,
+  "response": [
+    {
+      "DistrictId": "1",
+      "DistrictName": "ADILABAD",
+      "DistrictManagerId": "618469",
+      "DistrictManagerCode": "RAKESH.GADDAM CH TEL",
+      "DistrictManagerName": "Rakesh Gaddam",
+      "R1_UserId": "439037",
+      "R1_UserCode": "PRAVEEN.RHTEL",
+      "R1_UserName": "PRAVEEN PILLI RH TEL",
+      "R2_UserId": "609460",
+      "R2_UserCode": "RAVI.BABUSZH",
+      "R2_UserName": "Ravi Babu Ummadisetty",
+      "R3_UserId": "592240",
+      "R3_UserCode": "HARI.DUTT",
+      "R3_UserName": "Hari Dutt",
+      "R4_UserId": "79",
+      "R4_UserCode": "VIVEK",
+      "R4_UserName": "VIVEK GUPTA",
+      "R5_UserId": "",
+      "R5_UserCode": "",
+      "R5_UserName": ""
+    }
+  ]
+}

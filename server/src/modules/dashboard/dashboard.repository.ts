@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import type { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
-import { ExternalApiService } from '../../common/external-api/external-api.service';
+import { GeoCatalogService } from '../geo/geo-catalog.service';
 import {
   buildDealScopeWhere,
   buildPospScopeWhere,
@@ -17,20 +17,11 @@ import {
 import type { DashboardQueryDto } from './dto/dashboard-query.dto';
 import type { DashboardStats } from './dashboard.types';
 
-/** Maps a subordinate level label to its DistrictHierarchy code column. */
-const LEVEL_TO_DISTRICT_COLUMN: Record<string, string> = {
-  NATIONAL_HEAD: 'nhCode',
-  ZH: 'zhCode',
-  RH: 'rhCode',
-  ASM: 'asmCode',
-  DM: 'dmCode',
-};
-
 @Injectable()
 export class DashboardRepository {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly externalApi: ExternalApiService,
+    private readonly geoCatalog: GeoCatalogService,
   ) {}
 
   // ── scope helpers ──────────────────────────────────────────────────────────
@@ -75,23 +66,18 @@ export class DashboardRepository {
    */
   private async resolveEffectiveScope(
     callerScope: HierarchyScope,
-    subordinateLevel: string | undefined,
+    _subordinateLevel: string | undefined,
     subordinateCode: string | undefined,
     pospId: string | undefined,
   ): Promise<HierarchyScope> {
     // Terminal POSP-level drill takes highest priority
     if (pospId) return { pospIds: [pospId] };
 
-    if (!subordinateLevel || !subordinateCode) return callerScope;
+    // The org graph is role-agnostic — a subordinate is identified by code and
+    // resolves to every district they cover, regardless of their level label.
+    if (!subordinateCode) return callerScope;
 
-    const column = LEVEL_TO_DISTRICT_COLUMN[subordinateLevel];
-    if (!column) return callerScope;
-
-    let districtIds = await districtIdsForCode(
-      this.prisma,
-      column,
-      subordinateCode,
-    );
+    let districtIds = await districtIdsForCode(this.prisma, subordinateCode);
 
     // Intersect with the caller's own districts (null = unrestricted caller).
     const callerDistricts = scopeDistrictIds(callerScope);
@@ -109,30 +95,25 @@ export class DashboardRepository {
    * can only ever reduce what the caller already sees. A POSP-level scope is
    * left untouched (geography is implied by the POSP).
    */
-  private async applyGeoNarrowing(
+  private applyGeoNarrowing(
     scope: HierarchyScope,
     filters: DashboardQueryDto,
-  ): Promise<HierarchyScope> {
-    const { stateId, districtId, cityId } = filters;
-    if (!stateId && !districtId && !cityId) return scope;
+  ): HierarchyScope {
+    const { zoneId, regionId, stateId, districtId, cityId } = filters;
+    if (!zoneId && !regionId && !stateId && !districtId && !cityId)
+      return scope;
     if (scope.pospIds !== undefined) return scope; // POSP drill — leave as-is
 
-    let geoDistricts: string[] | null = null;
-    if (districtId) {
-      geoDistricts = [districtId];
-    } else if (cityId) {
-      const city = this.externalApi
-        .listCities('')
-        .find((c) => c.CityId === cityId);
-      geoDistricts = city ? [city.DistrictId] : [];
-    } else if (stateId) {
-      const rows = await this.prisma.districtHierarchy.findMany({
-        where: { stateId },
-        select: { districtId: true },
-      });
-      geoDistricts = rows.map((r) => r.districtId);
-    }
-    if (geoDistricts === null) return scope;
+    // Resolve any geo selection to a district set via the cached catalog
+    // (precedence district > city > region > state > zone). Works for every
+    // zone/region, not just the DistrictChain rows seen so far.
+    const geoDistricts = this.geoCatalog.resolveDistrictIds({
+      zoneId,
+      regionId,
+      stateId,
+      districtId,
+      cityId,
+    });
 
     const callerDistricts = scopeDistrictIds(scope);
     if (callerDistricts === null) return { districtIds: geoDistricts };
@@ -189,7 +170,7 @@ export class DashboardRepository {
       filters.subordinateCode,
       filters.pospId,
     );
-    effectiveScope = await this.applyGeoNarrowing(effectiveScope, filters);
+    effectiveScope = this.applyGeoNarrowing(effectiveScope, filters);
 
     const dealWhere = this.buildDealWhere(filters, effectiveScope);
     const leadWhere = await this.buildLeadWhere(filters, effectiveScope);

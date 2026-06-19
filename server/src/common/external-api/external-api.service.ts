@@ -10,6 +10,7 @@ import type {
   ExternalPospData,
   ExternalPospLoginData,
   ExternalState,
+  ExternalZone,
 } from './external-api.types';
 
 /** Alias kept for backward compat with sales-team.service */
@@ -101,6 +102,15 @@ export class ExternalApiService {
     });
   }
 
+  listZones(): ExternalZone[] {
+    if (this.useSnapshot) return this.readSnapshot<ExternalZone>('zones.json');
+    return [];
+  }
+
+  async listZonesLive(): Promise<ExternalZone[]> {
+    return this.fetchLive<ExternalZone>('/Cognitensor/ListZone');
+  }
+
   listHierarchy(query?: ExternalHierarchyQueryDto): ExternalHierarchyUser[] {
     if (this.useSnapshot) {
       let data = this.readSnapshot<ExternalHierarchyUser>('hierarchy.json');
@@ -121,6 +131,12 @@ export class ExternalApiService {
   async listHierarchyLive(
     query?: ExternalHierarchyQueryDto,
   ): Promise<ExternalHierarchyUser[]> {
+    // In snapshot mode there is no live endpoint to reach (e.g. local dev with
+    // no UAT/VPN access). Serve the bundled snapshot so callers like the org
+    // chart get real data instead of an empty live response.
+    if (this.useSnapshot) {
+      return this.listHierarchy(query);
+    }
     const body: Record<string, string | number | null> = {
       DistrictId: query?.districtId ?? null,
       UserCode: query?.userCode ?? null,

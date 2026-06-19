@@ -23,7 +23,7 @@ import { Card } from "@/components/ui/Card";
 import { KpiCard } from "@/components/ui/KpiCard";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ListDataSection } from "@/components/ui/ListDataSection";
-import { pospName } from "@/lib/crm-calculations";
+import { dealPospLabel } from "@/lib/crm-calculations";
 import { fmtDate, fmtINR, fmtINRShort } from "@/lib/formatters";
 import { useDealsList } from "@/hooks/useDealsList";
 import { useListQueryStatus } from "@/hooks/useListQueryStatus";
@@ -83,9 +83,13 @@ export default function DashboardPage(): React.ReactElement {
     } else {
       p.set("dateRange", period === "day" ? "today" : period);
     }
-    // Cascading drill-down: pospId takes priority, then deepest manager selection
+    // Scope precedence: pospId → role-based manager → cascade drill-down.
+    // The first two are set directly; the cascade uses the deepest selection.
     if (scopeDrill.posp) {
       p.set("pospId", scopeDrill.posp.id);
+    } else if (scopeDrill.manager) {
+      p.set("subordinateLevel", scopeDrill.manager.role);
+      p.set("subordinateCode", scopeDrill.manager.id);
     } else {
       const last = scopeDrill.path.at(-1);
       if (last) {
@@ -93,10 +97,13 @@ export default function DashboardPage(): React.ReactElement {
         p.set("subordinateCode", last.id);
       }
     }
-    // Scoped geographic narrowing (independent of the manager cascade)
+    // Scoped geographic narrowing (independent of the manager cascade).
+    // Most-specific selection wins: district > city > region > state > zone.
     if (scopeDrill.geo?.districtId) p.set("districtId", scopeDrill.geo.districtId);
     else if (scopeDrill.geo?.cityId) p.set("cityId", scopeDrill.geo.cityId);
+    else if (scopeDrill.geo?.regionId) p.set("regionId", scopeDrill.geo.regionId);
     else if (scopeDrill.geo?.stateId) p.set("stateId", scopeDrill.geo.stateId);
+    else if (scopeDrill.geo?.zoneId) p.set("zoneId", scopeDrill.geo.zoneId);
     return p;
   }, [period, dateFrom, dateTo, scopeDrill]);
 
@@ -176,12 +183,7 @@ export default function DashboardPage(): React.ReactElement {
             callerRole: "",
             nextLevel: null,
             subordinates: [],
-            states: [],
-            districts: [],
-            cities: [],
-            dms: [],
-            asms: [],
-            rhs: [],
+            roleGroups: [],
           }
         }
         scope={scopeDrill}
@@ -340,7 +342,7 @@ export default function DashboardPage(): React.ReactElement {
                   recentDeals.map((d) => (
                     <tr key={d.id}>
                       <td>{d.customer}</td>
-                      {!isPosp && <td>{pospName(posp, d.pospId)}</td>}
+                      {!isPosp && <td>{dealPospLabel(d, posp)}</td>}
                       <td>{d.policy}</td>
                       <td className="num">{fmtINR(d.premium)}</td>
                       <td>

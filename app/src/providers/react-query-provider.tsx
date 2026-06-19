@@ -28,6 +28,11 @@ function getQueryClient() {
   return browserQueryClient;
 }
 
+/** Drop all cached API data when the signed-in user changes. */
+export function clearBrowserQueryCache(): void {
+  browserQueryClient?.clear();
+}
+
 export function ReactQueryProvider({ children }: { children: ReactNode }) {
   const [queryClient] = useState(() => getQueryClient());
   return (

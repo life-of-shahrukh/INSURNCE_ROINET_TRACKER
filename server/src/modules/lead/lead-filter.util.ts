@@ -8,8 +8,9 @@ import {
 
 export function buildLeadFilterWhere(
   query: LeadListQueryDto,
+  districtIds?: string[] | null,
 ): Prisma.LeadWhereInput {
-  const geo = buildGeoFilterWhere(query);
+  const geo = buildGeoFilterWhere(query, districtIds);
   const dateBounds = resolveDateRange(query);
 
   const clauses: Prisma.LeadWhereInput[] = [];

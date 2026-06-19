@@ -1,0 +1,11 @@
+{
+  "capturedAt": "2026-06-17T16:02:10.161Z",
+  "method": "GET",
+  "path": "/api/sales-team/org-chart",
+  "baseUrl": "http://localhost:8000",
+  "status": 200,
+  "statusText": "OK",
+  "note": null,
+  "requestBody": null,
+  "response": []
+}

@@ -7,6 +7,7 @@ import {
 
 export function buildCustomerFilterWhere(
   query: CustomerListQueryDto,
+  districtIds?: string[] | null,
 ): Prisma.CustomerWhereInput {
   const clauses: Prisma.CustomerWhereInput[] = [];
   const dateBounds = resolveDateRange(query);
@@ -15,6 +16,12 @@ export function buildCustomerFilterWhere(
   if (query.kycStatus?.length)
     clauses.push({ kycStatus: { in: query.kycStatus } });
   if (query.source?.length) clauses.push({ source: { in: query.source } });
+
+  // Geo: zone/region/state/district/city are resolved to Cognitensor district
+  // ids upstream; Customer carries `districtId`, so narrow by that set.
+  if (districtIds !== undefined && districtIds !== null) {
+    clauses.push({ districtId: { in: districtIds } });
+  }
 
   if (query.search?.trim()) {
     const term = query.search.trim();

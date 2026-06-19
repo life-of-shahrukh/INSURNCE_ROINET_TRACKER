@@ -31,6 +31,16 @@ const DEAL_SORT_FIELDS: Record<string, keyof Deal> = {
   status: 'status',
 };
 
+const DEAL_POSP_INCLUDE = {
+  posp: {
+    select: { id: true, name: true, code: true },
+  },
+} as const;
+
+export type DealWithPosp = Prisma.DealGetPayload<{
+  include: typeof DEAL_POSP_INCLUDE;
+}>;
+
 @Injectable()
 export class DealRepository {
   constructor(private readonly prisma: PrismaService) {}
@@ -54,10 +64,16 @@ export class DealRepository {
     pageSize: number,
     sortBy?: string,
     sortOrder?: 'asc' | 'desc',
-  ): Promise<PaginatedResult<Deal>> {
+  ): Promise<PaginatedResult<DealWithPosp>> {
     const orderBy = this.resolveOrderBy(sortBy, sortOrder);
     const [data, total] = await Promise.all([
-      this.prisma.deal.findMany({ where, skip, take, orderBy }),
+      this.prisma.deal.findMany({
+        where,
+        skip,
+        take,
+        orderBy,
+        include: DEAL_POSP_INCLUDE,
+      }),
       this.prisma.deal.count({ where }),
     ]);
     return buildPaginatedResult(data, total, page, pageSize);
@@ -95,7 +111,7 @@ export class DealRepository {
     return deal;
   }
 
-  create(dto: CreateDealDto): Promise<Deal> {
+  create(dto: CreateDealDto): Promise<DealWithPosp> {
     const coaType = dto.coaType ?? 'AMOUNT';
     const coa = dto.coa ?? 0;
     return this.prisma.deal
@@ -122,6 +138,7 @@ export class DealRepository {
           areaId: dto.areaId ?? null,
           districtId: dto.districtId ?? null,
         },
+        include: DEAL_POSP_INCLUDE,
       })
       .catch((e: unknown) => this.handlePrismaError(e));
   }
@@ -153,7 +170,7 @@ export class DealRepository {
       .catch((e: unknown) => this.handlePrismaError(e));
   }
 
-  async update(id: string, dto: UpdateDealDto): Promise<Deal> {
+  async update(id: string, dto: UpdateDealDto): Promise<DealWithPosp> {
     const existing = await this.findById(id);
     // Recompute the effective COA whenever its inputs change (raw value, mode,
     // or premium — PERCENT-mode COA depends on premium).
@@ -187,6 +204,7 @@ export class DealRepository {
         }),
         ...(dto.remarks !== undefined && { remarks: dto.remarks }),
       },
+      include: DEAL_POSP_INCLUDE,
     });
   }
 

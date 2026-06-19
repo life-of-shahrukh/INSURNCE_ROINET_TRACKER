@@ -1,0 +1,140 @@
+{
+  "capturedAt": "2026-06-17T16:02:09.479Z",
+  "method": "GET",
+  "path": "/api/external/cities?districtId=1",
+  "baseUrl": "http://localhost:8000",
+  "status": 200,
+  "statusText": "OK",
+  "note": null,
+  "requestBody": null,
+  "response": [
+    {
+      "StateId": "33",
+      "StateName": "TELANGANA",
+      "DistrictId": "1",
+      "DistrictName": "ADILABAD",
+      "CityId": "5569",
+      "CityName": "Adilabad"
+    },
+    {
+      "StateId": "33",
+      "StateName": "TELANGANA",
+      "DistrictId": "1",
+      "DistrictName": "ADILABAD",
+      "CityId": "5570",
+      "CityName": "Asifabad"
+    },
+    {
+      "StateId": "33",
+      "StateName": "TELANGANA",
+      "DistrictId": "1",
+      "DistrictName": "ADILABAD",
+      "CityId": "5571",
+      "CityName": "Bellampalle"
+    },
+    {
+      "StateId": "33",
+      "StateName": "TELANGANA",
+      "DistrictId": "1",
+      "DistrictName": "ADILABAD",
+      "CityId": "5572",
+      "CityName": "Bhainsa"
+    },
+    {
+      "StateId": "33",
+      "StateName": "TELANGANA",
+      "DistrictId": "1",
+      "DistrictName": "ADILABAD",
+      "CityId": "5573",
+      "CityName": "Dasnapur"
+    },
+    {
+      "StateId": "33",
+      "StateName": "TELANGANA",
+      "DistrictId": "1",
+      "DistrictName": "ADILABAD",
+      "CityId": "5574",
+      "CityName": "Kaghaznagar"
+    },
+    {
+      "StateId": "33",
+      "StateName": "TELANGANA",
+      "DistrictId": "1",
+      "DistrictName": "ADILABAD",
+      "CityId": "5575",
+      "CityName": "Kyathampalle"
+    },
+    {
+      "StateId": "33",
+      "StateName": "TELANGANA",
+      "DistrictId": "1",
+      "DistrictName": "ADILABAD",
+      "CityId": "5576",
+      "CityName": "Madaram"
+    },
+    {
+      "StateId": "33",
+      "StateName": "TELANGANA",
+      "DistrictId": "1",
+      "DistrictName": "ADILABAD",
+      "CityId": "5577",
+      "CityName": "Mancherial"
+    },
+    {
+      "StateId": "33",
+      "StateName": "TELANGANA",
+      "DistrictId": "1",
+      "DistrictName": "ADILABAD",
+      "CityId": "5578",
+      "CityName": "Mandamarri"
+    },
+    {
+      "StateId": "33",
+      "StateName": "TELANGANA",
+      "DistrictId": "1",
+      "DistrictName": "ADILABAD",
+      "CityId": "5579",
+      "CityName": "Naspur"
+    },
+    {
+      "StateId": "33",
+      "StateName": "TELANGANA",
+      "DistrictId": "1",
+      "DistrictName": "ADILABAD",
+      "CityId": "5580",
+      "CityName": "Nirmal"
+    },
+    {
+      "StateId": "33",
+      "StateName": "TELANGANA",
+      "DistrictId": "1",
+      "DistrictName": "ADILABAD",
+      "CityId": "5581",
+      "CityName": "Singapur"
+    },
+    {
+      "StateId": "33",
+      "StateName": "TELANGANA",
+      "DistrictId": "1",
+      "DistrictName": "ADILABAD",
+      "CityId": "5582",
+      "CityName": "Tallapalle"
+    },
+    {
+      "StateId": "33",
+      "StateName": "TELANGANA",
+      "DistrictId": "1",
+      "DistrictName": "ADILABAD",
+      "CityId": "5583",
+      "CityName": "Teegalapahad"
+    },
+    {
+      "StateId": "33",
+      "StateName": "TELANGANA",
+      "DistrictId": "1",
+      "DistrictName": "ADILABAD",
+      "CityId": "5584",
+      "CityName": "Kaddam"
+    }
+  ]
+}

@@ -43,6 +43,20 @@ export class GeoFilterQueryDto extends PaginationQueryDto {
   @IsArray()
   @IsString({ each: true })
   @QueryStringArray()
+  state?: string[];
+
+  @ApiPropertyOptional({ type: [String] })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  @QueryStringArray()
+  city?: string[];
+
+  @ApiPropertyOptional({ type: [String] })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  @QueryStringArray()
   area?: string[];
 
   @ApiPropertyOptional({ type: [String] })

@@ -1,0 +1,202 @@
+{
+  "capturedAt": "2026-06-17T16:02:09.487Z",
+  "method": "GET",
+  "path": "/api/geo/catalog",
+  "baseUrl": "http://localhost:8000",
+  "status": 200,
+  "statusText": "OK",
+  "note": "Small geo reference lists (zones/regions/states) — loaded once on the client",
+  "requestBody": null,
+  "response": {
+    "zones": [
+      {
+        "id": "1",
+        "name": "J&K/PB/HP/HAR/DELHI/NCR"
+      },
+      {
+        "id": "2",
+        "name": "UP/UTT"
+      },
+      {
+        "id": "3",
+        "name": "RAJ/GUJ/MP/UT1"
+      },
+      {
+        "id": "4",
+        "name": "MAH/GOA"
+      },
+      {
+        "id": "5",
+        "name": "WB/NE/CDG"
+      },
+      {
+        "id": "6",
+        "name": "Bihar/JHND"
+      },
+      {
+        "id": "7",
+        "name": "TN/KE/KAR/UT2"
+      },
+      {
+        "id": "8",
+        "name": "odisha"
+      },
+      {
+        "id": "9",
+        "name": "AP/TEL"
+      }
+    ],
+    "regions": [
+      {
+        "id": "2",
+        "name": "Bihar"
+      },
+      {
+        "id": "7",
+        "name": "NCR HAR"
+      }
+    ],
+    "states": [
+      {
+        "id": "1",
+        "name": "DELHI"
+      },
+      {
+        "id": "2",
+        "name": "HARYANA"
+      },
+      {
+        "id": "3",
+        "name": "HIMACHAL PRADESH"
+      },
+      {
+        "id": "4",
+        "name": "JAMMU AND KASHMIR"
+      },
+      {
+        "id": "5",
+        "name": "PUNJAB"
+      },
+      {
+        "id": "6",
+        "name": "RAJASTHAN"
+      },
+      {
+        "id": "7",
+        "name": "UTTAR PRADESH"
+      },
+      {
+        "id": "10",
+        "name": "UTTARAKHAND"
+      },
+      {
+        "id": "11",
+        "name": "ASSAM"
+      },
+      {
+        "id": "12",
+        "name": "BIHAR"
+      },
+      {
+        "id": "13",
+        "name": "CHHATTISGARH"
+      },
+      {
+        "id": "14",
+        "name": "JHARKHAND"
+      },
+      {
+        "id": "15",
+        "name": "MANIPUR"
+      },
+      {
+        "id": "16",
+        "name": "MEGHALAYA"
+      },
+      {
+        "id": "17",
+        "name": "MIZORAM"
+      },
+      {
+        "id": "18",
+        "name": "NAGALAND"
+      },
+      {
+        "id": "19",
+        "name": "ODISHA"
+      },
+      {
+        "id": "20",
+        "name": "SIKKIM"
+      },
+      {
+        "id": "21",
+        "name": "TRIPURA"
+      },
+      {
+        "id": "22",
+        "name": "WEST BENGAL"
+      },
+      {
+        "id": "23",
+        "name": "GOA"
+      },
+      {
+        "id": "24",
+        "name": "GUJARAT"
+      },
+      {
+        "id": "25",
+        "name": "MADHYA PRADESH"
+      },
+      {
+        "id": "26",
+        "name": "MAHARASHTRA"
+      },
+      {
+        "id": "27",
+        "name": "ANDHRA PRADESH"
+      },
+      {
+        "id": "28",
+        "name": "KARNATAKA"
+      },
+      {
+        "id": "29",
+        "name": "KERALA"
+      },
+      {
+        "id": "30",
+        "name": "TAMIL NADU"
+      },
+      {
+        "id": "33",
+        "name": "TELANGANA"
+      },
+      {
+        "id": "34",
+        "name": "ARUNACHAL PRADESH"
+      },
+      {
+        "id": "35",
+        "name": "Daman Diu"
+      },
+      {
+        "id": "36",
+        "name": "Dadra And Nagar Haveli"
+      },
+      {
+        "id": "37",
+        "name": "Lakshadweep"
+      },
+      {
+        "id": "38",
+        "name": "Pondicherry"
+      },
+      {
+        "id": "39",
+        "name": "Andaman Nicobar Islands"
+      }
+    ]
+  }
+}

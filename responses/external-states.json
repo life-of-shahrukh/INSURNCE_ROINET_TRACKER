@@ -1,0 +1,187 @@
+{
+  "capturedAt": "2026-06-17T16:02:09.459Z",
+  "method": "GET",
+  "path": "/api/external/states",
+  "baseUrl": "http://localhost:8000",
+  "status": 200,
+  "statusText": "OK",
+  "note": null,
+  "requestBody": null,
+  "response": [
+    {
+      "StateId": "1",
+      "StateName": "DELHI",
+      "StateCode": "DL"
+    },
+    {
+      "StateId": "2",
+      "StateName": "HARYANA",
+      "StateCode": "HR"
+    },
+    {
+      "StateId": "3",
+      "StateName": "HIMACHAL PRADESH",
+      "StateCode": "HP"
+    },
+    {
+      "StateId": "4",
+      "StateName": "JAMMU AND KASHMIR",
+      "StateCode": "JK"
+    },
+    {
+      "StateId": "5",
+      "StateName": "PUNJAB",
+      "StateCode": "PB"
+    },
+    {
+      "StateId": "6",
+      "StateName": "RAJASTHAN",
+      "StateCode": "RJ"
+    },
+    {
+      "StateId": "7",
+      "StateName": "UTTAR PRADESH",
+      "StateCode": "UP"
+    },
+    {
+      "StateId": "10",
+      "StateName": "UTTARAKHAND",
+      "StateCode": "UK"
+    },
+    {
+      "StateId": "11",
+      "StateName": "ASSAM",
+      "StateCode": "AS"
+    },
+    {
+      "StateId": "12",
+      "StateName": "BIHAR",
+      "StateCode": "BR"
+    },
+    {
+      "StateId": "13",
+      "StateName": "CHHATTISGARH",
+      "StateCode": "CG"
+    },
+    {
+      "StateId": "14",
+      "StateName": "JHARKHAND",
+      "StateCode": "JH"
+    },
+    {
+      "StateId": "15",
+      "StateName": "MANIPUR",
+      "StateCode": "MN"
+    },
+    {
+      "StateId": "16",
+      "StateName": "MEGHALAYA",
+      "StateCode": "ML"
+    },
+    {
+      "StateId": "17",
+      "StateName": "MIZORAM",
+      "StateCode": "MZ"
+    },
+    {
+      "StateId": "18",
+      "StateName": "NAGALAND",
+      "StateCode": "NL"
+    },
+    {
+      "StateId": "19",
+      "StateName": "ODISHA",
+      "StateCode": "OR"
+    },
+    {
+      "StateId": "20",
+      "StateName": "SIKKIM",
+      "StateCode": "SK"
+    },
+    {
+      "StateId": "21",
+      "StateName": "TRIPURA",
+      "StateCode": "TR"
+    },
+    {
+      "StateId": "22",
+      "StateName": "WEST BENGAL",
+      "StateCode": "WB"
+    },
+    {
+      "StateId": "23",
+      "StateName": "GOA",
+      "StateCode": "GA"
+    },
+    {
+      "StateId": "24",
+      "StateName": "GUJARAT",
+      "StateCode": "GJ"
+    },
+    {
+      "StateId": "25",
+      "StateName": "MADHYA PRADESH",
+      "StateCode": "MP"
+    },
+    {
+      "StateId": "26",
+      "StateName": "MAHARASHTRA",
+      "StateCode": "MH"
+    },
+    {
+      "StateId": "27",
+      "StateName": "ANDHRA PRADESH",
+      "StateCode": "AP"
+    },
+    {
+      "StateId": "28",
+      "StateName": "KARNATAKA",
+      "StateCode": "KA"
+    },
+    {
+      "StateId": "29",
+      "StateName": "KERALA",
+      "StateCode": "KL"
+    },
+    {
+      "StateId": "30",
+      "StateName": "TAMIL NADU",
+      "StateCode": "TN"
+    },
+    {
+      "StateId": "33",
+      "StateName": "TELANGANA",
+      "StateCode": "TG"
+    },
+    {
+      "StateId": "34",
+      "StateName": "ARUNACHAL PRADESH",
+      "StateCode": "AR"
+    },
+    {
+      "StateId": "35",
+      "StateName": "Daman Diu",
+      "StateCode": "DD"
+    },
+    {
+      "StateId": "36",
+      "StateName": "Dadra And Nagar Haveli",
+      "StateCode": "DN"
+    },
+    {
+      "StateId": "37",
+      "StateName": "Lakshadweep",
+      "StateCode": "LD"
+    },
+    {
+      "StateId": "38",
+      "StateName": "Pondicherry",
+      "StateCode": "PY"
+    },
+    {
+      "StateId": "39",
+      "StateName": "Andaman Nicobar Islands",
+      "StateCode": "AN"
+    }
+  ]
+}

@@ -6,6 +6,15 @@ export interface FilterOptionItem {
   designation?: string;
 }
 
+/** Managers in scope grouped by their real org role (senior-first). */
+export interface RoleGroup {
+  /** Org role code (ADMIN | SZH | ZH | CH | RH | ASSISTASM | ASM | CSP | ...) */
+  role: string;
+  /** Human-readable label ('Super Zonal Head', 'Cluster Head', ...) */
+  label: string;
+  members: FilterOptionItem[];
+}
+
 export interface HierarchyFilterOptions {
   /** Caller's own role */
   callerRole: string;
@@ -13,14 +22,8 @@ export interface HierarchyFilterOptions {
   nextLevel: string | null;
   /** Particular people at `nextLevel` within the caller's scope */
   subordinates: FilterOptionItem[];
-  /** Geographic dimensions, scoped to the caller's territory */
-  states: FilterOptionItem[];
-  districts: FilterOptionItem[];
-  cities: FilterOptionItem[];
-  /** Manager-level dimensions, scoped to the caller's territory */
-  dms: FilterOptionItem[];
-  asms: FilterOptionItem[];
-  rhs: FilterOptionItem[];
+  /** Managers in scope grouped by real org role, ordered senior-first. */
+  roleGroups: RoleGroup[];
 }
 
 export interface SubordinatesResult {

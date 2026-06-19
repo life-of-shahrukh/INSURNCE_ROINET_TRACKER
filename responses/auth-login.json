@@ -1,0 +1,20 @@
+{
+  "capturedAt": "2026-06-17T16:02:08.983Z",
+  "method": "POST",
+  "path": "/api/auth/login",
+  "baseUrl": "http://localhost:8000",
+  "status": 200,
+  "statusText": "OK",
+  "note": "Sets access_token cookie for subsequent requests",
+  "requestBody": {
+    "email": "superadmin@roinet.com",
+    "password": "Admin@1234"
+  },
+  "response": {
+    "id": "cmqdxuytl0000c2lcckr2fvwb",
+    "email": "superadmin@roinet.com",
+    "role": "SUPER_ADMIN",
+    "status": "ACTIVE",
+    "pospId": null
+  }
+}

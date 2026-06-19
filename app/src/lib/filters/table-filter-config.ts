@@ -8,7 +8,9 @@ import {
   type FilterDimension,
   type FilterOption,
   type FilterState,
+  type GeoDimensionOptions,
 } from "./filter-utils";
+import { getCachedOptionLabel } from "./option-label-cache";
 
 /** Identifies which list/table the filter bar belongs to */
 export type ListViewId =
@@ -97,8 +99,10 @@ const QUERY_FILTER_DEFS: Record<
 const GEO_FIELDS: FilterFieldRef[] = [
   { type: "state", key: "zone", label: "Zone" },
   { type: "state", key: "region", label: "Region" },
+  { type: "state", key: "state", label: "State" },
   { type: "state", key: "area", label: "Area" },
   { type: "state", key: "district", label: "District" },
+  { type: "state", key: "city", label: "City" },
 ];
 
 /** Filter fields ordered to mirror each table's columns / card fields */
@@ -162,6 +166,7 @@ export const TABLE_FILTER_CONFIG: Record<ListViewId, ListViewFilterConfig> = {
       { type: "state", key: "kycStatus", label: "KYC Status" },
       { type: "state", key: "source", label: "Source" },
       { type: "state", key: "dateRange", label: "Created" },
+      ...GEO_FIELDS,
     ],
   },
   leads: {
@@ -219,10 +224,11 @@ export function getViewFilterDimensions(
   view: ListViewId,
   role: UserRole,
   filters: FilterState,
+  geoOptions?: GeoDimensionOptions,
 ): ViewFilterDimension[] {
   const config = TABLE_FILTER_CONFIG[view];
   const stateDimMap = new Map(
-    getVisibleDimensions(role, filters).map((dim) => [dim.key, dim]),
+    getVisibleDimensions(role, filters, geoOptions).map((dim) => [dim.key, dim]),
   );
 
   const result: ViewFilterDimension[] = [];
@@ -253,7 +259,11 @@ export interface ViewActiveFilterChip {
 }
 
 function getOptionLabel(options: FilterOption[], value: string): string {
-  return options.find((o) => o.value === value)?.label ?? value;
+  return (
+    options.find((o) => o.value === value)?.label ??
+    getCachedOptionLabel(value) ??
+    value
+  );
 }
 
 export function buildViewActiveFilterChips(

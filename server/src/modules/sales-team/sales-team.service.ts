@@ -17,6 +17,14 @@ import { SalesTeamListQueryDto } from './dto/sales-team-list-query.dto';
 import { buildSalesTeamFilterWhere } from './sales-team-filter.util';
 import { resolvePagination } from '../../common/utils/pagination.util';
 import type { PaginatedResult } from '../../common/interfaces/paginated-result.interface';
+import { OrgSyncService } from '../org-sync/org-sync.service';
+import type { OrgGraphCounts } from '../../common/org-graph/org-graph.repository';
+import {
+  loadDistrictOwnersByDistrictId,
+  loadPospsForOrgChart,
+} from '../../common/org-graph/org-chart-posp.util';
+import { OrgRole, orgRoleRank, appRoleFromOrgRole } from '../../common/external-api/user-type.util';
+import { buildOrgGraph } from '../../common/org-graph/org-graph-builder';
 
 export interface OrgNode {
   id: string;
@@ -24,7 +32,7 @@ export interface OrgNode {
   name: string;
   employeeCode: string;
   level: number; // 1=DM … 6=R5
-  designation: string; // 'DM' | 'R1' | 'R2' | 'R3' | 'R4' | 'R5'
+  designation: string; // 'DM' | 'R1' | … | 'POSP'
   districtName?: string;
 }
 
@@ -36,6 +44,7 @@ export class SalesTeamService {
     private readonly repository: SalesTeamRepository,
     private readonly prisma: PrismaService,
     private readonly externalApiService: ExternalApiService,
+    private readonly orgSyncService: OrgSyncService,
   ) {}
 
   async create(dto: CreateSalesTeamDto): Promise<SalesTeam> {
@@ -93,19 +102,6 @@ export class SalesTeamService {
   }
 
   /**
-   * Canonical chain in ListHierarchyUserData (bottom → top):
-   * DistrictManager → R1 → R2 → R3 → R4. The R-labels are positional, not
-   * role names, so we map them to our roles explicitly.
-   */
-  private static readonly LEVEL_TO_DESIGNATION: Record<number, string> = {
-    1: 'DM', // DistrictManager
-    2: 'ASM', // R1
-    3: 'RH', // R2
-    4: 'ZH', // R3
-    5: 'NATIONAL_HEAD', // R4
-  };
-
-  /**
    * Sync sales team hierarchy from ListHierarchyUserData external API.
    * Creates a placeholder User if none exists for the given employee code,
    * then upserts the SalesTeam record with the correct designation and
@@ -113,7 +109,7 @@ export class SalesTeamService {
    */
   async syncFromExternalApi(): Promise<{
     members: number;
-    districts: number;
+    org: OrgGraphCounts;
     pospsGeo: number;
   }> {
     this.logger.log('Starting sales team sync from external API...');
@@ -146,8 +142,8 @@ export class SalesTeamService {
       const rLevels = ['R1', 'R2', 'R3', 'R4'] as const;
       rLevels.forEach((r, idx) => {
         addPerson(
-          entry[`${r}_UserCode` as keyof typeof entry],
-          entry[`${r}_UserName` as keyof typeof entry],
+          (entry[`${r}_UserCode` as keyof typeof entry] as string) ?? '',
+          (entry[`${r}_UserName` as keyof typeof entry] as string) ?? '',
           idx + 2,
         );
       });
@@ -167,11 +163,23 @@ export class SalesTeamService {
       }
     }
 
+    const graphSeed = buildOrgGraph(hierarchyData);
+    const orgRoleByCode = new Map(
+      graphSeed.members.map((m) => [m.userCode, m.role as OrgRole]),
+    );
+    const appRoleByCode = new Map(
+      graphSeed.members.map((m) => [
+        m.userCode,
+        appRoleFromOrgRole(m.role as OrgRole),
+      ]),
+    );
+
     // Pass 1: upsert each person (designation + placeholder user).
     let members = 0;
     for (const person of people.values()) {
-      const designation =
-        SalesTeamService.LEVEL_TO_DESIGNATION[person.level] ?? 'DM';
+      const orgRole = orgRoleByCode.get(person.code);
+      const appRole = appRoleByCode.get(person.code) ?? 'DM';
+      const designation = orgRole ?? 'DM';
       try {
         const email = `${person.code.toLowerCase()}@roinet.sync`;
         let user = await this.prisma.user.findFirst({ where: { email } });
@@ -180,14 +188,14 @@ export class SalesTeamService {
             data: {
               email,
               passwordHash: 'sync-placeholder',
-              role: designation,
+              role: appRole,
               status: 'ACTIVE',
             },
           });
-        } else if (user.role !== designation) {
+        } else if (user.role !== appRole) {
           await this.prisma.user.update({
             where: { id: user.id },
-            data: { role: designation },
+            data: { role: appRole },
           });
         }
 
@@ -224,71 +232,16 @@ export class SalesTeamService {
       }
     }
 
-    const districts = await this.syncDistrictHierarchy(hierarchyData);
+    // Rebuild the org graph (OrgMember/OrgEdge/OrgClosure/DistrictChain) — the
+    // source of truth for hierarchy scoping. SalesTeam rows above still exist
+    // for the internal CRM tree view, but no longer drive data scoping.
+    const org = await this.orgSyncService.rebuild();
     const pospsGeo = await this.syncPospGeography();
 
     this.logger.log(
-      `Sync complete. members=${members} districts=${districts} pospsGeo=${pospsGeo}`,
+      `Sync complete. members=${members} org(members=${org.members}, districtChains=${org.districtChains}) pospsGeo=${pospsGeo}`,
     );
-    return { members, districts, pospsGeo };
-  }
-
-  /**
-   * Upserts one DistrictHierarchy row per ListHierarchyUserData entry. This is
-   * the source of truth for geographic scoping: a manager covers a district
-   * when their code appears in the matching level column.
-   */
-  async syncDistrictHierarchy(
-    hierarchyData?: HierarchyEntry[],
-  ): Promise<number> {
-    const data = hierarchyData ?? this.externalApiService.listHierarchy();
-
-    // districtId → stateId map from the districts snapshot (hierarchy rows
-    // carry no stateId of their own).
-    const stateByDistrict = new Map<string, string>();
-    try {
-      for (const d of this.externalApiService.listDistricts('')) {
-        stateByDistrict.set(d.DistrictId, d.StateId);
-      }
-    } catch {
-      // districts snapshot optional; stateId stays null if unavailable
-    }
-
-    let count = 0;
-    for (const e of data) {
-      if (!e.DistrictId) continue;
-      const payload = {
-        districtName: e.DistrictName || null,
-        stateId: stateByDistrict.get(e.DistrictId) ?? null,
-        dmId: e.DistrictManagerId || null,
-        dmCode: e.DistrictManagerCode || null,
-        dmName: e.DistrictManagerName || null,
-        asmId: e.R1_UserId || null,
-        asmCode: e.R1_UserCode || null,
-        asmName: e.R1_UserName || null,
-        rhId: e.R2_UserId || null,
-        rhCode: e.R2_UserCode || null,
-        rhName: e.R2_UserName || null,
-        zhId: e.R3_UserId || null,
-        zhCode: e.R3_UserCode || null,
-        zhName: e.R3_UserName || null,
-        nhId: e.R4_UserId || null,
-        nhCode: e.R4_UserCode || null,
-        nhName: e.R4_UserName || null,
-      };
-      try {
-        await this.prisma.districtHierarchy.upsert({
-          where: { districtId: e.DistrictId },
-          create: { districtId: e.DistrictId, ...payload },
-          update: payload,
-        });
-        count++;
-      } catch (err) {
-        this.logger.warn(`Failed to upsert district ${e.DistrictId}: ${err}`);
-      }
-    }
-    this.logger.log(`Synced ${count} district hierarchy rows.`);
-    return count;
+    return { members, org, pospsGeo };
   }
 
   /**
@@ -321,94 +274,116 @@ export class SalesTeamService {
   }
 
   /**
-   * Build a flat OrgNode[] from the live Cognitensor ListHierarchyUserData API.
-   * Each HierarchyEntry row represents a district chain: R5→R4→R3→R2→R1→DM.
-   * Nodes are deduplicated by UserId; parent-child links are derived per row.
+   * Build a flat OrgNode[] from the persisted org graph (OrgMember + OrgEdge +
+   * DistrictChain). The graph is refreshed weekly from Cognitensor by
+   * OrgSyncService (and on-demand via POST /sales-team/sync), so this endpoint
+   * never calls the live API per request — it just reads the DB, which keeps it
+   * fast and resilient to VPN/network availability.
    */
   async getOrgChartNodes(): Promise<OrgNode[]> {
-    this.logger.log('getOrgChartNodes: calling live Cognitensor API...');
-    let hierarchyData: HierarchyEntry[];
-    try {
-      hierarchyData = await this.externalApiService.listHierarchyLive();
-      this.logger.log(
-        `getOrgChartNodes: received ${hierarchyData?.length ?? 'null'} entries from live API`,
+    const members = await this.prisma.orgMember.findMany({
+      select: {
+        id: true,
+        userId: true,
+        userCode: true,
+        userName: true,
+        role: true,
+      },
+    });
+    if (members.length === 0) {
+      this.logger.warn(
+        'getOrgChartNodes: org graph is empty — run a sync (weekly cron or POST /sales-team/sync)',
       );
-    } catch (err) {
-      const errMsg = err instanceof Error ? err.message : String(err);
-      this.logger.error(
-        `getOrgChartNodes: live API failed - ${errMsg}`,
-        err instanceof Error ? err.stack : undefined,
-      );
-      this.logger.warn('getOrgChartNodes: falling back to snapshot');
-      hierarchyData = this.externalApiService.listHierarchy();
-      this.logger.log(
-        `getOrgChartNodes: snapshot returned ${hierarchyData.length} entries`,
-      );
+      return [];
+    }
+
+    const userIdByMemberId = new Map(members.map((m) => [m.id, m.userId]));
+
+    // Parent links from the deduplicated adjacency list; first manager wins.
+    const edges = await this.prisma.orgEdge.findMany({
+      select: { memberId: true, managerId: true },
+    });
+    const parentMemberOf = new Map<string, string>();
+    for (const e of edges) {
+      if (!parentMemberOf.has(e.memberId)) {
+        parentMemberOf.set(e.memberId, e.managerId);
+      }
+    }
+
+    // District label for district-owner members (chainLevel 0).
+    const owners = await this.prisma.districtChain.findMany({
+      where: { chainLevel: 0 },
+      select: { memberId: true, districtName: true },
+    });
+    const districtNameByMemberId = new Map<string, string>();
+    for (const o of owners) {
+      if (o.districtName && !districtNameByMemberId.has(o.memberId)) {
+        districtNameByMemberId.set(o.memberId, o.districtName);
+      }
     }
 
     const nodeMap = new Map<string, OrgNode>();
-
-    const levels = ['R5', 'R4', 'R3', 'R2', 'R1'] as const;
-    const levelIndex: Record<string, number> = {
-      R5: 6,
-      R4: 5,
-      R3: 4,
-      R2: 3,
-      R1: 2,
-    };
-
-    for (const entry of hierarchyData) {
-      // Add DM node
-      if (entry.DistrictManagerId) {
-        if (!nodeMap.has(entry.DistrictManagerId)) {
-          nodeMap.set(entry.DistrictManagerId, {
-            id: entry.DistrictManagerId,
-            parentId: null, // will be set below
-            name: entry.DistrictManagerName || entry.DistrictManagerCode,
-            employeeCode: entry.DistrictManagerCode,
-            level: 1,
-            designation: 'DM',
-            districtName: entry.DistrictName,
-          });
-        }
-      }
-
-      // Add R1–R5 nodes
-      for (const r of levels) {
-        const uid = entry[`${r}_UserId` as keyof HierarchyEntry];
-        const ucode = entry[`${r}_UserCode` as keyof HierarchyEntry];
-        const uname = entry[`${r}_UserName` as keyof HierarchyEntry];
-        if (uid && !nodeMap.has(uid)) {
-          nodeMap.set(uid, {
-            id: uid,
-            parentId: null,
-            name: uname || ucode,
-            employeeCode: ucode,
-            level: levelIndex[r],
-            designation: r,
-          });
-        }
-      }
-
-      // Link parent-child along the chain: DM→R1→R2→R3→R4→R5
-      // Build an ordered chain of present IDs from bottom (DM) to top (R5)
-      const chain: string[] = [];
-      if (entry.DistrictManagerId) chain.push(entry.DistrictManagerId);
-      for (const r of ['R1', 'R2', 'R3', 'R4', 'R5'] as const) {
-        const uid = entry[`${r}_UserId` as keyof HierarchyEntry];
-        if (uid) chain.push(uid);
-      }
-
-      // chain[i].parentId = chain[i+1] (next in chain is the parent)
-      for (let i = 0; i < chain.length - 1; i++) {
-        const node = nodeMap.get(chain[i]);
-        if (node && node.parentId === null) {
-          node.parentId = chain[i + 1];
-        }
-      }
+    for (const m of members) {
+      const role = m.role || OrgRole.UNKNOWN;
+      const parentMemberId = parentMemberOf.get(m.id);
+      const parentUserId = parentMemberId
+        ? (userIdByMemberId.get(parentMemberId) ?? null)
+        : null;
+      nodeMap.set(m.userId, {
+        id: m.userId,
+        parentId: parentUserId,
+        name: m.userName || m.userCode,
+        employeeCode: m.userCode,
+        level: orgRoleRank(role as OrgRole),
+        designation: role,
+        districtName: districtNameByMemberId.get(m.id),
+      });
     }
 
+    await this.appendPospNodes(
+      nodeMap,
+      await loadDistrictOwnersByDistrictId(this.prisma),
+    );
+    this.logger.log(`getOrgChartNodes: built ${nodeMap.size} nodes from DB`);
     return Array.from(nodeMap.values());
+  }
+
+  /**
+   * Adds POSP leaf nodes under each district's owner. Parent is the district
+   * manager Cognitensor UserId so links match manager nodes in `nodeMap`.
+   */
+  private async appendPospNodes(
+    nodeMap: Map<string, OrgNode>,
+    ownersByDistrict: Map<
+      string,
+      { userId: string; districtName: string | null }
+    >,
+  ): Promise<void> {
+    const posps = await loadPospsForOrgChart(this.prisma);
+    let attached = 0;
+
+    for (const p of posps) {
+      const owner = ownersByDistrict.get(p.districtId);
+      if (!owner || !nodeMap.has(owner.userId)) continue;
+
+      const nodeId = p.externalId ?? p.id;
+      if (nodeMap.has(nodeId)) continue;
+
+      nodeMap.set(nodeId, {
+        id: nodeId,
+        parentId: owner.userId,
+        name: p.name || p.code,
+        employeeCode: p.code,
+        level: 0,
+        designation: 'POSP',
+        districtName: owner.districtName ?? undefined,
+      });
+      attached++;
+    }
+
+    this.logger.log(
+      `Org chart: attached ${attached} POSP nodes under district managers`,
+    );
   }
 
   /**

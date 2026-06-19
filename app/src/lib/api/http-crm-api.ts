@@ -9,10 +9,17 @@ import { fetchPaginated, request } from "./fetch-client";
  * API payload so the rest of the app never has to worry about the mismatch.
  */
 function normalizeDeal(raw: Record<string, unknown>): Deal {
+  const pospRaw = raw["posp"];
+  const posp =
+    pospRaw && typeof pospRaw === "object"
+      ? (pospRaw as Deal["posp"])
+      : null;
+
   return {
     ...(raw as unknown as Deal),
     customer: (raw["customerName"] ?? raw["customer"] ?? "") as string,
     customerId: (raw["customerId"] ?? null) as string | null,
+    posp,
   };
 }
 

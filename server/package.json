@@ -30,7 +30,9 @@
     "db:studio": "prisma studio",
     "db:format": "prisma format",
     "db:validate": "prisma validate",
-    "seed:all": "ts-node -r tsconfig-paths/register src/seed/sync-from-snapshots.ts"
+    "seed:all": "ts-node -r tsconfig-paths/register src/seed/sync-from-snapshots.ts",
+    "seed:crm": "ts-node -r tsconfig-paths/register src/seed/seed-transactional.ts",
+    "snapshots:refresh": "node scripts/refresh-snapshots.mjs"
   },
   "dependencies": {
     "@nestjs/bull": "^11.0.4",
@@ -42,6 +44,7 @@
     "@nestjs/jwt": "^11.0.2",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/schedule": "^6.1.3",
     "@nestjs/swagger": "^11.4.4",
     "@prisma/client": "^6.19.3",
     "@types/cookie-parser": "^1.4.10",

@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { leadApi, CreateLeadInput, LeadStatus } from '../lib/api/lead-api';
 import { LIST_QUERY_OPTIONS } from '@/lib/query/list-query-options';
+import { dealKeys } from '@/hooks/useDealsList';
+import { dashboardStatKeys } from '@/hooks/useDashboardStats';
 
 export const leadKeys = {
   all: ['leads'] as const,
@@ -30,7 +32,11 @@ export function useCreateLead() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: CreateLeadInput) => leadApi.create(data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: leadKeys.all }),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: leadKeys.all }),
+        queryClient.invalidateQueries({ queryKey: dashboardStatKeys.all }),
+      ]),
   });
 }
 
@@ -39,7 +45,11 @@ export function useUpdateLead() {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<CreateLeadInput> & { status?: LeadStatus } }) =>
       leadApi.update(id, data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: leadKeys.all }),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: leadKeys.all }),
+        queryClient.invalidateQueries({ queryKey: dashboardStatKeys.all }),
+      ]),
   });
 }
 
@@ -47,6 +57,11 @@ export function useConvertLeadToDeal() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => leadApi.convertToDeal(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: leadKeys.all }),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: leadKeys.all }),
+        queryClient.invalidateQueries({ queryKey: dealKeys.all }),
+        queryClient.invalidateQueries({ queryKey: dashboardStatKeys.all }),
+      ]),
   });
 }

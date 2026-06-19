@@ -48,6 +48,31 @@ export class HierarchyController {
     return this.hierarchyService.getFilterOptions(user, scope);
   }
 
+  @Get('members/search')
+  @Roles(
+    Role.DM,
+    Role.ASM,
+    Role.RH,
+    Role.ZH,
+    Role.NATIONAL_HEAD,
+    Role.SUPER_ADMIN,
+  )
+  @ApiOperation({
+    summary: 'Scoped member/user typeahead by name or user code',
+    description:
+      "Server-side search over members within the caller's territory; returns up to `limit` matches so the client never downloads the full member list.",
+  })
+  searchMembers(
+    @Query('q') q = '',
+    @Query('limit') limit = '20',
+    @ResolvedScope() scope: HierarchyScope,
+    @Query('role') role?: string,
+  ) {
+    const n = Number(limit);
+    const safeLimit = Number.isFinite(n) && n > 0 ? Math.min(n, 50) : 20;
+    return this.hierarchyService.searchMembers(q, scope, safeLimit, role);
+  }
+
   @Get('subordinates')
   @Roles(
     Role.DM,
@@ -69,5 +94,23 @@ export class HierarchyController {
     @ResolvedScope() scope: HierarchyScope,
   ) {
     return this.hierarchyService.getSubordinatesByCode(level, code, scope);
+  }
+
+  @Get('org-chart')
+  @Roles(
+    Role.DM,
+    Role.ASM,
+    Role.RH,
+    Role.ZH,
+    Role.NATIONAL_HEAD,
+    Role.SUPER_ADMIN,
+  )
+  @ApiOperation({
+    summary: "Org chart nodes for the caller's territory",
+    description:
+      'Returns flat OrgMember nodes (id/parentId as external UserCodes) built from the org graph, restricted to the districts in the caller scope.',
+  })
+  getOrgChart(@ResolvedScope() scope: HierarchyScope) {
+    return this.hierarchyService.getOrgChart(scope);
   }
 }

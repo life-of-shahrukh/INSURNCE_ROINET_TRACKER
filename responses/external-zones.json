@@ -1,0 +1,48 @@
+{
+  "capturedAt": "2026-06-17T16:02:09.482Z",
+  "method": "GET",
+  "path": "/api/external/zones",
+  "baseUrl": "http://localhost:8000",
+  "status": 200,
+  "statusText": "OK",
+  "note": "Cognitensor ListZone — zonal lookup (Zoneid/ZoneName)",
+  "requestBody": null,
+  "response": [
+    {
+      "Zoneid": "1",
+      "ZoneName": "J&K/PB/HP/HAR/DELHI/NCR"
+    },
+    {
+      "Zoneid": "2",
+      "ZoneName": "UP/UTT"
+    },
+    {
+      "Zoneid": "3",
+      "ZoneName": "RAJ/GUJ/MP/UT1"
+    },
+    {
+      "Zoneid": "4",
+      "ZoneName": "MAH/GOA"
+    },
+    {
+      "Zoneid": "5",
+      "ZoneName": "WB/NE/CDG"
+    },
+    {
+      "Zoneid": "6",
+      "ZoneName": "Bihar/JHND"
+    },
+    {
+      "Zoneid": "7",
+      "ZoneName": "TN/KE/KAR/UT2"
+    },
+    {
+      "Zoneid": "8",
+      "ZoneName": "odisha"
+    },
+    {
+      "Zoneid": "9",
+      "ZoneName": "AP/TEL"
+    }
+  ]
+}

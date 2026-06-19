@@ -11,6 +11,7 @@ import {
 } from "react";
 import type { AuthUser, LoginPayload, SignupPospPayload } from "@/lib/auth-types";
 import { toAuthApiError } from "@/lib/auth-errors";
+import { resetSessionClientState } from "@/lib/reset-session-state";
 
 // In the browser the ALB routes /api/* → backend, so relative URLs are enough.
 // During SSR (server-side) we need an absolute URL to reach the backend container.
@@ -78,6 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       method: "POST",
       body: JSON.stringify(payload),
     });
+    resetSessionClientState();
     setUser(data);
   }, []);
 
@@ -86,6 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       method: "POST",
       body: JSON.stringify(payload),
     });
+    resetSessionClientState();
     setUser(data);
   }, []);
 
@@ -94,11 +97,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       method: "POST",
       body: JSON.stringify({ token, isPosp }),
     });
+    resetSessionClientState();
     setUser(data);
   }, []);
 
   const logout = useCallback(async () => {
     await apiRequest<void>("/api/auth/logout", { method: "POST" }).catch(() => {});
+    resetSessionClientState();
     setUser(null);
   }, []);
 

@@ -5,17 +5,22 @@ import { buildLeadScopeWhere } from '../../../common/auth/hierarchy-scope.util';
 import { buildLeadFilterWhere } from '../lead-filter.util';
 import { mergeWhereClauses } from '../../../common/utils/filter.util';
 import type { Prisma } from '@prisma/client';
+import { GeoCatalogService } from '../../geo/geo-catalog.service';
 
 @QueryHandler(ExportLeadsCsvQuery)
 export class ExportLeadsCsvHandler implements IQueryHandler<ExportLeadsCsvQuery> {
-  constructor(private readonly repo: LeadRepository) {}
+  constructor(
+    private readonly repo: LeadRepository,
+    private readonly geo: GeoCatalogService,
+  ) {}
 
   async execute(query: ExportLeadsCsvQuery): Promise<string> {
     const { filters, hierarchyScope } = query;
     const scopeWhere = hierarchyScope
       ? buildLeadScopeWhere(hierarchyScope)
       : {};
-    const filterWhere = buildLeadFilterWhere(filters);
+    const districtIds = this.geo.districtIdsForQuery(filters);
+    const filterWhere = buildLeadFilterWhere(filters, districtIds);
     const where = mergeWhereClauses(
       scopeWhere,
       filterWhere,

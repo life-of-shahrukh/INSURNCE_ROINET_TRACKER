@@ -10,8 +10,9 @@ import {
 
 export function buildDealFilterWhere(
   query: DealListQueryDto,
+  districtIds?: string[] | null,
 ): Prisma.DealWhereInput {
-  const geo = buildGeoFilterWhere(query);
+  const geo = buildGeoFilterWhere(query, districtIds);
   const dateBounds = resolveDateRange(query);
   const policyWhere = buildPolicyStatusWhere(query.policyStatus);
 

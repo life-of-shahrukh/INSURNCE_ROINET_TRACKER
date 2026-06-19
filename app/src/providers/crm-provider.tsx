@@ -12,6 +12,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { crmApi } from "@/lib/api";
 import { dealKeys } from "@/hooks/useDealsList";
+import { dashboardStatKeys } from "@/hooks/useDashboardStats";
 import { pospKeys } from "@/hooks/usePospList";
 import { downloadCsv } from "@/lib/crm-calculations";
 import type { Deal, DealInput, Posp, PospInput } from "@/lib/types";
@@ -69,7 +70,10 @@ export function CrmProvider({ children }: { children: ReactNode }) {
         : await crmApi.createDeal(input);
       // Refresh state in background — don't let a refresh failure mask success.
       void refresh();
-      void queryClient.invalidateQueries({ queryKey: dealKeys.all });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: dealKeys.all }),
+        queryClient.invalidateQueries({ queryKey: dashboardStatKeys.all }),
+      ]);
       return savedDeal;
     },
     [refresh, queryClient],
@@ -79,7 +83,10 @@ export function CrmProvider({ children }: { children: ReactNode }) {
     async (id: string) => {
       await crmApi.deleteDeal(id);
       await refresh();
-      await queryClient.invalidateQueries({ queryKey: dealKeys.all });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: dealKeys.all }),
+        queryClient.invalidateQueries({ queryKey: dashboardStatKeys.all }),
+      ]);
     },
     [refresh, queryClient],
   );

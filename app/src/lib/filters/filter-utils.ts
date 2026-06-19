@@ -2,6 +2,7 @@ import type { UserRole } from "@/lib/auth-types";
 import type { ListQueryParams } from "@/lib/api/list-query-params";
 import type { Deal } from "@/lib/types";
 import { PRODUCT_LINE_OPTIONS, getSubTypes, INSURER_OPTIONS } from "./insurance-products";
+import { getCachedOptionLabel } from "./option-label-cache";
 
 export interface FilterOption {
   value: string;
@@ -11,8 +12,10 @@ export interface FilterOption {
 export type MultiFilterKey =
   | "zone"
   | "region"
+  | "state"
   | "area"
   | "district"
+  | "city"
   | "posp"
   | "productLine"
   | "productSubType"
@@ -27,8 +30,10 @@ export type SingleFilterKey = "dateRange" | "dateFrom" | "dateTo" | "premiumRang
 export const MULTI_FILTER_KEYS: MultiFilterKey[] = [
   "zone",
   "region",
+  "state",
   "area",
   "district",
+  "city",
   "posp",
   "productLine",
   "productSubType",
@@ -60,8 +65,10 @@ export interface FilterState {
   premiumRange: string;
   zone: string[];
   region: string[];
+  state: string[];
   area: string[];
   district: string[];
+  city: string[];
   posp: string[];
   productLine: string[];
   productSubType: string[];
@@ -79,8 +86,10 @@ export const EMPTY_FILTERS: FilterState = {
   premiumRange: "",
   zone: [],
   region: [],
+  state: [],
   area: [],
   district: [],
+  city: [],
   posp: [],
   productLine: [],
   productSubType: [],
@@ -133,9 +142,23 @@ function subTypeOptions(productLines: string[]): FilterOption[] {
   return merged;
 }
 
+/** Small geo reference lists fed into zone/region/state dropdowns. */
+export interface GeoDimensionOptions {
+  zones: FilterOption[];
+  regions: FilterOption[];
+  states: FilterOption[];
+}
+
+const EMPTY_GEO_DIMENSION_OPTIONS: GeoDimensionOptions = {
+  zones: [],
+  regions: [],
+  states: [],
+};
+
 export function getVisibleDimensions(
   role: UserRole,
   currentFilters: FilterState,
+  geoOptions: GeoDimensionOptions = EMPTY_GEO_DIMENSION_OPTIONS,
 ): FilterDimension[] {
   const all: FilterDimension[] = [
     {
@@ -157,7 +180,7 @@ export function getVisibleDimensions(
       key: "zone",
       label: "Zone",
       type: "multi-autocomplete",
-      options: [],
+      options: geoOptions.zones,
       visibleToRoles: ["SUPER_ADMIN", "NATIONAL_HEAD"],
       placeholder: "All Zones",
     },
@@ -165,9 +188,17 @@ export function getVisibleDimensions(
       key: "region",
       label: "Region",
       type: "multi-autocomplete",
-      options: [],
+      options: geoOptions.regions,
       visibleToRoles: ["SUPER_ADMIN", "NATIONAL_HEAD", "ZH"],
       placeholder: "All Regions",
+    },
+    {
+      key: "state",
+      label: "State",
+      type: "multi-autocomplete",
+      options: geoOptions.states,
+      visibleToRoles: ["SUPER_ADMIN", "NATIONAL_HEAD", "ZH", "RH"],
+      placeholder: "All States",
     },
     {
       key: "area",
@@ -184,6 +215,14 @@ export function getVisibleDimensions(
       options: [],
       visibleToRoles: ["SUPER_ADMIN", "NATIONAL_HEAD", "ZH", "RH", "ASM"],
       placeholder: "All Districts",
+    },
+    {
+      key: "city",
+      label: "City",
+      type: "multi-autocomplete",
+      options: [],
+      visibleToRoles: ["SUPER_ADMIN", "NATIONAL_HEAD", "ZH", "RH", "ASM"],
+      placeholder: "All Cities",
     },
     {
       key: "posp",
@@ -287,7 +326,11 @@ export function getVisibleDimensions(
 }
 
 export function getOptionLabel(dim: FilterDimension, value: string): string {
-  return dim.options.find((o) => o.value === value)?.label ?? value;
+  return (
+    dim.options.find((o) => o.value === value)?.label ??
+    getCachedOptionLabel(value) ??
+    value
+  );
 }
 
 export function buildActiveFilterChips(
@@ -364,10 +407,14 @@ export function applyCascadeClear(
   next: FilterState,
 ): FilterState {
   if (key === "productLine") return { ...next, productSubType: [] };
-  if (key === "zone") return { ...next, region: [], area: [], district: [], posp: [] };
-  if (key === "region") return { ...next, area: [], district: [], posp: [] };
-  if (key === "area") return { ...next, district: [], posp: [] };
-  if (key === "district") return { ...next, posp: [] };
+  if (key === "zone")
+    return { ...next, region: [], state: [], area: [], district: [], city: [], posp: [] };
+  if (key === "region")
+    return { ...next, state: [], area: [], district: [], city: [], posp: [] };
+  if (key === "state") return { ...next, area: [], district: [], city: [], posp: [] };
+  if (key === "area") return { ...next, district: [], city: [], posp: [] };
+  if (key === "district") return { ...next, city: [], posp: [] };
+  if (key === "city") return { ...next, posp: [] };
   return next;
 }
 

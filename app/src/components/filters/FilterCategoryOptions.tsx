@@ -10,7 +10,10 @@ import {
   type FilterOption,
   type FilterState,
 } from "@/lib/filters/filter-utils";
+import { rememberOptionLabels } from "@/lib/filters/option-label-cache";
 import type { QueryFilterKey, ViewFilterDimension } from "@/lib/filters/table-filter-config";
+
+export type AsyncOptionSearch = (query: string) => Promise<FilterOption[]>;
 
 interface FilterCategoryOptionsProps {
   dimension: ViewFilterDimension;
@@ -18,8 +21,12 @@ interface FilterCategoryOptionsProps {
   queryValues: Record<QueryFilterKey, string | undefined>;
   onFilterChange: (key: keyof FilterState, value: string | string[]) => void;
   onQueryChange: (key: QueryFilterKey, value: string) => void;
-  onPospSearch?: (query: string) => Promise<FilterOption[]>;
+  onPospSearch?: AsyncOptionSearch;
+  onDistrictSearch?: AsyncOptionSearch;
+  onCitySearch?: AsyncOptionSearch;
 }
+
+const ASYNC_SEARCH_DEBOUNCE_MS = 250;
 
 function QueryTextField({
   id,
@@ -136,16 +143,25 @@ function SingleCheckboxList({
   );
 }
 
-function PospOptions({
+/**
+ * Server-side search list for big datasets (POSPs, districts, cities). Renders a
+ * debounced search box over a checkbox list; results come from `onSearch`.
+ * Selected ids that aren't in the current results are still shown (label resolved
+ * from the shared option-label cache, falling back to the id) so picks survive
+ * re-searching.
+ */
+function AsyncSearchOptions({
   dimensionId,
+  noun,
   selectedValues,
   onChange,
-  onPospSearch,
+  onSearch,
 }: {
   dimensionId: string;
+  noun: string;
   selectedValues: string[];
   onChange: (values: string[]) => void;
-  onPospSearch: (query: string) => Promise<FilterOption[]>;
+  onSearch: AsyncOptionSearch;
 }): React.ReactElement {
   const [search, setSearch] = useState("");
   const [options, setOptions] = useState<FilterOption[]>([]);
@@ -153,20 +169,25 @@ function PospOptions({
 
   useEffect(() => {
     let cancelled = false;
-    const run = async (): Promise<void> => {
-      setLoading(true);
-      try {
-        const results = await onPospSearch(search.trim());
-        if (!cancelled) setOptions(results);
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    };
-    void run();
+    setLoading(true);
+    const timer = setTimeout(() => {
+      void (async (): Promise<void> => {
+        try {
+          const results = await onSearch(search.trim());
+          if (cancelled) return;
+          rememberOptionLabels(results);
+          setOptions(results);
+        } finally {
+          if (!cancelled) setLoading(false);
+        }
+      })();
+    }, ASYNC_SEARCH_DEBOUNCE_MS);
+
     return () => {
       cancelled = true;
+      clearTimeout(timer);
     };
-  }, [search, onPospSearch]);
+  }, [search, onSearch]);
 
   const mergedOptions = useMemo(() => {
     const map = new Map<string, FilterOption>();
@@ -194,15 +215,15 @@ function PospOptions({
         <input
           type="text"
           className="filter-popover-search-input"
-          placeholder="Search POSP…"
+          placeholder={`Search ${noun}…`}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          aria-label="Search POSP"
+          aria-label={`Search ${noun}`}
         />
       </div>
       <FilterCheckboxRow
         id={`filter-${dimensionId}-all`}
-        label="All POSPs"
+        label={`All ${noun}`}
         checked={selectedValues.length === 0}
         onChange={() => onChange([])}
       />
@@ -210,7 +231,7 @@ function PospOptions({
         <p className="filter-popover-empty">Loading…</p>
       )}
       {!loading && mergedOptions.length === 0 && (
-        <p className="filter-popover-empty">No POSPs found</p>
+        <p className="filter-popover-empty">No {noun.toLowerCase()} found</p>
       )}
       {mergedOptions.map((opt) => (
         <FilterCheckboxRow
@@ -285,6 +306,8 @@ export function FilterCategoryOptions({
   onFilterChange,
   onQueryChange,
   onPospSearch,
+  onDistrictSearch,
+  onCitySearch,
 }: FilterCategoryOptionsProps): React.ReactElement {
   const dimensionId = dimension.queryKey ?? String(dimension.key);
 
@@ -325,11 +348,36 @@ export function FilterCategoryOptions({
 
   if (dimension.key === "posp" && onPospSearch) {
     return (
-      <PospOptions
+      <AsyncSearchOptions
         dimensionId={dimensionId}
+        noun="POSPs"
         selectedValues={filters.posp}
         onChange={(values) => onFilterChange("posp", values)}
-        onPospSearch={onPospSearch}
+        onSearch={onPospSearch}
+      />
+    );
+  }
+
+  if (dimension.key === "district" && onDistrictSearch) {
+    return (
+      <AsyncSearchOptions
+        dimensionId={dimensionId}
+        noun="Districts"
+        selectedValues={filters.district}
+        onChange={(values) => onFilterChange("district", values)}
+        onSearch={onDistrictSearch}
+      />
+    );
+  }
+
+  if (dimension.key === "city" && onCitySearch) {
+    return (
+      <AsyncSearchOptions
+        dimensionId={dimensionId}
+        noun="Cities"
+        selectedValues={filters.city}
+        onChange={(values) => onFilterChange("city", values)}
+        onSearch={onCitySearch}
       />
     );
   }

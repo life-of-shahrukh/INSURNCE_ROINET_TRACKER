@@ -5,7 +5,9 @@ import { FilterPopover } from "@/components/filters/FilterPopover";
 import type { UserRole } from "@/lib/auth-types";
 import type { ListQueryParams } from "@/lib/api/list-query-params";
 import { crmApi } from "@/lib/api";
-import type { FilterState } from "@/lib/filters/filter-utils";
+import { geoCatalogApi } from "@/lib/api/geo-catalog-api";
+import { useGeoCatalog } from "@/hooks/useGeoCatalog";
+import type { FilterOption, FilterState, GeoDimensionOptions } from "@/lib/filters/filter-utils";
 import {
   buildViewActiveFilterChips,
   countActiveFiltersForView,
@@ -134,9 +136,19 @@ export function UniversalFilter({
   const anchorRef = useRef<HTMLDivElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
 
+  const { data: catalog } = useGeoCatalog();
+  const geoOptions = useMemo<GeoDimensionOptions>(
+    () => ({
+      zones: (catalog?.zones ?? []).map((z) => ({ value: z.id, label: z.name })),
+      regions: (catalog?.regions ?? []).map((r) => ({ value: r.id, label: r.name })),
+      states: (catalog?.states ?? []).map((s) => ({ value: s.id, label: s.name })),
+    }),
+    [catalog],
+  );
+
   const dimensions = useMemo(
-    () => getViewFilterDimensions(view, role, filters),
-    [view, role, filters],
+    () => getViewFilterDimensions(view, role, filters, geoOptions),
+    [view, role, filters, geoOptions],
   );
 
   const activeCount = useMemo(
@@ -161,10 +173,26 @@ export function UniversalFilter({
     [query],
   );
 
-  const handlePospSearch = useCallback(async (searchTerm: string) => {
+  const handlePospSearch = useCallback(async (searchTerm: string): Promise<FilterOption[]> => {
     const params = new URLSearchParams({ search: searchTerm, pageSize: "20", page: "1" });
     const result = await crmApi.listPosp(params);
     return result.data.map((p) => ({ value: p.id, label: p.name }));
+  }, []);
+
+  const handleDistrictSearch = useCallback(async (searchTerm: string): Promise<FilterOption[]> => {
+    const results = await geoCatalogApi.searchDistricts(searchTerm);
+    return results.map((d) => ({
+      value: d.id,
+      label: d.stateName ? `${d.name} (${d.stateName})` : d.name,
+    }));
+  }, []);
+
+  const handleCitySearch = useCallback(async (searchTerm: string): Promise<FilterOption[]> => {
+    const results = await geoCatalogApi.searchCities(searchTerm);
+    return results.map((c) => ({
+      value: c.id,
+      label: c.districtName ? `${c.name} (${c.districtName})` : c.name,
+    }));
   }, []);
 
   const handleApplyFilters = useCallback(
@@ -246,8 +274,11 @@ export function UniversalFilter({
             role={role}
             filters={filters}
             queryValues={queryValues}
+            geoOptions={geoOptions}
             onApply={handleApplyFilters}
             onPospSearch={handlePospSearch}
+            onDistrictSearch={handleDistrictSearch}
+            onCitySearch={handleCitySearch}
           />
         </div>
 

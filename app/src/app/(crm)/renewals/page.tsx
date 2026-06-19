@@ -13,7 +13,7 @@ import { useListQueryStatus } from "@/hooks/useListQueryStatus";
 import { useColumnManager } from "@/hooks/useColumnManager";
 import type { ColumnConfig } from "@/hooks/useColumnManager";
 import { useDealsList } from "@/hooks/useDealsList";
-import { computeRenewals, pospName, downloadCsv } from "@/lib/crm-calculations";
+import { computeRenewals, dealPospLabel, downloadCsv } from "@/lib/crm-calculations";
 import { fmtDate, fmtINR } from "@/lib/formatters";
 import { useCrm } from "@/providers/crm-provider";
 import { useAuth } from "@/providers/auth-provider";
@@ -52,7 +52,7 @@ function renderRenewalCell(
     case "premium":
       return <td key={col.key} className="num-right">{fmtINR(r.premium)}</td>;
     case "posp":
-      return <td key={col.key}>{pospName(posp, r.pospId)}</td>;
+      return <td key={col.key}>{dealPospLabel(r, posp)}</td>;
     case "issued":
       return <td key={col.key}>{fmtDate(r.issued)}</td>;
     case "renewalDue":
@@ -94,7 +94,7 @@ export default function RenewalsPage(): React.ReactElement {
   const handleExport = () => {
     const headers = ["POSP", "Customer", "Policy", "Premium", "Renewal Date", "Days Left"];
     const rows = upcoming.map((r) => [
-      pospName(posp, r.pospId),
+      dealPospLabel(r, posp),
       r.customer,
       r.policy,
       String(r.premium),

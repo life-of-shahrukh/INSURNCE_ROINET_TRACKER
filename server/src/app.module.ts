@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ScheduleModule } from '@nestjs/schedule';
 import { CqrsModule } from '@nestjs/cqrs';
 import { PrismaModule } from './prisma/prisma.module';
 import { PospModule } from './modules/posp/posp.module';
@@ -14,11 +15,14 @@ import { ExternalApiModule } from './common/external-api/external-api.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { HierarchyModule } from './modules/hierarchy/hierarchy.module';
 import { SsoModule } from './modules/sso/sso.module';
+import { OrgSyncModule } from './modules/org-sync/org-sync.module';
+import { GeoModule } from './modules/geo/geo.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     EventEmitterModule.forRoot(),
+    ScheduleModule.forRoot(),
     CqrsModule.forRoot(),
     PrismaModule,
     AuthModule,
@@ -32,6 +36,8 @@ import { SsoModule } from './modules/sso/sso.module';
     ExternalApiModule,
     ProfileModule,
     HierarchyModule,
+    OrgSyncModule,
+    GeoModule,
   ],
 })
 export class AppModule {}

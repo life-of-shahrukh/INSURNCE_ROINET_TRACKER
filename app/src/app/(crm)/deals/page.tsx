@@ -15,7 +15,7 @@ import { useListQueryStatus } from "@/hooks/useListQueryStatus";
 import { useColumnManager } from "@/hooks/useColumnManager";
 import type { ColumnConfig } from "@/hooks/useColumnManager";
 import { useDealsList } from "@/hooks/useDealsList";
-import { pospName, fetchAndDownloadCsv } from "@/lib/crm-calculations";
+import { dealPospLabel, fetchAndDownloadCsv } from "@/lib/crm-calculations";
 import { fmtDate, fmtINR } from "@/lib/formatters";
 import { useCrm } from "@/providers/crm-provider";
 import { useAuth } from "@/providers/auth-provider";
@@ -48,7 +48,7 @@ function renderDealsCell(
 ): React.ReactNode {
   switch (col.key) {
     case "posp":
-      return <td key={col.key}>{pospName(posp, d.pospId)}</td>;
+      return <td key={col.key}>{dealPospLabel(d, posp)}</td>;
     case "customer":
       return <td key={col.key}><strong>{d.customer}</strong></td>;
     case "policy":

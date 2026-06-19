@@ -64,7 +64,7 @@ export class SalesTeamController {
     return this.salesTeamService.getHierarchy();
   }
 
-  // Org chart nodes from Cognitensor API: RH and above
+  // Org chart nodes from the persisted org graph (synced weekly): RH and above
   @Get('org-chart')
   @MinRole(Role.RH)
   getOrgChart() {

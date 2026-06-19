@@ -8,10 +8,14 @@ import { mergeWhereClauses } from '../../../common/utils/filter.util';
 import { resolvePagination } from '../../../common/utils/pagination.util';
 import type { PaginatedResult } from '../../../common/interfaces/paginated-result.interface';
 import type { Prisma } from '@prisma/client';
+import { GeoCatalogService } from '../../geo/geo-catalog.service';
 
 @QueryHandler(GetAllLeadsQuery)
 export class GetAllLeadsHandler implements IQueryHandler<GetAllLeadsQuery> {
-  constructor(private readonly repository: LeadRepository) {}
+  constructor(
+    private readonly repository: LeadRepository,
+    private readonly geo: GeoCatalogService,
+  ) {}
 
   async execute(query: GetAllLeadsQuery): Promise<PaginatedResult<Lead>> {
     const { filters, hierarchyScope } = query;
@@ -20,7 +24,8 @@ export class GetAllLeadsHandler implements IQueryHandler<GetAllLeadsQuery> {
     const scopeWhere = hierarchyScope
       ? buildLeadScopeWhere(hierarchyScope)
       : {};
-    const filterWhere = buildLeadFilterWhere(filters);
+    const districtIds = this.geo.districtIdsForQuery(filters);
+    const filterWhere = buildLeadFilterWhere(filters, districtIds);
     const where = mergeWhereClauses(
       scopeWhere,
       filterWhere,

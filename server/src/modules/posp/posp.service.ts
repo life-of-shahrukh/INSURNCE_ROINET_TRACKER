@@ -48,29 +48,19 @@ export class PospService {
   }
 
   /**
-   * If the caller filters by a specific DM/ASM/RH, narrow the scope to the
+   * If the caller filters by a specific manager code, narrow the scope to the
    * districts that manager covers — always intersected with the caller's own
-   * territory so the filter can never widen access.
+   * territory so the filter can never widen access. The org graph is
+   * role-agnostic, so any of the dm/asm/rh code filters resolves the same way.
    */
   private async applyManagerFilter(
     filters: PospListQueryDto,
     scope?: HierarchyScope,
   ): Promise<HierarchyScope | undefined> {
-    const managerFilter: { column: string; code: string } | null =
-      filters.dmCode
-        ? { column: 'dmCode', code: filters.dmCode }
-        : filters.asmCode
-          ? { column: 'asmCode', code: filters.asmCode }
-          : filters.rhCode
-            ? { column: 'rhCode', code: filters.rhCode }
-            : null;
-    if (!managerFilter) return scope;
+    const managerCode = filters.dmCode ?? filters.asmCode ?? filters.rhCode;
+    if (!managerCode) return scope;
 
-    let districtIds = await districtIdsForCode(
-      this.prisma,
-      managerFilter.column,
-      managerFilter.code,
-    );
+    let districtIds = await districtIdsForCode(this.prisma, managerCode);
     const callerDistricts = scope ? scopeDistrictIds(scope) : null;
     if (callerDistricts !== null) {
       const allowed = new Set(callerDistricts);

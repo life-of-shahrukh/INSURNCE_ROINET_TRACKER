@@ -1,0 +1,20 @@
+{
+  "capturedAt": "2026-06-17T16:02:10.201Z",
+  "method": "GET",
+  "path": "/api/hierarchy/subordinates?level=DM&code=VIVEK",
+  "baseUrl": "http://localhost:8000",
+  "status": 200,
+  "statusText": "OK",
+  "note": "Drill into first subordinate: VIVEK GUPTA (VIVEK)",
+  "response": {
+    "nextLevel": "DM",
+    "members": [
+      {
+        "id": "HARI.DUTT",
+        "name": "Hari Dutt",
+        "designation": "DM"
+      }
+    ],
+    "posps": []
+  }
+}

@@ -1,0 +1,2604 @@
+{
+  "capturedAt": "2026-06-17T16:02:09.455Z",
+  "method": "GET",
+  "path": "/api/hierarchy/org-chart",
+  "baseUrl": "http://localhost:8000",
+  "status": 200,
+  "statusText": "OK",
+  "note": null,
+  "requestBody": null,
+  "response": [
+    {
+      "id": "RAKESH.GADDAM CH TEL",
+      "parentId": "PRAVEEN.RHTEL",
+      "userId": "618469",
+      "name": "Rakesh Gaddam",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "PRAVEEN.RHTEL",
+      "parentId": "RAVI.BABUSZH",
+      "userId": "439037",
+      "name": "PRAVEEN PILLI RH TEL",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "RAVI.BABUSZH",
+      "parentId": "HARI.DUTT",
+      "userId": "609460",
+      "name": "Ravi Babu Ummadisetty",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "HARI.DUTT",
+      "parentId": "VIVEK",
+      "userId": "592240",
+      "name": "Hari Dutt",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "VIVEK",
+      "parentId": null,
+      "userId": "79",
+      "name": "VIVEK GUPTA",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "BELLAMKONDA.ASMAP",
+      "parentId": "NURULLA.ASMAP",
+      "userId": "484323",
+      "name": "BELLAMKONDA MEERA BABU ASM AP",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "NURULLA.ASMAP",
+      "parentId": "RAVI.BABUSZH",
+      "userId": "73267",
+      "name": "NURULLA SYED ASM AP DIRECT",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "YERRAMSETTI.ASMAP",
+      "parentId": "NURULLA.ASMAP",
+      "userId": "406583",
+      "name": "YERRAMSETTI SANTOSH KUMAR ASM AP",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "PADALA.ASMAP",
+      "parentId": "NURULLA.ASMAP",
+      "userId": "517185",
+      "name": "PADALA CHARAN TEJA ASM AP",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "PAVILLA.ASMTEL",
+      "parentId": "PRAVEEN.RHTEL",
+      "userId": "517510",
+      "name": "PAVILLA SRINIVAS SURYA ASM TEL",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "GANESH.ASMAP",
+      "parentId": "NURULLA.ASMAP",
+      "userId": "266581",
+      "name": "GANESH ASM AP",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SANDRAPATI.ASMAP",
+      "parentId": "GANESH.ASMAP",
+      "userId": "538541",
+      "name": "SANDRAPATI IMMANIYELU ASM AP",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "THANDROTHU.ASMAP",
+      "parentId": "NURULLA.ASMAP",
+      "userId": "609553",
+      "name": "Thandrothu Damodara Rao",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "THIRUMURUGAN.AASMTN",
+      "parentId": "PANDIDURAI.ASMTN",
+      "userId": "598242",
+      "name": "Thirumurugan",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "PANDIDURAI.ASMTN",
+      "parentId": "BHOOPATHI.RHTN",
+      "userId": "87633",
+      "name": "PANDIDURAI ASM TN DIRECT",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "BHOOPATHI.RHTN",
+      "parentId": "RAVI.BABUSZH",
+      "userId": "57682",
+      "name": "BOOPATHI MANOKARAN",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "RAJ.ASMTN",
+      "parentId": "BHOOPATHI.RHTN",
+      "userId": "84389",
+      "name": "RAJ KUMAR ASM TN DIRECT",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "MOHAN.ASMTN",
+      "parentId": "BHOOPATHI.RHTN",
+      "userId": "45",
+      "name": "MOHAN RAM KUMAR- ASM TN DIRECT",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "GANESAN.ASMTN",
+      "parentId": "BHOOPATHI.RHTN",
+      "userId": "73265",
+      "name": "GANESAN MADHAPPA-ASM TN DIRECT",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SATHEESHKUMAR.ASMTN ",
+      "parentId": "MOHAN.ASMTN",
+      "userId": "618504",
+      "name": "Satheeshkumar R",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "DESIKAMANI.ASMTN",
+      "parentId": "BHOOPATHI.RHTN",
+      "userId": "269175",
+      "name": "DESIKAMANI ASM TN",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "MATHESH.FOSTN",
+      "parentId": "GANESAN.ASMTN",
+      "userId": "443800",
+      "name": "MATHESH FOS TN",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "NISHIL.ASMKER",
+      "parentId": "DIPIN.KV_RHKER",
+      "userId": "563332",
+      "name": "Nishil",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "DIPIN.KV_RHKER",
+      "parentId": "RAVI.BABUSZH",
+      "userId": "607162",
+      "name": "Dipin KV",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "RAHUL.ASMBIHAR",
+      "parentId": "subhash.asmbihar",
+      "userId": "70748",
+      "name": "RAHUL KUMAR- ASM BIHAR",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "subhash.asmbihar",
+      "parentId": "RAMANUJ.BIHARJHKZM",
+      "userId": "33981",
+      "name": "SUBHASH KUMAR- ASM BIHAR",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "RAMANUJ.BIHARJHKZM",
+      "parentId": "KAJAL.BHADRA SZH",
+      "userId": "57654",
+      "name": "RAMANUJ-BIHAR JHARKHAND",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "KAJAL.BHADRA SZH",
+      "parentId": "HARI.DUTT",
+      "userId": "620619",
+      "name": "Kajal Bhadra",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "KRISHNA.ASMBIHAR",
+      "parentId": "RAMANUJ.BIHARJHKZM",
+      "userId": "250516",
+      "name": "KRISHNA KUMAR ASM BIHAR",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "NILESH.KUMAR ASM",
+      "parentId": "pawan.kumar",
+      "userId": "619052",
+      "name": "Nilesh Kumar",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "pawan.kumar",
+      "parentId": "RAMANUJ.BIHARJHKZM",
+      "userId": "41",
+      "name": "PAWAN KUMAR- BIHAR ASM",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "PRASHANT.ASMBIHAR",
+      "parentId": "pawan.kumar",
+      "userId": "344213",
+      "name": "PRASHANT KUMAR SUNNY ASM BIHAR",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "CHANDAN.ASMBIHAR",
+      "parentId": "CHINTU.ASMBIHAR",
+      "userId": "33983",
+      "name": "CHANDAN SHUKLA ASM BIHAR",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "CHINTU.ASMBIHAR",
+      "parentId": "RAMANUJ.BIHARJHKZM",
+      "userId": "71019",
+      "name": "CHINTU KUMAR -ASM BIHAR",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "Vikash.asmbihar",
+      "parentId": "RAMANUJ.BIHARJHKZM",
+      "userId": "33984",
+      "name": "VIKASH KUMAR SINGH- ASM BIHAR",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "NAWENDU.ASMBIHAR",
+      "parentId": "RAMANUJ.BIHARJHKZM",
+      "userId": "589215",
+      "name": "Nawendu Shekhar Pathak",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "PRASHANTJHA.ASMBIHAR",
+      "parentId": "CHINTU.ASMBIHAR",
+      "userId": "477967",
+      "name": "PRASHANT KUMAR JHA ASM BIHAR",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SONU.ASMBIHAR",
+      "parentId": "Vikash.asmbihar",
+      "userId": "436602",
+      "name": "SONU KUMAR SINGH ASM BIHAR",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "MOHAN.CHCDG",
+      "parentId": "DEVENDRA.NATH RH CG",
+      "userId": "575791",
+      "name": "Mohan Dewangan",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "DEVENDRA.NATH RH CG",
+      "parentId": "KAJAL.BHADRA SZH",
+      "userId": "620621",
+      "name": "Devendra Nath Pandey",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "BALRAM.SAHU AASM",
+      "parentId": "LALAN.ASMCDG",
+      "userId": "620823",
+      "name": "Balram Sahu",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "LALAN.ASMCDG",
+      "parentId": "MOHAN.CHCDG",
+      "userId": "439728",
+      "name": "LALAN KUMAR ASM CDG",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "PAWAN.KUMARCH",
+      "parentId": "PRABHAT.RHJKND",
+      "userId": "613012",
+      "name": "Pawan Kumar Singh",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "PRABHAT.RHJKND",
+      "parentId": "RAMANUJ.BIHARJHKZM",
+      "userId": "477943",
+      "name": "PRABHAT KUMAR RH JKND",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "RAJENDRA.ASMJKND",
+      "parentId": "PRABHAT.RHJKND",
+      "userId": "534646",
+      "name": "RAJENDRA KUMAR JHA ASM JKND",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SUMIT.KUMAR ASMJHD",
+      "parentId": "PRABHAT.RHJKND",
+      "userId": "619937",
+      "name": "Sumit Kumar",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "AMIT.SAXENAASMWUP",
+      "parentId": "DEV.RHWUP",
+      "userId": "603203",
+      "name": "Amit Kumar Saxena",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "DEV.RHWUP",
+      "parentId": "HARI.DUTT",
+      "userId": "90064",
+      "name": "DEV KUMAR RH WUP",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SANDEEP.KUMAR CH EUP",
+      "parentId": "ADESH",
+      "userId": "621062",
+      "name": "Sandeep Kumar Kaushal",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "ADESH",
+      "parentId": "HARI.DUTT",
+      "userId": "50",
+      "name": "ADESH SINGH(EUP)",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SHABIHUL.ABRARAASM",
+      "parentId": "ZISHAN.ASMEUP",
+      "userId": "564467",
+      "name": "Shabihul Abrar",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "ZISHAN.ASMEUP",
+      "parentId": "ADESH",
+      "userId": "118334",
+      "name": "ZISHAN TASLEEM ASM EUP",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "AMIT.YADAVASMUP",
+      "parentId": "ADESH",
+      "userId": "576310",
+      "name": "Amit Yadav",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "RAIS.AHAMADASMUP",
+      "parentId": "ADESH",
+      "userId": "600696",
+      "name": "Rais Ahamad",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SATYENDRA.KUMARASMUP",
+      "parentId": "ADESH",
+      "userId": "605692",
+      "name": "Satyendra Kumar",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "ABHIJIT.ASMUP",
+      "parentId": "ADESH",
+      "userId": "473514",
+      "name": "ABHIJIT SRIVASTAVA ASM UP",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "DHANANJAY.ASMEUP",
+      "parentId": "ADESH",
+      "userId": "617586",
+      "name": "Dhananjay Kumar Singh",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "BAM.ASMPB",
+      "parentId": "ANISH.RHJKPBHP",
+      "userId": "386688",
+      "name": "BAM BAHADAR ASM PB ",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "ANISH.RHJKPBHP",
+      "parentId": "HARI.DUTT",
+      "userId": "53",
+      "name": "ANISH DHIMAN RH - PB HP J&K",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "UMESH.ASMPB",
+      "parentId": "ANISH.RHJKPBHP",
+      "userId": "71556",
+      "name": "UMESH.KUMAR ASM PB",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SANDEEP.ASMPB",
+      "parentId": "ANISH.RHJKPBHP",
+      "userId": "209601",
+      "name": "SANDEEP SINGH ASM PB",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "RAM.OJHA",
+      "parentId": "SACHIN.ZHRAJGUJMP",
+      "userId": "37",
+      "name": "RAM.OJHA -ASM MP",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SACHIN.ZHRAJGUJMP",
+      "parentId": "HARI.DUTT",
+      "userId": "57068",
+      "name": "SACHIN PATHKAR(RAJ/GUJ/MP/UT1)",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "RAZIK.KHANASMMP",
+      "parentId": "RAM.OJHA",
+      "userId": "583737",
+      "name": "Razik Khan",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "UMAR.ASMMP",
+      "parentId": "RAM.OJHA",
+      "userId": "558290",
+      "name": "UMAR FARUQUE AHMED ASM MP",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "ABDUL.ASMMP",
+      "parentId": "RAHUL.ASMMP",
+      "userId": "486794",
+      "name": "ABDUL TAUSIF SHEKH ASM MP",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "RAHUL.ASMMP",
+      "parentId": "SACHIN.ZHRAJGUJMP",
+      "userId": "252171",
+      "name": "RAHUL VAISHY ASM MP",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SALIL.ASMMP",
+      "parentId": "RAHUL.ASMMP",
+      "userId": "262075",
+      "name": "SALIL SAHU ASM MP",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "MANISH.KUMARASMMP",
+      "parentId": "RAHUL.ASMMP",
+      "userId": "606588",
+      "name": "Manish Kumar Yadav",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "PRADEEP.ASMMP",
+      "parentId": "RAHUL.ASMMP",
+      "userId": "473510",
+      "name": "PRADEEP GAUTAM ASM MP",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "GOVIND.SINGHASMMP",
+      "parentId": "RAM.OJHA",
+      "userId": "608831",
+      "name": "Govind Singh Baghela",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "NILESH.ASMMAHA",
+      "parentId": "SHAIKH.RHMAHA",
+      "userId": "90089",
+      "name": "NILESH RAKSHIYE ASM MAHA",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SHAIKH.RHMAHA",
+      "parentId": "SACHIN.ZHRAJGUJMP",
+      "userId": "338478",
+      "name": "SHAIKH ANWAR RH MAHA",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "GAJANAN.ASMMAHA",
+      "parentId": "SHIVRAJ.RH MUM",
+      "userId": "450255",
+      "name": "GAJANAN GURAV ASM MAHA",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SHIVRAJ.RH MUM",
+      "parentId": "SHAIKH.RHMAHA",
+      "userId": "618417",
+      "name": "Shivraj Gangadhar Wanole",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SWAPNIL.ASMMAHA",
+      "parentId": "SHAIKH.RHMAHA",
+      "userId": "73268",
+      "name": "SWAPNIL MEHKARKAR ASM MAHA DIRECT",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "BHIMASHANKAR.ASMMAHA",
+      "parentId": "SHAIKH.RHMAHA",
+      "userId": "90095",
+      "name": "BHIMASHANKAR SHETAKAR ASM MAHA DIRECT",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SOMNATH.FOSMAHA",
+      "parentId": "MUNDHE.ASMMAHA",
+      "userId": "252177",
+      "name": "SOMNATH GOVIND FOS MAHA",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "MUNDHE.ASMMAHA",
+      "parentId": "SHAIKH.RHMAHA",
+      "userId": "90098",
+      "name": "MUNDHE SALABA ASM MAHA DIRECT",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "ANANDA.ASMMAHA",
+      "parentId": "SHAIKH.RHMAHA",
+      "userId": "84400",
+      "name": "ANANDA WANJE ASM MAHA DIRECT",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "NILKANTH.AASMMAHA",
+      "parentId": "SWAPNIL.ASMMAHA",
+      "userId": "617587",
+      "name": "Nilkanth Suryakant Lokhande",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "MOH.SHAMSHADASMMUMB",
+      "parentId": "SHIVRAJ.RH MUM",
+      "userId": "600756",
+      "name": "Mohammed Shamshad Shaikh",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "JEETENDRA.FOSMAHA",
+      "parentId": "SHIVRAJ.RH MUM",
+      "userId": "378488",
+      "name": "JEETENDRA AMLANI FOS MAHA",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "AMIR.ASMMAHA",
+      "parentId": "SHIVRAJ.RH MUM",
+      "userId": "446709",
+      "name": "AMIR TEMBE ASM MAHA",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SHRISHAILA.ASMKAR",
+      "parentId": "SATHISH.RHKAR",
+      "userId": "138278",
+      "name": "SHRISHAILA GOUDA ASM KAR",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SATHISH.RHKAR",
+      "parentId": "RAVI.BABUSZH",
+      "userId": "57684",
+      "name": "SATHISH NAYAK RH KARNATAKA",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "VINOD.ASMKAR",
+      "parentId": "SRIKRISHNA.CHKAR",
+      "userId": "377239",
+      "name": "VINOD ASM KAR",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SRIKRISHNA.CHKAR",
+      "parentId": "SATHISH.RHKAR",
+      "userId": "577188",
+      "name": "Srikrishna A.V",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "ARUNSINGH.SASMKAR",
+      "parentId": "SRIKRISHNA.CHKAR",
+      "userId": "563427",
+      "name": "Arunsingh S",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SAMPATH.ASMKAR",
+      "parentId": "SHRISHAILA.ASMKAR",
+      "userId": "266455",
+      "name": "SAMPATH ASM KAR",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SUBHASH.ASMHAR",
+      "parentId": "PALLAV.KUMAR ZH NCR",
+      "userId": "252179",
+      "name": "SUBHASH ASM HAR",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "PALLAV.KUMAR ZH NCR",
+      "parentId": "HARI.DUTT",
+      "userId": "619049",
+      "name": "Pallav Kumar",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SHER.ASMHAR",
+      "parentId": "PALLAV.KUMAR ZH NCR",
+      "userId": "484821",
+      "name": "SHER SINGH ASM HAR",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "MAYANK.ASMNCR",
+      "parentId": "PALLAV.KUMAR ZH NCR",
+      "userId": "561465",
+      "name": "MAYANK NANDAN ASM NCR",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "BHAGIRATH.ASMRAJ",
+      "parentId": "RADHAMOHAN.ASMRAJ",
+      "userId": "599789",
+      "name": "Bhagirath Prajapat",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "RADHAMOHAN.ASMRAJ",
+      "parentId": "KRISHNA.KANTZH",
+      "userId": "246408",
+      "name": "RADHAMOHAN VYAS ASM RAJ",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "KRISHNA.KANTZH",
+      "parentId": "SACHIN.ZHRAJGUJMP",
+      "userId": "615023",
+      "name": "Krishna Kant Pathak",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "NARESH.KUMARCH",
+      "parentId": "KRISHNA.KANTZH",
+      "userId": "615024",
+      "name": "Naresh Kumar Tank",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "VIKAS.ASMRAJ",
+      "parentId": "RADHAMOHAN.ASMRAJ",
+      "userId": "617004",
+      "name": "Vikas",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SANTOSH.KUMARAASM",
+      "parentId": "NARESH.KUMARCH",
+      "userId": "613551",
+      "name": "Santosh Kumar",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "YOGESH.SUTHARASMRAJ",
+      "parentId": "RADHAMOHAN.ASMRAJ",
+      "userId": "616553",
+      "name": "Yogesh Suthar",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "VINODKUMAR.RHGUJ",
+      "parentId": "SACHIN.ZHRAJGUJMP",
+      "userId": "609680",
+      "name": "Vinodkumar Bhurmal Bhati",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "MAHESHKUMAR.ASMGUJ",
+      "parentId": "JUZER.RHGUJ",
+      "userId": "467525",
+      "name": "MAHESHKUMAR MATHURBHAI MAKWANA ASM GUJ",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "JUZER.RHGUJ",
+      "parentId": "VINODKUMAR.RHGUJ",
+      "userId": "247015",
+      "name": "JUZER MITHAIWALA ASM GUJ",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "JAY.SURESHASMGUJ",
+      "parentId": "JUZER.RHGUJ",
+      "userId": "587829",
+      "name": "Jay Sureshchandra Rana",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "RAHUL.SHANTI CH GUJ",
+      "parentId": "JUZER.RHGUJ",
+      "userId": "618513",
+      "name": "Rahul Shantibhai Parmar",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "RAVI.TOMARASMWUP",
+      "parentId": "DEV.RHWUP",
+      "userId": "594288",
+      "name": "Ravi Tomar",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SANDEEP.ASMWUP",
+      "parentId": "ADESH",
+      "userId": "209609",
+      "name": "SANDEEP MATHURIYA ASM WUP",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "GYANENDRA.ASMWUP",
+      "parentId": "DEV.RHWUP",
+      "userId": "209610",
+      "name": "GYANENDRA KUMAR ASM WUP",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "MOHAMMAD.IMRAN ASM",
+      "parentId": "SANDEEP.ASMWUP",
+      "userId": "620637",
+      "name": "Mohammad Imran",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "MOSTOFA.ASMASSAM",
+      "parentId": "Sagir.Ali",
+      "userId": "265507",
+      "name": "MOSTOFA ISLAM ASM ASSAM",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "Sagir.Ali",
+      "parentId": "HARI.DUTT",
+      "userId": "618413",
+      "name": "Sagir Ali",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "JAHAIRUDDIN.ASMASSAM",
+      "parentId": "Sagir.Ali",
+      "userId": "188742",
+      "name": "JAHAIRUDDIN ALI ASM ASSAM",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "MEHBUB.ASMASSAM",
+      "parentId": "Sagir.Ali",
+      "userId": "85620",
+      "name": "MEHBUB MOHAZERIN- ASM ASSAM",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "AKRAM.ASMASSAM",
+      "parentId": "JAHAIRUDDIN.ASMASSAM",
+      "userId": "84406",
+      "name": "AKRAM ALI ASM ASSAM",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "MIRJAN.ASMASSAM",
+      "parentId": "Sagir.Ali",
+      "userId": "84407",
+      "name": "MIRJAN ALI ASM ASSAM",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "NASIMULLA.ASMASSAM",
+      "parentId": "Sagir.Ali",
+      "userId": "339576",
+      "name": "NASIMULLA ANSARI ASM ASSAM",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "PARWEZ.FOSASSAM",
+      "parentId": "JAHAIRUDDIN.ASMASSAM",
+      "userId": "335247",
+      "name": "PARWEZ AHMED FOS ASSAM",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "DEMLAR.FOSNE",
+      "parentId": "JAHAIRUDDIN.ASMASSAM",
+      "userId": "474776",
+      "name": "DEMLAR KHUMBONGMAYUM FOS NE",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SUMIT.ASMWB",
+      "parentId": "TAPAS.RHWB",
+      "userId": "556859",
+      "name": "SUMIT KANU ASM WB",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "TAPAS.RHWB",
+      "parentId": "HARI.DUTT",
+      "userId": "558275",
+      "name": "TAPAS KARMAKAR RH WB",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "PAPAI.PAUL ASM WB",
+      "parentId": "SAMIUL.ASMWB",
+      "userId": "618505",
+      "name": "Papai Paul",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SAMIUL.ASMWB",
+      "parentId": "TAPAS.RHWB",
+      "userId": "558288",
+      "name": "SAMIUL ALIM ASM WB",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "RAKESH.PRASADASMWB",
+      "parentId": "TAPAS.RHWB",
+      "userId": "616558",
+      "name": "Rakesh Prasad",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "AMIT.KUMARASMWB",
+      "parentId": "PRASENJIT.RHWB",
+      "userId": "587828",
+      "name": "Amit Kumar Ghosh",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "PRASENJIT.RHWB",
+      "parentId": "HARI.DUTT",
+      "userId": "344597",
+      "name": "PRASENJIT MUKHERJEE RH WB",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "ABHIJIT.BATABYAL ASM",
+      "parentId": "PRASENJIT.RHWB",
+      "userId": "620657",
+      "name": "Abhijit Batabyal",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "MANAS.ASMWB",
+      "parentId": "PRASENJIT.RHWB",
+      "userId": "189686",
+      "name": "MANAS MAHATO ASM WB",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SUBIR.ASMWB",
+      "parentId": "PRASENJIT.RHWB",
+      "userId": "331184",
+      "name": "SUBIR GHOSH ASM WB",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "PUSPASISH.ASMWB",
+      "parentId": "PRASENJIT.RHWB",
+      "userId": "71620",
+      "name": "PUSPASISH BERA - ASM WB",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SUBHAJIT.PAULASMWB",
+      "parentId": "PRASENJIT.RHWB",
+      "userId": "593332",
+      "name": "Subhajit Paul",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "SUDIP.KUMARASMNE",
+      "parentId": "Sagir.Ali",
+      "userId": "602656",
+      "name": "Sudip Kumar Banik",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "BANAMALI.ASMODI",
+      "parentId": "KAJAL.BHADRA SZH",
+      "userId": "167285",
+      "name": "BANAMALI BARIK ASM ODI",
+      "role": "UNKNOWN",
+      "appRole": "DM"
+    },
+    {
+      "id": "CSP000101",
+      "parentId": "SALIL.ASMMP",
+      "userId": "167",
+      "name": "CSP000101",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP000174",
+      "parentId": "BAM.ASMPB",
+      "userId": "266",
+      "name": "CSP000174",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP000401",
+      "parentId": "MAYANK.ASMNCR",
+      "userId": "535",
+      "name": "CSP000401",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP000647",
+      "parentId": "YERRAMSETTI.ASMAP",
+      "userId": "871",
+      "name": "CSP000647",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP003152",
+      "parentId": "RAM.OJHA",
+      "userId": "6189",
+      "name": "CSP003152",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP004988",
+      "parentId": "RAM.OJHA",
+      "userId": "10013",
+      "name": "CSP004988",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP006591",
+      "parentId": "UMAR.ASMMP",
+      "userId": "12606",
+      "name": "CSP006591",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP007166",
+      "parentId": "RAM.OJHA",
+      "userId": "13537",
+      "name": "CSP007166",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP007654",
+      "parentId": "Vikash.asmbihar",
+      "userId": "14324",
+      "name": "CSP007654",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP008082",
+      "parentId": "NARESH.KUMARCH",
+      "userId": "14948",
+      "name": "CSP008082",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP009219",
+      "parentId": "RAM.OJHA",
+      "userId": "16765",
+      "name": "CSP009219",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP011201",
+      "parentId": "RAM.OJHA",
+      "userId": "19893",
+      "name": "CSP011201",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP012884",
+      "parentId": "LALAN.ASMCDG",
+      "userId": "32649",
+      "name": "CSP012884",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP013192",
+      "parentId": "Vikash.asmbihar",
+      "userId": "33097",
+      "name": "CSP013192",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP013559",
+      "parentId": "Vikash.asmbihar",
+      "userId": "33638",
+      "name": "CSP013559",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP013625",
+      "parentId": "KRISHNA.ASMBIHAR",
+      "userId": "33745",
+      "name": "CSP013625",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP013766",
+      "parentId": "VIKAS.ASMRAJ",
+      "userId": "33952",
+      "name": "CSP013766",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP014412",
+      "parentId": "SANDEEP.KUMAR CH EUP",
+      "userId": "34844",
+      "name": "CSP014412",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP014746",
+      "parentId": "SOMNATH.FOSMAHA",
+      "userId": "35256",
+      "name": "CSP014746",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP016409",
+      "parentId": "MAHESHKUMAR.ASMGUJ",
+      "userId": "57393",
+      "name": "CSP016409",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP016867",
+      "parentId": "KRISHNA.ASMBIHAR",
+      "userId": "57980",
+      "name": "CSP016867",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP018337",
+      "parentId": "DHANANJAY.ASMEUP",
+      "userId": "69839",
+      "name": "CSP018337",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP018378",
+      "parentId": "GYANENDRA.ASMWUP",
+      "userId": "69885",
+      "name": "CSP018378",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP018457",
+      "parentId": "SALIL.ASMMP",
+      "userId": "69981",
+      "name": "CSP018457",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP019422",
+      "parentId": "GYANENDRA.ASMWUP",
+      "userId": "71179",
+      "name": "CSP019422",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP020087",
+      "parentId": "CHANDAN.ASMBIHAR",
+      "userId": "72082",
+      "name": "CSP020087",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP020828",
+      "parentId": "MOHAN.ASMTN",
+      "userId": "72994",
+      "name": "CSP020828",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP020831",
+      "parentId": "PADALA.ASMAP",
+      "userId": "72997",
+      "name": "CSP020831",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP020833",
+      "parentId": "RAKESH.GADDAM CH TEL",
+      "userId": "72999",
+      "name": "CSP020833",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP020839",
+      "parentId": "GANESAN.ASMTN",
+      "userId": "73005",
+      "name": "CSP020839",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP021188",
+      "parentId": "UMESH.ASMPB",
+      "userId": "73435",
+      "name": "CSP021188",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP021315",
+      "parentId": "Vikash.asmbihar",
+      "userId": "73587",
+      "name": "CSP021315",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP021797",
+      "parentId": "SUBHAJIT.PAULASMWB",
+      "userId": "74179",
+      "name": "CSP021797",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP021858",
+      "parentId": "YERRAMSETTI.ASMAP",
+      "userId": "84247",
+      "name": "CSP021858",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP022065",
+      "parentId": "AMIT.SAXENAASMWUP",
+      "userId": "84513",
+      "name": "CSP022065",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP022321",
+      "parentId": "YERRAMSETTI.ASMAP",
+      "userId": "84811",
+      "name": "CSP022321",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP022358",
+      "parentId": "YERRAMSETTI.ASMAP",
+      "userId": "84854",
+      "name": "CSP022358",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP023057",
+      "parentId": "ANANDA.ASMMAHA",
+      "userId": "85687",
+      "name": "CSP023057",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP023130",
+      "parentId": "ANANDA.ASMMAHA",
+      "userId": "85767",
+      "name": "CSP023130",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP024023",
+      "parentId": "MATHESH.FOSTN",
+      "userId": "86813",
+      "name": "CSP024023",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP024703",
+      "parentId": "THANDROTHU.ASMAP",
+      "userId": "87607",
+      "name": "CSP024703",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP025262",
+      "parentId": "RAHUL.ASMBIHAR",
+      "userId": "88261",
+      "name": "CSP025262",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP025389",
+      "parentId": "RAZIK.KHANASMMP",
+      "userId": "88421",
+      "name": "CSP025389",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP025567",
+      "parentId": "THANDROTHU.ASMAP",
+      "userId": "88645",
+      "name": "CSP025567",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP025578",
+      "parentId": "YERRAMSETTI.ASMAP",
+      "userId": "88661",
+      "name": "CSP025578",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP025702",
+      "parentId": "SWAPNIL.ASMMAHA",
+      "userId": "88808",
+      "name": "CSP025702",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP025821",
+      "parentId": "Vikash.asmbihar",
+      "userId": "88958",
+      "name": "CSP025821",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP026150",
+      "parentId": "NILESH.ASMMAHA",
+      "userId": "89359",
+      "name": "CSP026150",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP026316",
+      "parentId": "NILKANTH.AASMMAHA",
+      "userId": "89552",
+      "name": "CSP026316",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP026458",
+      "parentId": "THANDROTHU.ASMAP",
+      "userId": "89722",
+      "name": "CSP026458",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP026649",
+      "parentId": "THANDROTHU.ASMAP",
+      "userId": "89945",
+      "name": "CSP026649",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP026938",
+      "parentId": "ANANDA.ASMMAHA",
+      "userId": "90290",
+      "name": "CSP026938",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP027954",
+      "parentId": "SONU.ASMBIHAR",
+      "userId": "101442",
+      "name": "CSP027954",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP028361",
+      "parentId": "NILESH.ASMMAHA",
+      "userId": "101911",
+      "name": "CSP028361",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP028694",
+      "parentId": "BHIMASHANKAR.ASMMAHA",
+      "userId": "102275",
+      "name": "CSP028694",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP029096",
+      "parentId": "PRADEEP.ASMMP",
+      "userId": "102756",
+      "name": "CSP029096",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP029223",
+      "parentId": "NILESH.ASMMAHA",
+      "userId": "102893",
+      "name": "CSP029223",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP029524",
+      "parentId": "SALIL.ASMMP",
+      "userId": "103211",
+      "name": "CSP029524",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP029551",
+      "parentId": "YERRAMSETTI.ASMAP",
+      "userId": "103240",
+      "name": "CSP029551",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP030212",
+      "parentId": "SAMIUL.ASMWB",
+      "userId": "103943",
+      "name": "CSP030212",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP031400",
+      "parentId": "RAKESH.GADDAM CH TEL",
+      "userId": "115269",
+      "name": "CSP031400",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP031997",
+      "parentId": "RAM.OJHA",
+      "userId": "115938",
+      "name": "CSP031997",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP032130",
+      "parentId": "CHINTU.ASMBIHAR",
+      "userId": "116094",
+      "name": "CSP032130",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP034075",
+      "parentId": "SAMIUL.ASMWB",
+      "userId": "118328",
+      "name": "CSP034075",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP036567",
+      "parentId": "ANANDA.ASMMAHA",
+      "userId": "121170",
+      "name": "CSP036567",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP036642",
+      "parentId": "KRISHNA.ASMBIHAR",
+      "userId": "121259",
+      "name": "CSP036642",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP038090",
+      "parentId": "MATHESH.FOSTN",
+      "userId": "122947",
+      "name": "CSP038090",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP038742",
+      "parentId": "Vikash.asmbihar",
+      "userId": "123712",
+      "name": "CSP038742",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP042136",
+      "parentId": "RAZIK.KHANASMMP",
+      "userId": "137613",
+      "name": "CSP042136",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP042804",
+      "parentId": "THANDROTHU.ASMAP",
+      "userId": "138418",
+      "name": "CSP042804",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP044032",
+      "parentId": "SHABIHUL.ABRARAASM",
+      "userId": "149823",
+      "name": "CSP044032",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP045746",
+      "parentId": "MOSTOFA.ASMASSAM",
+      "userId": "151744",
+      "name": "CSP045746",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP045914",
+      "parentId": "MEHBUB.ASMASSAM",
+      "userId": "151940",
+      "name": "CSP045914",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP048017",
+      "parentId": "MOSTOFA.ASMASSAM",
+      "userId": "154430",
+      "name": "CSP048017",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP048885",
+      "parentId": "KRISHNA.ASMBIHAR",
+      "userId": "155451",
+      "name": "CSP048885",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP051462",
+      "parentId": "AMIT.SAXENAASMWUP",
+      "userId": "158530",
+      "name": "CSP051462",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP051668",
+      "parentId": "SOMNATH.FOSMAHA",
+      "userId": "158771",
+      "name": "CSP051668",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP060158",
+      "parentId": "KRISHNA.ASMBIHAR",
+      "userId": "169261",
+      "name": "CSP060158",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP061726",
+      "parentId": "RAZIK.KHANASMMP",
+      "userId": "171052",
+      "name": "CSP061726",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP067339",
+      "parentId": "NILKANTH.AASMMAHA",
+      "userId": "177563",
+      "name": "CSP067339",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP068616",
+      "parentId": "YERRAMSETTI.ASMAP",
+      "userId": "179023",
+      "name": "CSP068616",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP068619",
+      "parentId": "VINODKUMAR.RHGUJ",
+      "userId": "179026",
+      "name": "CSP068619",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP070604",
+      "parentId": "SONU.ASMBIHAR",
+      "userId": "181289",
+      "name": "CSP070604",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP071964",
+      "parentId": "RAHUL.ASMBIHAR",
+      "userId": "182799",
+      "name": "CSP071964",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP073128",
+      "parentId": "DESIKAMANI.ASMTN",
+      "userId": "184088",
+      "name": "CSP073128",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP074223",
+      "parentId": "BANAMALI.ASMODI",
+      "userId": "185336",
+      "name": "CSP074223",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP076087",
+      "parentId": "RAIS.AHAMADASMUP",
+      "userId": "187439",
+      "name": "CSP076087",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP079187",
+      "parentId": "SATHEESHKUMAR.ASMTN ",
+      "userId": "200962",
+      "name": "CSP079187",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP079786",
+      "parentId": "MOHAN.ASMTN",
+      "userId": "201652",
+      "name": "CSP079786",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP081629",
+      "parentId": "RAHUL.ASMBIHAR",
+      "userId": "203722",
+      "name": "CSP081629",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP082116",
+      "parentId": "SUBIR.ASMWB",
+      "userId": "204291",
+      "name": "CSP082116",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP082373",
+      "parentId": "YERRAMSETTI.ASMAP",
+      "userId": "204587",
+      "name": "CSP082373",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP082375",
+      "parentId": "SANDEEP.KUMAR CH EUP",
+      "userId": "204589",
+      "name": "CSP082375",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP082425",
+      "parentId": "KRISHNA.ASMBIHAR",
+      "userId": "204646",
+      "name": "CSP082425",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP082781",
+      "parentId": "DESIKAMANI.ASMTN",
+      "userId": "205054",
+      "name": "CSP082781",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP083226",
+      "parentId": "SONU.ASMBIHAR",
+      "userId": "205555",
+      "name": "CSP083226",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP084339",
+      "parentId": "RAJ.ASMTN",
+      "userId": "206783",
+      "name": "CSP084339",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP084913",
+      "parentId": "PADALA.ASMAP",
+      "userId": "207420",
+      "name": "CSP084913",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP085959",
+      "parentId": "BHIMASHANKAR.ASMMAHA",
+      "userId": "208627",
+      "name": "CSP085959",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP086305",
+      "parentId": "SANDEEP.KUMAR CH EUP",
+      "userId": "209012",
+      "name": "CSP086305",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP086360",
+      "parentId": "BANAMALI.ASMODI",
+      "userId": "209072",
+      "name": "CSP086360",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP087005",
+      "parentId": "SANDEEP.KUMAR CH EUP",
+      "userId": "209806",
+      "name": "CSP087005",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP088598",
+      "parentId": "YERRAMSETTI.ASMAP",
+      "userId": "211596",
+      "name": "CSP088598",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP088773",
+      "parentId": "AMIT.YADAVASMUP",
+      "userId": "211799",
+      "name": "CSP088773",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP089459",
+      "parentId": "Vikash.asmbihar",
+      "userId": "212568",
+      "name": "CSP089459",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP089514",
+      "parentId": "NILESH.ASMMAHA",
+      "userId": "212626",
+      "name": "CSP089514",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP089990",
+      "parentId": "NILESH.ASMMAHA",
+      "userId": "213160",
+      "name": "CSP089990",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP089991",
+      "parentId": "SANDEEP.ASMWUP",
+      "userId": "213161",
+      "name": "CSP089991",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP090598",
+      "parentId": "SWAPNIL.ASMMAHA",
+      "userId": "213827",
+      "name": "CSP090598",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP092123",
+      "parentId": "SANDEEP.ASMPB",
+      "userId": "215512",
+      "name": "CSP092123",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP092954",
+      "parentId": "GYANENDRA.ASMWUP",
+      "userId": "216444",
+      "name": "CSP092954",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP093629",
+      "parentId": "SHABIHUL.ABRARAASM",
+      "userId": "217194",
+      "name": "CSP093629",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP093749",
+      "parentId": "SAMIUL.ASMWB",
+      "userId": "217329",
+      "name": "CSP093749",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP094709",
+      "parentId": "GYANENDRA.ASMWUP",
+      "userId": "218364",
+      "name": "CSP094709",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP094747",
+      "parentId": "RAZIK.KHANASMMP",
+      "userId": "218407",
+      "name": "CSP094747",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP095043",
+      "parentId": "SAMPATH.ASMKAR",
+      "userId": "218734",
+      "name": "CSP095043",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP095448",
+      "parentId": "SANDEEP.ASMPB",
+      "userId": "219187",
+      "name": "CSP095448",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP096698",
+      "parentId": "BHAGIRATH.ASMRAJ",
+      "userId": "220617",
+      "name": "CSP096698",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP096888",
+      "parentId": "PUSPASISH.ASMWB",
+      "userId": "220849",
+      "name": "CSP096888",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP097526",
+      "parentId": "GYANENDRA.ASMWUP",
+      "userId": "221601",
+      "name": "CSP097526",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP099108",
+      "parentId": "PAVILLA.ASMTEL",
+      "userId": "223388",
+      "name": "CSP099108",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP100477",
+      "parentId": "MATHESH.FOSTN",
+      "userId": "224936",
+      "name": "CSP100477",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP102353",
+      "parentId": "BANAMALI.ASMODI",
+      "userId": "227035",
+      "name": "CSP102353",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP103367",
+      "parentId": "BANAMALI.ASMODI",
+      "userId": "228173",
+      "name": "CSP103367",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP103902",
+      "parentId": "SHRISHAILA.ASMKAR",
+      "userId": "228758",
+      "name": "CSP103902",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP104867",
+      "parentId": "GYANENDRA.ASMWUP",
+      "userId": "229823",
+      "name": "CSP104867",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP107123",
+      "parentId": "SANDEEP.KUMAR CH EUP",
+      "userId": "232300",
+      "name": "CSP107123",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP111879",
+      "parentId": "ABHIJIT.ASMUP",
+      "userId": "237583",
+      "name": "CSP111879",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP112393",
+      "parentId": "UMAR.ASMMP",
+      "userId": "238152",
+      "name": "CSP112393",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP112525",
+      "parentId": "JUZER.RHGUJ",
+      "userId": "238293",
+      "name": "CSP112525",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP115740",
+      "parentId": "SHABIHUL.ABRARAASM",
+      "userId": "241937",
+      "name": "CSP115740",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP115798",
+      "parentId": "SANDEEP.ASMPB",
+      "userId": "242000",
+      "name": "CSP115798",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP117349",
+      "parentId": "SHABIHUL.ABRARAASM",
+      "userId": "243724",
+      "name": "CSP117349",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP119512",
+      "parentId": "NARESH.KUMARCH",
+      "userId": "246075",
+      "name": "CSP119512",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP120103",
+      "parentId": "GANESAN.ASMTN",
+      "userId": "246722",
+      "name": "CSP120103",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP120113",
+      "parentId": "MOHAN.CHCDG",
+      "userId": "246732",
+      "name": "CSP120113",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP120882",
+      "parentId": "GYANENDRA.ASMWUP",
+      "userId": "247560",
+      "name": "CSP120882",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP121008",
+      "parentId": "RAVI.TOMARASMWUP",
+      "userId": "247694",
+      "name": "CSP121008",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP124558",
+      "parentId": "RAZIK.KHANASMMP",
+      "userId": "251630",
+      "name": "CSP124558",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP124776",
+      "parentId": "KRISHNA.ASMBIHAR",
+      "userId": "251870",
+      "name": "CSP124776",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP126476",
+      "parentId": "GYANENDRA.ASMWUP",
+      "userId": "253744",
+      "name": "CSP126476",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP127501",
+      "parentId": "THANDROTHU.ASMAP",
+      "userId": "254875",
+      "name": "CSP127501",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP128272",
+      "parentId": "LALAN.ASMCDG",
+      "userId": "255728",
+      "name": "CSP128272",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP129845",
+      "parentId": "PAPAI.PAUL ASM WB",
+      "userId": "257496",
+      "name": "CSP129845",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP130109",
+      "parentId": "GYANENDRA.ASMWUP",
+      "userId": "257777",
+      "name": "CSP130109",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP130738",
+      "parentId": "UMAR.ASMMP",
+      "userId": "258493",
+      "name": "CSP130738",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP131723",
+      "parentId": "RAIS.AHAMADASMUP",
+      "userId": "259605",
+      "name": "CSP131723",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP132048",
+      "parentId": "PRASHANTJHA.ASMBIHAR",
+      "userId": "259975",
+      "name": "CSP132048",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP132395",
+      "parentId": "LALAN.ASMCDG",
+      "userId": "260352",
+      "name": "CSP132395",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP132898",
+      "parentId": "KRISHNA.ASMBIHAR",
+      "userId": "260923",
+      "name": "CSP132898",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP134083",
+      "parentId": "PUSPASISH.ASMWB",
+      "userId": "262212",
+      "name": "CSP134083",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP134107",
+      "parentId": "SALIL.ASMMP",
+      "userId": "262238",
+      "name": "CSP134107",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP138965",
+      "parentId": "YERRAMSETTI.ASMAP",
+      "userId": "267617",
+      "name": "CSP138965",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP139249",
+      "parentId": "MOSTOFA.ASMASSAM",
+      "userId": "267929",
+      "name": "CSP139249",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP139938",
+      "parentId": "UMESH.ASMPB",
+      "userId": "268675",
+      "name": "CSP139938",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP140706",
+      "parentId": "NAWENDU.ASMBIHAR",
+      "userId": "269515",
+      "name": "CSP140706",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP140920",
+      "parentId": "SANDEEP.ASMWUP",
+      "userId": "269755",
+      "name": "CSP140920",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP141783",
+      "parentId": "PUSPASISH.ASMWB",
+      "userId": "270688",
+      "name": "CSP141783",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP143108",
+      "parentId": "NILESH.ASMMAHA",
+      "userId": "272167",
+      "name": "CSP143108",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP143994",
+      "parentId": "AMIT.YADAVASMUP",
+      "userId": "273156",
+      "name": "CSP143994",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP144084",
+      "parentId": "GYANENDRA.ASMWUP",
+      "userId": "273257",
+      "name": "CSP144084",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP144236",
+      "parentId": "THANDROTHU.ASMAP",
+      "userId": "273423",
+      "name": "CSP144236",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP145768",
+      "parentId": "RAHUL.ASMBIHAR",
+      "userId": "275114",
+      "name": "CSP145768",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP146637",
+      "parentId": "GAJANAN.ASMMAHA",
+      "userId": "276061",
+      "name": "CSP146637",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP147333",
+      "parentId": "DHANANJAY.ASMEUP",
+      "userId": "276824",
+      "name": "CSP147333",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP147361",
+      "parentId": "SANDEEP.KUMAR CH EUP",
+      "userId": "276854",
+      "name": "CSP147361",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP147430",
+      "parentId": "SANDEEP.KUMAR CH EUP",
+      "userId": "276934",
+      "name": "CSP147430",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP147947",
+      "parentId": "BANAMALI.ASMODI",
+      "userId": "277490",
+      "name": "CSP147947",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP148248",
+      "parentId": "SAMPATH.ASMKAR",
+      "userId": "277822",
+      "name": "CSP148248",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP150050",
+      "parentId": "LALAN.ASMCDG",
+      "userId": "279855",
+      "name": "CSP150050",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP150158",
+      "parentId": "MOHAMMAD.IMRAN ASM",
+      "userId": "279974",
+      "name": "CSP150158",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP150169",
+      "parentId": "SONU.ASMBIHAR",
+      "userId": "279988",
+      "name": "CSP150169",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP153814",
+      "parentId": "LALAN.ASMCDG",
+      "userId": "283880",
+      "name": "CSP153814",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP155398",
+      "parentId": "VIKAS.ASMRAJ",
+      "userId": "305623",
+      "name": "CSP155398",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP155488",
+      "parentId": "SAMIUL.ASMWB",
+      "userId": "305721",
+      "name": "CSP155488",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP155689",
+      "parentId": "YERRAMSETTI.ASMAP",
+      "userId": "305941",
+      "name": "CSP155689",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP156143",
+      "parentId": "MOHAN.CHCDG",
+      "userId": "306444",
+      "name": "CSP156143",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP156627",
+      "parentId": "AMIT.YADAVASMUP",
+      "userId": "306958",
+      "name": "CSP156627",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP157660",
+      "parentId": "YERRAMSETTI.ASMAP",
+      "userId": "308087",
+      "name": "CSP157660",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP157675",
+      "parentId": "LALAN.ASMCDG",
+      "userId": "308102",
+      "name": "CSP157675",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP157902",
+      "parentId": "MOHAN.CHCDG",
+      "userId": "308348",
+      "name": "CSP157902",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP160419",
+      "parentId": "PUSPASISH.ASMWB",
+      "userId": "311143",
+      "name": "CSP160419",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP161065",
+      "parentId": "PUSPASISH.ASMWB",
+      "userId": "311876",
+      "name": "CSP161065",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP161079",
+      "parentId": "MATHESH.FOSTN",
+      "userId": "311893",
+      "name": "CSP161079",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP161261",
+      "parentId": "PUSPASISH.ASMWB",
+      "userId": "312090",
+      "name": "CSP161261",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP161353",
+      "parentId": "BHIMASHANKAR.ASMMAHA",
+      "userId": "312186",
+      "name": "CSP161353",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP162156",
+      "parentId": "SONU.ASMBIHAR",
+      "userId": "313107",
+      "name": "CSP162156",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP162701",
+      "parentId": "PAPAI.PAUL ASM WB",
+      "userId": "313710",
+      "name": "CSP162701",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP162960",
+      "parentId": "PRASHANT.ASMBIHAR",
+      "userId": "313986",
+      "name": "CSP162960",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP164208",
+      "parentId": "SUDIP.KUMARASMNE",
+      "userId": "315398",
+      "name": "CSP164208",
+      "role": "POSP",
+      "appRole": "POSP"
+    },
+    {
+      "id": "CSP164717",
+      "parentId": "SANDEEP.KUMAR CH EUP",
+      "userId": "315953",
+      "name": "CSP164717",
+      "role": "POSP",
+      "appRole": "POSP"
+    }
+  ]
+}

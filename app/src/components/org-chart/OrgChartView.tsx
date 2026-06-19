@@ -20,26 +20,55 @@ interface D3OrgChart {
   expandAll(): this;
   collapseAll(): this;
   setCentered(id: string): this;
+  initialZoom(level: number): this;
   clearHighlighting(): this;
   setUpToTheRootHighlighted(id: string): this;
 }
 
+/** Zoom scale when landing on the logged-in user's card (d3 lastTransform.k). 1 = default. */
+const LOGIN_FOCUS_ZOOM = 0.95;
+
+// Keyed by org-role code (from usertype mapping), senior → junior. Labels match
+// ORG_ROLE_LABELS on the backend; UNKNOWN falls through to the getConfig default.
 const DESIGNATION_CONFIG: Record<string, { bg: string; color: string; label: string }> = {
-  R5: { bg: "#0f4c75", color: "#ffffff", label: "National Head" },
-  R4: { bg: "#1b6ca8", color: "#ffffff", label: "Zonal Head" },
-  R3: { bg: "#3282b8", color: "#ffffff", label: "Regional Head" },
-  R2: { bg: "#1b8a99", color: "#ffffff", label: "ASM" },
-  R1: { bg: "#2a9d8f", color: "#ffffff", label: "DM Cluster" },
-  DM: { bg: "#264653", color: "#ffffff", label: "Dist. Manager" },
+  ADMIN: { bg: "#0b3d63", color: "#ffffff", label: "Admin" },
+  NATIONAL_HEAD: { bg: "#0d4a6e", color: "#ffffff", label: "National Head" },
+  SZH: { bg: "#0f4c75", color: "#ffffff", label: "Super Zonal Head" },
+  ZH: { bg: "#1b6ca8", color: "#ffffff", label: "Zonal Head" },
+  CH: { bg: "#3282b8", color: "#ffffff", label: "Cluster Head" },
+  RH: { bg: "#1b8a99", color: "#ffffff", label: "Regional Head" },
+  ASSISTASM: { bg: "#2a9d8f", color: "#ffffff", label: "Assistant Area Sales Manager" },
+  ASM: { bg: "#3aa68a", color: "#ffffff", label: "Area Sales Manager" },
+  // CSF/CMF are managerial layers above CSP.
+  CSF: { bg: "#577590", color: "#ffffff", label: "CSF" },
+  CMF: { bg: "#6a8caf", color: "#ffffff", label: "CMF" },
+  // CSP is the front-line agent (the POSP tier).
+  CSP: { bg: "#ef8354", color: "#ffffff", label: "CSP" },
+  POSP: { bg: "#e76f51", color: "#ffffff", label: "POSP" },
 };
 
 function getConfig(designation: string) {
   return DESIGNATION_CONFIG[designation] ?? { bg: "#666", color: "#fff", label: designation };
 }
 
-function buildNodeHtml(d: { data: OrgNode }): string {
+function focusChartOnNode(
+  chart: D3OrgChart,
+  nodeId: string,
+  zoom: number,
+): void {
+  chart
+    .expandAll()
+    .setUpToTheRootHighlighted(nodeId)
+    .setCentered(nodeId)
+    .initialZoom(zoom)
+    .render();
+}
+
+function buildNodeHtml(focusNodeId?: string) {
+  return (d: { data: OrgNode }): string => {
   const node = d.data;
   const cfg = getConfig(node.designation);
+  const isFocused = focusNodeId != null && node.id === focusNodeId;
   const district = node.districtName
     ? `<div style="font-size:10px;color:#999;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${node.districtName}</div>`
     : "";
@@ -48,10 +77,10 @@ function buildNodeHtml(d: { data: OrgNode }): string {
       width:200px;
       background:#fff;
       border-radius:8px;
-      box-shadow:0 2px 8px rgba(0,0,0,0.12);
+      box-shadow:${isFocused ? "0 0 0 3px #f59e0b, 0 4px 14px rgba(0,0,0,0.18)" : "0 2px 8px rgba(0,0,0,0.12)"};
       overflow:hidden;
       font-family:inherit;
-      border:1px solid #e5e7eb;
+      border:${isFocused ? "2px solid #f59e0b" : "1px solid #e5e7eb"};
     ">
       <div style="
         background:${cfg.bg};
@@ -80,14 +109,15 @@ function buildNodeHtml(d: { data: OrgNode }): string {
       </div>
     </div>
   `;
+  };
 }
 
 interface OrgChartViewProps {
   data: OrgNode[];
-  /** The OrgNode.id matching the currently logged-in user. When supplied the
-   *  chart expands all nodes, highlights the path to root, and centres on this
-   *  node automatically on first render. */
-  currentUserNodeId?: string;
+  /** Node to centre and highlight on first render. */
+  focusNodeId?: string;
+  /** When true the chart centres on focusNodeId without trimming the tree. */
+  focusOnLogin?: boolean;
 }
 
 const toolbarButtonStyle: React.CSSProperties = {
@@ -101,7 +131,11 @@ const toolbarButtonStyle: React.CSSProperties = {
   color: "#374151",
 };
 
-export function OrgChartView({ data, currentUserNodeId }: OrgChartViewProps): React.ReactElement {
+export function OrgChartView({
+  data,
+  focusNodeId,
+  focusOnLogin = false,
+}: OrgChartViewProps): React.ReactElement {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<D3OrgChart | null>(null);
   const [search, setSearch] = useState("");
@@ -113,26 +147,26 @@ export function OrgChartView({ data, currentUserNodeId }: OrgChartViewProps): Re
       chartRef.current = new OrgChart();
     }
 
-    chartRef.current
+    const chart = chartRef.current;
+    chart
       .container(containerRef.current)
       .data(data)
       .nodeWidth(() => 210)
       .nodeHeight(() => 90)
-      .nodeContent(buildNodeHtml)
-      .render();
+      .nodeContent(buildNodeHtml(focusOnLogin ? focusNodeId : undefined));
 
-    // Expand the full tree, then focus on the current user's node.
-    if (currentUserNodeId) {
-      chartRef.current
-        .expandAll()
-        .setUpToTheRootHighlighted(currentUserNodeId)
-        .setCentered(currentUserNodeId)
-        .render();
+    if (focusNodeId && focusOnLogin) {
+      focusChartOnNode(chart, focusNodeId, LOGIN_FOCUS_ZOOM);
+      // Re-run after layout so centre + zoom apply reliably on first paint.
+      requestAnimationFrame(() => {
+        focusChartOnNode(chart, focusNodeId, LOGIN_FOCUS_ZOOM);
+      });
+    } else if (focusNodeId) {
+      focusChartOnNode(chart, focusNodeId, 1);
     } else {
-      // No specific user node — expand all so the full hierarchy is visible.
-      chartRef.current.expandAll().render();
+      chart.expandAll().render();
     }
-  }, [data, currentUserNodeId]);
+  }, [data, focusNodeId, focusOnLogin]);
 
   useEffect(() => {
     initChart();
@@ -153,11 +187,8 @@ export function OrgChartView({ data, currentUserNodeId }: OrgChartViewProps): Re
         (n.districtName ?? "").toLowerCase().includes(lower)
     );
     if (match) {
-      chartRef.current
-        .clearHighlighting()
-        .setUpToTheRootHighlighted(match.id)
-        .setCentered(match.id)
-        .render();
+      chartRef.current.clearHighlighting();
+      focusChartOnNode(chartRef.current, match.id, LOGIN_FOCUS_ZOOM);
     }
   }, [search, data]);
 

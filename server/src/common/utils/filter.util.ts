@@ -115,20 +115,29 @@ export function parsePremiumRange(
   return { gte: min, lte: max };
 }
 
+/**
+ * Builds the geo `where` clause. Zone/region/state/district/city selections are
+ * resolved server-side (via GeoCatalogService) to a set of Cognitensor
+ * `districtId`s and passed in as `districtIds`; this function only applies that
+ * set plus the non-catalog `area`/`posp` column filters.
+ *
+ * @param districtIds resolved district set, or `null` when no geo dimension was
+ *   selected (leaves the query un-narrowed by district). An empty array means a
+ *   geo dimension was selected but matched no districts → no rows.
+ */
 export function buildGeoFilterWhere(
   query: GeoFilterQueryDto,
+  districtIds?: string[] | null,
 ): Record<string, unknown> {
   const where: Record<string, unknown> = {};
 
-  if (query.zone?.length) where.zoneId = { in: query.zone };
-
-  if (query.region?.length) where.regionId = { in: query.region };
-
   if (query.area?.length) where.areaId = { in: query.area };
 
-  if (query.district?.length) where.districtId = { in: query.district };
-
   if (query.posp?.length) where.pospId = { in: query.posp };
+
+  if (districtIds !== undefined && districtIds !== null) {
+    where.districtId = { in: districtIds };
+  }
 
   return where;
 }

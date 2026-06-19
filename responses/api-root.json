@@ -1,0 +1,16 @@
+{
+  "capturedAt": "2026-06-17T16:02:08.885Z",
+  "method": "GET",
+  "path": "/api",
+  "baseUrl": "http://localhost:8000",
+  "status": 404,
+  "statusText": "Not Found",
+  "note": null,
+  "requestBody": null,
+  "response": {
+    "statusCode": 404,
+    "message": "Cannot GET /api",
+    "path": "/api",
+    "timestamp": "2026-06-17T16:02:08.884Z"
+  }
+}

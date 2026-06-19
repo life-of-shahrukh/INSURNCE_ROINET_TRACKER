@@ -1,0 +1,267 @@
+{
+  "capturedAt": "2026-06-17T16:02:09.465Z",
+  "method": "GET",
+  "path": "/api/external/districts?stateId=25",
+  "baseUrl": "http://localhost:8000",
+  "status": 200,
+  "statusText": "OK",
+  "note": null,
+  "requestBody": null,
+  "response": [
+    {
+      "StateId": "25",
+      "DistrictId": "270",
+      "DistrictName": "BHOPAL"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "271",
+      "DistrictName": "RAISEN"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "272",
+      "DistrictName": "RAJGARH"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "273",
+      "DistrictName": "SEHORE"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "274",
+      "DistrictName": "VIDISHA"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "275",
+      "DistrictName": "MORENA"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "276",
+      "DistrictName": "SHEOPUR"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "277",
+      "DistrictName": "BHIND"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "278",
+      "DistrictName": "ASHOKNAGAR"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "279",
+      "DistrictName": "SHIVPURI"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "280",
+      "DistrictName": "DATIA"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "281",
+      "DistrictName": "GUNA"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "282",
+      "DistrictName": "GWALIOR"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "283",
+      "DistrictName": "ALIRAJPUR"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "284",
+      "DistrictName": "BARWANI"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "285",
+      "DistrictName": "BURHANPUR"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "286",
+      "DistrictName": "DHAR"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "287",
+      "DistrictName": "INDORE"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "288",
+      "DistrictName": "JHABUA"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "289",
+      "DistrictName": "KHANDWA"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "290",
+      "DistrictName": "KHARGONE"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "291",
+      "DistrictName": "BALAGHAT"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "292",
+      "DistrictName": "CHHINDWARA"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "293",
+      "DistrictName": "JABALPUR"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "294",
+      "DistrictName": "KATNI"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "295",
+      "DistrictName": "MANDLA"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "296",
+      "DistrictName": "NARSINGHPUR"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "297",
+      "DistrictName": "SEONI"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "298",
+      "DistrictName": "BETUL"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "299",
+      "DistrictName": "HARDA"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "300",
+      "DistrictName": "HOSHANGABAD"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "301",
+      "DistrictName": "REWA"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "302",
+      "DistrictName": "SATNA"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "303",
+      "DistrictName": "SIDHI"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "304",
+      "DistrictName": "SINGRAULI"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "305",
+      "DistrictName": "CHHATARPUR"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "306",
+      "DistrictName": "DAMOH"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "307",
+      "DistrictName": "PANNA"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "308",
+      "DistrictName": "SAGAR"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "309",
+      "DistrictName": "TIKAMGARH"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "310",
+      "DistrictName": "ANUPPUR"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "311",
+      "DistrictName": "DINDORI"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "312",
+      "DistrictName": "SHAHDOL"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "313",
+      "DistrictName": "UMARIA"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "314",
+      "DistrictName": "DEWAS"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "315",
+      "DistrictName": "MANDSAUR"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "316",
+      "DistrictName": "NEEMUCH"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "317",
+      "DistrictName": "RATLAM"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "318",
+      "DistrictName": "SHAJAPUR"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "319",
+      "DistrictName": "UJJAIN"
+    },
+    {
+      "StateId": "25",
+      "DistrictId": "675",
+      "DistrictName": "EAST NIMAR"
+    }
+  ]
+}

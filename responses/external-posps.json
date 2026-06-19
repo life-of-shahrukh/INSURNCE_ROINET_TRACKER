@@ -1,0 +1,56 @@
+{
+  "capturedAt": "2026-06-17T16:02:09.601Z",
+  "method": "GET",
+  "path": "/api/external/posps?page=1&pageSize=3",
+  "baseUrl": "http://localhost:8000",
+  "status": 200,
+  "statusText": "OK",
+  "note": null,
+  "requestBody": null,
+  "response": {
+    "data": [
+      {
+        "UserId": "85687",
+        "UserCode": "CSP023057",
+        "MobileNo": "7350357007",
+        "EmailId": "shivraj.wanole@roinet.in",
+        "districtid": "330",
+        "stateid": "26",
+        "cityid": "3828",
+        "HephGcdCode": "GIDROINET2000473",
+        "CreatedDate": "25-08-2025 12:04:26",
+        "CreatedBy": "CSP023057"
+      },
+      {
+        "UserId": "12606",
+        "UserCode": "CSP006591",
+        "MobileNo": "9009660096",
+        "EmailId": "rkhandwa@gmail.com",
+        "districtid": "675",
+        "stateid": "25",
+        "cityid": "2113",
+        "HephGcdCode": "GIDROINET2000014",
+        "CreatedDate": "26-08-2025 12:36:41",
+        "CreatedBy": "CSP006591"
+      },
+      {
+        "UserId": "222367",
+        "UserCode": "CSP098199",
+        "MobileNo": "9340385353",
+        "EmailId": "meenabrijesh714@gmail.com",
+        "districtid": "273",
+        "stateid": "25",
+        "cityid": "3352",
+        "HephGcdCode": "GIDROINET2000037",
+        "CreatedDate": "26-08-2025 14:18:57",
+        "CreatedBy": "CSP098199"
+      }
+    ],
+    "meta": {
+      "page": 1,
+      "pageSize": 3,
+      "total": 268,
+      "totalPages": 90
+    }
+  }
+}

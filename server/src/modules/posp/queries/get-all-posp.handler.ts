@@ -8,10 +8,14 @@ import { mergeWhereClauses } from '../../../common/utils/filter.util';
 import { resolvePagination } from '../../../common/utils/pagination.util';
 import type { PaginatedResult } from '../../../common/interfaces/paginated-result.interface';
 import type { Prisma } from '@prisma/client';
+import { GeoCatalogService } from '../../geo/geo-catalog.service';
 
 @QueryHandler(GetAllPospQuery)
 export class GetAllPospHandler implements IQueryHandler<GetAllPospQuery> {
-  constructor(private readonly pospRepo: PospRepository) {}
+  constructor(
+    private readonly pospRepo: PospRepository,
+    private readonly geo: GeoCatalogService,
+  ) {}
 
   async execute(query: GetAllPospQuery): Promise<PaginatedResult<Posp>> {
     const { filters, hierarchyScope } = query;
@@ -20,7 +24,8 @@ export class GetAllPospHandler implements IQueryHandler<GetAllPospQuery> {
     const scopeWhere = hierarchyScope
       ? buildPospScopeWhere(hierarchyScope)
       : {};
-    const filterWhere = buildPospFilterWhere(filters);
+    const districtIds = this.geo.districtIdsForQuery(filters);
+    const filterWhere = buildPospFilterWhere(filters, districtIds);
     const where = mergeWhereClauses(
       scopeWhere,
       filterWhere,

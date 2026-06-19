@@ -37,6 +37,20 @@ export class DashboardQueryDto extends GeoFilterQueryDto {
   // ── Scoped geographic narrowing (intersected with the caller's scope) ────
 
   @ApiPropertyOptional({
+    description: 'Narrow to a single Cognitensor ZoneId',
+  })
+  @IsOptional()
+  @IsString()
+  zoneId?: string;
+
+  @ApiPropertyOptional({
+    description: 'Narrow to a single Cognitensor RegionId',
+  })
+  @IsOptional()
+  @IsString()
+  regionId?: string;
+
+  @ApiPropertyOptional({
     description: 'Narrow to a single Cognitensor StateId',
   })
   @IsOptional()

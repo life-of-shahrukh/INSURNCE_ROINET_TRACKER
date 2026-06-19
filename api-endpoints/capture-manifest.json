@@ -1,0 +1,248 @@
+{
+  "capturedAt": "2026-06-17T16:02:10.203Z",
+  "baseUrl": "http://localhost:8000",
+  "endpoints": [
+    {
+      "id": "health",
+      "method": "GET",
+      "path": "/health",
+      "auth": false,
+      "status": 200,
+      "file": "responses\\health.json"
+    },
+    {
+      "id": "api-root",
+      "method": "GET",
+      "path": "/api",
+      "auth": false,
+      "status": 404,
+      "file": "responses\\api-root.json"
+    },
+    {
+      "id": "auth-login",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "auth": false,
+      "body": {
+        "email": "superadmin@roinet.com",
+        "password": "Admin@1234"
+      },
+      "note": "Sets access_token cookie for subsequent requests",
+      "status": 200,
+      "file": "responses\\auth-login.json"
+    },
+    {
+      "id": "auth-me",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "auth": true,
+      "status": 200,
+      "file": "responses\\auth-me.json"
+    },
+    {
+      "id": "profile",
+      "method": "GET",
+      "path": "/api/profile",
+      "auth": true,
+      "status": 200,
+      "file": "responses\\profile.json"
+    },
+    {
+      "id": "dashboard-stats",
+      "method": "GET",
+      "path": "/api/dashboard/stats",
+      "auth": true,
+      "status": 200,
+      "file": "responses\\dashboard-stats.json"
+    },
+    {
+      "id": "hierarchy-filter-options",
+      "method": "GET",
+      "path": "/api/hierarchy/filter-options",
+      "auth": true,
+      "status": 200,
+      "file": "responses\\hierarchy-filter-options.json"
+    },
+    {
+      "id": "hierarchy-org-chart",
+      "method": "GET",
+      "path": "/api/hierarchy/org-chart",
+      "auth": true,
+      "status": 200,
+      "file": "responses\\hierarchy-org-chart.json"
+    },
+    {
+      "id": "external-states",
+      "method": "GET",
+      "path": "/api/external/states",
+      "auth": true,
+      "status": 200,
+      "file": "responses\\external-states.json"
+    },
+    {
+      "id": "external-districts",
+      "method": "GET",
+      "path": "/api/external/districts?stateId=25",
+      "auth": true,
+      "status": 200,
+      "file": "responses\\external-districts.json"
+    },
+    {
+      "id": "external-cities",
+      "method": "GET",
+      "path": "/api/external/cities?districtId=1",
+      "auth": true,
+      "status": 200,
+      "file": "responses\\external-cities.json"
+    },
+    {
+      "id": "external-zones",
+      "method": "GET",
+      "path": "/api/external/zones",
+      "auth": true,
+      "note": "Cognitensor ListZone — zonal lookup (Zoneid/ZoneName)",
+      "status": 200,
+      "file": "responses\\external-zones.json"
+    },
+    {
+      "id": "geo-catalog",
+      "method": "GET",
+      "path": "/api/geo/catalog",
+      "auth": true,
+      "note": "Small geo reference lists (zones/regions/states) — loaded once on the client",
+      "status": 200,
+      "file": "responses\\geo-catalog.json"
+    },
+    {
+      "id": "geo-districts-search",
+      "method": "GET",
+      "path": "/api/geo/districts/search?q=hyd&limit=5",
+      "auth": true,
+      "note": "Server-side district typeahead (big dataset, never bulk-loaded)",
+      "status": 200,
+      "file": "responses\\geo-districts-search.json"
+    },
+    {
+      "id": "geo-cities-search",
+      "method": "GET",
+      "path": "/api/geo/cities/search?q=ban&limit=5",
+      "auth": true,
+      "note": "Server-side city typeahead (big dataset, never bulk-loaded)",
+      "status": 200,
+      "file": "responses\\geo-cities-search.json"
+    },
+    {
+      "id": "hierarchy-members-search",
+      "method": "GET",
+      "path": "/api/hierarchy/members/search?q=a&limit=5",
+      "auth": true,
+      "note": "Scoped member/user typeahead by name or code",
+      "status": 200,
+      "file": "responses\\hierarchy-members-search.json"
+    },
+    {
+      "id": "external-hierarchy",
+      "method": "GET",
+      "path": "/api/external/hierarchy",
+      "auth": true,
+      "status": 200,
+      "file": "responses\\external-hierarchy.json"
+    },
+    {
+      "id": "external-hierarchy-filtered",
+      "method": "GET",
+      "path": "/api/external/hierarchy?districtId=1",
+      "auth": true,
+      "status": 200,
+      "file": "responses\\external-hierarchy-filtered.json"
+    },
+    {
+      "id": "external-posps",
+      "method": "GET",
+      "path": "/api/external/posps?page=1&pageSize=3",
+      "auth": true,
+      "status": 200,
+      "file": "responses\\external-posps.json"
+    },
+    {
+      "id": "posp-list",
+      "method": "GET",
+      "path": "/api/posp?page=1&pageSize=3",
+      "auth": true,
+      "status": 200,
+      "file": "responses\\posp-list.json"
+    },
+    {
+      "id": "deals-list",
+      "method": "GET",
+      "path": "/api/deals?page=1&pageSize=3",
+      "auth": true,
+      "status": 200,
+      "file": "responses\\deals-list.json"
+    },
+    {
+      "id": "leads-list",
+      "method": "GET",
+      "path": "/api/leads?page=1&pageSize=3",
+      "auth": true,
+      "status": 200,
+      "file": "responses\\leads-list.json"
+    },
+    {
+      "id": "leads-commitment",
+      "method": "GET",
+      "path": "/api/leads/commitment",
+      "auth": true,
+      "status": 200,
+      "file": "responses\\leads-commitment.json"
+    },
+    {
+      "id": "customers-list",
+      "method": "GET",
+      "path": "/api/customers?page=1&pageSize=3",
+      "auth": true,
+      "status": 200,
+      "file": "responses\\customers-list.json"
+    },
+    {
+      "id": "customers-search",
+      "method": "GET",
+      "path": "/api/customers/search?q=a",
+      "auth": true,
+      "status": 200,
+      "file": "responses\\customers-search.json"
+    },
+    {
+      "id": "sales-team-list",
+      "method": "GET",
+      "path": "/api/sales-team?page=1&pageSize=3",
+      "auth": true,
+      "status": 200,
+      "file": "responses\\sales-team-list.json"
+    },
+    {
+      "id": "sales-team-hierarchy",
+      "method": "GET",
+      "path": "/api/sales-team/hierarchy",
+      "auth": true,
+      "status": 200,
+      "file": "responses\\sales-team-hierarchy.json"
+    },
+    {
+      "id": "sales-team-org-chart",
+      "method": "GET",
+      "path": "/api/sales-team/org-chart",
+      "auth": true,
+      "status": 200,
+      "file": "responses\\sales-team-org-chart.json"
+    },
+    {
+      "id": "hierarchy-subordinates-drill",
+      "method": "GET",
+      "path": "/api/hierarchy/subordinates?level=DM&code=VIVEK",
+      "auth": true,
+      "status": 200,
+      "file": "responses\\hierarchy-subordinates-drill.json"
+    }
+  ]
+}

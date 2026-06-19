@@ -4,12 +4,12 @@ import { DashboardController } from './dashboard.controller';
 import { DashboardService } from './dashboard.service';
 import { DashboardRepository } from './dashboard.repository';
 import { GetDashboardStatsHandler } from './queries/get-dashboard-stats.handler';
-import { ExternalApiModule } from '../../common/external-api/external-api.module';
+import { GeoModule } from '../geo/geo.module';
 
 const QueryHandlers = [GetDashboardStatsHandler];
 
 @Module({
-  imports: [CqrsModule, ExternalApiModule],
+  imports: [CqrsModule, GeoModule],
   controllers: [DashboardController],
   providers: [DashboardService, DashboardRepository, ...QueryHandlers],
 })

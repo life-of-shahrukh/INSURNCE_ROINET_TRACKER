@@ -27,6 +27,14 @@ export interface DashboardStats {
     }>;
     /** Monthly trend: premium grouped by year-month */
     monthlyPremium: Array<{ month: string; premium: number; count: number }>;
+    /** Per-district breakdown — populated for manager roles */
+    byDistrict: Array<{
+      districtId: string;
+      districtName: string;
+      premium: number;
+      count: number;
+      pospCount: number;
+    }>;
   };
   leads: {
     total: number;
@@ -44,4 +52,15 @@ export interface DashboardStats {
     total: number;
     byKycStatus: Array<{ kycStatus: string; count: number }>;
   };
+  /**
+   * Team overview for manager roles.
+   * Populated from live ListHierarchyUserData when the caller is a manager.
+   * Null for POSP role.
+   */
+  team: {
+    /** Total districts in this manager's territory */
+    districtCount: number;
+    /** Counts of direct subordinates by role level */
+    subordinateCounts: Partial<Record<string, number>>;
+  } | null;
 }

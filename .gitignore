@@ -66,3 +66,4 @@ api-samples/
 # Secrets file
 .secret
 infra/.secret
+external-apis/

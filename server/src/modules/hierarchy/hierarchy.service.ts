@@ -31,6 +31,11 @@ export interface HierarchyFilterOptions {
   dms: FilterOptionItem[];
   asms: FilterOptionItem[];
   rhs: FilterOptionItem[];
+  zhs: FilterOptionItem[];
+  /** Zones that contain at least one district in the caller's territory */
+  zones: FilterOptionItem[];
+  /** Regions (RH-level groupings) within the caller's territory */
+  regions: FilterOptionItem[];
 }
 
 export interface SubordinatesResult {
@@ -192,6 +197,60 @@ export class HierarchyService {
     const dms = this.distinctLevel(rows, 'DM');
     const asms = this.distinctLevel(rows, 'ASM');
     const rhs = this.distinctLevel(rows, 'RH');
+    const zhs = this.distinctLevel(rows, 'ZH');
+
+    // Zones — scoped to only those containing at least one district in the caller's territory.
+    // Uses the enriched districts.json snapshot (has zoneid/regionid fields).
+    const callerDistrictIds = new Set(rows.map((r) => r.districtId));
+    const allDistrictData = (() => {
+      try {
+        return this.externalApi.listDistricts('');
+      } catch {
+        return [];
+      }
+    })();
+    const allZones = (() => {
+      try {
+        return this.externalApi.listZones();
+      } catch {
+        return [];
+      }
+    })();
+    const zoneMap = new Map(allZones.map((z) => [z.Zoneid, z.ZoneName]));
+
+    // For SUPER_ADMIN/NATIONAL_HEAD (no district restriction), show all zones.
+    const callerZoneIds = new Set(
+      allDistrictData
+        .filter((d) => d.zoneid && callerDistrictIds.has(d.DistrictId))
+        .map((d) => d.zoneid as string),
+    );
+    const zones =
+      callerDistrictIds.size === 0
+        ? allZones.map((z) => ({ id: z.Zoneid, name: z.ZoneName })).sort((a, b) => a.name.localeCompare(b.name))
+        : [...callerZoneIds]
+            .filter((id) => zoneMap.has(id))
+            .map((id) => ({ id, name: zoneMap.get(id) as string }))
+            .sort((a, b) => a.name.localeCompare(b.name));
+
+    // Regions — scoped to regionids present in the caller's districts (from enriched snapshot).
+    const regionNameFromData = new Map(
+      allDistrictData
+        .filter((d) => d.regionid && d.regionname)
+        .map((d) => [d.regionid as string, d.regionname as string]),
+    );
+    const callerRegionIds = new Set(
+      allDistrictData
+        .filter((d) => d.regionid && callerDistrictIds.has(d.DistrictId))
+        .map((d) => d.regionid as string),
+    );
+    const regions =
+      callerDistrictIds.size === 0
+        ? dedupe([...regionNameFromData.entries()].map(([id, name]) => ({ id, name })))
+        : dedupe(
+            [...callerRegionIds]
+              .filter((id) => regionNameFromData.has(id))
+              .map((id) => ({ id, name: regionNameFromData.get(id) as string })),
+          );
 
     const stateNames = this.stateNameMap();
     const states = dedupe(
@@ -245,6 +304,9 @@ export class HierarchyService {
       dms,
       asms,
       rhs,
+      zhs,
+      zones,
+      regions,
     };
   }
 

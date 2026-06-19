@@ -92,12 +92,12 @@ export class UserRepository {
   /**
    * Syncs fresh Cognitensor data into the Posp row identified by `code`.
    * Called on every SSO login so our DB always reflects the latest external state.
-   * Only updates fields sourced from Cognitensor; name and internal fields are untouched.
    */
   async upsertPospFromExternal(
     code: string,
     data: {
       externalId: string;
+      name?: string;
       mobile: string;
       email: string;
       gcdCode: string;
@@ -110,6 +110,7 @@ export class UserRepository {
       where: { code },
       data: {
         externalId: data.externalId,
+        ...(data.name && { name: data.name }),
         mobile: data.mobile,
         email: data.email,
         gcdCode: data.gcdCode,
@@ -125,5 +126,140 @@ export class UserRepository {
       where: { email: email.toLowerCase() },
       select: { id: true },
     });
+  }
+
+  /**
+   * Upserts a manager User record created/updated via SSO login.
+   * Managers do not have a Posp record — they authenticate via ListHierarchyUserData.
+   * Creates the User if this is their first login; updates role/status if changed.
+   * Also creates a SalesTeam stub (employeeCode) so HierarchyScopeInterceptor
+   * can look up their territory.
+   */
+  async upsertManagerFromSso(params: {
+    userCode: string;
+    role: Role;
+    name: string;
+  }): Promise<{ id: string; email: string; role: string; status: string }> {
+    const email = `${params.userCode.toLowerCase()}@roinet.sso`;
+
+    return this.prisma.$transaction(async (tx) => {
+      let user = await tx.user.findUnique({
+        where: { email },
+        select: { id: true, email: true, role: true, status: true },
+      });
+
+      if (!user) {
+        user = await tx.user.create({
+          data: {
+            email,
+            passwordHash: '',
+            role: params.role,
+            status: UserStatus.ACTIVE,
+          },
+          select: { id: true, email: true, role: true, status: true },
+        });
+      } else if (user.role !== params.role) {
+        user = await tx.user.update({
+          where: { id: user.id },
+          data: { role: params.role, status: UserStatus.ACTIVE },
+          select: { id: true, email: true, role: true, status: true },
+        });
+      }
+
+      // Ensure SalesTeam stub exists so scope resolution can find employeeCode
+      const existing = await tx.salesTeam.findUnique({
+        where: { userId: user.id },
+      });
+      if (!existing) {
+        await tx.salesTeam.create({
+          data: {
+            userId: user.id,
+            name: params.name,
+            employeeCode: params.userCode,
+            designation: params.role,
+            mobile: '',
+            email,
+            joiningDate: new Date(),
+            status: 'ACTIVE',
+          },
+        });
+      } else if (existing.employeeCode !== params.userCode) {
+        await tx.salesTeam.update({
+          where: { userId: user.id },
+          data: { employeeCode: params.userCode, name: params.name },
+        });
+      }
+
+      return user;
+    });
+  }
+
+  /**
+   * Syncs a manager's territory districts into the DistrictHierarchy cache table.
+   * Called on every manager SSO login so the fallback scope resolver stays current.
+   */
+  async syncManagerDistrictHierarchy(
+    rows: Array<{
+      districtId: string;
+      districtName: string;
+      dmCode?: string;
+      dmId?: string;
+      dmName?: string;
+      asmCode?: string;
+      asmId?: string;
+      asmName?: string;
+      rhCode?: string;
+      rhId?: string;
+      rhName?: string;
+      zhCode?: string;
+      zhId?: string;
+      zhName?: string;
+      nhCode?: string;
+      nhId?: string;
+      nhName?: string;
+    }>,
+  ): Promise<void> {
+    for (const row of rows) {
+      await this.prisma.districtHierarchy.upsert({
+        where: { districtId: row.districtId },
+        update: {
+          districtName: row.districtName,
+          dmId: row.dmId,
+          dmCode: row.dmCode,
+          dmName: row.dmName,
+          asmId: row.asmId,
+          asmCode: row.asmCode,
+          asmName: row.asmName,
+          rhId: row.rhId,
+          rhCode: row.rhCode,
+          rhName: row.rhName,
+          zhId: row.zhId,
+          zhCode: row.zhCode,
+          zhName: row.zhName,
+          nhId: row.nhId,
+          nhCode: row.nhCode,
+          nhName: row.nhName,
+        },
+        create: {
+          districtId: row.districtId,
+          districtName: row.districtName,
+          dmId: row.dmId,
+          dmCode: row.dmCode,
+          dmName: row.dmName,
+          asmId: row.asmId,
+          asmCode: row.asmCode,
+          asmName: row.asmName,
+          rhId: row.rhId,
+          rhCode: row.rhCode,
+          rhName: row.rhName,
+          zhId: row.zhId,
+          zhCode: row.zhCode,
+          zhName: row.zhName,
+          nhId: row.nhId,
+          nhCode: row.nhCode,
+          nhName: row.nhName,
+        },
+      });
+    }
   }
 }

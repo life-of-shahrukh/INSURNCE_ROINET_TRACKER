@@ -13,6 +13,8 @@ import {
   DealStatusChangedListener,
 } from './listeners/deal-events.listener';
 import { PrismaModule } from '../../prisma/prisma.module';
+import { ExternalApiModule } from '../../common/external-api/external-api.module';
+import { HierarchyScopeInterceptor } from '../../common/interceptors/hierarchy-scope.interceptor';
 
 const CommandHandlers = [
   CreateDealHandler,
@@ -23,11 +25,12 @@ const QueryHandlers = [GetAllDealsHandler, ExportDealsCsvHandler];
 const EventListeners = [DealCreatedListener, DealStatusChangedListener];
 
 @Module({
-  imports: [CqrsModule, PrismaModule],
+  imports: [CqrsModule, PrismaModule, ExternalApiModule],
   controllers: [DealController],
   providers: [
     DealService,
     DealRepository,
+    HierarchyScopeInterceptor,
     ...CommandHandlers,
     ...QueryHandlers,
     ...EventListeners,

@@ -94,9 +94,12 @@ export default function DashboardPage(): React.ReactElement {
       }
     }
     // Scoped geographic narrowing (independent of the manager cascade)
+    // Priority: districtId > cityId > stateId > regionId > zoneId
     if (scopeDrill.geo?.districtId) p.set("districtId", scopeDrill.geo.districtId);
     else if (scopeDrill.geo?.cityId) p.set("cityId", scopeDrill.geo.cityId);
     else if (scopeDrill.geo?.stateId) p.set("stateId", scopeDrill.geo.stateId);
+    else if (scopeDrill.geo?.regionId) p.set("regionId", scopeDrill.geo.regionId);
+    else if (scopeDrill.geo?.zoneId) p.set("zoneId", scopeDrill.geo.zoneId);
     return p;
   }, [period, dateFrom, dateTo, scopeDrill]);
 
@@ -176,12 +179,14 @@ export default function DashboardPage(): React.ReactElement {
             callerRole: "",
             nextLevel: null,
             subordinates: [],
+            zones: [],
             states: [],
             districts: [],
             cities: [],
             dms: [],
             asms: [],
             rhs: [],
+            zhs: [],
           }
         }
         scope={scopeDrill}
@@ -232,6 +237,13 @@ export default function DashboardPage(): React.ReactElement {
             label="Customers"
             value={statsLoading ? "…" : String(stats?.customers.total ?? 0)}
             sub={`${stats?.customers.byKycStatus.find((k) => k.kycStatus === "VERIFIED")?.count ?? 0} KYC verified`}
+          />
+        )}
+        {stats?.team && (
+          <KpiCard
+            label="Territory"
+            value={statsLoading ? "…" : String(stats.team.districtCount)}
+            sub="Districts covered"
           />
         )}
         <KpiCard

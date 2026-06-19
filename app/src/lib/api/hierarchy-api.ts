@@ -14,6 +14,9 @@ export interface HierarchyFilterOptions {
   /** Particular people at `nextLevel` within the caller's scope */
   subordinates: FilterOptionItem[];
   /** Geographic dimensions, scoped to the caller's territory */
+  zones: FilterOptionItem[];
+  /** Regions (RH-level groupings) within the caller's territory */
+  regions: FilterOptionItem[];
   states: FilterOptionItem[];
   districts: FilterOptionItem[];
   cities: FilterOptionItem[];
@@ -21,6 +24,7 @@ export interface HierarchyFilterOptions {
   dms: FilterOptionItem[];
   asms: FilterOptionItem[];
   rhs: FilterOptionItem[];
+  zhs: FilterOptionItem[];
 }
 
 export interface SubordinatesResult {

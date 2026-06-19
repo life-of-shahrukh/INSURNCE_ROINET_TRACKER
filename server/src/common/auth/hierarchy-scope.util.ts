@@ -2,6 +2,7 @@ import { ForbiddenException } from '@nestjs/common';
 import type { PrismaService } from '../../prisma/prisma.service';
 import { Role } from '../constants';
 import type { AuthUser } from './auth-user.interface';
+import type { HierarchyResolverService } from '../external-api/hierarchy-resolver.service';
 
 /**
  * Describes the data territory a given user is allowed to see.
@@ -100,20 +101,19 @@ export async function districtIdsForCode(
 /**
  * Resolves which data territory a user can access based on their role.
  *
- * The model is geographic: every POSP belongs to a district
- * (`Posp.districtId`), and the management chain above each district
- * (DM → ASM → RH → ZH → NH) is stored in `DistrictHierarchy`. A manager's
- * scope is therefore the set of districts where their code appears in the
- * column for their role.
+ * Resolution priority:
+ *  1. SUPER_ADMIN / NATIONAL_HEAD → empty scope = all data
+ *  2. POSP → { pospIds: [self] }
+ *  3. Manager roles (ZH/RH/ASM/DM) → use HierarchyResolverService (live API + DB fallback)
+ *     if provided, otherwise fall back to direct DistrictHierarchy DB lookup.
  *
- * Rules:
- *  - SUPER_ADMIN / NATIONAL_HEAD → empty scope = all data
- *  - POSP → { pospIds: [self] }
- *  - ZH / RH / ASM / DM → { districtIds } from DistrictHierarchy
+ * The `hierarchyResolver` parameter is optional for backward compatibility
+ * (e.g. callers that only have PrismaService available).
  */
 export async function resolveHierarchyScope(
   user: AuthUser,
   prisma: PrismaService,
+  hierarchyResolver?: HierarchyResolverService,
 ): Promise<HierarchyScope> {
   const { role } = user;
 
@@ -127,9 +127,7 @@ export async function resolveHierarchyScope(
     return { pospIds: [user.pospId] };
   }
 
-  const column = ROLE_TO_DISTRICT_COLUMN[role];
-  if (!column) return { districtIds: [] };
-
+  // Manager roles: look up their employeeCode in SalesTeam, then resolve territory
   const salesTeam = await prisma.salesTeam.findUnique({
     where: { userId: user.userId },
     select: { employeeCode: true },
@@ -137,6 +135,15 @@ export async function resolveHierarchyScope(
   if (!salesTeam) {
     return { districtIds: [] }; // no salesTeam record = no access
   }
+
+  // Use HierarchyResolverService (live API + cache + DB fallback) when available
+  if (hierarchyResolver) {
+    return hierarchyResolver.resolveManagerScope(salesTeam.employeeCode, role);
+  }
+
+  // Fallback: direct DB lookup (kept for backward compat / non-interceptor callers)
+  const column = ROLE_TO_DISTRICT_COLUMN[role];
+  if (!column) return { districtIds: [] };
 
   const districtIds = await districtIdsForCode(
     prisma,

@@ -19,6 +19,10 @@ export interface DrillItem {
 }
 
 export interface GeoFilter {
+  /** Cognitensor ZoneId (from ListZone) */
+  zoneId?: string;
+  /** Cognitensor regionid (from ListDistrict.regionid) */
+  regionId?: string;
   stateId?: string;
   districtId?: string;
   cityId?: string;
@@ -28,7 +32,7 @@ export interface GeoFilter {
  * Current drill-down state of the dashboard scope bar.
  * - `path`: managers selected, broadest → narrowest (each carries its level)
  * - `posp`: terminal POSP selection
- * - `geo`: independent scoped geographic narrowing
+ * - `geo`: independent scoped geographic narrowing (zone → region → state → district → city)
  */
 export interface DashboardScope {
   path: DrillItem[];
@@ -68,15 +72,15 @@ interface Props {
 }
 
 /**
- * District-based cascading scope bar.
+ * District-based cascading scope bar with zone/region geographic filtering.
  *
  * The cascade always walks the full chain for the caller's role with no level
  * skipped and no siblings exposed:
  *   SA/NH → ZH → RH → ASM → DM → POSP   (each role starts one level below itself)
  *
  * "All <level>" (the empty option) aggregates that level; picking a particular
- * person narrows to their territory; Reset returns to the caller's own totals
- * ("Myself"). A second row offers scoped state/district/city filters.
+ * person narrows to their territory; Reset returns to the caller's own totals.
+ * A second row offers scoped geographic filters: zone → region → state → district → city.
  */
 export function DashboardScopeBar({
   role,
@@ -101,7 +105,13 @@ export function DashboardScopeBar({
   if (!options.nextLevel) return null;
 
   const hasDrill = path.length > 0 || !!posp;
-  const hasGeo = !!(geo?.stateId || geo?.districtId || geo?.cityId);
+  const hasGeo = !!(
+    geo?.zoneId ??
+    geo?.regionId ??
+    geo?.stateId ??
+    geo?.districtId ??
+    geo?.cityId
+  );
 
   // ── event handlers ──────────────────────────────────────────────────────────
 
@@ -207,7 +217,7 @@ export function DashboardScopeBar({
       );
     }
     // Deeper levels require the parent to be selected.
-    if (!id(depth - 1)) return null;
+    if (id(depth - 1) === undefined) return null;
     const c = children[depth - 1];
     if (c.nextLevel === "POSP") return pospDropdown(c.posps, posp?.id);
     if (c.members.length > 0) {
@@ -250,8 +260,16 @@ export function DashboardScopeBar({
       {levelDropdown(4)}
 
       <span className="scope-bar__label">Filter:</span>
+      {/* Zone filter — available to ZH+ roles */}
+      {geoSelect("Zones", options.zones ?? [], geo?.zoneId, (v) =>
+        setGeo({ zoneId: v, regionId: undefined, stateId: undefined, districtId: undefined, cityId: undefined }),
+      )}
+      {/* Region filter — scoped to caller's RH territory */}
+      {geoSelect("Regions", options.regions ?? [], geo?.regionId, (v) =>
+        setGeo({ ...geo, zoneId: undefined, regionId: v, stateId: undefined, districtId: undefined, cityId: undefined }),
+      )}
       {geoSelect("States", options.states, geo?.stateId, (v) =>
-        setGeo({ stateId: v }),
+        setGeo({ ...geo, stateId: v, districtId: undefined, cityId: undefined }),
       )}
       {geoSelect("Districts", options.districts, geo?.districtId, (v) =>
         setGeo({ ...geo, districtId: v, cityId: undefined }),

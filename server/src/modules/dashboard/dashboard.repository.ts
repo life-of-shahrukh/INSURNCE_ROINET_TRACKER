@@ -104,20 +104,21 @@ export class DashboardRepository {
   }
 
   /**
-   * Narrows a scope by an explicit geography selection (state / district /
-   * city), translated to a district set and intersected with the scope so it
-   * can only ever reduce what the caller already sees. A POSP-level scope is
-   * left untouched (geography is implied by the POSP).
+   * Narrows a scope by an explicit geography selection (zone / region / state /
+   * district / city), translated to a district set and intersected with the
+   * scope so it can only ever reduce what the caller already sees.
+   * A POSP-level scope is left untouched (geography is implied by the POSP).
    */
   private async applyGeoNarrowing(
     scope: HierarchyScope,
     filters: DashboardQueryDto,
   ): Promise<HierarchyScope> {
-    const { stateId, districtId, cityId } = filters;
-    if (!stateId && !districtId && !cityId) return scope;
+    const { zoneId, regionId, stateId, districtId, cityId } = filters;
+    if (!zoneId && !regionId && !stateId && !districtId && !cityId) return scope;
     if (scope.pospIds !== undefined) return scope; // POSP drill — leave as-is
 
     let geoDistricts: string[] | null = null;
+
     if (districtId) {
       geoDistricts = [districtId];
     } else if (cityId) {
@@ -131,7 +132,22 @@ export class DashboardRepository {
         select: { districtId: true },
       });
       geoDistricts = rows.map((r) => r.districtId);
+    } else if (regionId) {
+      // Use districts snapshot to resolve regionId → districtIds
+      const allDistricts = this.externalApi.listDistricts('');
+      const regionDistricts = allDistricts
+        .filter((d) => d.regionid === regionId)
+        .map((d) => d.DistrictId);
+      geoDistricts = regionDistricts.length > 0 ? regionDistricts : [];
+    } else if (zoneId) {
+      // Use districts snapshot to resolve zoneId → districtIds
+      const allDistricts = this.externalApi.listDistricts('');
+      const zoneDistricts = allDistricts
+        .filter((d) => d.zoneid === zoneId)
+        .map((d) => d.DistrictId);
+      geoDistricts = zoneDistricts.length > 0 ? zoneDistricts : [];
     }
+
     if (geoDistricts === null) return scope;
 
     const callerDistricts = scopeDistrictIds(scope);
@@ -222,6 +238,7 @@ export class DashboardRepository {
       customerTotal,
       customersByKyc,
       monthlyDeals,
+      dealsByDistrict,
     ] = await Promise.all([
       // ── deals ──
       this.prisma.deal.aggregate({
@@ -294,6 +311,15 @@ export class DashboardRepository {
         orderBy: { createdAt: 'asc' },
         take: 5000,
       }),
+      // Per-district deal breakdown for manager-level views
+      this.prisma.deal.groupBy({
+        by: ['districtId'],
+        where: dealWhere,
+        _sum: { premium: true },
+        _count: { _all: true },
+        orderBy: { _sum: { premium: 'desc' } },
+        take: 50,
+      }),
     ]);
 
     // Resolve POSP names for top-POSP chart — filter out Self-issued deals (null pospId)
@@ -309,6 +335,34 @@ export class DashboardRepository {
         : [];
     const nameMap = new Map(pospNames.map((p) => [p.id, p.name]));
 
+    // Resolve district names for byDistrict from DistrictHierarchy cache
+    const districtIdList = dealsByDistrict
+      .map((d) => d.districtId)
+      .filter((id): id is string => !!id);
+    const districtRows =
+      districtIdList.length > 0
+        ? await this.prisma.districtHierarchy.findMany({
+            where: { districtId: { in: districtIdList } },
+            select: { districtId: true, districtName: true },
+          })
+        : [];
+    const districtNameMap = new Map(
+      districtRows.map((r) => [r.districtId, r.districtName ?? r.districtId]),
+    );
+
+    // POSP count per district for byDistrict
+    const pospByDistrict =
+      districtIdList.length > 0
+        ? await this.prisma.posp.groupBy({
+            by: ['districtId'],
+            where: { districtId: { in: districtIdList } },
+            _count: { _all: true },
+          })
+        : [];
+    const pospDistrictMap = new Map(
+      pospByDistrict.map((p) => [p.districtId, p._count._all]),
+    );
+
     const dealCount = dealAgg._count._all;
     const totalCoa = dealAgg._sum.coaAmount ?? 0;
     const conversionRate = dealCount
@@ -321,7 +375,7 @@ export class DashboardRepository {
         ? Math.round(
             issuedDeals.reduce((sum, d) => {
               const days =
-                (new Date(d.issued!).getTime() -
+                (new Date(d.issued ?? new Date()).getTime() -
                   new Date(d.createdAt).getTime()) /
                 86_400_000;
               return sum + days;
@@ -350,6 +404,13 @@ export class DashboardRepository {
     const activeLeadCount = leadsByStatus
       .filter((s) => !['WON', 'LOST'].includes(s.status))
       .reduce((acc, s) => acc + s._count._all, 0);
+
+    // Team overview — district coverage (for manager roles with districtIds scope)
+    const scopedDistrictIds =
+      effectiveScope.districtIds ?? scope.districtIds;
+    const teamDistrictCount = scopedDistrictIds
+      ? scopedDistrictIds.length
+      : null;
 
     return {
       deals: {
@@ -382,6 +443,17 @@ export class DashboardRepository {
             count: p._count._all,
           })),
         monthlyPremium,
+        byDistrict: dealsByDistrict
+          .filter((d) => d.districtId !== null)
+          .map((d) => ({
+            districtId: d.districtId as string,
+            districtName:
+              districtNameMap.get(d.districtId as string) ??
+              (d.districtId as string),
+            premium: d._sum.premium ?? 0,
+            count: d._count._all,
+            pospCount: pospDistrictMap.get(d.districtId as string) ?? 0,
+          })),
       },
       leads: {
         total: leadTotal,
@@ -410,6 +482,13 @@ export class DashboardRepository {
           count: k._count._all,
         })),
       },
+      team:
+        teamDistrictCount !== null
+          ? {
+              districtCount: teamDistrictCount,
+              subordinateCounts: {},
+            }
+          : null,
     };
   }
 }

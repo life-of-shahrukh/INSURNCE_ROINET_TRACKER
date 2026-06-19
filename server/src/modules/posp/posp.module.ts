@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { PrismaModule } from '../../prisma/prisma.module';
+import { ExternalApiModule } from '../../common/external-api/external-api.module';
+import { HierarchyScopeInterceptor } from '../../common/interceptors/hierarchy-scope.interceptor';
 import { PospController } from './posp.controller';
 import { PospService } from './posp.service';
 import { PospRepository } from './posp.repository';
@@ -20,11 +22,12 @@ const QueryHandlers = [
 const EventListeners = [PospCreatedListener];
 
 @Module({
-  imports: [CqrsModule, PrismaModule],
+  imports: [CqrsModule, PrismaModule, ExternalApiModule],
   controllers: [PospController],
   providers: [
     PospService,
     PospRepository,
+    HierarchyScopeInterceptor,
     ...CommandHandlers,
     ...QueryHandlers,
     ...EventListeners,

@@ -30,6 +30,20 @@ export class ExternalApiController {
     return this.externalApiService.listStates();
   }
 
+  @Get('zones')
+  @Roles(
+    Role.DM,
+    Role.ASM,
+    Role.RH,
+    Role.ZH,
+    Role.NATIONAL_HEAD,
+    Role.SUPER_ADMIN,
+  )
+  @ApiOperation({ summary: 'List all zones from Cognitensor (DM+)' })
+  listZones() {
+    return this.externalApiService.listZones();
+  }
+
   @Get('districts')
   @Roles(
     Role.POSP,
@@ -40,7 +54,9 @@ export class ExternalApiController {
     Role.NATIONAL_HEAD,
     Role.SUPER_ADMIN,
   )
-  @ApiOperation({ summary: 'List districts for a state from Cognitensor' })
+  @ApiOperation({
+    summary: 'List districts for a state from Cognitensor (includes regionid/zoneid)',
+  })
   listDistricts(@Query('stateId') stateId: string) {
     return this.externalApiService.listDistricts(stateId ?? '');
   }
@@ -65,7 +81,7 @@ export class ExternalApiController {
   @ApiOperation({
     summary: 'Full district → DM → ASM → ZH → NH hierarchy (RH+)',
     description:
-      'All params are optional. Pass districtId, userCode, or userId to filter by a specific district manager row.',
+      'All params are optional. Pass userCode to get only that manager\'s records (direct API filter).',
   })
   listHierarchy(@Query() query: ExternalHierarchyQueryDto) {
     return this.externalApiService.listHierarchy(query);

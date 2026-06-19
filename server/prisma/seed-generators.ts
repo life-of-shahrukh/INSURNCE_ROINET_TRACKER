@@ -6,6 +6,39 @@ export const SEED_TARGETS = {
   leads: 60,
 } as const;
 
+/**
+ * Real Cognitensor zone IDs (from ListZone snapshot).
+ * These are used as the zoneId on SalesTeam and Posp records.
+ */
+export const REAL_ZONES = {
+  NORTH_INDIA: '1',   // J&K/PB/HP/HAR/DELHI/NCR
+  UP_UTT: '2',        // UP/UTT
+  RAJ_GUJ: '3',       // RAJ/GUJ/MP/UT1
+  MAH_GOA: '4',       // MAH/GOA
+  WB_NE: '5',         // WB/NE/CDG
+  BIHAR_JH: '6',      // Bihar/JHND
+  SOUTH: '7',         // TN/KE/KAR/UT2
+  ODISHA: '8',        // odisha
+  AP_TEL: '9',        // AP/TEL
+} as const;
+
+/**
+ * A curated set of real Cognitensor district IDs per zone,
+ * derived from the ListHierarchyUserData snapshot. Used to seed
+ * DistrictHierarchy and POSP districtId fields.
+ */
+export const REAL_DISTRICT_IDS_BY_ZONE: Record<string, string[]> = {
+  '9':  ['1', '2', '3', '4', '5', '6', '7', '8'],    // AP/TEL
+  '7':  ['25', '26', '28', '30', '31', '34', '36'],   // TN/KE/KAR
+  '1':  ['387', '388', '389', '390', '391', '392'],   // J&K/PB/HP/HAR/DELHI/NCR
+  '2':  ['481', '482', '483', '484', '485'],           // UP/UTT
+  '6':  ['87', '88', '89', '90', '91', '92'],          // Bihar/JHND
+  '4':  ['200', '201', '202', '203'],                  // MAH/GOA
+  '3':  ['300', '301', '302'],                         // RAJ/GUJ
+  '5':  ['350', '351'],                                // WB/NE/CDG
+  '8':  ['400', '401'],                                // Odisha
+};
+
 const FIRST_NAMES = [
   'Rajesh',
   'Sunita',
@@ -171,7 +204,7 @@ export function buildCustomerSeed(index: number) {
   };
 }
 
-export function buildPospSeed(index: number) {
+export function buildPospSeed(index: number, districtId?: string) {
   const name = personName(index + 40);
   const code = `POSP-${1001 + index}`;
   return {
@@ -181,6 +214,7 @@ export function buildPospSeed(index: number) {
     email: `posp.${code.toLowerCase()}@example.com`,
     joined: new Date(2023 + (index % 3), index % 12, 1 + (index % 28)),
     active: index % 5 !== 0,
+    districtId: districtId ?? null,
   };
 }
 
@@ -255,7 +289,8 @@ export const SALES_TEAM_DEFS = [
   {
     email: 'zonal@roinet.com',
     name: 'Zonal Head West',
-    employeeCode: 'EMP-Z001',
+    // Real Cognitensor ZH code from ListHierarchyUserData snapshot
+    employeeCode: 'RAVI.BABUSZH',
     designation: 'ZH',
     territory: 'West Zone',
     mobile: '9100000002',
@@ -263,7 +298,8 @@ export const SALES_TEAM_DEFS = [
   {
     email: 'regional@roinet.com',
     name: 'Regional Head MH',
-    employeeCode: 'EMP-R001',
+    // Real Cognitensor RH code
+    employeeCode: 'NURULLA.ASMAP',
     designation: 'RH',
     territory: 'Maharashtra',
     mobile: '9100000003',
@@ -271,7 +307,8 @@ export const SALES_TEAM_DEFS = [
   {
     email: 'asm@roinet.com',
     name: 'Area Sales Manager',
-    employeeCode: 'EMP-A001',
+    // Real Cognitensor ASM code
+    employeeCode: 'BELLAMKONDA.ASMAP',
     designation: 'ASM',
     territory: 'Mumbai Metro',
     mobile: '9100000004',
@@ -279,9 +316,58 @@ export const SALES_TEAM_DEFS = [
   {
     email: 'dm@roinet.com',
     name: 'District Manager',
-    employeeCode: 'EMP-D001',
+    // Real Cognitensor DM/CH code
+    employeeCode: 'RAKESH.GADDAM CH TEL',
     designation: 'DM',
     territory: 'Mumbai South',
     mobile: '9100000005',
   },
 ] as const;
+
+/**
+ * Curated subset of real district hierarchy rows from the Cognitensor
+ * ListHierarchyUserData snapshot. Used to seed the DistrictHierarchy table
+ * so that manager SSO logins can resolve territory without a live API call.
+ *
+ * Structure mirrors exactly what `syncManagerDistrictHierarchy()` stores.
+ */
+export const DISTRICT_HIERARCHY_SEED: Array<{
+  districtId: string;
+  districtName: string;
+  stateId?: string;
+  dmCode?: string;
+  dmName?: string;
+  asmCode?: string;
+  asmName?: string;
+  rhCode?: string;
+  rhName?: string;
+  zhCode?: string;
+  zhName?: string;
+}> = [
+  // ── AP / TEL (zoneId: 9) ─────────────────────────────────────────────────
+  { districtId: '1',  districtName: 'ADILABAD',     stateId: '12', dmCode: 'RAKESH.GADDAM CH TEL', dmName: 'Rakesh Gaddam',                    rhCode: 'PRAVEEN.RHTEL',  rhName: 'PRAVEEN PILLI RH TEL', zhCode: 'RAVI.BABUSZH', zhName: 'Ravi Babu Ummadisetty' },
+  { districtId: '2',  districtName: 'ANANTAPUR',    stateId: '12', dmCode: 'BELLAMKONDA.ASMAP',    dmName: 'BELLAMKONDA MEERA BABU ASM AP',    rhCode: 'NURULLA.ASMAP',  rhName: 'NURULLA SYED ASM AP',  zhCode: 'RAVI.BABUSZH', zhName: 'Ravi Babu Ummadisetty' },
+  { districtId: '3',  districtName: 'CHITTOOR',     stateId: '12', dmCode: 'BELLAMKONDA.ASMAP',    dmName: 'BELLAMKONDA MEERA BABU ASM AP',    rhCode: 'NURULLA.ASMAP',  rhName: 'NURULLA SYED ASM AP',  zhCode: 'RAVI.BABUSZH', zhName: 'Ravi Babu Ummadisetty' },
+  { districtId: '4',  districtName: 'EAST GODAWARI',stateId: '12', dmCode: 'YERRAMSETTI.ASMAP',    dmName: 'YERRAMSETTI SANTOSH KUMAR ASM AP', rhCode: 'NURULLA.ASMAP',  rhName: 'NURULLA SYED ASM AP',  zhCode: 'RAVI.BABUSZH', zhName: 'Ravi Babu Ummadisetty' },
+  { districtId: '5',  districtName: 'GUNTUR',       stateId: '12', dmCode: 'PADALA.ASMAP',         dmName: 'PADALA ASM AP',                    rhCode: 'NURULLA.ASMAP',  rhName: 'NURULLA SYED ASM AP',  zhCode: 'RAVI.BABUSZH', zhName: 'Ravi Babu Ummadisetty' },
+  { districtId: '6',  districtName: 'KADAPA',       stateId: '12', dmCode: 'BELLAMKONDA.ASMAP',    dmName: 'BELLAMKONDA MEERA BABU ASM AP',    rhCode: 'NURULLA.ASMAP',  rhName: 'NURULLA SYED ASM AP',  zhCode: 'RAVI.BABUSZH', zhName: 'Ravi Babu Ummadisetty' },
+  { districtId: '7',  districtName: 'KRISHNA',      stateId: '12', dmCode: 'YERRAMSETTI.ASMAP',    dmName: 'YERRAMSETTI SANTOSH KUMAR ASM AP', rhCode: 'NURULLA.ASMAP',  rhName: 'NURULLA SYED ASM AP',  zhCode: 'RAVI.BABUSZH', zhName: 'Ravi Babu Ummadisetty' },
+  { districtId: '8',  districtName: 'KARIMNAGAR',   stateId: '12', dmCode: 'RAKESH.GADDAM CH TEL', dmName: 'Rakesh Gaddam',                    rhCode: 'PRAVEEN.RHTEL',  rhName: 'PRAVEEN PILLI RH TEL', zhCode: 'RAVI.BABUSZH', zhName: 'Ravi Babu Ummadisetty' },
+  // ── TN/KE/KAR (zoneId: 7) ────────────────────────────────────────────────
+  { districtId: '25', districtName: 'CHENNAI',      stateId: '33', dmCode: 'RAJ.ASMTN',            dmName: 'RAJ KUMAR ASM TN DIRECT',          rhCode: 'BHOOPATHI.RHTN', rhName: 'BOOPATHI MANOKARAN',   zhCode: 'RAVI.BABUSZH', zhName: 'Ravi Babu Ummadisetty' },
+  { districtId: '26', districtName: 'COIMBATORE',   stateId: '33', dmCode: 'MOHAN.ASMTN',          dmName: 'MOHAN RAM KUMAR ASM TN',           rhCode: 'BHOOPATHI.RHTN', rhName: 'BOOPATHI MANOKARAN',   zhCode: 'RAVI.BABUSZH', zhName: 'Ravi Babu Ummadisetty' },
+  { districtId: '28', districtName: 'DHARMAPURI',   stateId: '33', dmCode: 'GANESAN.ASMTN',        dmName: 'GANESAN MADHAPPA ASM TN',          rhCode: 'BHOOPATHI.RHTN', rhName: 'BOOPATHI MANOKARAN',   zhCode: 'RAVI.BABUSZH', zhName: 'Ravi Babu Ummadisetty' },
+  { districtId: '30', districtName: 'ERODE',        stateId: '33', dmCode: 'GANESAN.ASMTN',        dmName: 'GANESAN MADHAPPA ASM TN',          rhCode: 'BHOOPATHI.RHTN', rhName: 'BOOPATHI MANOKARAN',   zhCode: 'RAVI.BABUSZH', zhName: 'Ravi Babu Ummadisetty' },
+  { districtId: '31', districtName: 'KANCHIPURAM',  stateId: '33', dmCode: 'RAJ.ASMTN',            dmName: 'RAJ KUMAR ASM TN DIRECT',          rhCode: 'BHOOPATHI.RHTN', rhName: 'BOOPATHI MANOKARAN',   zhCode: 'RAVI.BABUSZH', zhName: 'Ravi Babu Ummadisetty' },
+  // ── HAR/NCR (zoneId: 1) ───────────────────────────────────────────────────
+  { districtId: '387', districtName: 'AMBALA',      stateId: '2',  dmCode: 'PALLAV.KUMAR ZH NCR',  dmName: 'Pallav Kumar',                     zhCode: 'PALLAV.KUMAR ZH NCR', zhName: 'Pallav Kumar' },
+  { districtId: '388', districtName: 'BHIWANI',     stateId: '2',  dmCode: 'PALLAV.KUMAR ZH NCR',  dmName: 'Pallav Kumar',                     zhCode: 'PALLAV.KUMAR ZH NCR', zhName: 'Pallav Kumar' },
+  { districtId: '389', districtName: 'FARIDABAD',   stateId: '2',  dmCode: 'PALLAV.KUMAR ZH NCR',  dmName: 'Pallav Kumar',                     zhCode: 'PALLAV.KUMAR ZH NCR', zhName: 'Pallav Kumar' },
+  { districtId: '391', districtName: 'GURGAON',     stateId: '2',  dmCode: 'PALLAV.KUMAR ZH NCR',  dmName: 'Pallav Kumar',                     zhCode: 'PALLAV.KUMAR ZH NCR', zhName: 'Pallav Kumar' },
+  // ── Bihar/JHND (zoneId: 6) ────────────────────────────────────────────────
+  { districtId: '87',  districtName: 'KATIHAR',     stateId: '12', dmCode: 'RAMANUJ.BIHARJHKZM',   dmName: 'RAMANUJ BIHAR JHARKHAND',          zhCode: 'RAMANUJ.BIHARJHKZM', zhName: 'RAMANUJ BIHAR JHARKHAND' },
+  { districtId: '88',  districtName: 'LAKHISARAI',  stateId: '12', dmCode: 'RAMANUJ.BIHARJHKZM',   dmName: 'RAMANUJ BIHAR JHARKHAND',          zhCode: 'RAMANUJ.BIHARJHKZM', zhName: 'RAMANUJ BIHAR JHARKHAND' },
+  { districtId: '89',  districtName: 'MADHUBANI',   stateId: '12', dmCode: 'RAMANUJ.BIHARJHKZM',   dmName: 'RAMANUJ BIHAR JHARKHAND',          zhCode: 'RAMANUJ.BIHARJHKZM', zhName: 'RAMANUJ BIHAR JHARKHAND' },
+  { districtId: '92',  districtName: 'MUZAFFARPUR', stateId: '12', dmCode: 'RAMANUJ.BIHARJHKZM',   dmName: 'RAMANUJ BIHAR JHARKHAND',          zhCode: 'RAMANUJ.BIHARJHKZM', zhName: 'RAMANUJ BIHAR JHARKHAND' },
+  { districtId: '95',  districtName: 'PATNA',       stateId: '12', dmCode: 'RAMANUJ.BIHARJHKZM',   dmName: 'RAMANUJ BIHAR JHARKHAND',          zhCode: 'RAMANUJ.BIHARJHKZM', zhName: 'RAMANUJ BIHAR JHARKHAND' },
+];

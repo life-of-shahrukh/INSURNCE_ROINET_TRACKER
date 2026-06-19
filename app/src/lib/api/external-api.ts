@@ -14,6 +14,7 @@ import type {
   HierarchyUser,
   PospData,
   State,
+  Zone,
 } from '../external-api-types';
 
 export const externalApi = {
@@ -22,7 +23,12 @@ export const externalApi = {
     return request<State[]>('/api/external/states');
   },
 
-  /** Districts for a given stateId */
+  /** All zones (9 zones) — available to DM+ roles */
+  async getZones(): Promise<Zone[]> {
+    return request<Zone[]>('/api/external/zones');
+  },
+
+  /** Districts for a given stateId — now includes regionid/zoneid enrichment */
   async getDistricts(stateId: string): Promise<District[]> {
     return request<District[]>(
       `/api/external/districts?stateId=${encodeURIComponent(stateId)}`,
@@ -36,9 +42,10 @@ export const externalApi = {
     );
   },
 
-  /** Full district → DM → ASM → ZH → NH hierarchy */
-  async getHierarchyUserData(): Promise<HierarchyUser[]> {
-    return request<HierarchyUser[]>('/api/external/hierarchy');
+  /** Full district → DM → ASM → ZH → NH hierarchy — optionally filtered by userCode */
+  async getHierarchyUserData(userCode?: string): Promise<HierarchyUser[]> {
+    const qs = userCode ? `?userCode=${encodeURIComponent(userCode)}` : '';
+    return request<HierarchyUser[]>(`/api/external/hierarchy${qs}`);
   },
 
   /** Paginated + filtered POSP list */

@@ -6,6 +6,9 @@ import {
   buildDealSeed,
   buildLeadSeed,
   buildPospSeed,
+  DISTRICT_HIERARCHY_SEED,
+  REAL_DISTRICT_IDS_BY_ZONE,
+  REAL_ZONES,
   SALES_TEAM_DEFS,
   SEED_TARGETS,
 } from './seed-generators';
@@ -100,17 +103,30 @@ async function seedSalesTeam(
     const userId = byEmail.get(def.email);
     if (!userId) continue;
 
-    const existing = await prisma.salesTeam.findUnique({ where: { userId } });
-    if (existing) {
-      // Always update managerId so the hierarchy chain is correct even if
-      // this record was created by an earlier seed run without the chain.
+    // First check if a SalesTeam already exists for this userId
+    const existingByUser = await prisma.salesTeam.findUnique({ where: { userId } });
+    if (existingByUser) {
       await prisma.salesTeam.update({
-        where: { id: existing.id },
+        where: { id: existingByUser.id },
         data: { managerId, designation: def.designation },
       });
       console.log(`  updated  ${def.name} (managerId chain repaired)`);
-      created.push({ id: existing.id, name: existing.name });
-      managerId = existing.id;
+      created.push({ id: existingByUser.id, name: existingByUser.name });
+      managerId = existingByUser.id;
+      continue;
+    }
+
+    // Check if a SalesTeam already exists for this employeeCode (created by sync-from-snapshots)
+    // If so, link that existing record to the dev user instead of creating a duplicate.
+    const existingByCode = await prisma.salesTeam.findUnique({ where: { employeeCode: def.employeeCode } });
+    if (existingByCode) {
+      await prisma.salesTeam.update({
+        where: { id: existingByCode.id },
+        data: { userId, managerId, designation: def.designation },
+      });
+      console.log(`  linked   ${def.name} (${def.employeeCode}) → ${def.email}`);
+      created.push({ id: existingByCode.id, name: existingByCode.name });
+      managerId = existingByCode.id;
       continue;
     }
 
@@ -197,8 +213,12 @@ async function seedPosp(
 
   const existingCodes = new Set(existing.map((p) => p.code));
 
+  // Flatten all real district IDs for round-robin assignment
+  const allDistrictIds = Object.values(REAL_DISTRICT_IDS_BY_ZONE).flat();
+
   for (let i = 0; i < SEED_TARGETS.posp; i++) {
-    const data = buildPospSeed(i);
+    const districtId = allDistrictIds[i % allDistrictIds.length];
+    const data = buildPospSeed(i, districtId);
     if (existingCodes.has(data.code)) continue;
 
     const created = await prisma.posp.create({
@@ -207,7 +227,7 @@ async function seedPosp(
     });
     existingCodes.add(data.code);
     posps.push(created);
-    console.log(`  created  ${created.name} (${data.code})`);
+    console.log(`  created  ${created.name} (${data.code}) → district ${districtId}`);
   }
 
   if (posps.length > existing.length) {
@@ -427,6 +447,62 @@ async function backfillDealGeo() {
   );
 }
 
+/**
+ * Seed the DistrictHierarchy table with a curated subset of real Cognitensor
+ * district rows. This allows HierarchyResolverService to work without a live
+ * external API call during local development.
+ */
+async function seedDistrictHierarchy(): Promise<void> {
+  console.log('\n[DH] District Hierarchy cache…');
+
+  let created = 0;
+  let updated = 0;
+
+  for (const row of DISTRICT_HIERARCHY_SEED) {
+    const existing = await prisma.districtHierarchy.findUnique({
+      where: { districtId: row.districtId },
+    });
+
+    if (existing) {
+      await prisma.districtHierarchy.update({
+        where: { districtId: row.districtId },
+        data: {
+          districtName: row.districtName,
+          stateId: row.stateId ?? null,
+          dmCode: row.dmCode ?? null,
+          dmName: row.dmName ?? null,
+          asmCode: row.asmCode ?? null,
+          asmName: row.asmName ?? null,
+          rhCode: row.rhCode ?? null,
+          rhName: row.rhName ?? null,
+          zhCode: row.zhCode ?? null,
+          zhName: row.zhName ?? null,
+        },
+      });
+      updated++;
+    } else {
+      await prisma.districtHierarchy.create({
+        data: {
+          districtId: row.districtId,
+          districtName: row.districtName,
+          stateId: row.stateId ?? null,
+          dmCode: row.dmCode ?? null,
+          dmName: row.dmName ?? null,
+          asmCode: row.asmCode ?? null,
+          asmName: row.asmName ?? null,
+          rhCode: row.rhCode ?? null,
+          rhName: row.rhName ?? null,
+          zhCode: row.zhCode ?? null,
+          zhName: row.zhName ?? null,
+        },
+      });
+      created++;
+    }
+  }
+
+  console.log(`  created  ${created}  updated  ${updated}  total ${DISTRICT_HIERARCHY_SEED.length} rows`);
+}
+
 // ── Expanded hierarchy tree definition ──────────────────────────────────────
 //
 // Each ZH has 2 RHs → each RH has 2 ASMs → each ASM has 2 DMs → 5 POSPs/DM.
@@ -442,6 +518,7 @@ interface HierarchyNodeDef {
   zoneId: string;
   regionId?: string;
   areaId?: string;
+  districtId?: string;
   children: HierarchyNodeDef[];
 }
 
@@ -454,7 +531,7 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
     employeeCode: 'EMP-Z002',
     territory: 'South Zone',
     mobile: '9100000012',
-    zoneId: 'zone-south',
+    zoneId: REAL_ZONES.AP_TEL,
     children: [
       {
         email: 'rh-ap@seed.roinet.com',
@@ -463,8 +540,8 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
         employeeCode: 'EMP-R011',
         territory: 'Andhra Pradesh',
         mobile: '9100000021',
-        zoneId: 'zone-south',
-        regionId: 'region-ap',
+        zoneId: REAL_ZONES.AP_TEL,
+        regionId: 'AP',
         children: [
           {
             email: 'asm-hyd@seed.roinet.com',
@@ -473,8 +550,8 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
             employeeCode: 'EMP-A021',
             territory: 'Hyderabad',
             mobile: '9100000031',
-            zoneId: 'zone-south',
-            regionId: 'region-ap',
+            zoneId: REAL_ZONES.AP_TEL,
+            regionId: 'AP',
             areaId: 'area-hyd',
             children: [
               {
@@ -484,9 +561,10 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
                 employeeCode: 'EMP-D031',
                 territory: 'Hyd Central',
                 mobile: '9100000041',
-                zoneId: 'zone-south',
-                regionId: 'region-ap',
+                zoneId: REAL_ZONES.AP_TEL,
+                regionId: 'AP',
                 areaId: 'area-hyd-c',
+                districtId: '1',
                 children: [],
               },
               {
@@ -496,9 +574,10 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
                 employeeCode: 'EMP-D032',
                 territory: 'Hyd West',
                 mobile: '9100000042',
-                zoneId: 'zone-south',
-                regionId: 'region-ap',
+                zoneId: REAL_ZONES.AP_TEL,
+                regionId: 'AP',
                 areaId: 'area-hyd-w',
+                districtId: '8',
                 children: [],
               },
             ],
@@ -510,8 +589,8 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
             employeeCode: 'EMP-A022',
             territory: 'Vizag',
             mobile: '9100000032',
-            zoneId: 'zone-south',
-            regionId: 'region-ap',
+            zoneId: REAL_ZONES.AP_TEL,
+            regionId: 'AP',
             areaId: 'area-viz',
             children: [
               {
@@ -521,9 +600,10 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
                 employeeCode: 'EMP-D033',
                 territory: 'Vizag North',
                 mobile: '9100000043',
-                zoneId: 'zone-south',
-                regionId: 'region-ap',
+                zoneId: REAL_ZONES.AP_TEL,
+                regionId: 'AP',
                 areaId: 'area-viz-n',
+                districtId: '7',
                 children: [],
               },
               {
@@ -533,9 +613,10 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
                 employeeCode: 'EMP-D034',
                 territory: 'Vizag South',
                 mobile: '9100000044',
-                zoneId: 'zone-south',
-                regionId: 'region-ap',
+                zoneId: REAL_ZONES.AP_TEL,
+                regionId: 'AP',
                 areaId: 'area-viz-s',
+                districtId: '5',
                 children: [],
               },
             ],
@@ -549,8 +630,8 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
         employeeCode: 'EMP-R012',
         territory: 'Karnataka',
         mobile: '9100000022',
-        zoneId: 'zone-south',
-        regionId: 'region-kn',
+        zoneId: REAL_ZONES.AP_TEL,
+        regionId: 'KAR',
         children: [
           {
             email: 'asm-blr@seed.roinet.com',
@@ -559,8 +640,8 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
             employeeCode: 'EMP-A023',
             territory: 'Bengaluru',
             mobile: '9100000033',
-            zoneId: 'zone-south',
-            regionId: 'region-kn',
+            zoneId: REAL_ZONES.AP_TEL,
+            regionId: 'KAR',
             areaId: 'area-blr',
             children: [
               {
@@ -570,9 +651,10 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
                 employeeCode: 'EMP-D035',
                 territory: 'Blr North',
                 mobile: '9100000045',
-                zoneId: 'zone-south',
-                regionId: 'region-kn',
+                zoneId: REAL_ZONES.AP_TEL,
+                regionId: 'KAR',
                 areaId: 'area-blr-n',
+                districtId: '25',
                 children: [],
               },
               {
@@ -582,9 +664,10 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
                 employeeCode: 'EMP-D036',
                 territory: 'Blr South',
                 mobile: '9100000046',
-                zoneId: 'zone-south',
-                regionId: 'region-kn',
+                zoneId: REAL_ZONES.AP_TEL,
+                regionId: 'KAR',
                 areaId: 'area-blr-s',
+                districtId: '26',
                 children: [],
               },
             ],
@@ -596,8 +679,8 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
             employeeCode: 'EMP-A024',
             territory: 'Mysuru',
             mobile: '9100000034',
-            zoneId: 'zone-south',
-            regionId: 'region-kn',
+            zoneId: REAL_ZONES.AP_TEL,
+            regionId: 'KAR',
             areaId: 'area-mys',
             children: [
               {
@@ -607,9 +690,10 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
                 employeeCode: 'EMP-D037',
                 territory: 'Mys Central',
                 mobile: '9100000047',
-                zoneId: 'zone-south',
-                regionId: 'region-kn',
+                zoneId: REAL_ZONES.AP_TEL,
+                regionId: 'KAR',
                 areaId: 'area-mys-c',
+                districtId: '28',
                 children: [],
               },
               {
@@ -619,9 +703,10 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
                 employeeCode: 'EMP-D038',
                 territory: 'Mys Rural',
                 mobile: '9100000048',
-                zoneId: 'zone-south',
-                regionId: 'region-kn',
+                zoneId: REAL_ZONES.AP_TEL,
+                regionId: 'KAR',
                 areaId: 'area-mys-r',
+                districtId: '30',
                 children: [],
               },
             ],
@@ -638,7 +723,7 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
     employeeCode: 'EMP-Z003',
     territory: 'North Zone',
     mobile: '9100000013',
-    zoneId: 'zone-north',
+    zoneId: REAL_ZONES.NORTH_INDIA,
     children: [
       {
         email: 'rh-dl@seed.roinet.com',
@@ -647,8 +732,8 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
         employeeCode: 'EMP-R013',
         territory: 'Delhi NCR',
         mobile: '9100000023',
-        zoneId: 'zone-north',
-        regionId: 'region-dl',
+        zoneId: REAL_ZONES.NORTH_INDIA,
+        regionId: 'NCR',
         children: [
           {
             email: 'asm-ndl@seed.roinet.com',
@@ -657,8 +742,8 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
             employeeCode: 'EMP-A031',
             territory: 'New Delhi',
             mobile: '9100000035',
-            zoneId: 'zone-north',
-            regionId: 'region-dl',
+            zoneId: REAL_ZONES.NORTH_INDIA,
+            regionId: 'NCR',
             areaId: 'area-ndl',
             children: [
               {
@@ -668,9 +753,10 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
                 employeeCode: 'EMP-D041',
                 territory: 'NDL Central',
                 mobile: '9100000051',
-                zoneId: 'zone-north',
-                regionId: 'region-dl',
+                zoneId: REAL_ZONES.NORTH_INDIA,
+                regionId: 'NCR',
                 areaId: 'area-ndl-c',
+                districtId: '387',
                 children: [],
               },
               {
@@ -680,9 +766,10 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
                 employeeCode: 'EMP-D042',
                 territory: 'NDL West',
                 mobile: '9100000052',
-                zoneId: 'zone-north',
-                regionId: 'region-dl',
+                zoneId: REAL_ZONES.NORTH_INDIA,
+                regionId: 'NCR',
                 areaId: 'area-ndl-w',
+                districtId: '388',
                 children: [],
               },
             ],
@@ -694,8 +781,8 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
             employeeCode: 'EMP-A032',
             territory: 'Gurugram',
             mobile: '9100000036',
-            zoneId: 'zone-north',
-            regionId: 'region-dl',
+            zoneId: REAL_ZONES.NORTH_INDIA,
+            regionId: 'NCR',
             areaId: 'area-gdg',
             children: [
               {
@@ -705,9 +792,10 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
                 employeeCode: 'EMP-D043',
                 territory: 'GDG Sec-1',
                 mobile: '9100000053',
-                zoneId: 'zone-north',
-                regionId: 'region-dl',
+                zoneId: REAL_ZONES.NORTH_INDIA,
+                regionId: 'NCR',
                 areaId: 'area-gdg-1',
+                districtId: '389',
                 children: [],
               },
               {
@@ -717,9 +805,10 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
                 employeeCode: 'EMP-D044',
                 territory: 'GDG Sec-2',
                 mobile: '9100000054',
-                zoneId: 'zone-north',
-                regionId: 'region-dl',
+                zoneId: REAL_ZONES.NORTH_INDIA,
+                regionId: 'NCR',
                 areaId: 'area-gdg-2',
+                districtId: '391',
                 children: [],
               },
             ],
@@ -733,8 +822,8 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
         employeeCode: 'EMP-R014',
         territory: 'Uttar Pradesh',
         mobile: '9100000024',
-        zoneId: 'zone-north',
-        regionId: 'region-up',
+        zoneId: REAL_ZONES.NORTH_INDIA,
+        regionId: 'UP',
         children: [
           {
             email: 'asm-lko@seed.roinet.com',
@@ -743,8 +832,8 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
             employeeCode: 'EMP-A033',
             territory: 'Lucknow',
             mobile: '9100000037',
-            zoneId: 'zone-north',
-            regionId: 'region-up',
+            zoneId: REAL_ZONES.NORTH_INDIA,
+            regionId: 'UP',
             areaId: 'area-lko',
             children: [
               {
@@ -754,9 +843,10 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
                 employeeCode: 'EMP-D045',
                 territory: 'LKO Central',
                 mobile: '9100000055',
-                zoneId: 'zone-north',
-                regionId: 'region-up',
+                zoneId: REAL_ZONES.NORTH_INDIA,
+                regionId: 'UP',
                 areaId: 'area-lko-c',
+                districtId: '87',
                 children: [],
               },
               {
@@ -766,9 +856,10 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
                 employeeCode: 'EMP-D046',
                 territory: 'LKO East',
                 mobile: '9100000056',
-                zoneId: 'zone-north',
-                regionId: 'region-up',
+                zoneId: REAL_ZONES.NORTH_INDIA,
+                regionId: 'UP',
                 areaId: 'area-lko-e',
+                districtId: '88',
                 children: [],
               },
             ],
@@ -780,8 +871,8 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
             employeeCode: 'EMP-A034',
             territory: 'Kanpur',
             mobile: '9100000038',
-            zoneId: 'zone-north',
-            regionId: 'region-up',
+            zoneId: REAL_ZONES.NORTH_INDIA,
+            regionId: 'UP',
             areaId: 'area-knp',
             children: [
               {
@@ -791,9 +882,10 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
                 employeeCode: 'EMP-D047',
                 territory: 'KNP City',
                 mobile: '9100000057',
-                zoneId: 'zone-north',
-                regionId: 'region-up',
+                zoneId: REAL_ZONES.NORTH_INDIA,
+                regionId: 'UP',
                 areaId: 'area-knp-c',
+                districtId: '89',
                 children: [],
               },
               {
@@ -803,9 +895,10 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
                 employeeCode: 'EMP-D048',
                 territory: 'KNP Rural',
                 mobile: '9100000058',
-                zoneId: 'zone-north',
-                regionId: 'region-up',
+                zoneId: REAL_ZONES.NORTH_INDIA,
+                regionId: 'UP',
                 areaId: 'area-knp-r',
+                districtId: '92',
                 children: [],
               },
             ],
@@ -822,8 +915,8 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
     employeeCode: 'EMP-R015',
     territory: 'Gujarat',
     mobile: '9100000025',
-    zoneId: 'zone-west',
-    regionId: 'region-gj',
+    zoneId: REAL_ZONES.MAH_GOA,
+    regionId: 'GUJ',
     children: [
       {
         email: 'asm-ahm@seed.roinet.com',
@@ -832,8 +925,8 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
         employeeCode: 'EMP-A041',
         territory: 'Ahmedabad',
         mobile: '9100000039',
-        zoneId: 'zone-west',
-        regionId: 'region-gj',
+        zoneId: REAL_ZONES.MAH_GOA,
+        regionId: 'GUJ',
         areaId: 'area-ahm',
         children: [
           {
@@ -843,9 +936,10 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
             employeeCode: 'EMP-D051',
             territory: 'AHM North',
             mobile: '9100000061',
-            zoneId: 'zone-west',
-            regionId: 'region-gj',
+            zoneId: REAL_ZONES.MAH_GOA,
+            regionId: 'GUJ',
             areaId: 'area-ahm-n',
+                districtId: '95',
             children: [],
           },
           {
@@ -855,9 +949,10 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
             employeeCode: 'EMP-D052',
             territory: 'AHM South',
             mobile: '9100000062',
-            zoneId: 'zone-west',
-            regionId: 'region-gj',
+            zoneId: REAL_ZONES.MAH_GOA,
+            regionId: 'GUJ',
             areaId: 'area-ahm-s',
+                districtId: '31',
             children: [],
           },
         ],
@@ -869,8 +964,8 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
         employeeCode: 'EMP-A042',
         territory: 'Surat',
         mobile: '9100000040',
-        zoneId: 'zone-west',
-        regionId: 'region-gj',
+        zoneId: REAL_ZONES.MAH_GOA,
+        regionId: 'GUJ',
         areaId: 'area-srt',
         children: [
           {
@@ -880,9 +975,10 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
             employeeCode: 'EMP-D053',
             territory: 'SRT City',
             mobile: '9100000063',
-            zoneId: 'zone-west',
-            regionId: 'region-gj',
+            zoneId: REAL_ZONES.MAH_GOA,
+            regionId: 'GUJ',
             areaId: 'area-srt-c',
+                districtId: '3',
             children: [],
           },
           {
@@ -892,9 +988,10 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
             employeeCode: 'EMP-D054',
             territory: 'SRT Rural',
             mobile: '9100000064',
-            zoneId: 'zone-west',
-            regionId: 'region-gj',
+            zoneId: REAL_ZONES.MAH_GOA,
+            regionId: 'GUJ',
             areaId: 'area-srt-r',
+                districtId: '4',
             children: [],
           },
         ],
@@ -909,8 +1006,8 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
     employeeCode: 'EMP-A043',
     territory: 'Pune',
     mobile: '9100000071',
-    zoneId: 'zone-west',
-    regionId: 'region-mh',
+    zoneId: REAL_ZONES.MAH_GOA,
+    regionId: 'MAH',
     areaId: 'area-pune',
     children: [
       {
@@ -920,9 +1017,10 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
         employeeCode: 'EMP-D061',
         territory: 'Pune East',
         mobile: '9100000081',
-        zoneId: 'zone-west',
-        regionId: 'region-mh',
+        zoneId: REAL_ZONES.MAH_GOA,
+        regionId: 'MAH',
         areaId: 'area-pune-e',
+                districtId: '200',
         children: [],
       },
       {
@@ -932,9 +1030,10 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
         employeeCode: 'EMP-D062',
         territory: 'Pune West',
         mobile: '9100000082',
-        zoneId: 'zone-west',
-        regionId: 'region-mh',
+        zoneId: REAL_ZONES.MAH_GOA,
+        regionId: 'MAH',
         areaId: 'area-pune-w',
+                districtId: '201',
         children: [],
       },
     ],
@@ -947,9 +1046,10 @@ const EXPANDED_HIERARCHY: HierarchyNodeDef[] = [
     employeeCode: 'EMP-D071',
     territory: 'Mumbai North',
     mobile: '9100000091',
-    zoneId: 'zone-west',
-    regionId: 'region-mh',
+    zoneId: REAL_ZONES.MAH_GOA,
+    regionId: 'MAH',
     areaId: 'area-mumbai',
+    districtId: '202',
     children: [],
   },
 ];
@@ -968,6 +1068,7 @@ async function seedExpandedHierarchy(): Promise<void> {
     areaId: string;
     zoneId: string;
     regionId: string;
+    districtId: string;
     email: string;
   }> = [];
 
@@ -1002,18 +1103,18 @@ async function seedExpandedHierarchy(): Promise<void> {
     select: { id: true, areaId: true },
   });
 
-  // Update existing ZH SalesTeam geo to zone-west (for filter consistency)
+  // Update existing ZH SalesTeam geo to MAH_GOA zone (for filter consistency)
   if (existingZhRecord) {
     await prisma.salesTeam.update({
       where: { id: existingZhRecord.id },
-      data: { zoneId: 'zone-west' },
+      data: { zoneId: REAL_ZONES.MAH_GOA },
     });
   }
   // Update existing RH SalesTeam geo
   if (existingRhRecord) {
     await prisma.salesTeam.update({
       where: { id: existingRhRecord.id },
-      data: { zoneId: 'zone-west', regionId: 'region-mh' },
+      data: { zoneId: REAL_ZONES.MAH_GOA, regionId: 'MAH' },
     });
   }
   // Update existing ASM SalesTeam geo
@@ -1021,8 +1122,8 @@ async function seedExpandedHierarchy(): Promise<void> {
     await prisma.salesTeam.update({
       where: { id: existingAsmRecord.id },
       data: {
-        zoneId: 'zone-west',
-        regionId: 'region-mh',
+        zoneId: REAL_ZONES.MAH_GOA,
+        regionId: 'MAH',
         areaId: 'area-mumbai',
       },
     });
@@ -1033,8 +1134,8 @@ async function seedExpandedHierarchy(): Promise<void> {
     await prisma.salesTeam.update({
       where: { id: existingDmRecord.id },
       data: {
-        zoneId: 'zone-west',
-        regionId: 'region-mh',
+        zoneId: REAL_ZONES.MAH_GOA,
+        regionId: 'MAH',
         areaId: 'area-mumbai',
       },
     });
@@ -1042,15 +1143,16 @@ async function seedExpandedHierarchy(): Promise<void> {
       where: { asmId: existingDmRecord.id },
       data: {
         areaId: 'area-mumbai',
-        zoneId: 'zone-west',
-        regionId: 'region-mh',
+        zoneId: REAL_ZONES.MAH_GOA,
+        regionId: 'MAH',
       },
     });
     dmRecords.push({
       id: existingDmRecord.id,
       areaId: 'area-mumbai',
-      zoneId: 'zone-west',
-      regionId: 'region-mh',
+      zoneId: REAL_ZONES.MAH_GOA,
+      regionId: 'MAH',
+      districtId: '200',
       email: 'dm@roinet.com',
     });
   }
@@ -1123,6 +1225,7 @@ async function seedExpandedHierarchy(): Promise<void> {
         areaId: node.areaId ?? stId,
         zoneId: node.zoneId,
         regionId: node.regionId ?? '',
+        districtId: node.districtId ?? '',
         email: node.email,
       });
     }
@@ -1261,6 +1364,7 @@ async function seedExpandedHierarchy(): Promise<void> {
           areaId: dm.areaId,
           zoneId: dm.zoneId,
           regionId: dm.regionId || null,
+          districtId: dm.districtId || null,
         },
       });
       pospCreated++;
@@ -1289,16 +1393,17 @@ async function main() {
   await seedLeads(customers, salesTeam);
   await seedExpandedHierarchy();
   await backfillDealGeo();
+  await seedDistrictHierarchy();
 
   console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log(' Seed complete. Login credentials:');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log('  Super Admin    superadmin@roinet.com  / Admin@1234');
   console.log('  National Head  national@roinet.com    / National@123');
-  console.log('  Zonal Head     zonal@roinet.com       / Zonal@1234');
-  console.log('  Regional Head  regional@roinet.com    / Regional@123');
-  console.log('  ASM            asm@roinet.com         / Asm@12345');
-  console.log('  DM             dm@roinet.com          / Dm@123456');
+  console.log('  Zonal Head     zonal@roinet.com       / Zonal@1234 (code: RAVI.BABUSZH)');
+  console.log('  Regional Head  regional@roinet.com    / Regional@123 (code: NURULLA.ASMAP)');
+  console.log('  ASM            asm@roinet.com         / Asm@12345 (code: BELLAMKONDA.ASMAP)');
+  console.log('  DM/CH          dm@roinet.com          / Dm@123456 (code: RAKESH.GADDAM CH TEL)');
   console.log('  POSP           posp@roinet.com        / Posp@1234');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 }

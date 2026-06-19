@@ -21,7 +21,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient({ log: ['warn', 'error'] });
 
-const SNAPSHOT_DIR = path.join(__dirname, '../../../data/snapshots');
+const SNAPSHOT_DIR = path.join(__dirname, '../../data/snapshots');
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
@@ -49,6 +49,8 @@ function parseDate(raw: string): Date {
 interface PospSnapshotRow {
   UserId: string;
   UserCode: string;
+  /** Full name — added to API response */
+  username?: string;
   MobileNo: string;
   EmailId: string;
   districtid: string;
@@ -65,21 +67,36 @@ interface HierarchySnapshotRow {
   DistrictManagerId: string;
   DistrictManagerCode: string;
   DistrictManagerName: string;
+  usertype: string;
   R1_UserId: string;
   R1_UserCode: string;
   R1_UserName: string;
+  R1_usertype: string;
   R2_UserId: string;
   R2_UserCode: string;
   R2_UserName: string;
+  R2_usertype: string;
   R3_UserId: string;
   R3_UserCode: string;
   R3_UserName: string;
+  R3_usertype: string;
   R4_UserId: string;
   R4_UserCode: string;
   R4_UserName: string;
+  R4_usertype: string;
   R5_UserId: string;
   R5_UserCode: string;
   R5_UserName: string;
+  R5_usertype: string;
+  R6_UserId: string;
+  R6_UserCode: string;
+  R6_UserName: string;
+  R6_usertype: string;
+  R7_UserId: string;
+  R7_UserCode: string;
+  R7_UserName: string;
+  R7_usertype: string;
+  [key: string]: string;
 }
 
 interface HierarchyUserFlat {
@@ -119,7 +136,7 @@ async function seedPosps(): Promise<void> {
           code,
           externalId: row.UserId,
           gcdCode: row.HephGcdCode ?? null,
-          name: code,
+          name: row.username?.trim() || code,
           mobile: row.MobileNo ?? '',
           email,
           joined: joinedDate,
@@ -131,6 +148,7 @@ async function seedPosps(): Promise<void> {
         update: {
           externalId: row.UserId,
           gcdCode: row.HephGcdCode ?? null,
+          name: row.username?.trim() || code,
           mobile: row.MobileNo ?? '',
           email,
           districtId: row.districtid || null,
@@ -177,65 +195,68 @@ async function seedPosps(): Promise<void> {
 
 // ── Phase B: Seed Hierarchy Users ─────────────────────────────────────────
 
+/**
+ * Maps a Cognitensor usertype string to our internal Role string.
+ * Returns null for types we don't handle (ADMIN=0, CMF=1, CSF=2).
+ */
+function usertypeToRole(ut: string): string | null {
+  switch (ut) {
+    case '3':  return 'POSP';
+    case '4':  return 'ASM';
+    case '11': return 'ASM';   // ASSISTASM → same role
+    case '6':  return 'RH';
+    case '10': return 'ZH';
+    case '12': return 'DM';    // CH = Cluster Head
+    case '14': return 'NATIONAL_HEAD'; // SZH
+    default:   return null;
+  }
+}
+
+function usertypeToDesignation(ut: string): string | null {
+  switch (ut) {
+    case '3':  return 'POSP';
+    case '4':  return 'ASM';
+    case '11': return 'ASSISTASM';
+    case '6':  return 'RH';
+    case '10': return 'ZH';
+    case '12': return 'DM';
+    case '14': return 'NATIONAL_HEAD';
+    default:   return null;
+  }
+}
+
 function extractHierarchyUsers(
   rows: HierarchySnapshotRow[],
 ): HierarchyUserFlat[] {
   const seen = new Map<string, HierarchyUserFlat>();
 
   for (const row of rows) {
-    const levels: Array<{
-      userId: string;
-      code: string;
-      name: string;
-      role: string;
-      designation: string;
-    }> = [
-      {
-        userId: row.DistrictManagerId,
-        code: row.DistrictManagerCode,
-        name: row.DistrictManagerName,
-        role: 'DM',
-        designation: 'DM',
-      },
-      {
-        userId: row.R1_UserId,
-        code: row.R1_UserCode,
-        name: row.R1_UserName,
-        role: 'ASM',
-        designation: 'ASM',
-      },
-      {
-        userId: row.R2_UserId,
-        code: row.R2_UserCode,
-        name: row.R2_UserName,
-        role: 'RH',
-        designation: 'RH',
-      },
-      {
-        userId: row.R3_UserId,
-        code: row.R3_UserCode,
-        name: row.R3_UserName,
-        role: 'ZH',
-        designation: 'ZH',
-      },
-      {
-        userId: row.R4_UserId,
-        code: row.R4_UserCode,
-        name: row.R4_UserName,
-        role: 'NATIONAL_HEAD',
-        designation: 'NATIONAL_HEAD',
-      },
+    // Build all persons from this row using usertype — NOT positional assumption
+    const persons: Array<{ userId: string; code: string; name: string; ut: string }> = [
+      { userId: row.DistrictManagerId, code: row.DistrictManagerCode, name: row.DistrictManagerName, ut: row.usertype },
     ];
+    for (let i = 1; i <= 7; i++) {
+      const r = row as Record<string, string>;
+      persons.push({
+        userId: r[`R${i}_UserId`] ?? '',
+        code:   r[`R${i}_UserCode`] ?? '',
+        name:   r[`R${i}_UserName`] ?? '',
+        ut:     r[`R${i}_usertype`] ?? '',
+      });
+    }
 
-    for (const level of levels) {
-      if (!level.userId || !level.code) continue;
-      if (!seen.has(level.userId)) {
-        seen.set(level.userId, {
-          userId: level.userId,
-          userCode: level.code,
-          userName: level.name || level.code,
-          role: level.role,
-          designation: level.designation,
+    for (const p of persons) {
+      if (!p.userId || !p.code || !p.ut) continue;
+      const role = usertypeToRole(p.ut);
+      const designation = usertypeToDesignation(p.ut);
+      if (!role || !designation) continue; // skip ADMIN (0) and unhandled types
+      if (!seen.has(p.userId)) {
+        seen.set(p.userId, {
+          userId: p.userId,
+          userCode: p.code,
+          userName: p.name || p.code,
+          role,
+          designation,
         });
       }
     }
@@ -314,42 +335,95 @@ interface DistrictSnapshotRow {
   DistrictName: string;
 }
 
+/**
+ * Extracts the person at a given usertype from a hierarchy row by scanning
+ * all R-positions. The Cognitensor API does NOT guarantee fixed positions —
+ * R1 is NOT always ASM, R2 is NOT always RH. We must match by usertype.
+ *
+ * Usertype mapping:
+ *   12 (CH)     → dmCode
+ *   4  (ASM)    → asmCode
+ *   11 (ASSIST) → asmCode (same column)
+ *   6  (RH)     → rhCode
+ *   10 (ZH)     → zhCode
+ *   14 (SZH)    → nhCode
+ */
+function extractByUsertype(
+  row: HierarchySnapshotRow,
+  targetUsertype: string,
+): { id: string | null; code: string | null; name: string | null } {
+  // Check DM level first
+  if (row.usertype === targetUsertype) {
+    return {
+      id: row.DistrictManagerId || null,
+      code: row.DistrictManagerCode || null,
+      name: row.DistrictManagerName || null,
+    };
+  }
+  // Scan R1–R7
+  for (let i = 1; i <= 7; i++) {
+    const ut = (row as Record<string, string>)[`R${i}_usertype`];
+    if (ut === targetUsertype) {
+      return {
+        id: (row as Record<string, string>)[`R${i}_UserId`] || null,
+        code: (row as Record<string, string>)[`R${i}_UserCode`] || null,
+        name: (row as Record<string, string>)[`R${i}_UserName`] || null,
+      };
+    }
+  }
+  return { id: null, code: null, name: null };
+}
+
 async function seedDistrictHierarchy(): Promise<void> {
   const rows = readSnapshot<HierarchySnapshotRow>('hierarchy.json');
   console.log(`\n🗺️  Phase C: seeding ${rows.length} district hierarchy rows…`);
 
   const stateByDistrict = new Map<string, string>();
   try {
-    for (const d of readSnapshot<DistrictSnapshotRow>(
-      'districts-sample.json',
-    )) {
+    for (const d of readSnapshot<DistrictSnapshotRow>('districts.json')) {
       stateByDistrict.set(d.DistrictId, d.StateId);
     }
   } catch {
-    /* optional */
+    // fall back to districts-sample.json
+    try {
+      for (const d of readSnapshot<DistrictSnapshotRow>('districts-sample.json')) {
+        stateByDistrict.set(d.DistrictId, d.StateId);
+      }
+    } catch { /* optional */ }
   }
 
   let count = 0;
   for (const e of rows) {
     if (!e.DistrictId) continue;
+
+    // Map each person by their usertype, not their positional R-number.
+    // CH (12) or ASM (4/11) at DM level, RH (6), ZH (10), SZH (14) → nhCode.
+    const dm   = extractByUsertype(e, '12');
+    const asmA = extractByUsertype(e, '4');
+    const asmB = extractByUsertype(e, '11'); // ASSISTASM — same column as ASM
+    const asm  = asmA.code ? asmA : asmB;
+    const rh   = extractByUsertype(e, '6');
+    const zh   = extractByUsertype(e, '10');
+    const szh  = extractByUsertype(e, '14'); // SZH → nhCode
+
     const payload = {
       districtName: e.DistrictName || null,
       stateId: stateByDistrict.get(e.DistrictId) ?? null,
-      dmId: e.DistrictManagerId || null,
-      dmCode: e.DistrictManagerCode || null,
-      dmName: e.DistrictManagerName || null,
-      asmId: e.R1_UserId || null,
-      asmCode: e.R1_UserCode || null,
-      asmName: e.R1_UserName || null,
-      rhId: e.R2_UserId || null,
-      rhCode: e.R2_UserCode || null,
-      rhName: e.R2_UserName || null,
-      zhId: e.R3_UserId || null,
-      zhCode: e.R3_UserCode || null,
-      zhName: e.R3_UserName || null,
-      nhId: e.R4_UserId || null,
-      nhCode: e.R4_UserCode || null,
-      nhName: e.R4_UserName || null,
+      dmId:   dm.id,
+      dmCode: dm.code,
+      dmName: dm.name,
+      asmId:   asm.id,
+      asmCode: asm.code,
+      asmName: asm.name,
+      rhId:   rh.id,
+      rhCode: rh.code,
+      rhName: rh.name,
+      zhId:   zh.id,
+      zhCode: zh.code,
+      zhName: zh.name,
+      nhId:   szh.id,
+      nhCode: szh.code,
+      nhName: szh.name,
     };
     await prisma.districtHierarchy.upsert({
       where: { districtId: e.DistrictId },
@@ -360,15 +434,13 @@ async function seedDistrictHierarchy(): Promise<void> {
   }
   console.log(`  ✓ upserted=${count}`);
 
-  // Wire SalesTeam.managerId from the district chain (child → parent).
+  // Wire SalesTeam.managerId using the full R1–R7 chain (ordered by position).
   const childToParent = new Map<string, string>();
   for (const e of rows) {
+    // Build ordered chain: DM → R1 → R2 → ... → R7 (filter empties)
     const chain = [
       e.DistrictManagerCode,
-      e.R1_UserCode,
-      e.R2_UserCode,
-      e.R3_UserCode,
-      e.R4_UserCode,
+      ...[1,2,3,4,5,6,7].map((i) => (e as Record<string,string>)[`R${i}_UserCode`]),
     ].filter((c): c is string => !!c);
     for (let i = 0; i < chain.length - 1; i++) {
       if (!childToParent.has(chain[i]))

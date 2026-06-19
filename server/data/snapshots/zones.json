@@ -1,0 +1,14 @@
+{
+    "description": "success",
+    "Data": [
+        { "Zoneid": "1", "ZoneName": "J&K/PB/HP/HAR/DELHI/NCR" },
+        { "Zoneid": "2", "ZoneName": "UP/UTT" },
+        { "Zoneid": "3", "ZoneName": "RAJ/GUJ/MP/UT1" },
+        { "Zoneid": "4", "ZoneName": "MAH/GOA" },
+        { "Zoneid": "5", "ZoneName": "WB/NE/CDG" },
+        { "Zoneid": "6", "ZoneName": "Bihar/JHND" },
+        { "Zoneid": "7", "ZoneName": "TN/KE/KAR/UT2" },
+        { "Zoneid": "8", "ZoneName": "odisha" },
+        { "Zoneid": "9", "ZoneName": "AP/TEL" }
+    ]
+}

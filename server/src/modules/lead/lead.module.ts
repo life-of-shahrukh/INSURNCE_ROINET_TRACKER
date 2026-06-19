@@ -4,6 +4,8 @@ import { LeadController } from './lead.controller';
 import { LeadService } from './lead.service';
 import { LeadRepository } from './lead.repository';
 import { PrismaModule } from '../../prisma/prisma.module';
+import { ExternalApiModule } from '../../common/external-api/external-api.module';
+import { HierarchyScopeInterceptor } from '../../common/interceptors/hierarchy-scope.interceptor';
 import { CreateLeadHandler } from './commands/create-lead.handler';
 import { UpdateLeadHandler } from './commands/update-lead.handler';
 import { ConvertLeadToDealHandler } from './commands/convert-lead-to-deal.handler';
@@ -25,11 +27,12 @@ const QueryHandlers = [
 const EventListeners = [LeadEventsListener];
 
 @Module({
-  imports: [CqrsModule, PrismaModule],
+  imports: [CqrsModule, PrismaModule, ExternalApiModule],
   controllers: [LeadController],
   providers: [
     LeadService,
     LeadRepository,
+    HierarchyScopeInterceptor,
     ...CommandHandlers,
     ...QueryHandlers,
     ...EventListeners,

@@ -10,6 +10,11 @@ import type {
   ExternalPospData,
   ExternalPospLoginData,
   ExternalState,
+  ExternalZone,
+  ManagerIdentity,
+} from './external-api.types';
+import {
+  externalUserTypeToRole,
 } from './external-api.types';
 
 /** Alias kept for backward compat with sales-team.service */
@@ -73,9 +78,24 @@ export class ExternalApiService {
     return this.fetchLive<ExternalState>('/Cognitensor/ListState');
   }
 
+  listZones(): ExternalZone[] {
+    if (this.useSnapshot) {
+      const zonePath = path.join(SNAPSHOT_DIR, 'zones.json');
+      if (fs.existsSync(zonePath)) {
+        return this.readSnapshot<ExternalZone>('zones.json');
+      }
+      return [];
+    }
+    return [];
+  }
+
+  async listZonesLive(): Promise<ExternalZone[]> {
+    return this.fetchLive<ExternalZone>('/Cognitensor/ListZone');
+  }
+
   listDistricts(stateId: string): ExternalDistrict[] {
     if (this.useSnapshot) {
-      const all = this.readSnapshot<ExternalDistrict>('districts-sample.json');
+      const all = this.readSnapshot<ExternalDistrict>('districts.json');
       return stateId ? all.filter((d) => d.StateId === stateId) : all;
     }
     return [];
@@ -108,10 +128,24 @@ export class ExternalApiService {
         data = data.filter((r) => r.DistrictId === String(query.districtId));
       }
       if (query?.userCode) {
-        data = data.filter((r) => r.DistrictManagerCode === query.userCode);
+        const code = query.userCode;
+        data = data.filter((r) => {
+          if (r.DistrictManagerCode === code) return true;
+          for (let i = 1; i <= 7; i++) {
+            if ((r as Record<string, string>)[`R${i}_UserCode`] === code) return true;
+          }
+          return false;
+        });
       }
       if (query?.userId !== undefined) {
-        data = data.filter((r) => r.DistrictManagerId === String(query.userId));
+        const uid = String(query.userId);
+        data = data.filter((r) => {
+          if (r.DistrictManagerId === uid) return true;
+          for (let i = 1; i <= 7; i++) {
+            if ((r as Record<string, string>)[`R${i}_UserId`] === uid) return true;
+          }
+          return false;
+        });
       }
       return data;
     }
@@ -130,6 +164,98 @@ export class ExternalApiService {
       '/Cognitensor/ListHierarchyUserData',
       body,
     );
+  }
+
+  /**
+   * Resolves a manager's identity (role, districtIds) by querying
+   * ListHierarchyUserData with their userCode as a direct filter.
+   * The API returns only records where this manager appears anywhere
+   * in the hierarchy chain — no full scan needed.
+   *
+   * Snapshot mode searches across all R-level columns.
+   * Live mode relies on the Cognitensor API's server-side filter.
+   */
+  async getManagerIdentity(userCode: string): Promise<ManagerIdentity> {
+    const rows = await (this.useSnapshot
+      ? Promise.resolve(this.listHierarchy({ userCode }))
+      : this.listHierarchyLive({ userCode }));
+
+    if (!rows || rows.length === 0) {
+      throw new NotFoundException(
+        `No hierarchy records found for userCode "${userCode}"`,
+      );
+    }
+
+    // Find which position this user holds (DM / R1..R7) and their usertype
+    const first = rows[0];
+    let userId = '';
+    let userName = '';
+    let usertypeStr = '';
+
+    if (first.DistrictManagerCode === userCode) {
+      userId = first.DistrictManagerId;
+      userName = first.DistrictManagerName;
+      usertypeStr = first.usertype ?? '12';
+    } else {
+      // Search R1–R7 for the matching code
+      let found = false;
+      for (let i = 1; i <= 7; i++) {
+        const row = first as Record<string, string>;
+        if (row[`R${i}_UserCode`] === userCode) {
+          userId = row[`R${i}_UserId`] ?? '';
+          userName = row[`R${i}_UserName`] ?? '';
+          usertypeStr = row[`R${i}_usertype`] ?? '';
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        // Fallback: use the district manager level
+        userId = first.DistrictManagerId;
+        userName = first.DistrictManagerName;
+        usertypeStr = first.usertype ?? '12';
+      }
+    }
+
+    const usertypeNum = parseInt(usertypeStr, 10);
+    const role = externalUserTypeToRole(usertypeNum);
+    if (!role) {
+      throw new NotFoundException(
+        `UserCode "${userCode}" has unhandled usertype ${usertypeNum} — not a loginable manager role`,
+      );
+    }
+
+    const districtIds = rows.map((r) => r.DistrictId).filter(Boolean);
+
+    return {
+      userId,
+      userCode,
+      userName,
+      usertype: usertypeNum,
+      role,
+      districtIds,
+    };
+  }
+
+  /**
+   * Returns live POSP profiles for a given districtId.
+   * Used by dashboard for POSP roster views within a manager's territory.
+   * Dashboard metrics (deals, leads) are from local DB; profiles come from here.
+   */
+  listPospsByDistrict(districtId: string): ExternalPospData[] {
+    if (this.useSnapshot) {
+      const all = this.readSnapshot<ExternalPospData>('posps.json');
+      return districtId
+        ? all.filter((p) => p.districtid === districtId)
+        : all;
+    }
+    return [];
+  }
+
+  async listPospsByDistrictLive(districtId: string): Promise<ExternalPospData[]> {
+    return this.fetchLive<ExternalPospData>('/Cognitensor/ListPospData', {
+      districtid: Number(districtId),
+    });
   }
 
   listPosps(query: ExternalPospQueryDto): PaginatedResult<ExternalPospData> {
@@ -246,14 +372,15 @@ export class ExternalApiService {
       filtered = filtered.filter((p) => ids.has(p.cityid));
     }
 
-    // Free-text search across code / email / mobile / GCD code
+    // Free-text search across name / code / email / mobile / GCD code
     if (search) {
       filtered = filtered.filter(
         (p) =>
           p.UserCode.toLowerCase().includes(search) ||
           p.EmailId.toLowerCase().includes(search) ||
           p.MobileNo.includes(search) ||
-          p.HephGcdCode.toLowerCase().includes(search),
+          p.HephGcdCode.toLowerCase().includes(search) ||
+          (p.username ?? '').toLowerCase().includes(search),
       );
     }
 

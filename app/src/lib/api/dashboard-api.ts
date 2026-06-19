@@ -28,6 +28,14 @@ export interface DashboardStats {
     }>;
     /** Monthly premium trend: last 12 months */
     monthlyPremium: Array<{ month: string; premium: number; count: number }>;
+    /** Per-district breakdown — populated for manager roles */
+    byDistrict: Array<{
+      districtId: string;
+      districtName: string;
+      premium: number;
+      count: number;
+      pospCount: number;
+    }>;
   };
   leads: {
     total: number;
@@ -44,6 +52,11 @@ export interface DashboardStats {
     total: number;
     byKycStatus: Array<{ kycStatus: string; count: number }>;
   };
+  /** Team overview for manager roles; null for POSP */
+  team: {
+    districtCount: number;
+    subordinateCounts: Partial<Record<string, number>>;
+  } | null;
 }
 
 export const EMPTY_STATS: DashboardStats = {
@@ -63,15 +76,49 @@ export const EMPTY_STATS: DashboardStats = {
     byPolicy: [],
     topPosps: [],
     monthlyPremium: [],
+    byDistrict: [],
   },
   leads: { total: 0, activeCount: 0, byStatus: [], byTimeline: [], bySource: [] },
   posps: { total: 0, active: 0 },
   customers: { total: 0, byKycStatus: [] },
+  team: null,
 };
 
+/**
+ * Builds query params for the dashboard stats endpoint.
+ * Supports all standard params plus hierarchy-specific zoneId/regionId narrowing.
+ */
+export interface DashboardStatsParams {
+  dateRange?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  /** Narrow to specific zone (Cognitensor ZoneId) */
+  zoneId?: string;
+  /** Narrow to specific region (Cognitensor regionid from ListDistrict) */
+  regionId?: string;
+  stateId?: string;
+  districtId?: string;
+  cityId?: string;
+  /** Drill into a specific subordinate's territory */
+  subordinateLevel?: string;
+  subordinateCode?: string;
+  pospId?: string;
+}
+
 export const dashboardApi = {
-  getStats(params?: URLSearchParams): Promise<DashboardStats> {
-    const qs = params?.toString();
+  getStats(params?: URLSearchParams | DashboardStatsParams): Promise<DashboardStats> {
+    let qs: string | undefined;
+    if (params instanceof URLSearchParams) {
+      qs = params.toString();
+    } else if (params) {
+      const sp = new URLSearchParams();
+      for (const [k, v] of Object.entries(params)) {
+        if (v !== undefined && v !== null && v !== '') {
+          sp.set(k, String(v));
+        }
+      }
+      qs = sp.toString();
+    }
     const url = qs ? `/api/dashboard/stats?${qs}` : '/api/dashboard/stats';
     return request<DashboardStats>(url);
   },

@@ -336,25 +336,58 @@ export function DashboardScopeBar({
     isManagerRoleGroupVisible(role, g.role),
   );
 
+  // For Super Admin and National Head, hide the cascade dropdowns since they
+  // already see all data by default. They should use role-group filters instead.
+  const showCascade = role !== "SUPER_ADMIN" && role !== "NATIONAL_HEAD";
+
+  // Determine active filter description for display
+  const activeFilterLabel = (): string | null => {
+    if (posp) return `POSP: ${posp.name}`;
+    if (manager) return `${manager.name}${manager.role ? ` (${manager.role})` : ""}`;
+    if (path.length > 0) {
+      const last = path[path.length - 1];
+      return `${last.name}${last.level ? ` (${last.level})` : ""}`;
+    }
+    return null;
+  };
+
+  const activeFilter = activeFilterLabel();
+
   return (
     <div className="scope-bar">
-      <span className="scope-bar__label">Viewing:</span>
-      {levelDropdown(0)}
-      {levelDropdown(1)}
-      {levelDropdown(2)}
-      {levelDropdown(3)}
-      {levelDropdown(4)}
+      {showCascade && (
+        <>
+          <span className="scope-bar__label">Viewing:</span>
+          {levelDropdown(0)}
+          {levelDropdown(1)}
+          {levelDropdown(2)}
+          {levelDropdown(3)}
+          {levelDropdown(4)}
+        </>
+      )}
 
       {visibleRoleGroups.length > 0 && (
         <>
-          <span className="scope-bar__label">By role:</span>
+          <span className="scope-bar__label">
+            {showCascade ? "By role:" : "Filter by role:"}
+          </span>
           {visibleRoleGroups.map((g) =>
             roleDropdown(g.role, g.label, g.members),
           )}
         </>
       )}
 
-      <span className="scope-bar__label">Filter:</span>
+      {activeFilter && (
+        <div className="scope-bar__active-filter">
+          <span className="scope-bar__active-label">
+            Viewing data for: <strong>{activeFilter}</strong>
+          </span>
+        </div>
+      )}
+
+      <span className="scope-bar__label">
+        {showCascade ? "Filter:" : "Geographic filters:"}
+      </span>
       {isGeoFilterVisible(role, "zone") &&
         geoSelect("Zones", catalog?.zones ?? [], geo?.zoneId, (v) =>
           setGeo({ zoneId: v }),

@@ -290,6 +290,25 @@ a {
   border-color: var(--danger, #dc2626);
 }
 
+.scope-bar__active-filter {
+  flex: 1 1 100%;
+  margin-top: 4px;
+  padding: 8px 12px;
+  background: var(--primary-light, #eff6ff);
+  border-left: 3px solid var(--primary, #3b82f6);
+  border-radius: 4px;
+}
+
+.scope-bar__active-label {
+  font-size: 13px;
+  color: var(--primary-dark, #1e40af);
+}
+
+.scope-bar__active-label strong {
+  font-weight: 600;
+  color: var(--primary, #3b82f6);
+}
+
 /* ─────────────────────────────────────────────────────────────────────────── */
 
 .chart-empty {

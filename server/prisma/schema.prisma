@@ -254,6 +254,74 @@ model OrgMember {
   @@index([role])
 }
 
+model Announcement {
+  id          String   @id @default(cuid()) @db.NVarChar(36)
+  title       String   @db.NVarChar(200)
+  content     String   @db.NVarChar(2000)
+  /// Comma-separated target roles e.g. "POSP,DM,ASM"
+  targetRoles String   @db.NVarChar(200)
+  /// "info" | "warning" | "success" | "error"
+  severity    String   @default("info") @db.NVarChar(20)
+  priority    Int      @default(0)
+  isActive    Boolean  @default(true)
+  startsAt    DateTime
+  expiresAt   DateTime?
+  createdBy   String   @db.NVarChar(36)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  dismissals  AnnouncementDismissal[]
+}
+
+model AnnouncementDismissal {
+  id             String       @id @default(cuid()) @db.NVarChar(36)
+  announcementId String       @db.NVarChar(36)
+  userId         String       @db.NVarChar(36)
+  dismissedAt    DateTime     @default(now())
+
+  announcement   Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([announcementId, userId])
+}
+
+/// District-keyed management chain mirrored from Cognitensor ListHierarchyUserData.
+/// One row per district; a manager covers a district when their code appears in
+/// the column for their level. This is the source of truth for hierarchy scoping:
+/// a POSP belongs to a district (Posp.districtId), and the chain above that
+/// district (DM -> ASM -> RH -> ZH -> NH) determines who can see that POSP.
+model DistrictHierarchy {
+  id           String  @id @default(cuid()) @db.NVarChar(36)
+  districtId   String  @unique @db.NVarChar(50)
+  districtName String? @db.NVarChar(200)
+  stateId      String? @db.NVarChar(50)
+
+  dmId   String? @db.NVarChar(50)
+  dmCode String? @db.NVarChar(100)
+  dmName String? @db.NVarChar(200)
+
+  asmId   String? @db.NVarChar(50)
+  asmCode String? @db.NVarChar(100)
+  asmName String? @db.NVarChar(200)
+
+  rhId   String? @db.NVarChar(50)
+  rhCode String? @db.NVarChar(100)
+  rhName String? @db.NVarChar(200)
+
+  zhId   String? @db.NVarChar(50)
+  zhCode String? @db.NVarChar(100)
+  zhName String? @db.NVarChar(200)
+
+  nhId   String? @db.NVarChar(50)
+  nhCode String? @db.NVarChar(100)
+  nhName String? @db.NVarChar(200)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userCode])
+  @@index([role])
+}
+
 /// Adjacency list: `memberId` reports to `managerId` (one step up the chain).
 /// Deduplicated — a person reporting to the same manager across many districts
 /// collapses to a single edge.

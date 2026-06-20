@@ -17,6 +17,7 @@ import { HierarchyModule } from './modules/hierarchy/hierarchy.module';
 import { SsoModule } from './modules/sso/sso.module';
 import { OrgSyncModule } from './modules/org-sync/org-sync.module';
 import { GeoModule } from './modules/geo/geo.module';
+import { AnnouncementModule } from './modules/announcement/announcement.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { GeoModule } from './modules/geo/geo.module';
     HierarchyModule,
     OrgSyncModule,
     GeoModule,
+    AnnouncementModule,
   ],
 })
 export class AppModule {}

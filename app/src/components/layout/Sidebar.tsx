@@ -35,6 +35,7 @@ const NAV: NavItem[] = [
   { href: "/renewals",    icon: "↻", label: "Renewals" },
   { href: "/commissions", icon: "₹", label: "Commissions",     minRole: "ASM" },
   { href: "/reports",     icon: "▦", label: "Reports",         minRole: "ASM" },
+  { href: "/announcements", icon: "⚑", label: "Announcements",  minRole: "SUPER_ADMIN" },
   { href: "/profile",     icon: "◎", label: "My Profile" },
 ];
 

@@ -34,6 +34,8 @@ export interface AuthUser {
   role: UserRole;
   status: UserStatus;
   pospId: string | null;
+  orgRole?: string;
+  roleLabel?: string;
 }
 
 export interface LoginResponse {

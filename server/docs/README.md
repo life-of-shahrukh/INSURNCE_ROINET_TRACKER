@@ -118,6 +118,7 @@ phase-{number}-{brief-description}.md
 ## Additional Documentation
 
 - **[Developer Login Matrix](./developer-login-matrix.md)** — **start here for local testing**: seed commands, demo + real logins per hierarchy level, scope notes
+- **[UserCode Identity & Login Mapping](./usercode-identity-and-login.md)** — why `UserCode` is the real identity key, synthetic manager emails, password vs future manager SSO, and scope resolution (e.g. `HARI.DUTT` → National Head)
 - **[Cognitensor External API](./cognitensor-external-api.md)** — upstream UAT endpoints (`ListHierarchyUserData`, `ListPospData`, geo lists), snapshot mode, `usertype` role mapping, and seed/sync
 - [Authentication, Roles & Data Scope](./authentication-roles-and-scope.md) — Roles, login flows (password + SSO), and how data scope is resolved per role
 - [RBAC Decorators Guide](./RBAC_DECORATORS.md) - Detailed guide on role-based access control

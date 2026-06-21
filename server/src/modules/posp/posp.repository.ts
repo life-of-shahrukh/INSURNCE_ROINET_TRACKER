@@ -6,6 +6,12 @@ import { Posp, Prisma } from '@prisma/client';
 import type { PaginatedResult } from '../../common/interfaces/paginated-result.interface';
 import { buildPaginatedResult } from '../../common/utils/pagination.util';
 import { toCsv, type CsvColumn } from '../../common/utils/csv.util';
+import {
+  attachDealStatsToPosps,
+  enrichPospsWithActivity,
+  fetchDealStatsByPospId,
+  type PospWithComputedActivity,
+} from '../../common/business-rules/posp-activity.prisma';
 
 const POSP_SORT_FIELDS: Record<string, keyof Posp> = {
   createdAt: 'createdAt',
@@ -29,6 +35,60 @@ export class PospRepository {
     return { [field]: sortOrder };
   }
 
+  private async attachDealStats(
+    posps: PospWithComputedActivity[],
+  ): Promise<PospWithComputedActivity[]> {
+    const statsMap = await fetchDealStatsByPospId(
+      this.prisma,
+      posps.map((p) => p.id),
+    );
+    return attachDealStatsToPosps(posps, statsMap);
+  }
+
+  private async findPaginatedByDealCount(
+    where: Prisma.PospWhereInput,
+    skip: number,
+    take: number,
+    page: number,
+    pageSize: number,
+    sortOrder: 'asc' | 'desc' = 'desc',
+  ): Promise<PaginatedResult<PospWithComputedActivity>> {
+    const matching = await this.prisma.posp.findMany({
+      where,
+      select: { id: true },
+    });
+    const total = matching.length;
+    const ids = matching.map((p) => p.id);
+
+    const statsMap = await fetchDealStatsByPospId(this.prisma, ids);
+
+    const sortedIds = [...ids].sort((a, b) => {
+      const countA = statsMap.get(a)?.dealCount ?? 0;
+      const countB = statsMap.get(b)?.dealCount ?? 0;
+      if (countA !== countB) {
+        return sortOrder === 'desc' ? countB - countA : countA - countB;
+      }
+      return a.localeCompare(b);
+    });
+
+    const pageIds = sortedIds.slice(skip, skip + take);
+    if (pageIds.length === 0) {
+      return buildPaginatedResult([], total, page, pageSize);
+    }
+
+    const rows = await this.prisma.posp.findMany({
+      where: { id: { in: pageIds } },
+    });
+    const rowMap = new Map(rows.map((r) => [r.id, r]));
+    const orderedRows = pageIds
+      .map((id) => rowMap.get(id))
+      .filter((r): r is Posp => r !== undefined);
+
+    const enriched = await enrichPospsWithActivity(this.prisma, orderedRows);
+    const data = attachDealStatsToPosps(enriched, statsMap);
+    return buildPaginatedResult(data, total, page, pageSize);
+  }
+
   async findPaginated(
     where: Prisma.PospWhereInput,
     skip: number,
@@ -37,12 +97,25 @@ export class PospRepository {
     pageSize: number,
     sortBy?: string,
     sortOrder?: 'asc' | 'desc',
-  ): Promise<PaginatedResult<Posp>> {
+  ): Promise<PaginatedResult<PospWithComputedActivity>> {
+    if (sortBy === 'dealCount') {
+      return this.findPaginatedByDealCount(
+        where,
+        skip,
+        take,
+        page,
+        pageSize,
+        sortOrder ?? 'desc',
+      );
+    }
+
     const orderBy = this.resolveOrderBy(sortBy, sortOrder);
-    const [data, total] = await Promise.all([
+    const [rows, total] = await Promise.all([
       this.prisma.posp.findMany({ where, skip, take, orderBy }),
       this.prisma.posp.count({ where }),
     ]);
+    const enriched = await enrichPospsWithActivity(this.prisma, rows);
+    const data = await this.attachDealStats(enriched);
     return buildPaginatedResult(data, total, page, pageSize);
   }
 
@@ -57,10 +130,11 @@ export class PospRepository {
     });
   }
 
-  async findById(id: string): Promise<Posp> {
+  async findById(id: string): Promise<PospWithComputedActivity> {
     const posp = await this.prisma.posp.findUnique({ where: { id } });
     if (!posp) throw new NotFoundException(`POSP with id "${id}" not found`);
-    return posp;
+    const [enriched] = await enrichPospsWithActivity(this.prisma, [posp]);
+    return enriched;
   }
 
   async findByEmail(email: string): Promise<Posp | null> {
@@ -96,11 +170,12 @@ export class PospRepository {
   }
 
   async exportCsvWhere(where: Prisma.PospWhereInput): Promise<string> {
-    const posps = await this.prisma.posp.findMany({
+    const rows = await this.prisma.posp.findMany({
       where,
       orderBy: { createdAt: 'asc' },
     });
-    const columns: CsvColumn<Posp>[] = [
+    const posps = await enrichPospsWithActivity(this.prisma, rows);
+    const columns: CsvColumn<PospWithComputedActivity>[] = [
       { header: 'ID', value: (r) => r.id },
       { header: 'Name', value: (r) => r.name },
       { header: 'Code', value: (r) => r.code },

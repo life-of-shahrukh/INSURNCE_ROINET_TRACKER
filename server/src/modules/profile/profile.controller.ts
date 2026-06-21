@@ -1,5 +1,10 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ProfileService } from './profile.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
@@ -14,6 +19,31 @@ import type { AuthUser } from '../../common/auth/auth-user.interface';
 @ApiBearerAuth()
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
+
+  @Get('by-code/:userCode')
+  @Roles(
+    Role.POSP,
+    Role.DM,
+    Role.ASM,
+    Role.RH,
+    Role.ZH,
+    Role.NATIONAL_HEAD,
+    Role.SUPER_ADMIN,
+  )
+  @ApiOperation({
+    summary:
+      'Get a user profile by Cognitensor userCode (Posp.code or SalesTeam.employeeCode)',
+  })
+  @ApiParam({
+    name: 'userCode',
+    description: 'Cognitensor UserCode, e.g. CSP023057 or RAMANUJ.BIHARJHKZM',
+  })
+  getByUserCode(
+    @Param('userCode') userCode: string,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.profileService.getProfileByUserCode(userCode, user);
+  }
 
   @Get()
   @Roles(

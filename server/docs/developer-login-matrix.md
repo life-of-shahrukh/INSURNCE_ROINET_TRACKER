@@ -174,11 +174,14 @@ There are 133+ hierarchy users and 268 synced POSPs after `seed:all`.
    as leaf nodes on manager charts only.
 
 5. **SSO** — POSP SSO (`isPosp=true`) is implemented; manager SSO is not yet.
-   Local dev uses password login.
+   Local dev uses password login. Future manager SSO will pass `userCode` (e.g.
+   `HARI.DUTT`) and resolve to the same identity and scope as password login.
+   See [UserCode Identity & Login Mapping](./usercode-identity-and-login.md).
 
 ---
 
 ## Related docs
 
+- [UserCode Identity & Login Mapping](./usercode-identity-and-login.md) — `UserCode` as identity key, synthetic emails, SSO plan
 - [Authentication, Roles & Data Scope](./authentication-roles-and-scope.md) — flows, scope resolution, SSO
 - [RBAC Decorators Guide](./RBAC_DECORATORS.md) — `@MinRole`, `@Roles`, guards

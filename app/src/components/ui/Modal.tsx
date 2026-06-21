@@ -8,10 +8,12 @@ interface ModalProps {
   title: string;
   onClose: () => void;
   children: ReactNode;
-  footer?: ReactNode;
+  /** Omit for default Cancel; pass `null` to hide the footer */
+  footer?: ReactNode | null;
+  wide?: boolean;
 }
 
-export function Modal({ open, title, onClose, children, footer }: ModalProps) {
+export function Modal({ open, title, onClose, children, footer, wide = false }: ModalProps) {
   if (!open) return null;
 
   return (
@@ -21,7 +23,7 @@ export function Modal({ open, title, onClose, children, footer }: ModalProps) {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="modal" role="dialog" aria-modal="true">
+      <div className={`modal${wide ? " modal--wide" : ""}`} role="dialog" aria-modal="true">
         <div className="modal-header">
           <div className="modal-title">{title}</div>
           <button type="button" className="close-btn" onClick={onClose} aria-label="Close">
@@ -29,11 +31,13 @@ export function Modal({ open, title, onClose, children, footer }: ModalProps) {
           </button>
         </div>
         <div className="modal-body">{children}</div>
-        {footer ?? (
+        {footer === null ? null : (
           <div className="modal-footer">
-            <Button variant="secondary" onClick={onClose}>
-              Cancel
-            </Button>
+            {footer ?? (
+              <Button variant="secondary" onClick={onClose}>
+                Cancel
+              </Button>
+            )}
           </div>
         )}
       </div>

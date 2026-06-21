@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/providers/auth-provider";
 import { hasMinRole, type UserRole } from "@/lib/auth-types";
+import { userDisplayRole } from "@/lib/role-display";
 
 function LogoutIcon() {
   return (
@@ -39,16 +40,6 @@ const NAV: NavItem[] = [
   { href: "/profile",     icon: "◎", label: "My Profile" },
 ];
 
-const ROLE_LABEL: Record<UserRole, string> = {
-  SUPER_ADMIN:   "Super Admin",
-  NATIONAL_HEAD: "National Head",
-  ZH:            "Zonal Head",
-  RH:            "Regional Head",
-  ASM:           "Area Sales Mgr",
-  DM:            "District Mgr",
-  POSP:          "POSP Agent",
-};
-
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -73,7 +64,13 @@ export function Sidebar() {
           <div className="logo-title">Roinet Insurance</div>
           <div className="logo-sub">Brokers — Sales CRM</div>
           <Link href="/profile" className="logo-role" style={{ textDecoration: "none", cursor: "pointer" }}>
-            {role ? ROLE_LABEL[role] : ""}
+            {user
+              ? userDisplayRole({
+                  role: user.role,
+                  orgRole: user.orgRole,
+                  roleLabel: user.roleLabel,
+                })
+              : ""}
           </Link>
         </div>
         <nav className="sidebar-nav" aria-label="Main navigation">

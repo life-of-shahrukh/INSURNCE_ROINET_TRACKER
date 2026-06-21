@@ -1,20 +1,27 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Pagination } from "@/components/ui/Pagination";
 import { ListDataSection } from "@/components/ui/ListDataSection";
+import { UserProfileModal } from "@/components/profile/UserProfileModal";
+import { PospRosterCard } from "@/components/posp/PospRosterCard";
 import { UniversalFilter } from "@/components/filters/UniversalFilter";
 import { useListQueryState } from "@/hooks/useListQueryState";
 import { useListQueryStatus } from "@/hooks/useListQueryStatus";
 import { usePospList } from "@/hooks/usePospList";
-import { useDealsList } from "@/hooks/useDealsList";
-import { fmtDate, fmtINRShort } from "@/lib/formatters";
 import { useAuth } from "@/providers/auth-provider";
 import { fetchAndDownloadCsv } from "@/lib/crm-calculations";
+import type { ListQueryParams } from "@/lib/api/list-query-params";
 import { toast } from "sonner";
+
+const POSP_LIST_DEFAULTS: Partial<ListQueryParams> = {
+  pageSize: 100,
+  sortBy: "dealCount",
+  sortOrder: "desc",
+};
 
 export default function PospPage() {
   const { user } = useAuth();
@@ -31,7 +38,7 @@ export default function PospPage() {
     setPageSize,
     applyViewFilters,
     apiParams,
-  } = useListQueryState(undefined, "posp");
+  } = useListQueryState(POSP_LIST_DEFAULTS, "posp");
 
   const pospQuery = usePospList(apiParams);
   const { data: pospResult } = pospQuery;
@@ -39,11 +46,19 @@ export default function PospPage() {
   const posp = pospResult?.data ?? [];
   const meta = pospResult?.meta;
 
-  const dealsParams = useMemo(() => new URLSearchParams({ pageSize: "100", page: "1" }), []);
-  const { data: dealsResult } = useDealsList(dealsParams);
-  const deals = dealsResult?.data ?? [];
-
   const [exporting, setExporting] = useState(false);
+  const [selectedUserCode, setSelectedUserCode] = useState<string | null>(null);
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  const openProfile = (code: string) => {
+    setSelectedUserCode(code);
+    setProfileOpen(true);
+  };
+
+  const closeProfile = () => {
+    setProfileOpen(false);
+    setSelectedUserCode(null);
+  };
 
   const handleExport = async () => {
     setExporting(true);
@@ -61,7 +76,7 @@ export default function PospPage() {
       <div className="list-page">
       <PageHeader
         title="POSP Roster"
-        subtitle="Active and inactive Point of Sales Persons — synced from Roinet"
+        subtitle="Synced from Roinet — sorted by most deals — inactive = no deals in the last 30 days"
         actions={
           <Button variant="secondary" onClick={handleExport} disabled={exporting}>
             {exporting ? "Exporting…" : "Export CSV"}
@@ -82,39 +97,19 @@ export default function PospPage() {
       />
 
       <Card className="list-table-card">
-      <ListDataSection isInitialLoading={isInitialLoading} isRefreshing={isRefreshing} stretch>
+      <ListDataSection
+        isInitialLoading={isInitialLoading}
+        isRefreshing={isRefreshing}
+        stretch
+        skeletonVariant="posp-grid"
+      >
         <div className="posp-grid">
         {posp.length === 0 ? (
           <div className="empty">No POSPs match these filters.</div>
         ) : (
-          posp.map((p) => {
-            const myDeals = deals.filter((d) => d.pospId === p.id);
-            const total = myDeals.reduce((a, d) => a + (+d.premium || 0), 0);
-            return (
-              <div
-                key={p.id}
-                className="posp-card"
-              >
-                <div className="posp-card-header">
-                  <div>
-                    <div className="posp-name">{p.name}</div>
-                    <div className="posp-code">{p.code}</div>
-                  </div>
-                  <span className={`posp-status ${p.active ? "active" : "inactive"}`}>
-                    {p.active ? "Active" : "Inactive"}
-                  </span>
-                </div>
-                <div className="posp-meta">
-                  <span>{p.mobile}</span>
-                  <span>Joined {fmtDate(p.joined)}</span>
-                </div>
-                <div className="posp-stats">
-                  <span>{myDeals.length} deals</span>
-                  <span>{fmtINRShort(total)} premium</span>
-                </div>
-              </div>
-            );
-          })
+          posp.map((p) => (
+            <PospRosterCard key={p.id} posp={p} onSelect={openProfile} />
+          ))
         )}
         </div>
 
@@ -125,6 +120,11 @@ export default function PospPage() {
       </Card>
       </div>
 
+      <UserProfileModal
+        open={profileOpen}
+        userCode={selectedUserCode}
+        onClose={closeProfile}
+      />
     </>
   );
 }

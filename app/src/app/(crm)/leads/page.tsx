@@ -165,7 +165,12 @@ export default function LeadsPage() {
       </div>
 
       {/* Kanban by Timeline */}
-      <ListDataSection isInitialLoading={isInitialLoading} isRefreshing={isRefreshing} stretch>
+      <ListDataSection
+        isInitialLoading={isInitialLoading}
+        isRefreshing={isRefreshing}
+        stretch
+        skeletonVariant="kanban"
+      >
         <div className="kanban">
         {TIMELINE_COLS.map((col) => (
           <div key={col.key} className="kanban-col">

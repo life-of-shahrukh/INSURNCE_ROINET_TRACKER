@@ -29,7 +29,8 @@ export type QueryFilterKey =
   | "active"
   | "designation"
   | "teamStatus"
-  | "territory";
+  | "territory"
+  | "managerCode";
 
 export interface ViewFilterDimension extends FilterDimension {
   queryKey?: QueryFilterKey;
@@ -65,8 +66,8 @@ const CLOSURE_TIMELINE_OPTIONS: FilterOption[] = [
 
 const POSP_ACTIVE_OPTIONS: FilterOption[] = [
   { value: "", label: "All" },
-  { value: "true", label: "Active" },
-  { value: "false", label: "Inactive" },
+  { value: "true", label: "Active (deal in last 30 days)" },
+  { value: "false", label: "Inactive (no deal in 30 days)" },
 ];
 
 const DESIGNATION_OPTIONS: FilterOption[] = [
@@ -94,6 +95,7 @@ const QUERY_FILTER_DEFS: Record<
   designation: { label: "Designation", options: DESIGNATION_OPTIONS },
   teamStatus: { label: "Status", options: TEAM_STATUS_OPTIONS },
   territory: { label: "Territory", options: [] },
+  managerCode: { label: "Manager", options: [{ value: "", label: "All Managers" }] },
 };
 
 const GEO_FIELDS: FilterFieldRef[] = [
@@ -186,8 +188,10 @@ export const TABLE_FILTER_CONFIG: Record<ListViewId, ListViewFilterConfig> = {
     searchPlaceholder: "Name, code, mobile…",
     fields: [
       { type: "query", key: "active", label: "Status" },
+      { type: "query", key: "managerCode", label: "Manager" },
       { type: "state", key: "dateRange", label: "Joined" },
       ...GEO_FIELDS,
+      { type: "state", key: "posp", label: "POSP" },
     ],
   },
   "sales-team": {
@@ -219,11 +223,16 @@ function buildQueryDimension(
   };
 }
 
+export interface PospFilterOptions {
+  managerOptions?: FilterOption[];
+}
+
 export function getViewFilterDimensions(
   view: ListViewId,
   role: UserRole,
   filters: FilterState,
   geoOptions?: GeoDimensionOptions,
+  pospOptions?: PospFilterOptions,
 ): ViewFilterDimension[] {
   const config = TABLE_FILTER_CONFIG[view];
   const stateDimMap = new Map(
@@ -242,7 +251,23 @@ export function getViewFilterDimensions(
         placeholder: field.label ?? dim.placeholder ?? dim.label,
       });
     } else {
-      result.push(buildQueryDimension(field.key, field.label));
+      if (field.key === "managerCode" && role === "POSP") continue;
+      const dim = buildQueryDimension(field.key, field.label);
+      if (
+        view === "posp" &&
+        field.key === "managerCode" &&
+        pospOptions?.managerOptions?.length
+      ) {
+        result.push({
+          ...dim,
+          options: [
+            { value: "", label: "All Managers" },
+            ...pospOptions.managerOptions,
+          ],
+        });
+      } else {
+        result.push(dim);
+      }
     }
   }
 
@@ -457,6 +482,8 @@ export function buildViewApiParams(view: ListViewId, query: ListQueryParams): UR
     page: query.page,
     pageSize: query.pageSize,
     search: query.search,
+    sortBy: query.sortBy,
+    sortOrder: query.sortOrder,
   };
 
   if (query.renewals) {

@@ -15,6 +15,7 @@ import {
 import {
   getViewFilterDimensions,
   type ListViewId,
+  type PospFilterOptions,
   type QueryFilterKey,
   type ViewFilterDimension,
 } from "@/lib/filters/table-filter-config";
@@ -26,6 +27,7 @@ interface FilterPopoverProps {
   filters: FilterState;
   queryValues: Record<QueryFilterKey, string | undefined>;
   geoOptions?: GeoDimensionOptions;
+  pospFilterOptions?: PospFilterOptions;
   onApply: (
     filters: FilterState,
     queryValues: Record<QueryFilterKey, string | undefined>,
@@ -44,6 +46,7 @@ export const FilterPopover = forwardRef<HTMLDivElement, FilterPopoverProps>(
       filters,
       queryValues,
       geoOptions,
+      pospFilterOptions,
       onApply,
       onPospSearch,
       onDistrictSearch,
@@ -66,8 +69,8 @@ export const FilterPopover = forwardRef<HTMLDivElement, FilterPopoverProps>(
 
     const dimensions = useMemo(
       (): ViewFilterDimension[] =>
-        getViewFilterDimensions(view, role, draftFilters, geoOptions),
-      [view, role, draftFilters, geoOptions],
+        getViewFilterDimensions(view, role, draftFilters, geoOptions, pospFilterOptions),
+      [view, role, draftFilters, geoOptions, pospFilterOptions],
     );
 
     const firstId = dimensions.length > 0 ? getDimensionId(dimensions[0]) : "";

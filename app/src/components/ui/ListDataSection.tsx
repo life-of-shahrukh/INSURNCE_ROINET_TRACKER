@@ -1,6 +1,13 @@
 "use client";
 
 import type { ReactNode } from "react";
+import {
+  KanbanSkeleton,
+  PospGridSkeleton,
+  TableSkeleton,
+} from "@/components/skeletons";
+
+export type ListSkeletonVariant = "table" | "posp-grid" | "kanban";
 
 interface ListDataSectionProps {
   isInitialLoading: boolean;
@@ -9,6 +16,18 @@ interface ListDataSectionProps {
   className?: string;
   /** Pin pagination to the bottom of a fixed-height table area. */
   stretch?: boolean;
+  skeletonVariant?: ListSkeletonVariant;
+}
+
+function renderListSkeleton(variant: ListSkeletonVariant): React.ReactElement {
+  switch (variant) {
+    case "posp-grid":
+      return <PospGridSkeleton />;
+    case "kanban":
+      return <KanbanSkeleton />;
+    default:
+      return <TableSkeleton />;
+  }
 }
 
 export function ListDataSection({
@@ -17,6 +36,7 @@ export function ListDataSection({
   children,
   className,
   stretch = false,
+  skeletonVariant = "table",
 }: ListDataSectionProps): React.ReactElement {
   const sectionClass = [
     "list-data-section",
@@ -30,7 +50,7 @@ export function ListDataSection({
   if (isInitialLoading) {
     return (
       <div className={`${sectionClass} list-data-section--loading`.trim()}>
-        <div className="list-data-section-placeholder">Loading…</div>
+        {renderListSkeleton(skeletonVariant)}
       </div>
     );
   }

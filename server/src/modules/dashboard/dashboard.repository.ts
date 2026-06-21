@@ -14,6 +14,7 @@ import {
   mergeWhereClauses,
   resolveDateRange,
 } from '../../common/utils/filter.util';
+import { pospActiveWhere } from '../../common/business-rules/posp-activity.prisma';
 import type { DashboardQueryDto } from './dto/dashboard-query.dto';
 import type { DashboardStats } from './dashboard.types';
 
@@ -260,7 +261,9 @@ export class DashboardRepository {
       }),
       // ── posps ──
       this.prisma.posp.count({ where: pospWhere }),
-      this.prisma.posp.count({ where: { ...pospWhere, active: true } }),
+      this.prisma.posp.count({
+        where: mergeWhereClauses(pospWhere, pospActiveWhere()),
+      }),
       // ── customers — scoped via their deals' pospId ──
       this.prisma.customer.count({ where: customerScopeWhere }),
       this.prisma.customer.groupBy({

@@ -1,11 +1,17 @@
 # Authentication, Roles & Data Scope
 
 **Status**: ✅ Current
-**Last Updated**: June 17, 2026
+**Last Updated**: June 21, 2026
 
 This document describes the RoiNet Tracker authentication flows, the role
 hierarchy, and how each authenticated user's **data scope** (the territory of
 records they are allowed to see) is resolved.
+
+> **Identity key:** Cognitensor `UserCode` (for example `HARI.DUTT`) is the real
+> business identity. Manager login emails are synthesized from `UserCode`; scope,
+> org chart, and role labels resolve through `SalesTeam.employeeCode` →
+> `OrgMember.userCode`. See
+> [UserCode Identity & Login Mapping](./usercode-identity-and-login.md).
 
 All backend routes are served under the global `/api` prefix (e.g.
 `POST /api/auth/login`).
@@ -83,6 +89,9 @@ Controller: `v1/sso` → `POST /api/v1/sso/...`. Uses an RSA-signed, short-lived
      POSP code, and issues the same `access_token` cookie.
    - `isPosp = false` → **hierarchical manager SSO is not yet implemented**
      (throws `NotImplementedException`). Managers currently log in via password.
+     When implemented, the SSO token's `userCode` will resolve to the same
+     `User` / `SalesTeam` / scope as password login — see
+     [UserCode Identity & Login Mapping](./usercode-identity-and-login.md).
 
 > Required env: `SSO_API_KEY`, `SSO_RSA_PRIVATE_KEY`, `SSO_RSA_PUBLIC_KEY`,
 > `SSO_REDIRECT_BASE_URL`, `SSO_TOKEN_EXPIRY_SECONDS`.

@@ -1,14 +1,17 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { FilterPopover } from "@/components/filters/FilterPopover";
 import type { UserRole } from "@/lib/auth-types";
 import type { ListQueryParams } from "@/lib/api/list-query-params";
 import { crmApi } from "@/lib/api";
+import { hierarchyApi } from "@/lib/api/hierarchy-api";
 import { formatPospLabel } from "@/lib/posp-display";
 import { geoCatalogApi } from "@/lib/api/geo-catalog-api";
 import { useGeoCatalog } from "@/hooks/useGeoCatalog";
 import type { FilterOption, FilterState, GeoDimensionOptions } from "@/lib/filters/filter-utils";
+import { isManagerRoleGroupVisible } from "@/lib/filters/filter-visibility";
 import {
   buildViewActiveFilterChips,
   countActiveFiltersForView,
@@ -138,6 +141,13 @@ export function UniversalFilter({
   const popoverRef = useRef<HTMLDivElement>(null);
 
   const { data: catalog } = useGeoCatalog();
+  const { data: hierarchyOptions } = useQuery({
+    queryKey: ["hierarchy", "filter-options"],
+    queryFn: () => hierarchyApi.getFilterOptions(),
+    enabled: view === "posp" && role !== "POSP",
+    staleTime: 1000 * 60 * 5,
+  });
+
   const geoOptions = useMemo<GeoDimensionOptions>(
     () => ({
       zones: (catalog?.zones ?? []).map((z) => ({ value: z.id, label: z.name })),
@@ -147,9 +157,24 @@ export function UniversalFilter({
     [catalog],
   );
 
+  const pospFilterOptions = useMemo(() => {
+    if (view !== "posp" || !hierarchyOptions) return undefined;
+    const managers: FilterOption[] = [];
+    for (const group of hierarchyOptions.roleGroups) {
+      if (!isManagerRoleGroupVisible(role, group.role)) continue;
+      for (const member of group.members) {
+        managers.push({
+          value: member.id,
+          label: `${member.name} (${group.label})`,
+        });
+      }
+    }
+    return { managerOptions: managers };
+  }, [view, hierarchyOptions, role]);
+
   const dimensions = useMemo(
-    () => getViewFilterDimensions(view, role, filters, geoOptions),
-    [view, role, filters, geoOptions],
+    () => getViewFilterDimensions(view, role, filters, geoOptions, pospFilterOptions),
+    [view, role, filters, geoOptions, pospFilterOptions],
   );
 
   const activeCount = useMemo(
@@ -170,6 +195,7 @@ export function UniversalFilter({
       designation: query.designation,
       teamStatus: query.teamStatus,
       territory: query.territory,
+      managerCode: query.managerCode,
     }),
     [query],
   );
@@ -279,6 +305,7 @@ export function UniversalFilter({
             filters={filters}
             queryValues={queryValues}
             geoOptions={geoOptions}
+            pospFilterOptions={pospFilterOptions}
             onApply={handleApplyFilters}
             onPospSearch={handlePospSearch}
             onDistrictSearch={handleDistrictSearch}

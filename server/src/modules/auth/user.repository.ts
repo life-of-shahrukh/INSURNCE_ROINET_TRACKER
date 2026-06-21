@@ -10,12 +10,14 @@ export class UserRepository {
   async findByEmail(email: string): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: { email: email.toLowerCase() },
+      include: { salesTeam: { select: { designation: true } } },
     });
   }
 
   async findById(id: string): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: { id },
+      include: { salesTeam: { select: { designation: true } } },
     });
   }
 

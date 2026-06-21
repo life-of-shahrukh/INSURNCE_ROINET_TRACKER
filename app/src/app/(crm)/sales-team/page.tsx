@@ -11,6 +11,7 @@ import { ListDataSection } from "@/components/ui/ListDataSection";
 import { ColumnManagerPanel } from "@/components/ui/ColumnManagerPanel";
 import { UniversalFilter } from "@/components/filters/UniversalFilter";
 import { SalesTeamModal } from "@/components/sales-team/SalesTeamModal";
+import { HierarchyTreeSkeleton } from "@/components/skeletons";
 import { useListQueryStatus } from "@/hooks/useListQueryStatus";
 import { useColumnManager } from "@/hooks/useColumnManager";
 import type { ColumnConfig } from "@/hooks/useColumnManager";
@@ -290,7 +291,7 @@ export default function SalesTeamPage(): React.ReactElement {
       {tab === "hierarchy" && (
         <Card>
           {hierarchyLoading ? (
-            <div className="empty">Loading hierarchy…</div>
+            <HierarchyTreeSkeleton />
           ) : !hierarchy || hierarchy.length === 0 ? (
             <div className="empty">No hierarchy data. Try syncing from the Roinet API.</div>
           ) : (

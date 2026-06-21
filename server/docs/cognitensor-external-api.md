@@ -193,7 +193,7 @@ flowchart LR
 | Org graph (`OrgMember`, `OrgEdge`, `DistrictChain`) | `ListHierarchyUserData` | Built by `buildOrgGraph` — same logic in seed and runtime sync |
 | POSP roster + SSO lookup | `ListPospData` | Synced to `Posp` table; `getPospByUserCode` for SSO |
 | Geo filters / dashboard scope | Districts + zones + states | Cached in `GeoCatalogService`; large city/district lists are searched server-side |
-| `@roinet.in` hierarchy logins | `ListHierarchyUserData` via `seed:all` | Password = `UserCode` |
+| `@roinet.in` hierarchy logins | `ListHierarchyUserData` via `seed:all` | Email derived from `UserCode` (upstream has no email); password = `UserCode`. See [UserCode Identity & Login Mapping](./usercode-identity-and-login.md). |
 
 ---
 

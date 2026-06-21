@@ -16,6 +16,7 @@ import {
   DashboardScopeBar,
   type DashboardScope,
 } from "@/components/dashboard/DashboardScopeBar";
+import { DashboardStatsSkeleton } from "@/components/skeletons";
 import { DealModal } from "@/components/deals/DealModal";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -217,68 +218,72 @@ export default function DashboardPage(): React.ReactElement {
         onChange={setScopeDrill}
       />
 
+      {statsLoading ? (
+        <DashboardStatsSkeleton />
+      ) : (
+        <>
       {/* ── KPI Row ────────────────────────────────────────────────────── */}
       <div className="kpi-grid">
         <KpiCard
           label="Total Premium"
-          value={statsLoading ? "…" : fmtINRShort(stats?.deals.totalPremium ?? 0)}
+          value={fmtINRShort(stats?.deals.totalPremium ?? 0)}
           sub={`${stats?.deals.count ?? 0} deals ${periodText}`}
         />
         {showRetainedMargin && (
           <KpiCard
             label="Retained Margin"
-            value={statsLoading ? "…" : fmtINRShort(stats?.deals.totalMargin ?? 0)}
+            value={fmtINRShort(stats?.deals.totalMargin ?? 0)}
             sub="After COA"
             variant="success"
           />
         )}
         <KpiCard
           label="Hot Deals"
-          value={statsLoading ? "…" : String(stats?.deals.hotCount ?? 0)}
+          value={String(stats?.deals.hotCount ?? 0)}
           sub="Likely to close soon"
           variant="hot"
         />
         <KpiCard
           label="Lead Pipeline"
-          value={statsLoading ? "…" : String(stats?.leads.activeCount ?? 0)}
+          value={String(stats?.leads.activeCount ?? 0)}
           sub={`${stats?.leads.total ?? 0} total leads ${periodText}`}
           variant="warm"
         />
         <KpiCard
           label="Conversion"
-          value={statsLoading ? "…" : `${stats?.deals.conversionRate ?? 0}%`}
+          value={`${stats?.deals.conversionRate ?? 0}%`}
           sub={`${stats?.deals.issuedCount ?? 0} issued / ${stats?.deals.count ?? 0}`}
         />
         {showPospKpi && (
           <KpiCard
             label={pospKpi}
-            value={statsLoading ? "…" : String(stats?.posps.active ?? 0)}
+            value={String(stats?.posps.active ?? 0)}
             sub={`${stats?.posps.total ?? 0} total`}
           />
         )}
         {showCustomersKpi && (
           <KpiCard
             label="Customers"
-            value={statsLoading ? "…" : String(stats?.customers.total ?? 0)}
+            value={String(stats?.customers.total ?? 0)}
             sub={`${stats?.customers.byKycStatus.find((k) => k.kycStatus === "VERIFIED")?.count ?? 0} KYC verified`}
           />
         )}
         <KpiCard
           label="Avg Premium"
-          value={statsLoading ? "…" : fmtINRShort(stats?.deals.avgPremium ?? 0)}
+          value={fmtINRShort(stats?.deals.avgPremium ?? 0)}
           sub="Per deal"
         />
         {showCostPerIssued && (
           <KpiCard
             label="Cost / Issued Policy"
-            value={statsLoading ? "…" : fmtINRShort(stats?.deals.costPerIssuedPolicy ?? 0)}
+            value={fmtINRShort(stats?.deals.costPerIssuedPolicy ?? 0)}
             sub="Acquisition cost"
           />
         )}
         {showPipelineVel && (
           <KpiCard
             label="Pipeline Velocity"
-            value={statsLoading ? "…" : `${stats?.deals.avgDaysToIssue ?? 0}d`}
+            value={`${stats?.deals.avgDaysToIssue ?? 0}d`}
             sub="Avg days to issue"
           />
         )}
@@ -338,6 +343,8 @@ export default function DashboardPage(): React.ReactElement {
           <LeadSourceChart data={stats?.leads.bySource ?? []} />
         </Card>
       </div>
+        </>
+      )}
 
       {/* ── Recent Deals ──────────────────────────────────────────────── */}
       <Card title="Recent Deals">

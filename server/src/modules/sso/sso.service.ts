@@ -12,6 +12,7 @@ import * as crypto from 'crypto';
 import { UserRepository } from '../auth/user.repository';
 import { Role, UserStatus } from '../../common/constants';
 import { AuthUserPayload } from '../auth/auth.service';
+import { buildAuthUserPayload } from '../auth/auth-payload.util';
 import { ExternalApiService } from '../../common/external-api/external-api.service';
 import { resolvePospDisplayName } from '../../common/external-api/posp-display.util';
 
@@ -125,13 +126,7 @@ export class SsoService {
       `SSO login successful for POSP userCode=${payload.userCode} user=${user.email}`,
     );
 
-    return {
-      id: user.id,
-      email: user.email,
-      role: user.role as Role,
-      status: user.status as UserStatus,
-      pospId: user.pospId,
-    };
+    return buildAuthUserPayload({ ...user, salesTeam: null });
   }
 
   // ─── Private helpers ──────────────────────────────────────────────────────

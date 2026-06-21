@@ -1,0 +1,36 @@
+---
+description: POSP active/inactive status is derived from deal activity (30-day rule)
+globs: server/**/posp/**/*,server/**/deal/**/*,app/**/posp/**,app/src/components/posp/**
+alwaysApply: false
+---
+
+# POSP Active / Inactive — Deal Activity Rule
+
+**POSPs are never marked inactive manually in product flows.** The `Posp.active` column
+in the database may be updated as a cache (`lastBusinessAt`, `autoInactive`), but the
+**source of truth** is deal activity.
+
+## Definition
+
+| Status | Rule |
+|--------|------|
+| **Active** | At least one deal (`Deal.createdAt`) in the rolling last **30 days** |
+| **Active (grace)** | Joined within the last 30 days and has **no deals yet** (onboarding window) |
+| **Inactive** | No deal in the last 30 days **and** join date is older than 30 days |
+
+Constants and helpers live in
+[`server/src/common/business-rules/posp-activity.util.ts`](server/src/common/business-rules/posp-activity.util.ts).
+
+## Where it applies
+
+- POSP roster list + CSV export — `active` on API responses is **computed**
+- Universal filter `active=true|false` — uses Prisma activity filters, not raw `Posp.active`
+- Dashboard KPI `posps.active` — count of territorially scoped active POSPs
+- Profile `posp.active` — computed for the viewed user
+- On `DealCreatedEvent` — refresh `lastBusinessAt` + `active` on the linked POSP
+
+## Do not
+
+- Add UI for managers to toggle POSP active/inactive (synced roster only)
+- Use Cognitensor upstream status as CRM active/inactive
+- Change the threshold in one place only — update `POSP_INACTIVITY_THRESHOLD_DAYS` and this doc

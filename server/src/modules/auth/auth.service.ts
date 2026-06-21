@@ -14,6 +14,7 @@ import { ApprovePospDto } from './dto/approve-posp.dto';
 import { JwtPayload } from '../../common/auth/jwt-payload.interface';
 import { AuthUser } from '../../common/auth/auth-user.interface';
 import { UserRepository } from './user.repository';
+import { buildAuthUserPayload } from './auth-payload.util';
 
 const COOKIE_NAME = 'access_token';
 const COOKIE_OPTIONS = {
@@ -30,6 +31,10 @@ export interface AuthUserPayload {
   role: Role;
   status: UserStatus;
   pospId: string | null;
+  /** Org-graph role code from SalesTeam.designation (e.g. CH, SZH). */
+  orgRole?: string;
+  /** Human label for UI — e.g. Cluster Head while app role is RH. */
+  roleLabel?: string;
 }
 
 @Injectable()
@@ -59,13 +64,7 @@ export class AuthService {
 
     res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS);
 
-    return {
-      id: user.id,
-      email: user.email,
-      role: user.role as Role,
-      status: user.status as UserStatus,
-      pospId: user.pospId,
-    };
+    return buildAuthUserPayload(user);
   }
 
   logout(res: Response): void {
@@ -137,11 +136,7 @@ export class AuthService {
     res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS);
 
     return {
-      id: user.id,
-      email: user.email,
-      role: user.role as Role,
-      status: user.status as UserStatus,
-      pospId: user.pospId,
+      ...buildAuthUserPayload({ ...user, salesTeam: null }),
       message: 'Signup successful. You now have direct access.',
     };
   }
@@ -157,21 +152,15 @@ export class AuthService {
   async me(user: AuthUser): Promise<AuthUserPayload> {
     const profile = await this.userRepo.findById(user.userId);
     if (profile) {
-      return {
-        id: profile.id,
-        email: profile.email,
-        role: profile.role as Role,
-        status: profile.status as UserStatus,
-        pospId: profile.pospId,
-      };
+      return buildAuthUserPayload(profile);
     }
-    return {
+    return buildAuthUserPayload({
       id: user.userId,
       email: user.email,
       role: user.role,
       status: user.status,
       pospId: user.pospId ?? null,
-    };
+    });
   }
 
   private signToken(user: {

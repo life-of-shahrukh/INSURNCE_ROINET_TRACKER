@@ -42,4 +42,12 @@ export class PospListQueryDto extends GeoFilterQueryDto {
   @IsOptional()
   @IsString()
   rhCode?: string;
+
+  @ApiPropertyOptional({
+    description:
+      'Filter POSPs in the territory of any manager (user code) — DM, ASM, RH, etc.',
+  })
+  @IsOptional()
+  @IsString()
+  managerCode?: string;
 }

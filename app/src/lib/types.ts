@@ -146,6 +146,8 @@ export interface Posp {
   email: string;
   joined: Date;
   active: boolean;
+  dealCount?: number;
+  premiumTotal?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }

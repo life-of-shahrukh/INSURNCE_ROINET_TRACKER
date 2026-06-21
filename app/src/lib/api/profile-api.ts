@@ -87,6 +87,7 @@ export interface UplineTeamSummary {
 export type ProfileTeamSummary = DownlineTeamSummary | UplineTeamSummary;
 
 export interface ProfileResponse {
+  userCode?: string;
   user: ProfileUser;
   posp?: ProfilePosp;
   salesTeam?: ProfileSalesTeam;
@@ -96,5 +97,10 @@ export interface ProfileResponse {
 export const profileApi = {
   async getMe(): Promise<ProfileResponse> {
     return request<ProfileResponse>('/api/profile');
+  },
+
+  async getByUserCode(userCode: string): Promise<ProfileResponse> {
+    const encoded = encodeURIComponent(userCode.trim());
+    return request<ProfileResponse>(`/api/profile/by-code/${encoded}`);
   },
 };

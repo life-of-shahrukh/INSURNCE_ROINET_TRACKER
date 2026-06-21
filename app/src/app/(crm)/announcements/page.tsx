@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { TableSkeleton } from "@/components/skeletons";
 import {
   fetchAllAnnouncements,
   createAnnouncement,
@@ -397,7 +398,7 @@ export default function AnnouncementsPage(): React.ReactElement {
 
       <Card>
         {isLoading ? (
-          <div className="empty">Loading announcements…</div>
+          <TableSkeleton columns={6} rows={5} />
         ) : announcements.length === 0 ? (
           <div className="ann-empty-state">
             <div className="ann-empty-state__icon">

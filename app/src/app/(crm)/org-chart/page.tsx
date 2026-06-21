@@ -6,6 +6,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { useAuth } from "@/providers/auth-provider";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { OrgChartView } from "@/components/org-chart/OrgChartView";
+import { OrgChartSkeleton } from "@/components/skeletons";
 import {
   resolveCurrentUserNodeId,
   shouldFocusOrgChartOnLogin,
@@ -40,20 +41,7 @@ export default function OrgChartPage(): React.ReactElement {
       />
 
       <div style={{ flex: 1, overflow: "hidden", minHeight: 0 }}>
-        {(isLoading || waitingForProfile) && (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              height: "100%",
-              color: "#6b7280",
-              fontSize: 14,
-            }}
-          >
-            Loading hierarchy data…
-          </div>
-        )}
+        {(isLoading || waitingForProfile) && <OrgChartSkeleton />}
 
         {isError && (
           <div

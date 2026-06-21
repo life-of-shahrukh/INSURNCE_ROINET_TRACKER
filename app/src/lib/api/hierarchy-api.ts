@@ -33,6 +33,17 @@ export interface SubordinatesResult {
   posps: FilterOptionItem[];
 }
 
+/** Flat node list for d3-org-chart — scoped to the caller's territory. */
+export interface OrgChartNode {
+  id: string;
+  parentId: string | null;
+  name: string;
+  employeeCode: string;
+  level: number;
+  designation: string;
+  districtName?: string;
+}
+
 export const hierarchyApi = {
   getFilterOptions(): Promise<HierarchyFilterOptions> {
     return request<HierarchyFilterOptions>('/api/hierarchy/filter-options');
@@ -43,5 +54,10 @@ export const hierarchyApi = {
     return request<SubordinatesResult>(
       `/api/hierarchy/subordinates?level=${encodeURIComponent(level)}&code=${encodeURIComponent(code)}`,
     );
+  },
+
+  /** Territory-scoped org chart nodes (managers + POSPs). */
+  getOrgChart(): Promise<OrgChartNode[]> {
+    return request<OrgChartNode[]>('/api/hierarchy/org-chart');
   },
 };

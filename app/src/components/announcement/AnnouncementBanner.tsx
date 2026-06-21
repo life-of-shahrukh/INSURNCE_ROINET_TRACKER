@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchActiveAnnouncements, dismissAnnouncement, type AnnouncementSeverity } from "@/lib/api/announcement-api";
+import { useQuery } from "@tanstack/react-query";
+import { fetchActiveAnnouncements, type AnnouncementSeverity } from "@/lib/api/announcement-api";
 
 const SEVERITY_STYLES: Record<
   AnnouncementSeverity,
@@ -34,10 +34,9 @@ const SEVERITY_STYLES: Record<
   },
 };
 
-const AUTO_ROTATE_MS = 8000;
+const AUTO_ROTATE_MS = 5000;
 
 export function AnnouncementBanner() {
-  const qc = useQueryClient();
   const [activeIndex, setActiveIndex] = useState(0);
   const [visible, setVisible] = useState(true);
   const autoRotateRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -47,13 +46,6 @@ export function AnnouncementBanner() {
     queryFn: fetchActiveAnnouncements,
     refetchInterval: 60_000,
     staleTime: 30_000,
-  });
-
-  const dismissMutation = useMutation({
-    mutationFn: dismissAnnouncement,
-    onSuccess: async () => {
-      await qc.invalidateQueries({ queryKey: ["announcements", "active"] });
-    },
   });
 
   const count = announcements.length;
@@ -99,12 +91,6 @@ export function AnnouncementBanner() {
 
   const style = SEVERITY_STYLES[current.severity as AnnouncementSeverity] ?? SEVERITY_STYLES.info;
 
-  function handleDismiss() {
-    dismissMutation.mutate(current.id);
-    setVisible(false);
-    setTimeout(() => setVisible(true), 100);
-  }
-
   function handlePrev() {
     prev();
     resetAutoRotate();
@@ -148,22 +134,8 @@ export function AnnouncementBanner() {
               >
                 ‹
               </button>
-              <div className="announcement-dots" aria-label={`${activeIndex + 1} of ${count}`}>
-                {announcements.map((_, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    className={`announcement-dot${i === activeIndex ? " announcement-dot--active" : ""}`}
-                    onClick={() => {
-                      setActiveIndex(i);
-                      resetAutoRotate();
-                    }}
-                    aria-label={`Go to announcement ${i + 1}`}
-                    style={{
-                      background: i === activeIndex ? style.border : style.border + "44",
-                    }}
-                  />
-                ))}
+              <div className="announcement-counter" aria-label={`${activeIndex + 1} of ${count}`}>
+                {activeIndex + 1}/{count}
               </div>
               <button
                 type="button"
@@ -177,17 +149,6 @@ export function AnnouncementBanner() {
             </>
           )}
         </div>
-
-        <button
-          type="button"
-          className="announcement-dismiss"
-          onClick={handleDismiss}
-          aria-label="Dismiss announcement"
-          disabled={dismissMutation.isPending}
-          style={{ color: style.textColor }}
-        >
-          ×
-        </button>
       </div>
     </div>
   );

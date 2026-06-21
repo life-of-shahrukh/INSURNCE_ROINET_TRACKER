@@ -1,7 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { salesTeamApi, CreateSalesTeamInput } from '../lib/api/sales-team-api';
+import { hierarchyApi, type OrgChartNode } from '../lib/api/hierarchy-api';
 import { LIST_QUERY_OPTIONS } from '@/lib/query/list-query-options';
-export type { OrgNode } from '../lib/api/sales-team-api';
+export type { OrgChartNode as OrgNode } from '../lib/api/hierarchy-api';
 
 export const teamKeys = {
   all: ['sales-team'] as const,
@@ -48,7 +49,7 @@ export function useUpdateSalesTeam() {
 export function useOrgChart() {
   return useQuery({
     queryKey: teamKeys.orgChart(),
-    queryFn: () => salesTeamApi.getOrgChart(),
+    queryFn: () => hierarchyApi.getOrgChart(),
     staleTime: 1000 * 60 * 5,
   });
 }

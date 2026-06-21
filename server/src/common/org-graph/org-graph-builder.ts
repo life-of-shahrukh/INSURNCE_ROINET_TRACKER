@@ -11,10 +11,11 @@ import type { ExternalHierarchyUser } from '../external-api/external-api.types';
 import {
   mergeOrgRole,
   orgRoleFromUserType,
+  orgRoleRank,
   parseUserType,
   refineAdminRoles,
+  OrgRole,
 } from '../external-api/user-type.util';
-import type { OrgRole } from '../external-api/user-type.util';
 
 export interface MemberSeed {
   userId: string;
@@ -114,16 +115,25 @@ export function buildOrgGraph(
   const parents = new Map<string, Set<string>>();
   // (districtId|memberUserId) -> chainLevel, keeping the lowest level seen.
   const districtChainMap = new Map<string, DistrictChainSeed>();
+  // Track the lowest chainLevel where each user appears (their PRIMARY role)
+  const lowestChainLevel = new Map<string, { level: number; role: OrgRole }>();
 
   for (const entry of hierarchy) {
     const chain = chainOf(entry);
     if (chain.length === 0) continue;
 
-    // Members (deduped by userId; merge usertype across districts).
-    for (const slot of chain) {
+    // Members (deduped by userId; use role from LOWEST chain level as primary).
+    chain.forEach((slot, chainLevel) => {
       const incomingRole = orgRoleFromUserType(slot.userType);
       const incomingType = parseUserType(slot.userType);
       const existing = members.get(slot.userId);
+      
+      // Track lowest chain level for this user
+      const currentLowest = lowestChainLevel.get(slot.userId);
+      if (!currentLowest || chainLevel < currentLowest.level) {
+        lowestChainLevel.set(slot.userId, { level: chainLevel, role: incomingRole });
+      }
+      
       if (!existing) {
         members.set(slot.userId, {
           userId: slot.userId,
@@ -133,7 +143,8 @@ export function buildOrgGraph(
           role: incomingRole,
         });
       } else {
-        const mergedRole = mergeOrgRole(existing.role as OrgRole, incomingRole);
+        // Use the role from the lowest chain level (primary assignment)
+        const primaryRole = lowestChainLevel.get(slot.userId)?.role ?? incomingRole;
         members.set(slot.userId, {
           ...existing,
           userName: existing.userName || slot.userName || slot.userCode,
@@ -141,10 +152,10 @@ export function buildOrgGraph(
             existing.userType !== null && incomingType !== null
               ? Math.max(existing.userType, incomingType)
               : (existing.userType ?? incomingType),
-          role: mergedRole,
+          role: primaryRole,
         });
       }
-    }
+    });
 
     // Edges: chain[i] reports to chain[i+1].
     for (let i = 0; i < chain.length - 1; i++) {
@@ -187,12 +198,53 @@ export function buildOrgGraph(
   const memberList = [...members.values()];
   refineAdminRoles(memberList, edges);
 
+  // Validate edge ranks to detect data quality issues
+  validateEdgeRanks(members, edges);
+
   return {
     members: memberList,
     edges,
     closures: buildClosure([...members.keys()], parents),
     districtChains: [...districtChainMap.values()],
   };
+}
+
+/**
+ * Validates that subordinates have lower org rank than their managers.
+ * Logs warnings for rank inversions which indicate data quality issues.
+ */
+function validateEdgeRanks(
+  members: Map<string, MemberSeed>,
+  edges: EdgeSeed[],
+): void {
+  const warnings: string[] = [];
+
+  for (const edge of edges) {
+    const member = members.get(edge.memberUserId);
+    const manager = members.get(edge.managerUserId);
+
+    if (member && manager) {
+      const memberRank = orgRoleRank(member.role as OrgRole);
+      const managerRank = orgRoleRank(manager.role as OrgRole);
+
+      // Flag when subordinate has equal/higher rank than manager
+      if (memberRank >= managerRank && member.role !== OrgRole.UNKNOWN) {
+        warnings.push(
+          `${member.userCode} (${member.role}, rank ${memberRank}) ` +
+            `reports to ${manager.userCode} (${manager.role}, rank ${managerRank})`,
+        );
+      }
+    }
+  }
+
+  if (warnings.length > 0) {
+    console.warn('\n⚠️  Hierarchy rank inversions detected:');
+    warnings.slice(0, 10).forEach((w) => console.warn(`  - ${w}`));
+    if (warnings.length > 10) {
+      console.warn(`  ... and ${warnings.length - 10} more`);
+    }
+    console.warn('');
+  }
 }
 
 /**

@@ -57,7 +57,7 @@ interface FormState {
 const EMPTY_FORM: FormState = {
   title: "",
   content: "",
-  targetRoles: [],
+  targetRoles: [...ALL_ROLES], // Default to all roles selected
   severity: "info",
   priority: 0,
   isActive: true,
@@ -216,6 +216,7 @@ function AnnouncementFormModal({
             <div className="ann-form-row">
               <div className="ann-form-group ann-form-group--flex">
                 <label className="ann-label">Severity</label>
+                <p className="ann-helper-text">Visual style of the announcement banner</p>
                 <div className="ann-severity-options">
                   {SEVERITY_OPTIONS.map((s) => (
                     <button
@@ -233,18 +234,6 @@ function AnnouncementFormModal({
                     </button>
                   ))}
                 </div>
-              </div>
-
-              <div className="ann-form-group ann-form-group--narrow">
-                <label className="ann-label">Priority</label>
-                <input
-                  type="number"
-                  className="ann-input"
-                  value={form.priority}
-                  min={0}
-                  onChange={(e) => setForm((p) => ({ ...p, priority: Number.parseInt(e.target.value, 10) || 0 }))}
-                />
-                <span className="ann-helper-text">Higher = shown first</span>
               </div>
             </div>
           </div>
@@ -429,7 +418,6 @@ export default function AnnouncementsPage(): React.ReactElement {
                   <th>Announcement</th>
                   <th>Target Roles</th>
                   <th>Severity</th>
-                  <th>Priority</th>
                   <th>Status</th>
                   <th>Schedule</th>
                   <th style={{ textAlign: "right" }}>Actions</th>
@@ -452,9 +440,6 @@ export default function AnnouncementsPage(): React.ReactElement {
                       </div>
                     </td>
                     <td><SeverityBadge severity={a.severity} /></td>
-                    <td style={{ textAlign: "center" }}>
-                      <span className="ann-table-priority">{a.priority}</span>
-                    </td>
                     <td><StatusBadge isActive={a.isActive} /></td>
                     <td>
                       <div className="ann-table-schedule">

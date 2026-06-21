@@ -318,8 +318,7 @@ model DistrictHierarchy {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([userCode])
-  @@index([role])
+  @@index([districtId])
 }
 
 /// Adjacency list: `memberId` reports to `managerId` (one step up the chain).

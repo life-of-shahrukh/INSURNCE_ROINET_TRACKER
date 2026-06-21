@@ -1,4 +1,4 @@
-import type { OrgNode } from "@/lib/api/sales-team-api";
+import type { OrgChartNode } from "@/lib/api/hierarchy-api";
 import type { UserRole } from "@/lib/auth-types";
 
 /** Map app roles to org designation when employeeCode lookup fails. */
@@ -20,7 +20,7 @@ export function employeeCodeFromEmail(email: string | undefined): string | undef
 }
 
 export function resolveCurrentUserNodeId(
-  nodes: OrgNode[],
+  nodes: OrgChartNode[],
   employeeCode: string | undefined,
   role: string,
   email?: string,

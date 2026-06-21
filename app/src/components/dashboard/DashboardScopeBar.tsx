@@ -11,7 +11,6 @@ import type {
 import type { UserRole } from "@/lib/auth-types";
 import {
   isGeoFilterVisible,
-  isManagerRoleGroupVisible,
 } from "@/lib/filters/filter-visibility";
 import { ScopeAsyncSelect, type GeoOption } from "./ScopeAsyncSelect";
 
@@ -54,8 +53,11 @@ export interface DashboardScope {
 
 const LEVEL_LABELS: Record<string, string> = {
   NATIONAL_HEAD: "National Heads",
+  SZH: "Super Zonal Heads",
   ZH: "Zone Heads",
+  CH: "Cluster Heads",
   RH: "Regional Heads",
+  ASSISTASM: "Assistant Area Sales Managers",
   ASM: "Area Managers",
   DM: "District Managers",
   POSP: "POSPs",
@@ -332,9 +334,9 @@ export function DashboardScopeBar({
     );
   }
 
-  const visibleRoleGroups = options.roleGroups.filter((g) =>
-    isManagerRoleGroupVisible(role, g.role),
-  );
+  // Backend already filters roleGroups based on caller's hierarchy,
+  // so we trust the API response completely (no client-side filtering).
+  const visibleRoleGroups = options.roleGroups;
 
   // For Super Admin and National Head, hide the cascade dropdowns since they
   // already see all data by default. They should use role-group filters instead.

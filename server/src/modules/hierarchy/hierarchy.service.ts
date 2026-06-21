@@ -62,6 +62,12 @@ export interface OrgChartNode {
   role: string;
   /** Best-effort app-role bucket (NATIONAL_HEAD | ZH | RH | ASM | DM). */
   appRole: string;
+  /** UserCode — mirrors `id` for frontend OrgNode compatibility. */
+  employeeCode: string;
+  /** Org role code — mirrors `role` for card styling in d3-org-chart. */
+  designation: string;
+  level: number;
+  districtName?: string;
 }
 
 /** Kept for the controller's `level` query param (now advisory only). */
@@ -122,21 +128,33 @@ export class HierarchyService {
   }
 
   private toItem(member: OrgMember): FilterOptionItem {
-    const appRole = appRoleFromOrgRole(member.role as OrgRole);
     return {
       id: member.userCode,
       name: member.userName ?? member.userCode,
-      designation: appRole,
+      designation: member.role,
     };
   }
 
-  /** App-role label of the most senior member, for the cascade dropdown. */
-  private representativeLevel(members: OrgMember[]): string | null {
-    if (members.length === 0) return null;
-    const senior = members.reduce((a, b) =>
+  /**
+   * Cascade shows one org-role tier at a time: the most senior valid direct
+   * report role, with only members matching that org role (not app-role buckets).
+   */
+  private filterCascadeReports(
+    reports: OrgMember[],
+    callerOrgRank: number,
+  ): { nextLevel: string | null; members: OrgMember[] } {
+    const valid = reports.filter(
+      (r) => orgRoleRank(r.role as OrgRole) < callerOrgRank,
+    );
+    if (valid.length === 0) return { nextLevel: null, members: [] };
+
+    const senior = valid.reduce((a, b) =>
       orgRoleRank(b.role as OrgRole) > orgRoleRank(a.role as OrgRole) ? b : a,
     );
-    return appRoleFromOrgRole(senior.role as OrgRole);
+    const nextOrgRole = senior.role;
+    const sameRole = valid.filter((r) => r.role === nextOrgRole);
+
+    return { nextLevel: nextOrgRole, members: sameRole };
   }
 
   // ── public API ─────────────────────────────────────────────────────────
@@ -151,44 +169,85 @@ export class HierarchyService {
     // + server-side search), so this endpoint only returns people dimensions.
     const districtIds = [...new Set(chains.map((c) => c.districtId))];
 
-    // Manager-level dimensions: distinct members covering scope, grouped by
-    // their real org role (senior-first), so higher roles like Cluster Head /
-    // Zonal Head / Super Zonal Head surface as their own filter dropdowns.
-    const memberIds = [...new Set(chains.map((c) => c.memberId))];
+    // Manager-level dimensions: ONLY include subordinates (people below caller),
+    // not all members in scope districts (which includes peers/siblings).
+    const callerId = await this.callerMemberId(user);
+    let subordinateMemberIds: string[] = [];
+    
+    if (callerId) {
+      // Get caller's rank for filtering
+      const callerMember = await this.prisma.orgMember.findUnique({
+        where: { id: callerId },
+        select: { role: true },
+      });
+
+      if (callerMember) {
+        const callerRank = orgRoleRank(callerMember.role as OrgRole);
+
+        // Get all transitive subordinates
+        const closure = await this.prisma.orgClosure.findMany({
+          where: { ancestorId: callerId },
+          select: { descendantId: true },
+        });
+        const allDescendantIds = closure.map((c) => c.descendantId);
+
+        // Fetch members and filter by rank to exclude rank inversions
+        const allMembers = await this.prisma.orgMember.findMany({
+          where: { id: { in: allDescendantIds } },
+          select: { id: true, role: true },
+        });
+
+        subordinateMemberIds = allMembers
+          .filter((m) => orgRoleRank(m.role as OrgRole) < callerRank)
+          .map((m) => m.id);
+      }
+    } else if (scopeDistrictIds(scope) === null) {
+      // Super Admin / National Head with no restrictions → include all
+      const memberIds = [...new Set(chains.map((c) => c.memberId))];
+      subordinateMemberIds = memberIds;
+    }
+    
     const members =
-      memberIds.length > 0
+      subordinateMemberIds.length > 0
         ? await this.prisma.orgMember.findMany({
-            where: { id: { in: memberIds } },
+            where: { id: { in: subordinateMemberIds } },
           })
         : [];
-    const roleGroups = this.filterRoleGroupsForCaller(
+    const roleGroups = await this.filterRoleGroupsForCaller(
       this.groupMembersByRole(members),
-      user.role,
+      user,
     );
 
     // Cascade: the people directly below the caller in the org graph.
     let nextLevel: string | null = null;
     let subordinates: FilterOptionItem[] = [];
     if (user.role !== Role.POSP) {
-      const callerId = await this.callerMemberId(user);
+      const cascadeCallerId = await this.callerMemberId(user);
 
-      // Roots (top of the tree) are only valid for an unrestricted caller
-      // (SUPER_ADMIN / NATIONAL_HEAD). A scoped manager we can't match must
-      // never fall back to global roots — they'd see people above them.
-      let reports: OrgMember[];
-      if (callerId) {
-        reports = await this.directReports(callerId);
+      let allReports: OrgMember[];
+      let callerOrgRank = orgRoleRank(OrgRole.ADMIN);
+
+      if (cascadeCallerId) {
+        allReports = await this.directReports(cascadeCallerId);
+        const callerMember = await this.prisma.orgMember.findUnique({
+          where: { id: cascadeCallerId },
+          select: { role: true },
+        });
+        if (callerMember) {
+          callerOrgRank = orgRoleRank(callerMember.role as OrgRole);
+        }
       } else if (scopeDistrictIds(scope) === null) {
-        reports = await this.rootMembers();
+        allReports = await this.rootMembers();
       } else {
-        reports = [];
+        allReports = [];
       }
 
-      if (reports.length > 0) {
-        nextLevel = this.representativeLevel(reports);
-        subordinates = sortItems(reports.map((m) => this.toItem(m)));
-      } else {
-        // Leaf manager (or unmatched) → terminal POSP level.
+      const cascade = this.filterCascadeReports(allReports, callerOrgRank);
+      if (cascade.members.length > 0) {
+        nextLevel = cascade.nextLevel;
+        subordinates = sortItems(cascade.members.map((m) => this.toItem(m)));
+      } else if (cascadeCallerId) {
+        // Leaf manager, or all direct reports excluded (e.g. rank inversions).
         nextLevel = Role.POSP;
         subordinates = await this.pospsInDistricts(districtIds);
       }
@@ -269,15 +328,38 @@ export class HierarchyService {
       );
   }
 
-  /** Only expose org-role groups strictly below the caller's app-role rank. */
-  private filterRoleGroupsForCaller(
+  /**
+   * Only expose org-role groups strictly below the caller in the hierarchy.
+   * Compares org role ranks (not app role ranks) so that a Regional Head doesn't
+   * see Cluster Heads (who map to the same app role but rank higher in org hierarchy).
+   */
+  private async filterRoleGroupsForCaller(
     groups: RoleGroup[],
-    callerRole: Role,
-  ): RoleGroup[] {
-    const callerRank = ROLE_RANK[callerRole] ?? 0;
-    return groups.filter((g) => {
-      const groupAppRole = appRoleFromOrgRole(g.role as OrgRole) as Role;
-      return (ROLE_RANK[groupAppRole] ?? 0) < callerRank;
+    user: AuthUser,
+  ): Promise<RoleGroup[]> {
+    // Never show ADMIN in role dropdowns — it's a system role, not a filter option.
+    const filtered = groups.filter((g) => g.role !== 'ADMIN');
+
+    // Fetch caller's actual org role to compare ranks properly
+    const callerId = await this.callerMemberId(user);
+    if (!callerId) {
+      // Can't determine caller's position → fall back to showing nothing below them
+      return [];
+    }
+
+    const callerMember = await this.prisma.orgMember.findUnique({
+      where: { id: callerId },
+      select: { role: true },
+    });
+
+    if (!callerMember) return [];
+
+    const callerOrgRank = orgRoleRank(callerMember.role as OrgRole);
+
+    return filtered.filter((g) => {
+      const groupOrgRank = orgRoleRank(g.role as OrgRole);
+      // Only show groups with strictly lower org rank (excludes same-level peers)
+      return groupOrgRank < callerOrgRank;
     });
   }
 
@@ -293,7 +375,7 @@ export class HierarchyService {
   ): Promise<SubordinatesResult> {
     const member = await this.prisma.orgMember.findFirst({
       where: { userCode: code },
-      select: { id: true },
+      select: { id: true, role: true },
     });
     if (!member) return { nextLevel: null, members: [], posps: [] };
 
@@ -319,9 +401,11 @@ export class HierarchyService {
       const allowed = new Set(districtIds);
       const filtered = await this.filterMembersByDistricts(reports, allowed);
       const visible = filtered.length > 0 ? filtered : reports;
+      const callerOrgRank = orgRoleRank(member.role as OrgRole);
+      const cascade = this.filterCascadeReports(visible, callerOrgRank);
       return {
-        nextLevel: this.representativeLevel(visible),
-        members: sortItems(visible.map((m) => this.toItem(m))),
+        nextLevel: cascade.nextLevel,
+        members: sortItems(cascade.members.map((m) => this.toItem(m))),
         posps: [],
       };
     }
@@ -363,6 +447,17 @@ export class HierarchyService {
     const inScope = new Set(members.map((m) => m.id));
     const codeById = new Map(members.map((m) => [m.id, m.userCode]));
 
+    const owners = await this.prisma.districtChain.findMany({
+      where: { chainLevel: 0, memberId: { in: [...inScope] } },
+      select: { memberId: true, districtName: true },
+    });
+    const districtNameByMemberId = new Map<string, string>();
+    for (const o of owners) {
+      if (o.districtName && !districtNameByMemberId.has(o.memberId)) {
+        districtNameByMemberId.set(o.memberId, o.districtName);
+      }
+    }
+
     const edges = await this.prisma.orgEdge.findMany({
       where: { memberId: { in: [...inScope] } },
       select: { memberId: true, managerId: true },
@@ -375,14 +470,19 @@ export class HierarchyService {
     }
 
     const managerNodes = members.map((m) => {
+      const role = m.role || OrgRole.UNKNOWN;
       const parentId = parentOf.get(m.id);
       return {
         id: m.userCode,
         parentId: parentId ? (codeById.get(parentId) ?? null) : null,
         userId: m.userId,
         name: m.userName ?? m.userCode,
-        role: m.role,
-        appRole: appRoleFromOrgRole(m.role as OrgRole),
+        role,
+        appRole: appRoleFromOrgRole(role as OrgRole),
+        employeeCode: m.userCode,
+        designation: role,
+        level: orgRoleRank(role as OrgRole),
+        districtName: districtNameByMemberId.get(m.id),
       };
     });
 
@@ -417,6 +517,10 @@ export class HierarchyService {
         name: p.name || p.code,
         role: Role.POSP,
         appRole: Role.POSP,
+        employeeCode: p.code,
+        designation: Role.POSP,
+        level: 0,
+        districtName: owner.districtName ?? undefined,
       });
     }
     return nodes;

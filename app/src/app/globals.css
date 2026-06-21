@@ -2191,22 +2191,32 @@ textarea {
   flex-shrink: 0;
 }
 
-.announcement-banner {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 10px 14px;
-  margin: 0 0 12px 0;
-  border-radius: 0 6px 6px 0;
-  animation: banner-slide-in 0.25s ease-out;
-  position: relative;
-  min-height: 44px;
+/* ── Announcement Banner (News Ticker Style) ────────────────────────────── */
+
+.announcement-carousel {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  margin-bottom: 0;
 }
 
-@keyframes banner-slide-in {
+.announcement-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  margin: 0;
+  border-radius: 0;
+  animation: banner-slide-down 0.3s ease-out;
+  position: relative;
+  min-height: 48px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+@keyframes banner-slide-down {
   from {
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateY(-100%);
   }
   to {
     opacity: 1;
@@ -2215,116 +2225,156 @@ textarea {
 }
 
 .announcement-banner__icon {
-  font-size: 16px;
-  line-height: 1.4;
+  font-size: 18px;
+  line-height: 1;
   flex-shrink: 0;
   font-weight: 700;
-  margin-top: 1px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .announcement-banner__body {
   flex: 1;
   min-width: 0;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  gap: 8px;
 }
 
 .announcement-banner__title {
   font-size: 13px;
   font-weight: 700;
   line-height: 1.3;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .announcement-banner__content {
-  font-size: 12.5px;
-  line-height: 1.5;
-  opacity: 0.88;
-  word-break: break-word;
+  font-size: 13px;
+  line-height: 1.4;
+  opacity: 0.92;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .announcement-banner__controls {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
   flex-shrink: 0;
+  margin-left: auto;
+  padding: 0 8px;
+  border-left: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.announcement-counter {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  min-width: 40px;
+  text-align: center;
+  letter-spacing: 0.02em;
 }
 
 .announcement-nav-btn {
-  background: none;
+  background: rgba(255, 255, 255, 0.2);
   border: none;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 20px;
+  font-weight: 700;
   line-height: 1;
-  padding: 2px 4px;
-  border-radius: 4px;
-  opacity: 0.7;
-  transition: opacity 0.15s;
+  padding: 4px 8px;
+  border-radius: 6px;
+  opacity: 0.8;
+  transition: opacity 0.15s, background 0.15s;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .announcement-nav-btn:hover {
   opacity: 1;
-}
-
-.announcement-dots {
-  display: flex;
-  gap: 5px;
-  align-items: center;
-}
-
-.announcement-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  transition: transform 0.15s, opacity 0.15s;
-  opacity: 0.5;
-}
-
-.announcement-dot--active {
-  transform: scale(1.35);
-  opacity: 1;
-}
-
-.announcement-dot:hover {
-  opacity: 0.85;
+  background: rgba(255, 255, 255, 0.35);
 }
 
 .announcement-dismiss {
-  background: none;
+  background: rgba(255, 255, 255, 0.2);
   border: none;
   cursor: pointer;
-  font-size: 20px;
+  font-size: 22px;
+  font-weight: 300;
   line-height: 1;
-  padding: 0 2px;
-  opacity: 0.55;
-  transition: opacity 0.15s;
-  flex-shrink: 0;
-  align-self: flex-start;
-  margin-top: -1px;
+  padding: 4px;
+  border-radius: 6px;
+  opacity: 0.8;
+  transition: opacity 0.15s, background 0.15s;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
 }
 
 .announcement-dismiss:hover {
   opacity: 1;
+  background: rgba(255, 255, 255, 0.35);
 }
 
 .announcement-dismiss:disabled {
-  opacity: 0.3;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .announcement-banner {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 8px;
+    padding: 8px 12px;
+    min-height: 44px;
   }
 
-  .announcement-banner__controls {
-    order: 3;
-    width: 100%;
-    justify-content: center;
+  .announcement-banner__body {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .announcement-banner__content {
+    white-space: normal;
+    max-height: 2.8em;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .announcement-counter {
+    font-size: 11px;
+    padding: 2px 6px;
+    min-width: 36px;
+  }
+
+  .announcement-nav-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 18px;
+  }
+
+  .announcement-dismiss {
+    width: 24px;
+    height: 24px;
+    font-size: 20px;
   }
 }
 

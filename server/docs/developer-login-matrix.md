@@ -45,7 +45,7 @@ testing.
 | Super Zonal | `ZH` | — | — | `sachin.zhrajgujmp@roinet.in` | `SACHIN.ZHRAJGUJMP` | Super Zonal Head | ~132 districts | Scoped subtree |
 | Regional | `RH` | `regional@roinet.com` | `Regional@123` | `shaikh.rhmaha@roinet.in` | `SHAIKH.RHMAHA` | Regional Head | ~38 districts | Scoped subtree |
 | Area | `ASM` | `asm@roinet.com` | `Asm@12345` | `rahul.asmbihar@roinet.in` | `RAHUL.ASMBIHAR` | Area Sales Manager | ~4 districts | Scoped subtree |
-| District | `DM` | `dm@roinet.com` | `Dm@123456` | — (no real DM tier) | — | District Manager | 1 district (demo only) | Scoped subtree |
+| District | `DM` | `dm@roinet.com` | `Dm@123456` | — (no real DM tier) | — | Distri   
 | Field agent | `POSP` | `posp@roinet.com` | `Posp@1234` | `shivraj.wanole@roinet.in` | `CSP023057` | Self only | N/A (leaf node) |
 
 ### Demo manager scope aliasing

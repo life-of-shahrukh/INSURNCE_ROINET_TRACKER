@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import type { OrgNode } from "@/hooks/useSalesTeam";
+import type { OrgChartNode } from "@/lib/api/hierarchy-api";
 
 // d3-org-chart ships its own type declarations
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -9,10 +9,10 @@ const { OrgChart } = require("d3-org-chart") as { OrgChart: new () => D3OrgChart
 
 interface D3OrgChart {
   container(el: HTMLDivElement): this;
-  data(nodes: OrgNode[]): this;
+  data(nodes: OrgChartNode[]): this;
   nodeWidth(_: () => number): this;
   nodeHeight(_: () => number): this;
-  nodeContent(fn: (d: { data: OrgNode }) => string): this;
+  nodeContent(fn: (d: { data: OrgChartNode }) => string): this;
   render(): this;
   fit(): void;
   zoomIn(): void;
@@ -65,7 +65,7 @@ function focusChartOnNode(
 }
 
 function buildNodeHtml(focusNodeId?: string) {
-  return (d: { data: OrgNode }): string => {
+  return (d: { data: OrgChartNode }): string => {
   const node = d.data;
   const cfg = getConfig(node.designation);
   const isFocused = focusNodeId != null && node.id === focusNodeId;
@@ -113,7 +113,7 @@ function buildNodeHtml(focusNodeId?: string) {
 }
 
 interface OrgChartViewProps {
-  data: OrgNode[];
+  data: OrgChartNode[];
   /** Node to centre and highlight on first render. */
   focusNodeId?: string;
   /** When true the chart centres on focusNodeId without trimming the tree. */

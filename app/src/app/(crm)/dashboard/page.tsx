@@ -99,6 +99,8 @@ export default function DashboardPage(): React.ReactElement {
     }
     // Scoped geographic narrowing (independent of the manager cascade).
     // Most-specific selection wins: district > city > region > state > zone.
+    // Note: Dashboard stats use singular IDs (cityId), but deals/leads use arrays (city[]).
+    // We use singular format here and let each API endpoint handle it appropriately.
     if (scopeDrill.geo?.districtId) p.set("districtId", scopeDrill.geo.districtId);
     else if (scopeDrill.geo?.cityId) p.set("cityId", scopeDrill.geo.cityId);
     else if (scopeDrill.geo?.regionId) p.set("regionId", scopeDrill.geo.regionId);
@@ -107,10 +109,42 @@ export default function DashboardPage(): React.ReactElement {
     return p;
   }, [period, dateFrom, dateTo, scopeDrill]);
 
-  // Stats params has a larger page size so stats are accurate
+  // Stats params use singular IDs (cityId, districtId, etc.)
   const statsParams = useMemo(() => {
     const p = new URLSearchParams(apiParams);
     p.set("pageSize", "1"); // only KPIs from stats; paging size irrelevant
+    return p;
+  }, [apiParams]);
+
+  // Deals/Leads params need array format (city[], district[], etc.)
+  const dealsParams = useMemo(() => {
+    const p = new URLSearchParams(apiParams);
+    // Convert singular IDs to array format for GeoFilterQueryDto
+    if (p.has("cityId")) {
+      const val = p.get("cityId");
+      p.delete("cityId");
+      if (val) p.set("city", val);
+    }
+    if (p.has("districtId")) {
+      const val = p.get("districtId");
+      p.delete("districtId");
+      if (val) p.set("district", val);
+    }
+    if (p.has("regionId")) {
+      const val = p.get("regionId");
+      p.delete("regionId");
+      if (val) p.set("region", val);
+    }
+    if (p.has("stateId")) {
+      const val = p.get("stateId");
+      p.delete("stateId");
+      if (val) p.set("state", val);
+    }
+    if (p.has("zoneId")) {
+      const val = p.get("zoneId");
+      p.delete("zoneId");
+      if (val) p.set("zone", val);
+    }
     return p;
   }, [apiParams]);
 
@@ -118,8 +152,8 @@ export default function DashboardPage(): React.ReactElement {
   const { data: stats, isLoading: statsLoading } =
     useDashboardStats(statsParams);
 
-  // Recent deals table only (pageSize=5)
-  const dealsQuery = useDealsList(apiParams);
+  // Recent deals table only (pageSize=5) - uses array format for geo filters
+  const dealsQuery = useDealsList(dealsParams);
   const { data: dealsResult } = dealsQuery;
   const { isInitialLoading, isRefreshing } = useListQueryStatus(dealsQuery);
   const recentDeals = useMemo(() => dealsResult?.data ?? [], [dealsResult]);

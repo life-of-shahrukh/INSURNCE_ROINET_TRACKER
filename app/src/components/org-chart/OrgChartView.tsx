@@ -13,6 +13,7 @@ interface D3OrgChart {
   nodeWidth(_: () => number): this;
   nodeHeight(_: () => number): this;
   nodeContent(fn: (d: { data: OrgChartNode }) => string): this;
+  onNodeClick(fn: (d: any) => void): this;
   render(): this;
   fit(): void;
   zoomIn(): void;
@@ -118,6 +119,8 @@ interface OrgChartViewProps {
   focusNodeId?: string;
   /** When true the chart centres on focusNodeId without trimming the tree. */
   focusOnLogin?: boolean;
+  /** Called when a node is clicked (receives employeeCode). */
+  onNodeClick?: (employeeCode: string) => void;
 }
 
 const toolbarButtonStyle: React.CSSProperties = {
@@ -135,6 +138,7 @@ export function OrgChartView({
   data,
   focusNodeId,
   focusOnLogin = false,
+  onNodeClick,
 }: OrgChartViewProps): React.ReactElement {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<D3OrgChart | null>(null);
@@ -148,6 +152,19 @@ export function OrgChartView({
     }
 
     const chart = chartRef.current;
+    
+    // Set up click handler before rendering
+    if (onNodeClick) {
+      chart.onNodeClick((d: any) => {
+        // d3-org-chart passes the full node object, not just the ID string
+        const nodeId = typeof d === 'string' ? d : (d.id ?? d.data?.id);
+        const node = data.find((n) => n.id === nodeId);
+        if (node) {
+          onNodeClick(node.employeeCode);
+        }
+      });
+    }
+
     chart
       .container(containerRef.current)
       .data(data)
@@ -166,7 +183,7 @@ export function OrgChartView({
     } else {
       chart.expandAll().render();
     }
-  }, [data, focusNodeId, focusOnLogin]);
+  }, [data, focusNodeId, focusOnLogin, onNodeClick]);
 
   useEffect(() => {
     initChart();

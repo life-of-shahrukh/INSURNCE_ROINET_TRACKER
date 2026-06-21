@@ -220,6 +220,7 @@ export default function DashboardPage(): React.ReactElement {
             nextLevel: null,
             subordinates: [],
             roleGroups: [],
+            filterMode: { cascade: false, roleGroups: false, geo: false },
           }
         }
         scope={scopeDrill}

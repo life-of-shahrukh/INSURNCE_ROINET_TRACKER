@@ -1,7 +1,7 @@
 # Developer Login Matrix
 
 **Status**: Current  
-**Last Updated**: June 17, 2026
+**Last Updated**: June 21, 2026
 
 Quick reference for local development and QA. Use these accounts to verify
 scoped data, dashboard, geo filters, and org chart at every hierarchy level.
@@ -30,23 +30,56 @@ Login endpoint: `POST /api/auth/login` with `{ "email", "password" }` → HttpOn
 
 ---
 
+## Cognitensor org roles (`usertype`)
+
+Full mapping: [`server/data/reference/user-type.txt`](../data/reference/user-type.txt).
+
+| `usertype` | Org role | Label | App login role* | Manager / field |
+|------------|----------|-------|-----------------|-----------------|
+| 0 | `ADMIN` | Admin (VIVEK) | `NATIONAL_HEAD` | System |
+| 0 | `NATIONAL_HEAD` | National Head | `NATIONAL_HEAD` | National |
+| 14 | `SZH` | Super Zonal Head | `ZH` | Manager |
+| 10 | `ZH` | Zonal Head | `ZH` | Manager |
+| 12 | `CH` | Cluster Head | `RH` | Manager |
+| 6 | `RH` | Regional Head | `RH` | Manager |
+| 11 | `ASSISTASM` | Assistant Area Sales Manager | `ASM` | Manager |
+| 4 | `ASM` | Area Sales Manager | `ASM` | Manager |
+| 2 | `CSF` | CSF | `DM` / `POSP` | Field (POSP roster) |
+| 1 | `CMF` | CMF | `DM` / `POSP` | Field (POSP roster) |
+| 3 | `CSP` | CSP | `DM` / `POSP` | Field (POSP roster) |
+
+\* **App login role** = CRM `User.role` for RBAC and dashboard geo floor. **Org role**
+comes from Cognitensor `usertype` and is what the org chart / filter designation
+shows. Example: a Cluster Head (`usertype` 12) logs in with app role `RH` but
+their card reads **Cluster Head**.
+
+---
+
 ## Master login matrix
 
-One row per hierarchy level. **Demo** accounts use simple passwords; **Real**
+One row per testable level. **Demo** accounts use simple passwords; **Real**
 accounts come from Cognitensor sync (`seed:all`) and are preferred for realistic
 testing.
 
-| Level | Role | Demo email | Demo password | Real email | Real password | Org label | Approx. scope | Org chart |
-|-------|------|------------|---------------|------------|---------------|-----------|---------------|-----------|
-| System | `SUPER_ADMIN` | `superadmin@roinet.com` | `Admin@1234` | — | — | — | All data | Full tree |
-| Admin | `NATIONAL_HEAD` | — | — | `vivek@roinet.in` | `VIVEK` | Admin | All data | Full tree |
-| National Head | `NATIONAL_HEAD` | `national@roinet.com` | `National@123` | `hari.dutt@roinet.in` | `HARI.DUTT` | National Head | All data | Focus on self |
-| Zonal | `ZH` | `zonal@roinet.com` | `Zonal@1234` | `ramanuj.biharjhkzm@roinet.in` | `RAMANUJ.BIHARJHKZM` | Zonal Head | ~43 districts | Scoped subtree |
-| Super Zonal | `ZH` | — | — | `sachin.zhrajgujmp@roinet.in` | `SACHIN.ZHRAJGUJMP` | Super Zonal Head | ~132 districts | Scoped subtree |
-| Regional | `RH` | `regional@roinet.com` | `Regional@123` | `shaikh.rhmaha@roinet.in` | `SHAIKH.RHMAHA` | Regional Head | ~38 districts | Scoped subtree |
-| Area | `ASM` | `asm@roinet.com` | `Asm@12345` | `rahul.asmbihar@roinet.in` | `RAHUL.ASMBIHAR` | Area Sales Manager | ~4 districts | Scoped subtree |
-| District | `DM` | `dm@roinet.com` | `Dm@123456` | — (no real DM tier) | — | Distri   
-| Field agent | `POSP` | `posp@roinet.com` | `Posp@1234` | `shivraj.wanole@roinet.in` | `CSP023057` | Self only | N/A (leaf node) |
+| Level | Org role | `usertype` | App role | Demo email | Demo password | Real email | Real password | Approx. scope | Dashboard filters |
+|-------|----------|------------|----------|------------|---------------|------------|---------------|---------------|-------------------|
+| System | — | — | `SUPER_ADMIN` | `superadmin@roinet.com` | `Admin@1234` | — | — | All data | Role groups + geo (no cascade) |
+| Admin | `ADMIN` | 0 | `NATIONAL_HEAD` | — | — | `vivek@roinet.in` | `VIVEK` | All data | Role groups + geo |
+| National Head | `NATIONAL_HEAD` | 0 | `NATIONAL_HEAD` | `national@roinet.com` | `National@123` | `hari.dutt@roinet.in` | `HARI.DUTT` | All data | Role groups + geo |
+| Super Zonal Head | `SZH` | 14 | `ZH` | — | — | `sachin.zhrajgujmp@roinet.in` | `SACHIN.ZHRAJGUJMP` | ~132 districts | Cascade (ZH) + role groups + geo |
+| Super Zonal Head | `SZH` | 14 | `ZH` | — | — | `kajal.bhadra szh@roinet.in` | `KAJAL.BHADRA SZH` | multi-zone | Same as above |
+| Zonal Head | `ZH` | 10 | `ZH` | `zonal@roinet.com` | `Zonal@1234` | `ramanuj.biharjhkzm@roinet.in` | `RAMANUJ.BIHARJHKZM` | ~43 districts | Cascade (CH) + role groups + geo |
+| Cluster Head | `CH` | 12 | `RH` | — | — | `chintu.asmbihar@roinet.in` | `CHINTU.ASMBIHAR` | subset of ZH | Cascade (ASM) + role groups + geo |
+| Regional Head | `RH` | 6 | `RH` | `regional@roinet.com` | `Regional@123` | `shaikh.rhmaha@roinet.in` | `SHAIKH.RHMAHA` | ~38 districts | Cascade (ASM) + role groups + geo |
+| Assistant ASM | `ASSISTASM` | 11 | `ASM` | — | — | `sandrapati.asmap@roinet.in` | `SANDRAPATI.ASMAP` | district-level | Cascade (ASM) + role groups + geo |
+| Area Sales Manager | `ASM` | 4 | `ASM` | `asm@roinet.com` | `Asm@12345` | `rahul.asmbihar@roinet.in` | `RAHUL.ASMBIHAR` | ~4 districts | Cascade (POSP) + geo |
+| District (demo only) | `ASM`* | 4 | `DM` | `dm@roinet.com` | `Dm@123456` | — | — | 1 district | Cascade (POSP) + geo |
+| Field agent (CSP) | `CSP` | 3 | `POSP` | `posp@roinet.com` | `Posp@1234` | `shivraj.wanole@roinet.in` | `CSP023057` | Self only | None (no scope bar) |
+
+\* Demo **DM** has no Cognitensor tier; it aliases the smallest ASM territory
+(`PRASHANTJHA.ASMBIHAR`). CSF / CMF / CSP users are field agents on the POSP
+roster — use any synced POSP email from `data/snapshots/posps.json`, not a
+separate manager login row.
 
 ### Demo manager scope aliasing
 
@@ -73,17 +106,19 @@ Source: `server/src/common/auth/hierarchy-scope.util.ts` → `DEMO_EMPLOYEE_CODE
 
 ## What to verify per level
 
-| Level | Suggested account | Check |
-|-------|-------------------|-------|
-| Super Admin | `superadmin@roinet.com` | All customers/deals/leads visible; all geo filters; full org chart |
-| Admin | `vivek@roinet.in` | Org chart card **Admin**; all data |
-| National Head | `hari.dutt@roinet.in` | Org chart card **National Head**; all data; chart opens on own card |
-| Super Zonal Head | `sachin.zhrajgujmp@roinet.in` | Org chart card **Super Zonal Head**; ~132 districts |
-| Zonal Head | `ramanuj.biharjhkzm@roinet.in` or `zonal@roinet.com` | Scoped lists; org chart focused on self |
-| Regional Head | `shaikh.rhmaha@roinet.in` or `regional@roinet.com` | Reduced scope (~38 districts) |
-| ASM | `rahul.asmbihar@roinet.in` or `asm@roinet.com` | Area-level scope (~4 districts) |
-| DM | `dm@roinet.com` (demo only — no real DM tier) | Smallest scope (1 district) |
-| POSP | `shivraj.wanole@roinet.in` | Only own deals; no org-chart page access |
+| Org role | Suggested account | Check |
+|----------|-------------------|-------|
+| Super Admin | `superadmin@roinet.com` | All data; role-group + geo filters; full org chart |
+| Admin | `vivek@roinet.in` | Org chart card **Admin**; unrestricted data |
+| National Head | `hari.dutt@roinet.in` | Card **National Head**; role groups (no cascade) |
+| Super Zonal Head | `sachin.zhrajgujmp@roinet.in` | Card **Super Zonal Head**; cascade shows ZH tier; ~132 districts |
+| Zonal Head | `ramanuj.biharjhkzm@roinet.in` | Cascade shows **CH** only (not mixed RH/ASM); ~43 districts |
+| Cluster Head | `chintu.asmbihar@roinet.in` | Card **Cluster Head**; app role `RH`; ASM cascade below |
+| Regional Head | `shaikh.rhmaha@roinet.in` | Cascade **ASM** only (rank inversions excluded); ~38 districts |
+| Assistant ASM | `sandrapati.asmap@roinet.in` | Card **Assistant ASM**; scoped under RH/ASM chain |
+| ASM | `rahul.asmbihar@roinet.in` | Cascade to POSPs; ~4 districts |
+| DM (demo) | `dm@roinet.com` | Smallest manager scope (1 district); POSP cascade |
+| CSP / POSP | `shivraj.wanole@roinet.in` | Own deals only; no org-chart page; no dashboard filters |
 
 After `seed:crm`, **customers, leads, and deals are empty** — add them via the app
 to test create flows. Re-run `npm run seed:crm` anytime without touching the org graph.

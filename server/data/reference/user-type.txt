@@ -1,3 +1,9 @@
+# Cognitensor usertype reference (ListHierarchyUserData)
+# Source: upstream user-type enum + org-graph mapping in user-type.util.ts
+#
+# IMPORTANT: Role in the org graph is defined by `usertype`, NOT by UserCode
+# suffix (e.g. NILESH.ASMMAHA can be usertype 12 = Cluster Head).
+
 UserType {
     ADMIN = 0,
     CMF = 1,
@@ -11,12 +17,41 @@ UserType {
     SZH = 14
 }
 
-CSP- CSP
-CMF - CMF
-CSF - CSF
-ASM - Area Sales Manager
+# ── Full mapping (senior → junior by org rank) ────────────────────────────────
+#
+# usertype | Org role    | Label                          | Rank | App bucket*  | Tier
+# ---------|-------------|--------------------------------|------|--------------|------------------
+#    0     | ADMIN       | Admin (VIVEK only)             | 100  | NATIONAL_HEAD| System
+#    0     | NATIONAL_HEAD | National Head (reports to Admin) | 95 | NATIONAL_HEAD | National
+#   14     | SZH         | Super Zonal Head               |  90  | ZH           | Manager
+#   10     | ZH          | Zonal Head                     |  80  | ZH           | Manager
+#   12     | CH          | Cluster Head                   |  70  | RH           | Manager
+#    6     | RH          | Regional Head                  |  60  | RH           | Manager
+#   11     | ASSISTASM   | Assistant Area Sales Manager   |  45  | ASM          | Manager
+#    4     | ASM         | Area Sales Manager             |  40  | ASM          | Manager
+#    2     | CSF         | CSF                            |  30  | DM           | Field / POSP
+#    1     | CMF         | CMF                            |  25  | DM           | Field / POSP
+#    3     | CSP         | CSP (front-line agent)         |  20  | DM / POSP    | Field / POSP
+#
+# * App bucket = CRM login Role used for RBAC (@MinRole, dashboard geo floor).
+#   Org role (from usertype) is what the org chart and filter designation show.
+#
+# usertype 0 special case: VIVEK → ADMIN; anyone else with usertype 0 who
+# reports to VIVEK → NATIONAL_HEAD (e.g. HARI.DUTT).
+
+# ── Short labels ────────────────────────────────────────────────────────────
+CSP      - CSP (Point of Sales Person / field agent)
+CMF      - CMF
+CSF      - CSF
+ASM      - Area Sales Manager
 ASSISTASM - Assistant Area Sales Manager
-RH - Regional Head
-ZH - Zonal Head
-CH - Cluster Head
-SZH - Super Zonal Head
+RH       - Regional Head
+CH       - Cluster Head
+ZH       - Zonal Head
+SZH      - Super Zonal Head
+
+# ── CRM notes ───────────────────────────────────────────────────────────────
+# - Managers (SZH → ASM) appear in OrgMember + DistrictChain; login as @roinet.in
+# - CSP/CSF/CMF are synced as POSP master data, not created in the CRM
+# - There is no real Cognitensor "DM" tier; demo DM borrows smallest ASM territory
+# - Dashboard filters use org role for people pickers, app bucket for geo floor

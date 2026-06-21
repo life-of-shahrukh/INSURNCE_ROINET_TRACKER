@@ -6,6 +6,7 @@ const EMPTY: HierarchyFilterOptions = {
   nextLevel: null,
   subordinates: [],
   roleGroups: [],
+  filterMode: { cascade: false, roleGroups: false, geo: false },
 };
 
 export function useHierarchyFilterOptions() {

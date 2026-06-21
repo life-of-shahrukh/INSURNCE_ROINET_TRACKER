@@ -115,8 +115,11 @@ export function DashboardScopeBar({
 
   const { data: catalog } = useGeoCatalog();
 
+  const { cascade: showCascade, roleGroups: showRoleGroups, geo: showGeo } =
+    options.filterMode;
+
   if (!role || role === "POSP") return null;
-  if (!options.nextLevel) return null;
+  if (!showCascade && !showRoleGroups && !showGeo) return null;
 
   const hasDrill = path.length > 0 || !!posp;
   const hasRole = !!manager;
@@ -334,13 +337,8 @@ export function DashboardScopeBar({
     );
   }
 
-  // Backend already filters roleGroups based on caller's hierarchy,
-  // so we trust the API response completely (no client-side filtering).
-  const visibleRoleGroups = options.roleGroups;
-
-  // For Super Admin and National Head, hide the cascade dropdowns since they
-  // already see all data by default. They should use role-group filters instead.
-  const showCascade = role !== "SUPER_ADMIN" && role !== "NATIONAL_HEAD";
+  // Backend drives which filter rows are visible for this caller.
+  const visibleRoleGroups = showRoleGroups ? options.roleGroups : [];
 
   // Determine active filter description for display
   const activeFilterLabel = (): string | null => {
@@ -390,19 +388,19 @@ export function DashboardScopeBar({
       <span className="scope-bar__label">
         {showCascade ? "Filter:" : "Geographic filters:"}
       </span>
-      {isGeoFilterVisible(role, "zone") &&
+      {showGeo && isGeoFilterVisible(role, "zone") &&
         geoSelect("Zones", catalog?.zones ?? [], geo?.zoneId, (v) =>
           setGeo({ zoneId: v }),
         )}
-      {isGeoFilterVisible(role, "region") &&
+      {showGeo && isGeoFilterVisible(role, "region") &&
         geoSelect("Regions", catalog?.regions ?? [], geo?.regionId, (v) =>
           setGeo({ regionId: v }),
         )}
-      {isGeoFilterVisible(role, "state") &&
+      {showGeo && isGeoFilterVisible(role, "state") &&
         geoSelect("States", catalog?.states ?? [], geo?.stateId, (v) =>
           setGeo({ stateId: v }),
         )}
-      {isGeoFilterVisible(role, "district") && (
+      {showGeo && isGeoFilterVisible(role, "district") && (
         <ScopeAsyncSelect
           placeholder="Search districts…"
           selectedId={geo?.districtId}
@@ -412,7 +410,7 @@ export function DashboardScopeBar({
           }
         />
       )}
-      {isGeoFilterVisible(role, "city") && (
+      {showGeo && isGeoFilterVisible(role, "city") && (
         <ScopeAsyncSelect
           placeholder="Search cities…"
           selectedId={geo?.cityId}

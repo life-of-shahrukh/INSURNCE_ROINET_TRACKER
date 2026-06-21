@@ -43,6 +43,12 @@ export interface HierarchyFilterOptions {
   subordinates: FilterOptionItem[];
   /** Managers in scope grouped by real org role, ordered senior-first. */
   roleGroups: RoleGroup[];
+  /** Server-driven flags for which filter UI rows to render. */
+  filterMode: {
+    cascade: boolean;
+    roleGroups: boolean;
+    geo: boolean;
+  };
 }
 
 export interface SubordinatesResult {
@@ -258,6 +264,32 @@ export class HierarchyService {
       nextLevel,
       subordinates,
       roleGroups,
+      filterMode: this.buildFilterMode(
+        user,
+        nextLevel,
+        subordinates,
+        roleGroups,
+      ),
+    };
+  }
+
+  /** Which dashboard filter rows the client should render for this caller. */
+  private buildFilterMode(
+    user: AuthUser,
+    nextLevel: string | null,
+    subordinates: FilterOptionItem[],
+    roleGroups: RoleGroup[],
+  ): HierarchyFilterOptions['filterMode'] {
+    const unrestricted =
+      user.role === Role.SUPER_ADMIN || user.role === Role.NATIONAL_HEAD;
+    return {
+      cascade:
+        !unrestricted &&
+        user.role !== Role.POSP &&
+        nextLevel !== null &&
+        subordinates.length > 0,
+      roleGroups: roleGroups.length > 0,
+      geo: user.role !== Role.POSP,
     };
   }
 
@@ -340,11 +372,13 @@ export class HierarchyService {
     // Never show ADMIN in role dropdowns — it's a system role, not a filter option.
     const filtered = groups.filter((g) => g.role !== 'ADMIN');
 
-    // Fetch caller's actual org role to compare ranks properly
+    const unrestricted =
+      user.role === Role.SUPER_ADMIN || user.role === Role.NATIONAL_HEAD;
+
     const callerId = await this.callerMemberId(user);
     if (!callerId) {
-      // Can't determine caller's position → fall back to showing nothing below them
-      return [];
+      // System logins (Super Admin) or NH without org-graph link see all groups.
+      return unrestricted ? filtered : [];
     }
 
     const callerMember = await this.prisma.orgMember.findUnique({
@@ -352,13 +386,15 @@ export class HierarchyService {
       select: { role: true },
     });
 
-    if (!callerMember) return [];
+    if (!callerMember) return unrestricted ? filtered : [];
 
     const callerOrgRank = orgRoleRank(callerMember.role as OrgRole);
 
+    // Unrestricted callers with an org-graph link still see every role group.
+    if (unrestricted) return filtered;
+
     return filtered.filter((g) => {
       const groupOrgRank = orgRoleRank(g.role as OrgRole);
-      // Only show groups with strictly lower org rank (excludes same-level peers)
       return groupOrgRank < callerOrgRank;
     });
   }

@@ -24,6 +24,12 @@ export interface HierarchyFilterOptions {
   subordinates: FilterOptionItem[];
   /** Managers in scope grouped by real org role, ordered senior-first. */
   roleGroups: RoleGroup[];
+  /** Server-driven flags for which filter UI rows to render. */
+  filterMode: {
+    cascade: boolean;
+    roleGroups: boolean;
+    geo: boolean;
+  };
 }
 
 export interface SubordinatesResult {

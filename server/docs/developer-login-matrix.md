@@ -108,17 +108,17 @@ Source: `server/src/common/auth/hierarchy-scope.util.ts` → `DEMO_EMPLOYEE_CODE
 
 | Org role | Suggested account | Check |
 |----------|-------------------|-------|
-| Super Admin | `superadmin@roinet.com` | All data; role-group + geo filters; full org chart |
+| Super Admin | `superadmin@roinet.com` | All data; role-group + geo filters; full org chart; profile **Team / Hierarchy** nationwide rollup |
 | Admin | `vivek@roinet.in` | Org chart card **Admin**; unrestricted data |
-| National Head | `hari.dutt@roinet.in` | Card **National Head**; role groups + geo |
-| Super Zonal Head | `sachin.zhrajgujmp@roinet.in` | Card **Super Zonal Head**; role groups + geo; ~132 districts |
-| Zonal Head | `ramanuj.biharjhkzm@roinet.in` | Role groups (CH, RH, ASM, …) + geo; ~43 districts |
-| Cluster Head | `chintu.asmbihar@roinet.in` | Card **Cluster Head**; app role `RH`; role groups + geo |
-| Regional Head | `shaikh.rhmaha@roinet.in` | ASM role group + geo; rank inversions excluded; ~38 districts |
-| Assistant ASM | `sandrapati.asmap@roinet.in` | Card **Assistant ASM**; scoped under RH/ASM chain |
-| ASM | `rahul.asmbihar@roinet.in` | POSP role group + geo; ~4 districts |
-| DM (demo) | `dm@roinet.com` | Smallest manager scope (1 district); POSP role group + geo |
-| CSP / POSP | `shivraj.wanole@roinet.in` | Own deals only; no org-chart page; no dashboard filters |
+| National Head | `hari.dutt@roinet.in` | Card **National Head**; role groups + geo; profile team rollup |
+| Super Zonal Head | `sachin.zhrajgujmp@roinet.in` | Card **Super Zonal Head**; role groups + geo; ~132 districts; profile role breakdown + expandable names |
+| Zonal Head | `ramanuj.biharjhkzm@roinet.in` | Role groups (CH, RH, ASM, …) + geo; ~43 districts; profile shows CH/RH/ASM counts + names |
+| Cluster Head | `chintu.asmbihar@roinet.in` | Card **Cluster Head**; app role `RH`; role groups + geo; profile downline summary |
+| Regional Head | `shaikh.rhmaha@roinet.in` | ASM role group + geo; rank inversions excluded; ~38 districts; profile ASM/POSP counts |
+| Assistant ASM | `sandrapati.asmap@roinet.in` | Card **Assistant ASM**; scoped under RH/ASM chain; profile downline summary |
+| ASM | `rahul.asmbihar@roinet.in` | POSP role group + geo; ~4 districts; profile mostly POSPs + district KPI |
+| DM (demo) | `dm@roinet.com` | Smallest manager scope (1 district); POSP role group + geo; profile POSP list expandable |
+| CSP / POSP | `shivraj.wanole@roinet.in` | Own deals only; no org-chart page; no dashboard filters; profile **Reporting chain** (managers above) |
 
 After `seed:crm`, **customers, leads, and deals are empty** — add them via the app
 to test create flows. Re-run `npm run seed:crm` anytime without touching the org graph.

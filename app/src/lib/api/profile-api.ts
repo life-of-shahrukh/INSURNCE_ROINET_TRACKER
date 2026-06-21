@@ -43,10 +43,54 @@ export interface ProfileSalesTeam {
   territory: string | null;
 }
 
+export interface TeamPersonReportsTo {
+  id: string;
+  name: string;
+  role: string;
+  label: string;
+}
+
+export interface TeamPerson {
+  id: string;
+  name: string;
+  role: string;
+  label: string;
+  code?: string;
+  stateName?: string | null;
+  districtName?: string | null;
+  cityName?: string | null;
+  reportsTo?: TeamPersonReportsTo | null;
+}
+
+export interface RoleTeamBucket {
+  role: string;
+  label: string;
+  directCount: number;
+  totalCount: number;
+  members: TeamPerson[];
+}
+
+export interface DownlineTeamSummary {
+  mode: 'downline';
+  districtCount: number;
+  pospCount: number;
+  managerCount: number;
+  roles: RoleTeamBucket[];
+}
+
+export interface UplineTeamSummary {
+  mode: 'upline';
+  districtName: string | null;
+  reportingChain: TeamPerson[];
+}
+
+export type ProfileTeamSummary = DownlineTeamSummary | UplineTeamSummary;
+
 export interface ProfileResponse {
   user: ProfileUser;
   posp?: ProfilePosp;
   salesTeam?: ProfileSalesTeam;
+  teamSummary?: ProfileTeamSummary;
 }
 
 export const profileApi = {

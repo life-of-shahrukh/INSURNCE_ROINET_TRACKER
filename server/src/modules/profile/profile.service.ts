@@ -1,5 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import type { AuthUser } from '../../common/auth/auth-user.interface';
+import { Role } from '../../common/constants';
+import {
+  buildDownlineSummary,
+  buildUplineSummary,
+  type GeoNameResolver,
+  type ProfileTeamSummary,
+} from '../../common/org-graph/team-summary.util';
+import { GeoCatalogService } from '../geo/geo-catalog.service';
 
 export interface ProfileResponse {
   user: {
@@ -42,11 +51,34 @@ export interface ProfileResponse {
     managerId: string | null;
     territory: string | null;
   };
+  teamSummary?: ProfileTeamSummary;
 }
 
 @Injectable()
 export class ProfileService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly geoCatalog: GeoCatalogService,
+  ) {}
+
+  private geoResolver(): GeoNameResolver {
+    return {
+      districtById: (id) => {
+        const d = this.geoCatalog.districtsByIds([id])[0];
+        return d ? { name: d.name, stateName: d.stateName ?? null } : undefined;
+      },
+      cityById: (id) => {
+        const c = this.geoCatalog.citiesByIds([id])[0];
+        return c ? { name: c.name } : undefined;
+      },
+      stateById: (id) => {
+        const s = this.geoCatalog
+          .getCatalog()
+          .states.find((st) => st.id === id);
+        return s ? { name: s.name } : undefined;
+      },
+    };
+  }
 
   async getProfile(userId: string): Promise<ProfileResponse> {
     const user = await this.prisma.user.findUnique({
@@ -110,6 +142,34 @@ export class ProfileService {
         managerId: user.salesTeam.managerId,
         territory: user.salesTeam.territory,
       };
+    }
+
+    const authUser: AuthUser = {
+      userId: user.id,
+      email: user.email,
+      role: user.role as AuthUser['role'],
+      status: user.status as AuthUser['status'],
+      pospId: user.pospId ?? undefined,
+    };
+
+    if (user.posp) {
+      const upline = await buildUplineSummary(
+        this.prisma,
+        user.posp,
+        this.geoResolver(),
+      );
+      if (upline) response.teamSummary = upline;
+    } else if (
+      user.salesTeam ||
+      user.role === Role.SUPER_ADMIN ||
+      user.role === Role.NATIONAL_HEAD
+    ) {
+      const downline = await buildDownlineSummary(
+        this.prisma,
+        authUser,
+        this.geoResolver(),
+      );
+      if (downline) response.teamSummary = downline;
     }
 
     return response;

@@ -68,9 +68,7 @@ export default function DashboardPage(): React.ReactElement {
   const [period, setPeriod] = useState<DashboardPeriod>("month");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
-  const [scopeDrill, setScopeDrill] = useState<DashboardScope>({
-    path: [],
-  });
+  const [scopeDrill, setScopeDrill] = useState<DashboardScope>({});
 
   const { data: filterOptions } = useHierarchyFilterOptions();
 
@@ -83,21 +81,13 @@ export default function DashboardPage(): React.ReactElement {
     } else {
       p.set("dateRange", period === "day" ? "today" : period);
     }
-    // Scope precedence: pospId → role-based manager → cascade drill-down.
-    // The first two are set directly; the cascade uses the deepest selection.
-    if (scopeDrill.posp) {
-      p.set("pospId", scopeDrill.posp.id);
+    if (scopeDrill.manager?.role === "POSP") {
+      p.set("pospId", scopeDrill.manager.id);
     } else if (scopeDrill.manager) {
       p.set("subordinateLevel", scopeDrill.manager.role);
       p.set("subordinateCode", scopeDrill.manager.id);
-    } else {
-      const last = scopeDrill.path.at(-1);
-      if (last) {
-        p.set("subordinateLevel", last.level);
-        p.set("subordinateCode", last.id);
-      }
     }
-    // Scoped geographic narrowing (independent of the manager cascade).
+    // Scoped geographic narrowing (independent of role selection).
     // Most-specific selection wins: district > city > region > state > zone.
     // Note: Dashboard stats use singular IDs (cityId), but deals/leads use arrays (city[]).
     // We use singular format here and let each API endpoint handle it appropriately.

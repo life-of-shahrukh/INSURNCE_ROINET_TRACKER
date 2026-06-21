@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { salesTeamApi, CreateSalesTeamInput } from '../lib/api/sales-team-api';
-import { hierarchyApi, type OrgChartNode } from '../lib/api/hierarchy-api';
+import { hierarchyApi } from '../lib/api/hierarchy-api';
 import { LIST_QUERY_OPTIONS } from '@/lib/query/list-query-options';
 export type { OrgChartNode as OrgNode } from '../lib/api/hierarchy-api';
 

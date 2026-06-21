@@ -63,17 +63,17 @@ testing.
 
 | Level | Org role | `usertype` | App role | Demo email | Demo password | Real email | Real password | Approx. scope | Dashboard filters |
 |-------|----------|------------|----------|------------|---------------|------------|---------------|---------------|-------------------|
-| System | — | — | `SUPER_ADMIN` | `superadmin@roinet.com` | `Admin@1234` | — | — | All data | Role groups + geo (no cascade) |
+| System | — | — | `SUPER_ADMIN` | `superadmin@roinet.com` | `Admin@1234` | — | — | All data | Role groups + geo |
 | Admin | `ADMIN` | 0 | `NATIONAL_HEAD` | — | — | `vivek@roinet.in` | `VIVEK` | All data | Role groups + geo |
 | National Head | `NATIONAL_HEAD` | 0 | `NATIONAL_HEAD` | `national@roinet.com` | `National@123` | `hari.dutt@roinet.in` | `HARI.DUTT` | All data | Role groups + geo |
-| Super Zonal Head | `SZH` | 14 | `ZH` | — | — | `sachin.zhrajgujmp@roinet.in` | `SACHIN.ZHRAJGUJMP` | ~132 districts | Cascade (ZH) + role groups + geo |
-| Super Zonal Head | `SZH` | 14 | `ZH` | — | — | `kajal.bhadra szh@roinet.in` | `KAJAL.BHADRA SZH` | multi-zone | Same as above |
-| Zonal Head | `ZH` | 10 | `ZH` | `zonal@roinet.com` | `Zonal@1234` | `ramanuj.biharjhkzm@roinet.in` | `RAMANUJ.BIHARJHKZM` | ~43 districts | Cascade (CH) + role groups + geo |
-| Cluster Head | `CH` | 12 | `RH` | — | — | `chintu.asmbihar@roinet.in` | `CHINTU.ASMBIHAR` | subset of ZH | Cascade (ASM) + role groups + geo |
-| Regional Head | `RH` | 6 | `RH` | `regional@roinet.com` | `Regional@123` | `shaikh.rhmaha@roinet.in` | `SHAIKH.RHMAHA` | ~38 districts | Cascade (ASM) + role groups + geo |
-| Assistant ASM | `ASSISTASM` | 11 | `ASM` | — | — | `sandrapati.asmap@roinet.in` | `SANDRAPATI.ASMAP` | district-level | Cascade (ASM) + role groups + geo |
-| Area Sales Manager | `ASM` | 4 | `ASM` | `asm@roinet.com` | `Asm@12345` | `rahul.asmbihar@roinet.in` | `RAHUL.ASMBIHAR` | ~4 districts | Cascade (POSP) + geo |
-| District (demo only) | `ASM`* | 4 | `DM` | `dm@roinet.com` | `Dm@123456` | — | — | 1 district | Cascade (POSP) + geo |
+| Super Zonal Head | `SZH` | 14 | `ZH` | — | — | `sachin.zhrajgujmp@roinet.in` | `SACHIN.ZHRAJGUJMP` | ~132 districts | Role groups + geo |
+| Super Zonal Head | `SZH` | 14 | `ZH` | — | — | `kajal.bhadra szh@roinet.in` | `KAJAL.BHADRA SZH` | multi-zone | Role groups + geo |
+| Zonal Head | `ZH` | 10 | `ZH` | `zonal@roinet.com` | `Zonal@1234` | `ramanuj.biharjhkzm@roinet.in` | `RAMANUJ.BIHARJHKZM` | ~43 districts | Role groups + geo |
+| Cluster Head | `CH` | 12 | `RH` | — | — | `chintu.asmbihar@roinet.in` | `CHINTU.ASMBIHAR` | subset of ZH | Role groups + geo |
+| Regional Head | `RH` | 6 | `RH` | `regional@roinet.com` | `Regional@123` | `shaikh.rhmaha@roinet.in` | `SHAIKH.RHMAHA` | ~38 districts | Role groups + geo |
+| Assistant ASM | `ASSISTASM` | 11 | `ASM` | — | — | `sandrapati.asmap@roinet.in` | `SANDRAPATI.ASMAP` | district-level | Role groups + geo |
+| Area Sales Manager | `ASM` | 4 | `ASM` | `asm@roinet.com` | `Asm@12345` | `rahul.asmbihar@roinet.in` | `RAHUL.ASMBIHAR` | ~4 districts | POSP role group + geo |
+| District (demo only) | `ASM`* | 4 | `DM` | `dm@roinet.com` | `Dm@123456` | — | — | 1 district | POSP role group + geo |
 | Field agent (CSP) | `CSP` | 3 | `POSP` | `posp@roinet.com` | `Posp@1234` | `shivraj.wanole@roinet.in` | `CSP023057` | Self only | None (no scope bar) |
 
 \* Demo **DM** has no Cognitensor tier; it aliases the smallest ASM territory
@@ -110,14 +110,14 @@ Source: `server/src/common/auth/hierarchy-scope.util.ts` → `DEMO_EMPLOYEE_CODE
 |----------|-------------------|-------|
 | Super Admin | `superadmin@roinet.com` | All data; role-group + geo filters; full org chart |
 | Admin | `vivek@roinet.in` | Org chart card **Admin**; unrestricted data |
-| National Head | `hari.dutt@roinet.in` | Card **National Head**; role groups (no cascade) |
-| Super Zonal Head | `sachin.zhrajgujmp@roinet.in` | Card **Super Zonal Head**; cascade shows ZH tier; ~132 districts |
-| Zonal Head | `ramanuj.biharjhkzm@roinet.in` | Cascade shows **CH** only (not mixed RH/ASM); ~43 districts |
-| Cluster Head | `chintu.asmbihar@roinet.in` | Card **Cluster Head**; app role `RH`; ASM cascade below |
-| Regional Head | `shaikh.rhmaha@roinet.in` | Cascade **ASM** only (rank inversions excluded); ~38 districts |
+| National Head | `hari.dutt@roinet.in` | Card **National Head**; role groups + geo |
+| Super Zonal Head | `sachin.zhrajgujmp@roinet.in` | Card **Super Zonal Head**; role groups + geo; ~132 districts |
+| Zonal Head | `ramanuj.biharjhkzm@roinet.in` | Role groups (CH, RH, ASM, …) + geo; ~43 districts |
+| Cluster Head | `chintu.asmbihar@roinet.in` | Card **Cluster Head**; app role `RH`; role groups + geo |
+| Regional Head | `shaikh.rhmaha@roinet.in` | ASM role group + geo; rank inversions excluded; ~38 districts |
 | Assistant ASM | `sandrapati.asmap@roinet.in` | Card **Assistant ASM**; scoped under RH/ASM chain |
-| ASM | `rahul.asmbihar@roinet.in` | Cascade to POSPs; ~4 districts |
-| DM (demo) | `dm@roinet.com` | Smallest manager scope (1 district); POSP cascade |
+| ASM | `rahul.asmbihar@roinet.in` | POSP role group + geo; ~4 districts |
+| DM (demo) | `dm@roinet.com` | Smallest manager scope (1 district); POSP role group + geo |
 | CSP / POSP | `shivraj.wanole@roinet.in` | Own deals only; no org-chart page; no dashboard filters |
 
 After `seed:crm`, **customers, leads, and deals are empty** — add them via the app

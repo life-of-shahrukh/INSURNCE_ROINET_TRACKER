@@ -259,35 +259,30 @@ export class HierarchyService {
       }
     }
 
+    if (nextLevel === Role.POSP && subordinates.length > 0) {
+      roleGroups.push({
+        role: Role.POSP,
+        label: 'POSPs',
+        members: subordinates,
+      });
+    }
+
     return {
       callerRole: user.role,
       nextLevel,
       subordinates,
       roleGroups,
-      filterMode: this.buildFilterMode(
-        user,
-        nextLevel,
-        subordinates,
-        roleGroups,
-      ),
+      filterMode: this.buildFilterMode(user, roleGroups),
     };
   }
 
   /** Which dashboard filter rows the client should render for this caller. */
   private buildFilterMode(
     user: AuthUser,
-    nextLevel: string | null,
-    subordinates: FilterOptionItem[],
     roleGroups: RoleGroup[],
   ): HierarchyFilterOptions['filterMode'] {
-    const unrestricted =
-      user.role === Role.SUPER_ADMIN || user.role === Role.NATIONAL_HEAD;
     return {
-      cascade:
-        !unrestricted &&
-        user.role !== Role.POSP &&
-        nextLevel !== null &&
-        subordinates.length > 0,
+      cascade: false,
       roleGroups: roleGroups.length > 0,
       geo: user.role !== Role.POSP,
     };

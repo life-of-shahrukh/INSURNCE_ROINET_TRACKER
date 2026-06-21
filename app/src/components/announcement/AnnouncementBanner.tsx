@@ -1,8 +1,13 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/providers/auth-provider";
 import { fetchActiveAnnouncements, type AnnouncementSeverity } from "@/lib/api/announcement-api";
+import {
+  dismissAnnouncementBanner,
+  isAnnouncementBannerDismissed,
+} from "@/lib/announcement-dismiss-storage";
 
 const SEVERITY_STYLES: Record<
   AnnouncementSeverity,
@@ -37,8 +42,10 @@ const SEVERITY_STYLES: Record<
 const AUTO_ROTATE_MS = 5000;
 
 export function AnnouncementBanner() {
+  const { user } = useAuth();
   const [activeIndex, setActiveIndex] = useState(0);
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
+  const [ready, setReady] = useState(false);
   const autoRotateRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const { data: announcements = [] } = useQuery({
@@ -46,8 +53,13 @@ export function AnnouncementBanner() {
     queryFn: fetchActiveAnnouncements,
     refetchInterval: 60_000,
     staleTime: 30_000,
+    enabled: Boolean(user),
   });
 
+  const announcementIds = useMemo(
+    () => announcements.map((item) => item.id),
+    [announcements],
+  );
   const count = announcements.length;
 
   const next = useCallback(() => {
@@ -58,17 +70,30 @@ export function AnnouncementBanner() {
     setActiveIndex((i) => (i - 1 + Math.max(count, 1)) % Math.max(count, 1));
   }, [count]);
 
-  // Reset index when announcements change and current index is out of range
+  useEffect(() => {
+    if (!user) {
+      setVisible(false);
+      setReady(false);
+      return;
+    }
+
+    if (count === 0) {
+      setVisible(false);
+      setReady(true);
+      return;
+    }
+
+    const dismissed = isAnnouncementBannerDismissed(user.id, announcementIds);
+    setVisible(!dismissed);
+    setReady(true);
+  }, [user, count, announcementIds]);
+
   useEffect(() => {
     if (count > 0 && activeIndex >= count) {
       setActiveIndex(0);
     }
-    if (count > 0) {
-      setVisible(true);
-    }
   }, [count, activeIndex]);
 
-  // Auto-rotate carousel
   useEffect(() => {
     if (count <= 1) return;
     autoRotateRef.current = setInterval(next, AUTO_ROTATE_MS);
@@ -84,12 +109,11 @@ export function AnnouncementBanner() {
     }
   }, [count, next]);
 
-  if (!visible || count === 0) return null;
-
-  const current = announcements[Math.min(activeIndex, count - 1)];
-  if (!current) return null;
-
-  const style = SEVERITY_STYLES[current.severity as AnnouncementSeverity] ?? SEVERITY_STYLES.info;
+  function handleDismiss() {
+    if (!user) return;
+    dismissAnnouncementBanner(user.id, announcementIds);
+    setVisible(false);
+  }
 
   function handlePrev() {
     prev();
@@ -100,6 +124,13 @@ export function AnnouncementBanner() {
     next();
     resetAutoRotate();
   }
+
+  if (!user || !ready || !visible || count === 0) return null;
+
+  const current = announcements[Math.min(activeIndex, count - 1)];
+  if (!current) return null;
+
+  const style = SEVERITY_STYLES[current.severity as AnnouncementSeverity] ?? SEVERITY_STYLES.info;
 
   return (
     <div className="announcement-carousel">
@@ -148,6 +179,15 @@ export function AnnouncementBanner() {
               </button>
             </>
           )}
+          <button
+            type="button"
+            className="announcement-dismiss"
+            onClick={handleDismiss}
+            aria-label="Dismiss announcements"
+            style={{ color: style.textColor }}
+          >
+            ×
+          </button>
         </div>
       </div>
     </div>

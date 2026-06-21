@@ -86,7 +86,7 @@ export function Sidebar() {
           ))}
         </nav>
         <div className="sidebar-footer">
-          <button type="button" className="nav-item nav-logout" onClick={handleLogout} aria-label="Log out">
+          <button type="button" className="nav-logout" onClick={handleLogout} aria-label="Log out">
             <span className="nav-icon"><LogoutIcon /></span>
             Logout
           </button>

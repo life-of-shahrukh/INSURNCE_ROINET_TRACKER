@@ -23,7 +23,9 @@ export class OrgChartController {
 
   @Get(':id')
   @MinRole(Role.ASM)
-  @ApiOperation({ summary: 'Get org-chart subtree rooted at a specific member' })
+  @ApiOperation({
+    summary: 'Get org-chart subtree rooted at a specific member',
+  })
   getSubtree(@Param('id') id: string): Promise<OrgChartNode> {
     return this.orgChartService.getSubtree(id);
   }

@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Announcement, Prisma } from '@prisma/client';
 import { CreateAnnouncementDto } from './dto/create-announcement.dto';
@@ -65,10 +61,7 @@ export class AnnouncementRepository {
     return announcements;
   }
 
-  create(
-    dto: CreateAnnouncementDto,
-    createdBy: string,
-  ): Promise<Announcement> {
+  create(dto: CreateAnnouncementDto, createdBy: string): Promise<Announcement> {
     return this.prisma.announcement.create({
       data: {
         title: dto.title,

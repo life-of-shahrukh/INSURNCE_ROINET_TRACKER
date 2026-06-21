@@ -4,9 +4,7 @@ import { AnnouncementRepository } from '../announcement.repository';
 import { Announcement } from '@prisma/client';
 
 @CommandHandler(CreateAnnouncementCommand)
-export class CreateAnnouncementHandler
-  implements ICommandHandler<CreateAnnouncementCommand>
-{
+export class CreateAnnouncementHandler implements ICommandHandler<CreateAnnouncementCommand> {
   constructor(private readonly repo: AnnouncementRepository) {}
 
   execute(command: CreateAnnouncementCommand): Promise<Announcement> {

@@ -3,9 +3,7 @@ import { DeleteAnnouncementCommand } from './delete-announcement.command';
 import { AnnouncementRepository } from '../announcement.repository';
 
 @CommandHandler(DeleteAnnouncementCommand)
-export class DeleteAnnouncementHandler
-  implements ICommandHandler<DeleteAnnouncementCommand>
-{
+export class DeleteAnnouncementHandler implements ICommandHandler<DeleteAnnouncementCommand> {
   constructor(private readonly repo: AnnouncementRepository) {}
 
   execute(command: DeleteAnnouncementCommand): Promise<void> {

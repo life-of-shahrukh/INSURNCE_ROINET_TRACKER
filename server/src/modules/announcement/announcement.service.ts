@@ -20,7 +20,9 @@ export class AnnouncementService {
     private readonly queryBus: QueryBus,
   ) {}
 
-  getAll(filters: AnnouncementListQueryDto): Promise<PaginatedResult<Announcement>> {
+  getAll(
+    filters: AnnouncementListQueryDto,
+  ): Promise<PaginatedResult<Announcement>> {
     return this.queryBus.execute(new GetAllAnnouncementsQuery(filters));
   }
 
@@ -36,10 +38,7 @@ export class AnnouncementService {
     );
   }
 
-  update(
-    id: string,
-    dto: UpdateAnnouncementDto,
-  ): Promise<Announcement> {
+  update(id: string, dto: UpdateAnnouncementDto): Promise<Announcement> {
     return this.commandBus.execute(new UpdateAnnouncementCommand(id, dto));
   }
 

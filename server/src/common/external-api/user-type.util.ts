@@ -122,7 +122,7 @@ export function orgRoleRank(role: OrgRole): number {
 }
 
 /** Keep the more senior org role when a user appears in multiple chain slots. */
-export function mergeOrgRole(existing: OrgRole, incoming: OrgRole): OrgRole {
+export function mergeOrgRole(existing: OrgRole, _incoming: OrgRole): OrgRole {
   // CRITICAL: Don't blindly take highest rank - that corrupts data when
   // someone appears at different levels due to data inconsistencies.
   // Instead, preserve their PRIMARY role (the one they hold most often).

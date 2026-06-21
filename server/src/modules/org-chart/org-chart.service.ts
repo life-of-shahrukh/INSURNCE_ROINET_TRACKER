@@ -13,13 +13,17 @@ export class OrgChartService {
   async getSubtree(rootId: string): Promise<OrgChartNode> {
     const root = await this.orgChartRepo.findById(rootId);
     if (!root) {
-      throw new NotFoundException(`Sales team member with id "${rootId}" not found`);
+      throw new NotFoundException(
+        `Sales team member with id "${rootId}" not found`,
+      );
     }
     const allMembers = await this.orgChartRepo.findAll();
     const tree = this.orgChartRepo.buildTree(allMembers);
     const found = this.findNodeById(tree, rootId);
     if (!found) {
-      throw new NotFoundException(`Sales team member with id "${rootId}" not found in tree`);
+      throw new NotFoundException(
+        `Sales team member with id "${rootId}" not found in tree`,
+      );
     }
     return found;
   }

@@ -9,7 +9,6 @@
 
 import type { ExternalHierarchyUser } from '../external-api/external-api.types';
 import {
-  mergeOrgRole,
   orgRoleFromUserType,
   orgRoleRank,
   parseUserType,
@@ -127,13 +126,16 @@ export function buildOrgGraph(
       const incomingRole = orgRoleFromUserType(slot.userType);
       const incomingType = parseUserType(slot.userType);
       const existing = members.get(slot.userId);
-      
+
       // Track lowest chain level for this user
       const currentLowest = lowestChainLevel.get(slot.userId);
       if (!currentLowest || chainLevel < currentLowest.level) {
-        lowestChainLevel.set(slot.userId, { level: chainLevel, role: incomingRole });
+        lowestChainLevel.set(slot.userId, {
+          level: chainLevel,
+          role: incomingRole,
+        });
       }
-      
+
       if (!existing) {
         members.set(slot.userId, {
           userId: slot.userId,
@@ -144,7 +146,8 @@ export function buildOrgGraph(
         });
       } else {
         // Use the role from the lowest chain level (primary assignment)
-        const primaryRole = lowestChainLevel.get(slot.userId)?.role ?? incomingRole;
+        const primaryRole =
+          lowestChainLevel.get(slot.userId)?.role ?? incomingRole;
         members.set(slot.userId, {
           ...existing,
           userName: existing.userName || slot.userName || slot.userCode,

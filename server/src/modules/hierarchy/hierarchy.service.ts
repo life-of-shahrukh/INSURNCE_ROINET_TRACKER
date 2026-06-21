@@ -7,7 +7,7 @@ import {
   type HierarchyScope,
 } from '../../common/auth/hierarchy-scope.util';
 import type { AuthUser } from '../../common/auth/auth-user.interface';
-import { Role, ROLE_RANK } from '../../common/constants';
+import { Role } from '../../common/constants';
 import {
   OrgRole,
   appRoleFromOrgRole,
@@ -173,7 +173,7 @@ export class HierarchyService {
     // not all members in scope districts (which includes peers/siblings).
     const callerId = await this.callerMemberId(user);
     let subordinateMemberIds: string[] = [];
-    
+
     if (callerId) {
       // Get caller's rank for filtering
       const callerMember = await this.prisma.orgMember.findUnique({
@@ -206,7 +206,7 @@ export class HierarchyService {
       const memberIds = [...new Set(chains.map((c) => c.memberId))];
       subordinateMemberIds = memberIds;
     }
-    
+
     const members =
       subordinateMemberIds.length > 0
         ? await this.prisma.orgMember.findMany({

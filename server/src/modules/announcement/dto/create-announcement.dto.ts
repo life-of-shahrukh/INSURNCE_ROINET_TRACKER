@@ -11,16 +11,6 @@ import {
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-const VALID_ROLES = [
-  'SUPER_ADMIN',
-  'NATIONAL_HEAD',
-  'ZH',
-  'RH',
-  'ASM',
-  'DM',
-  'POSP',
-] as const;
-
 const VALID_SEVERITIES = ['info', 'warning', 'success', 'error'] as const;
 
 export class CreateAnnouncementDto {

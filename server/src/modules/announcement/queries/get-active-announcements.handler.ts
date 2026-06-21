@@ -4,9 +4,7 @@ import { AnnouncementRepository } from '../announcement.repository';
 import { Announcement } from '@prisma/client';
 
 @QueryHandler(GetActiveAnnouncementsQuery)
-export class GetActiveAnnouncementsHandler
-  implements IQueryHandler<GetActiveAnnouncementsQuery>
-{
+export class GetActiveAnnouncementsHandler implements IQueryHandler<GetActiveAnnouncementsQuery> {
   constructor(private readonly repo: AnnouncementRepository) {}
 
   execute(query: GetActiveAnnouncementsQuery): Promise<Announcement[]> {

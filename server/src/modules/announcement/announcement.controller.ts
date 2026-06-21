@@ -56,10 +56,7 @@ export class AnnouncementController {
   @HttpCode(HttpStatus.CREATED)
   @Roles(Role.SUPER_ADMIN)
   @ApiOperation({ summary: 'Create a new announcement' })
-  create(
-    @Body() dto: CreateAnnouncementDto,
-    @CurrentUser() user: AuthUser,
-  ) {
+  create(@Body() dto: CreateAnnouncementDto, @CurrentUser() user: AuthUser) {
     return this.announcementService.create(dto, user);
   }
 

@@ -5,9 +5,7 @@ import { Announcement } from '@prisma/client';
 import type { PaginatedResult } from '../../../common/interfaces/paginated-result.interface';
 
 @QueryHandler(GetAllAnnouncementsQuery)
-export class GetAllAnnouncementsHandler
-  implements IQueryHandler<GetAllAnnouncementsQuery>
-{
+export class GetAllAnnouncementsHandler implements IQueryHandler<GetAllAnnouncementsQuery> {
   constructor(private readonly repo: AnnouncementRepository) {}
 
   execute(

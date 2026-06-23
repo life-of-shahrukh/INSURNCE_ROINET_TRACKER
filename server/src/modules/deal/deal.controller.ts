@@ -20,7 +20,7 @@ import { CreateDealDto } from './dto/create-deal.dto';
 import { UpdateDealDto } from './dto/update-deal.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
-import { MinRole, Roles } from '../../common/decorators/roles.decorator';
+import { Roles } from '../../common/decorators/roles.decorator';
 import { Role } from '../../common/constants';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { ResolvedScope } from '../../common/decorators/scope.decorator';
@@ -104,16 +104,29 @@ export class DealController {
     @Param('id') id: string,
     @Body() dto: UpdateDealDto,
     @CurrentUser() user: AuthUser,
+    @ResolvedScope() scope: HierarchyScope,
   ) {
-    return this.dealService.update(id, dto, user);
+    return this.dealService.update(id, dto, user, scope);
   }
 
-  // Only ASM and above can delete deals
+  // ASM+ and POSP (own deals) may delete converted deals
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @MinRole(Role.ASM)
-  @ApiOperation({ summary: 'Delete a deal (ASM+)' })
-  remove(@Param('id') id: string, @CurrentUser() user: AuthUser) {
-    return this.dealService.delete(id, user);
+  @Roles(
+    Role.ASM,
+    Role.DM,
+    Role.RH,
+    Role.ZH,
+    Role.NATIONAL_HEAD,
+    Role.SUPER_ADMIN,
+    Role.POSP,
+  )
+  @ApiOperation({ summary: 'Delete a deal' })
+  remove(
+    @Param('id') id: string,
+    @CurrentUser() user: AuthUser,
+    @ResolvedScope() scope: HierarchyScope,
+  ) {
+    return this.dealService.delete(id, user, scope);
   }
 }

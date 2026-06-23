@@ -19,12 +19,14 @@ import { computePolicySummary, marginPercent } from "@/lib/crm-calculations";
 import { fmtINR } from "@/lib/formatters";
 import { useCrm } from "@/providers/crm-provider";
 import { useAuth } from "@/providers/auth-provider";
+import { hasMinRole } from "@/lib/auth-types";
 import { useMemo } from "react";
 
 export default function ReportsPage() {
   const { posp, exportCsv } = useCrm();
   const { user } = useAuth();
   const role = user?.role ?? "POSP";
+  const showTeamPospChart = hasMinRole(role, "DM");
 
   const {
     filters,
@@ -83,9 +85,15 @@ export default function ReportsPage() {
 
       <Card title="Funnel by Product"><ProductFunnelChart deals={deals} /></Card>
 
-      <div className="row-2">
-        <Card title="Top POSP Performance (Radar)"><PospActivityRadarChart deals={deals} posp={posp} /></Card>
-        <Card title="Lead Conversion by Product"><LeadConversionChart leads={leads} /></Card>
+      <div className={showTeamPospChart ? "row-2" : ""}>
+        {showTeamPospChart ? (
+          <Card title="Top POSP Performance (Radar)">
+            <PospActivityRadarChart deals={deals} posp={posp} />
+          </Card>
+        ) : null}
+        <Card title="Lead Conversion by Product">
+          <LeadConversionChart leads={leads} />
+        </Card>
       </div>
 
       <Card title="Summary by Policy Type (current page)">

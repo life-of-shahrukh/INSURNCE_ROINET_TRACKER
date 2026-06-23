@@ -22,6 +22,8 @@ export interface ListQueryParams extends FilterState {
   territory?: string;
   renewals?: string;
   managerCode?: string;
+  /** Deals Tracker: only converted WON leads with a policy number */
+  wonOnly?: string;
 }
 
 export const DEFAULT_LIST_QUERY: ListQueryParams = {
@@ -47,6 +49,7 @@ const EXTRA_KEYS = [
   "territory",
   "renewals",
   "managerCode",
+  "wonOnly",
 ] as const;
 
 export function parseListQueryFromSearchParams(
@@ -80,6 +83,7 @@ export function parseListQueryFromSearchParams(
       else if (key === "territory") base.territory = val;
       else if (key === "renewals") base.renewals = val;
       else if (key === "managerCode") base.managerCode = val;
+      else if (key === "wonOnly") base.wonOnly = val;
     }
   }
 
@@ -103,6 +107,7 @@ export function listQueryToSearchParams(query: ListQueryParams): URLSearchParams
   if (query.territory) params.set("territory", query.territory);
   if (query.renewals) params.set("renewals", query.renewals);
   if (query.managerCode) params.set("managerCode", query.managerCode);
+  if (query.wonOnly) params.set("wonOnly", query.wonOnly);
 
   return params;
 }
@@ -126,5 +131,6 @@ export function countActiveFilters(query: ListQueryParams): number {
   if (query.territory) count++;
   if (query.renewals) count++;
   if (query.managerCode) count++;
+  if (query.wonOnly) count++;
   return count;
 }

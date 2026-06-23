@@ -29,6 +29,7 @@ import {
   appRoleFromOrgRole,
 } from '../../common/external-api/user-type.util';
 import { buildOrgGraph } from '../../common/org-graph/org-graph-builder';
+import { resolvePospDisplayName } from '../../common/external-api/posp-display.util';
 
 export interface OrgNode {
   id: string;
@@ -249,8 +250,8 @@ export class SalesTeamService {
   }
 
   /**
-   * Backfills Posp.districtId/stateId/cityId from ListPospData. SSO login
-   * already populates this per-POSP; this fills in everyone else.
+   * Backfills Posp.name and geography from ListPospData (`username` → name).
+   * SSO login already updates per-POSP; this fills in everyone else on org sync.
    */
   async syncPospGeography(): Promise<number> {
     let posps;
@@ -266,6 +267,7 @@ export class SalesTeamService {
       const res = await this.prisma.posp.updateMany({
         where: { OR: [{ code: p.UserCode }, { externalId: p.UserId }] },
         data: {
+          name: resolvePospDisplayName(p),
           districtId: p.districtid || null,
           stateId: p.stateid || null,
           cityId: p.cityid || null,

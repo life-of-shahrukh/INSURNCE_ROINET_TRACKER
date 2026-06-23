@@ -58,7 +58,10 @@ export class PospService {
     scope?: HierarchyScope,
   ): Promise<HierarchyScope | undefined> {
     const managerCode =
-      filters.managerCode ?? filters.dmCode ?? filters.asmCode ?? filters.rhCode;
+      filters.managerCode ??
+      filters.dmCode ??
+      filters.asmCode ??
+      filters.rhCode;
     if (!managerCode) return scope;
 
     let districtIds = await districtIdsForCode(this.prisma, managerCode);

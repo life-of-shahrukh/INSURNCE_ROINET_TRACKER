@@ -7,7 +7,7 @@ import { QueryStringArray } from '../../../common/decorators/query-string-array.
 import { GeoFilterQueryDto } from '../../../common/dto/geo-filter-query.dto';
 
 export class DealListQueryDto extends GeoFilterQueryDto {
-  @ApiPropertyOptional({ type: [String], enum: ['H', 'W', 'C'] })
+  @ApiPropertyOptional({ type: [String], enum: ['H', 'W', 'C', 'D'] })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
@@ -30,4 +30,12 @@ export class DealListQueryDto extends GeoFilterQueryDto {
   @IsOptional()
   @IsIn(['true', 'false'])
   renewals?: string;
+
+  @ApiPropertyOptional({
+    description:
+      'When true, only deals converted from WON leads (policy # set)',
+  })
+  @IsOptional()
+  @IsIn(['true', 'false'])
+  wonOnly?: string;
 }

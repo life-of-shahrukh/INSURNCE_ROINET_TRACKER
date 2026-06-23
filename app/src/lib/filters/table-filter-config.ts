@@ -58,10 +58,10 @@ const LEAD_STATUS_OPTIONS: FilterOption[] = [
 
 const CLOSURE_TIMELINE_OPTIONS: FilterOption[] = [
   { value: "", label: "All Timelines" },
-  { value: "THIS_MONTH", label: "This Month" },
-  { value: "T_PLUS_1", label: "T+1" },
-  { value: "T_PLUS_2", label: "T+2" },
-  { value: "LATER", label: "Later" },
+  { value: "THIS_MONTH", label: "Hot — this month" },
+  { value: "T_PLUS_1", label: "Warm — next month (T+1)" },
+  { value: "T_PLUS_2", label: "Cold — within 2 months (T+2)" },
+  { value: "LATER", label: "Later — more than 2 months" },
 ];
 
 const POSP_ACTIVE_OPTIONS: FilterOption[] = [
@@ -118,7 +118,6 @@ export const TABLE_FILTER_CONFIG: Record<ListViewId, ListViewFilterConfig> = {
       { type: "state", key: "insurer", label: "Insurer" },
       { type: "state", key: "dealStatus", label: "Status" },
       { type: "state", key: "premiumRange", label: "Premium" },
-      { type: "state", key: "policyStatus", label: "Issued" },
       { type: "state", key: "dateRange", label: "Expected" },
       ...GEO_FIELDS,
     ],
@@ -492,6 +491,10 @@ export function buildViewApiParams(view: ListViewId, query: ListQueryParams): UR
   }
 
   const params = listQueryToSearchParams(payload);
+
+  if (view === "deals") {
+    params.set("wonOnly", "true");
+  }
 
   if (payload.teamStatus) {
     params.set("status", payload.teamStatus);

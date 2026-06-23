@@ -1,6 +1,7 @@
 "use client";
 
 import { fmtDate, fmtINRShort } from "@/lib/formatters";
+import { formatPospLabel } from "@/lib/posp-display";
 import type { Posp } from "@/lib/types";
 
 interface PospRosterCardProps {
@@ -35,7 +36,12 @@ export function PospRosterCard({
   onSelect,
 }: PospRosterCardProps): React.ReactElement {
   const location = geoLabel(posp);
-  const initials = getInitials(posp.name);
+  const displayLabel = formatPospLabel(posp.name, posp.code);
+  const initials = getInitials(
+    posp.name.trim().toUpperCase() === posp.code.toUpperCase()
+      ? posp.code
+      : posp.name,
+  );
   const dealCount = posp.dealCount ?? 0;
   const premiumTotal = posp.premiumTotal ?? 0;
 
@@ -53,7 +59,7 @@ export function PospRosterCard({
           handleActivate();
         }
       }}
-      aria-label={`View profile for ${posp.name}`}
+      aria-label={`View profile for ${displayLabel}`}
     >
       <div className="posp-roster-card__accent" aria-hidden />
 
@@ -63,8 +69,7 @@ export function PospRosterCard({
             {initials}
           </div>
           <div className="posp-roster-card__title-block">
-            <h3 className="posp-roster-card__name">{posp.name}</h3>
-            <span className="posp-roster-card__code">{posp.code}</span>
+            <h3 className="posp-roster-card__name">{displayLabel}</h3>
           </div>
         </div>
         <div className="posp-roster-card__status-block">

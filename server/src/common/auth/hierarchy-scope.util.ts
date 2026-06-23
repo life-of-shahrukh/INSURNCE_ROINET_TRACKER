@@ -1,4 +1,5 @@
 import { ForbiddenException } from '@nestjs/common';
+import type { Prisma } from '@prisma/client';
 import type { PrismaService } from '../../prisma/prisma.service';
 import { Role } from '../constants';
 import type { AuthUser } from './auth-user.interface';
@@ -138,13 +139,16 @@ export function scopeDistrictIds(scope: HierarchyScope): string[] | null {
 
 /**
  * Converts a HierarchyScope into a Prisma-compatible `where` clause fragment
- * for Lead queries (uses geography columns, not pospId).
+ * for Lead queries (uses pospId for POSP, geography columns for managers).
  */
 export function buildLeadScopeWhere(
   scope: HierarchyScope,
 ): Record<string, unknown> {
   if (!scope || Object.keys(scope).length === 0) return {};
 
+  if (scope.pospIds !== undefined) {
+    return { pospId: { in: scope.pospIds } };
+  }
   if (scope.districtIds) {
     return { districtId: { in: scope.districtIds } };
   }
@@ -157,7 +161,6 @@ export function buildLeadScopeWhere(
   if (scope.zoneIds) {
     return { zoneId: { in: scope.zoneIds } };
   }
-  // pospIds scope does not map directly to Lead — geography handled above
   return {};
 }
 
@@ -193,6 +196,40 @@ export function buildDealScopeWhere(
 /**
  * Converts a HierarchyScope into a `where` clause for Posp queries.
  */
+/**
+ * Customers are linked to territory via related deals/leads (and optionally
+ * denormalized `districtId` on the customer row).
+ */
+export function buildCustomerScopeWhere(
+  scope: HierarchyScope,
+): Prisma.CustomerWhereInput {
+  if (!scope || Object.keys(scope).length === 0) return {};
+
+  const orClauses: Prisma.CustomerWhereInput[] = [];
+
+  const dealScope = buildDealScopeWhere(scope);
+  if (Object.keys(dealScope).length > 0) {
+    orClauses.push({
+      deals: { some: dealScope },
+    });
+  }
+
+  const leadScope = buildLeadScopeWhere(scope);
+  if (Object.keys(leadScope).length > 0) {
+    orClauses.push({
+      leads: { some: leadScope },
+    });
+  }
+
+  if (scope.districtIds?.length) {
+    orClauses.push({ districtId: { in: scope.districtIds } });
+  }
+
+  if (orClauses.length === 0) return {};
+  if (orClauses.length === 1) return orClauses[0];
+  return { OR: orClauses };
+}
+
 export function buildPospScopeWhere(
   scope: HierarchyScope,
 ): Record<string, unknown> {

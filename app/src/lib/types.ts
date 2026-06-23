@@ -80,7 +80,7 @@ export interface SalesTeam {
 }
 
 // Deal types (for legacy CRM provider compatibility)
-export type DealStatus = 'H' | 'W' | 'C';
+export type DealStatus = 'H' | 'W' | 'C' | 'L' | 'D';
 
 // COA entry mode: PERCENT (of premium) | AMOUNT (rupees)
 export type CoaType = 'PERCENT' | 'AMOUNT';

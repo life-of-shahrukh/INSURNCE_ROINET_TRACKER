@@ -1,8 +1,10 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetAllCustomersQuery } from './get-all-customers.query';
 import { CustomerRepository } from '../customer.repository';
-import { Customer } from '@prisma/client';
+import { Customer, Prisma } from '@prisma/client';
+import { buildCustomerScopeWhere } from '../../../common/auth/hierarchy-scope.util';
 import { buildCustomerFilterWhere } from '../customer-filter.util';
+import { mergeWhereClauses } from '../../../common/utils/filter.util';
 import { resolvePagination } from '../../../common/utils/pagination.util';
 import type { PaginatedResult } from '../../../common/interfaces/paginated-result.interface';
 import { GeoCatalogService } from '../../geo/geo-catalog.service';
@@ -17,10 +19,18 @@ export class GetAllCustomersHandler implements IQueryHandler<GetAllCustomersQuer
   async execute(
     query: GetAllCustomersQuery,
   ): Promise<PaginatedResult<Customer>> {
-    const { filters } = query;
+    const { filters, hierarchyScope } = query;
     const { skip, take, page, pageSize } = resolvePagination(filters);
+
+    const scopeWhere = hierarchyScope
+      ? buildCustomerScopeWhere(hierarchyScope)
+      : {};
     const districtIds = this.geo.districtIdsForQuery(filters);
-    const where = buildCustomerFilterWhere(filters, districtIds);
+    const filterWhere = buildCustomerFilterWhere(filters, districtIds);
+    const where = mergeWhereClauses(
+      scopeWhere,
+      filterWhere,
+    ) as Prisma.CustomerWhereInput;
 
     return this.repository.findPaginated(
       where,

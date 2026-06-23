@@ -189,10 +189,10 @@ export function LeadModal({ open, lead, onClose }: LeadModalProps) {
                 })
               }
             >
-              <option value="THIS_MONTH">This Month</option>
-              <option value="T_PLUS_1">T+1 (Next Month)</option>
-              <option value="T_PLUS_2">T+2</option>
-              <option value="LATER">Later</option>
+              <option value="THIS_MONTH">Hot — this month</option>
+              <option value="T_PLUS_1">Warm — next month (T+1)</option>
+              <option value="T_PLUS_2">Cold — within 2 months (T+2)</option>
+              <option value="LATER">Later — more than 2 months</option>
             </select>
             {errors.closureTimeline && (
               <span className="field-error">{errors.closureTimeline}</span>

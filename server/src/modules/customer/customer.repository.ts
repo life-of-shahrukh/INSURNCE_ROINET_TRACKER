@@ -75,15 +75,20 @@ export class CustomerRepository {
     });
   }
 
-  async search(query: string): Promise<Customer[]> {
+  async search(
+    query: string,
+    scopeWhere?: Prisma.CustomerWhereInput,
+  ): Promise<Customer[]> {
+    const searchWhere: Prisma.CustomerWhereInput = {
+      OR: [
+        { name: { contains: query } },
+        { mobile: { contains: query } },
+        { email: { contains: query } },
+      ],
+    };
+    const where = scopeWhere ? { AND: [scopeWhere, searchWhere] } : searchWhere;
     return this.prisma.customer.findMany({
-      where: {
-        OR: [
-          { name: { contains: query } },
-          { mobile: { contains: query } },
-          { email: { contains: query } },
-        ],
-      },
+      where,
       take: 20,
       orderBy: { name: 'asc' },
     });

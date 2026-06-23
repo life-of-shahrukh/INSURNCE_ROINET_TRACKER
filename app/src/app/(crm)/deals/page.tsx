@@ -15,12 +15,20 @@ import { useListQueryStatus } from "@/hooks/useListQueryStatus";
 import { useColumnManager } from "@/hooks/useColumnManager";
 import type { ColumnConfig } from "@/hooks/useColumnManager";
 import { useDealsList } from "@/hooks/useDealsList";
+import { useDeleteDeal } from "@/hooks/useDeleteDeal";
+import { TrashIconButton } from "@/components/ui/TrashIconButton";
 import { dealPospLabel, fetchAndDownloadCsv } from "@/lib/crm-calculations";
 import { fmtDate, fmtINR } from "@/lib/formatters";
 import { useCrm } from "@/providers/crm-provider";
 import { useAuth } from "@/providers/auth-provider";
 import { toast } from "sonner";
+import type { ListQueryParams } from "@/lib/api/list-query-params";
+
 import type { Deal } from "@/lib/types";
+
+const DEALS_QUERY_DEFAULTS: Partial<ListQueryParams> = {
+  wonOnly: "true",
+};
 
 const DEALS_COLUMNS: ColumnConfig[] = [
   { key: "posp", label: "POSP" },
@@ -87,13 +95,10 @@ function renderDealsCell(
           >
             Edit
           </button>
-          <button
-            type="button"
-            className="icon-btn danger"
+          <TrashIconButton
             onClick={() => onDelete(d.id)}
-          >
-            Del
-          </button>
+            title="Delete deal"
+          />
         </td>
       );
     default:
@@ -102,7 +107,8 @@ function renderDealsCell(
 }
 
 export default function DealsPage(): React.ReactElement {
-  const { posp, deleteDeal } = useCrm();
+  const { posp } = useCrm();
+  const deleteDealMutation = useDeleteDeal();
   const { user } = useAuth();
   const role = user?.role ?? "POSP";
 
@@ -117,7 +123,7 @@ export default function DealsPage(): React.ReactElement {
     setPageSize,
     applyViewFilters,
     apiParams,
-  } = useListQueryState(undefined, "deals");
+  } = useListQueryState(DEALS_QUERY_DEFAULTS, "deals");
 
   const dealsQuery = useDealsList(apiParams);
   const { data: result } = dealsQuery;
@@ -144,8 +150,14 @@ export default function DealsPage(): React.ReactElement {
   const { visibleColumns } = colManager;
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this deal?")) return;
-    await deleteDeal(id);
+    if (!confirm("Delete this deal? The linked lead will return to the pipeline.")) return;
+    try {
+      await deleteDealMutation.mutateAsync(id);
+      toast.success("Deal deleted");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Please try again.";
+      toast.error(`Failed to delete deal: ${msg}`);
+    }
   };
 
   return (
@@ -153,22 +165,12 @@ export default function DealsPage(): React.ReactElement {
       <div className="list-page">
         <PageHeader
           title="Deals Tracker"
-          subtitle="Master list — POSP, customer, policy details, status, expected closure"
+          subtitle="Won leads with a policy number — converted from the Leads Pipeline"
           actions={
             <div style={{ display: "flex", gap: 8 }}>
               <Button variant="secondary" onClick={handleExport} disabled={exporting}>
                 {exporting ? "Exporting…" : "Export CSV"}
               </Button>
-              {role === "POSP" && (
-                <Button
-                  onClick={() => {
-                    setEditDeal(null);
-                    setModalOpen(true);
-                  }}
-                >
-                  + New Deal
-                </Button>
-              )}
             </div>
           }
         />
@@ -203,7 +205,7 @@ export default function DealsPage(): React.ReactElement {
                   {rows.length === 0 ? (
                     <tr>
                       <td colSpan={visibleColumns.length} className="empty">
-                        No deals match these filters.
+                        No won leads with a policy number match these filters.
                       </td>
                     </tr>
                   ) : (

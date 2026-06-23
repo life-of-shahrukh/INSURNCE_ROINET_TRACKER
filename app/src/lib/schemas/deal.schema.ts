@@ -6,13 +6,13 @@ export const dealFormSchema = z.object({
   customerId: z.string().optional(),
   customer: z.string().min(2, "Customer name must be at least 2 characters"),
   policy: z.enum(POLICY_TYPES, { error: "Select a valid policy type" }),
-  sum: z.coerce.number({ error: "Enter a valid amount" }).min(1, "Sum assured must be greater than 0"),
+  sum: z.coerce.number({ error: "Enter a valid amount" }).min(0, "Sum assured cannot be negative"),
   premium: z.coerce.number({ error: "Enter a valid amount" }).min(1, "Premium must be greater than 0"),
   // COA / coaType / margin are SUPER_ADMIN-only financial fields — optional in the form.
   coa: z.coerce.number({ error: "Enter a valid amount" }).min(0, "COA cannot be negative").optional(),
   coaType: z.enum(["PERCENT", "AMOUNT"]).optional(),
   margin: z.coerce.number({ error: "Enter a valid amount" }).min(0, "Margin cannot be negative").optional(),
-  status: z.enum(["H", "W", "C"], { error: "Select a valid status" }),
+  status: z.enum(["H", "W", "C", "L", "D"], { error: "Select a valid status" }),
   expected: z.string().min(1, "Expected closure date is required"),
   // Proposal number: assigned by insurer on proposal form submission (before policy issuance).
   // Optional at deal creation — POSP fills it once they receive it from the insurer.

@@ -253,6 +253,7 @@ export function getVisibleDimensions(
         { value: "H", label: "Hot" },
         { value: "W", label: "Warm" },
         { value: "C", label: "Cold" },
+        { value: "D", label: "Done" },
       ],
       placeholder: "All Statuses",
     },

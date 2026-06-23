@@ -6,6 +6,7 @@ import { UpdateAnnouncementDto } from './dto/update-announcement.dto';
 import { AnnouncementListQueryDto } from './dto/announcement-list-query.dto';
 import type { PaginatedResult } from '../../common/interfaces/paginated-result.interface';
 import { buildPaginatedResult } from '../../common/utils/pagination.util';
+import { announcementTargetsRole } from './announcement-status.util';
 
 @Injectable()
 export class AnnouncementRepository {
@@ -50,7 +51,6 @@ export class AnnouncementRepository {
         isActive: true,
         startsAt: { lte: now },
         OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
-        targetRoles: { contains: userRole },
         dismissals: {
           none: { userId },
         },
@@ -58,7 +58,9 @@ export class AnnouncementRepository {
       orderBy: [{ priority: 'desc' }, { createdAt: 'desc' }],
     });
 
-    return announcements;
+    return announcements.filter((row) =>
+      announcementTargetsRole(row.targetRoles, userRole),
+    );
   }
 
   create(dto: CreateAnnouncementDto, createdBy: string): Promise<Announcement> {

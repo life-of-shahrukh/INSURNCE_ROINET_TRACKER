@@ -35,7 +35,7 @@ import { useAuth } from "@/providers/auth-provider";
 import { hasMinRole } from "@/lib/auth-types";
 import type { UserRole } from "@/lib/auth-types";
 import { canSeeWidget } from "@/lib/dashboard-widget-registry";
-import type { Deal } from "@/lib/types";
+import type { Lead } from "@/lib/api/lead-api";
 import { useMemo, useState } from "react";
 
 // ── role helpers ────────────────────────────────────────────────────────────
@@ -150,7 +150,7 @@ export default function DashboardPage(): React.ReactElement {
   const recentDeals = useMemo(() => dealsResult?.data ?? [], [dealsResult]);
 
   const [dealModalOpen, setDealModalOpen] = useState(false);
-  const [editDeal, setEditDeal] = useState<Deal | null>(null);
+  const [editLead, setEditLead] = useState<Lead | null>(null);
 
   const periodText = dashboardPeriodLabel(period, dateFrom, dateTo);
 
@@ -183,11 +183,11 @@ export default function DashboardPage(): React.ReactElement {
             {role === "POSP" && (
               <Button
                 onClick={() => {
-                  setEditDeal(null);
+                  setEditLead(null);
                   setDealModalOpen(true);
                 }}
               >
-                + New Deal
+                + New Lead
               </Button>
             )}
           </>
@@ -394,7 +394,7 @@ export default function DashboardPage(): React.ReactElement {
 
       <DealModal
         open={dealModalOpen}
-        deal={editDeal}
+        lead={editLead}
         onClose={() => setDealModalOpen(false)}
       />
     </>

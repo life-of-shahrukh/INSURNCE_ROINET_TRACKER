@@ -20,7 +20,8 @@
   --border: #e3e8ef;
   --hot: #e63946;
   --warm: #f4a261;
-  --cold: #6c8bb8;
+  --cold: #3282b8;
+  --later: #8e8e8e;
   --success: #2a9d8f;
   --shadow: 0 1px 3px rgba(15, 76, 117, 0.08), 0 1px 2px rgba(15, 76, 117, 0.05);
   --shadow-lg: 0 4px 12px rgba(15, 76, 117, 0.12);
@@ -796,6 +797,14 @@ tr:hover td {
   border-color: var(--hot);
 }
 
+.icon-btn--trash {
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+
 .badge {
   display: inline-block;
   padding: 3px 10px;
@@ -1385,8 +1394,10 @@ tr:hover td {
   width: 100%;
   max-width: 640px;
   max-height: 90vh;
-  overflow-y: auto;
   box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .modal--wide {
@@ -1399,6 +1410,8 @@ tr:hover td {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-shrink: 0;
+  background: white;
 }
 
 .modal-title {
@@ -1416,6 +1429,9 @@ tr:hover td {
 
 .modal-body {
   padding: 20px 24px;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .modal-footer {
@@ -1424,6 +1440,8 @@ tr:hover td {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
+  flex-shrink: 0;
+  background: white;
 }
 
 .form-grid {
@@ -1494,8 +1512,18 @@ textarea {
 
 .kanban {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 14px;
+}
+
+.kanban--timeline {
+  align-items: start;
+}
+
+@media (max-width: 1200px) {
+  .kanban {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 900px) {
@@ -1509,6 +1537,13 @@ textarea {
   padding: 12px;
   border-radius: 8px;
   min-height: 200px;
+}
+
+.kanban-col-subtitle {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-top: 2px;
 }
 
 .kanban-col-header {
@@ -1539,12 +1574,43 @@ textarea {
   font-size: 13px;
 }
 
+.lead-card--hot,
 .lead-card.hot {
   border-left-color: var(--hot);
 }
 
+.lead-card--warm,
 .lead-card.warm {
   border-left-color: var(--warm);
+}
+
+.lead-card--cold,
+.lead-card.cold {
+  border-left-color: var(--cold);
+}
+
+.lead-card--later,
+.lead-card.later {
+  border-left-color: var(--later);
+}
+
+.lead-timeline-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid;
+  font-weight: 600;
+}
+
+.lead-done-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #2a9d8f;
+  color: white;
+  font-weight: 600;
 }
 
 .lead-card-name {

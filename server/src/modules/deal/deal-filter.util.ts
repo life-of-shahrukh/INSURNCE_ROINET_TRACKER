@@ -49,6 +49,13 @@ export function buildDealFilterWhere(
     clauses.push({ issued: { not: null } });
   }
 
+  if (query.wonOnly === 'true') {
+    clauses.push({
+      policyNo: { not: '' },
+      convertedFromLead: { status: 'WON' },
+    });
+  }
+
   if (query.search?.trim()) {
     const term = query.search.trim();
     clauses.push({

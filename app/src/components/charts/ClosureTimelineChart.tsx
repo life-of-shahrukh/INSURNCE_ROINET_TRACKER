@@ -8,6 +8,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
+import { CLOSURE_TIMELINE_META } from "@/lib/closure-timeline";
 
 export interface TimelineRow {
   timeline: string;
@@ -18,20 +19,17 @@ interface Props {
   data: TimelineRow[];
 }
 
-const TIMELINE_CONFIG: Record<string, { label: string; color: string }> = {
-  THIS_MONTH: { label: "This Month", color: "#e63946" },
-  T_PLUS_1: { label: "T+1 Month", color: "#f4a261" },
-  T_PLUS_2: { label: "T+2 Months", color: "#3282b8" },
-  LATER: { label: "Later", color: "#6c8bb8" },
-};
-
 export function ClosureTimelineChart({ data }: Props): React.ReactElement {
   const chartData = data
-    .map(({ timeline, count }) => ({
-      name: TIMELINE_CONFIG[timeline]?.label ?? timeline,
-      value: count,
-      color: TIMELINE_CONFIG[timeline]?.color ?? "#888",
-    }))
+    .map(({ timeline, count }) => {
+      const meta =
+        CLOSURE_TIMELINE_META[timeline as keyof typeof CLOSURE_TIMELINE_META];
+      return {
+        name: meta ? `${meta.label} (${meta.subtitle})` : timeline,
+        value: count,
+        color: meta?.color ?? "#888",
+      };
+    })
     .filter((d) => d.value > 0);
 
   if (chartData.length === 0) {

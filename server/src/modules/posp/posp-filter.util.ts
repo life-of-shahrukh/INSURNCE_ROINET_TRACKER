@@ -1,37 +1,1 @@
-import type { Prisma } from '@prisma/client';
-import type { PospListQueryDto } from './dto/posp-list-query.dto';
-import {
-  pospActiveWhere,
-  pospInactiveWhere,
-} from '../../common/business-rules/posp-activity.prisma';
-import { mergeWhereClauses, resolveDateRange } from '../../common/utils/filter.util';
-import { buildPospGeoFilterWhere } from './posp-geo-filter.util';
-
-export function buildPospFilterWhere(
-  query: PospListQueryDto,
-  districtIds?: string[] | null,
-): Prisma.PospWhereInput {
-  const geo = buildPospGeoFilterWhere(query, districtIds);
-  const dateBounds = resolveDateRange(query);
-  const clauses: Prisma.PospWhereInput[] = [];
-
-  if (Object.keys(geo).length > 0) clauses.push(geo);
-  if (dateBounds) clauses.push({ joined: dateBounds });
-  if (query.active === 'true') clauses.push(pospActiveWhere());
-  if (query.active === 'false') clauses.push(pospInactiveWhere());
-
-  if (query.search?.trim()) {
-    const term = query.search.trim();
-    clauses.push({
-      OR: [
-        { name: { contains: term } },
-        { email: { contains: term } },
-        { mobile: { contains: term } },
-        { code: { contains: term } },
-      ],
-    });
-  }
-
-  return mergeWhereClauses(...clauses);
-}
-
+import type { Prisma } from '@prisma/client';import type { PospListQueryDto } from './dto/posp-list-query.dto';import {  pospActiveWhere,  pospInactiveWhere,} from '../../common/business-rules/posp-activity.prisma';import {  mergeWhereClauses,  resolveDateRange,} from '../../common/utils/filter.util';import { buildPospGeoFilterWhere } from './posp-geo-filter.util';export function buildPospFilterWhere(  query: PospListQueryDto,  districtIds?: string[] | null,): Prisma.PospWhereInput {  const geo = buildPospGeoFilterWhere(query, districtIds);  const dateBounds = resolveDateRange(query);  const clauses: Prisma.PospWhereInput[] = [];  if (Object.keys(geo).length > 0) clauses.push(geo);  if (dateBounds) clauses.push({ joined: dateBounds });  if (query.active === 'true') clauses.push(pospActiveWhere());  if (query.active === 'false') clauses.push(pospInactiveWhere());  if (query.search?.trim()) {    const term = query.search.trim();    clauses.push({      OR: [        { name: { contains: term } },        { email: { contains: term } },        { mobile: { contains: term } },        { code: { contains: term } },      ],    });  }  return mergeWhereClauses(...clauses);}

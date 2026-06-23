@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import type { HierarchyScope } from '../../common/auth/hierarchy-scope.util';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { CreateCustomerCommand } from './commands/create-customer.command';
@@ -24,19 +25,38 @@ export class CustomerService {
 
   async findAll(
     filters: CustomerListQueryDto,
+    hierarchyScope?: HierarchyScope,
   ): Promise<PaginatedResult<Customer>> {
-    return this.queryBus.execute(new GetAllCustomersQuery(filters));
+    return this.queryBus.execute(
+      new GetAllCustomersQuery(filters, hierarchyScope),
+    );
   }
 
-  async search(query: string): Promise<Customer[]> {
-    return this.queryBus.execute(new SearchCustomersQuery(query));
+  async search(
+    query: string,
+    hierarchyScope?: HierarchyScope,
+  ): Promise<Customer[]> {
+    return this.queryBus.execute(
+      new SearchCustomersQuery(query, hierarchyScope),
+    );
   }
 
-  async update(id: string, dto: UpdateCustomerDto): Promise<Customer> {
-    return this.commandBus.execute(new UpdateCustomerCommand(id, dto));
+  async update(
+    id: string,
+    dto: UpdateCustomerDto,
+    hierarchyScope?: HierarchyScope,
+  ): Promise<Customer> {
+    return this.commandBus.execute(
+      new UpdateCustomerCommand(id, dto, hierarchyScope),
+    );
   }
 
-  exportCsv(filters: CustomerListQueryDto): Promise<string> {
-    return this.queryBus.execute(new ExportCustomersCsvQuery(filters));
+  exportCsv(
+    filters: CustomerListQueryDto,
+    hierarchyScope?: HierarchyScope,
+  ): Promise<string> {
+    return this.queryBus.execute(
+      new ExportCustomersCsvQuery(filters, hierarchyScope),
+    );
   }
 }

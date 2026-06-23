@@ -48,5 +48,5 @@ export function buildPospGeoFilterWhere(
     }
   }
 
-  return mergeWhereClauses(...clauses) as Prisma.PospWhereInput;
+  return mergeWhereClauses(...clauses);
 }

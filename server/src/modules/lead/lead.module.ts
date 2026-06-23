@@ -7,6 +7,7 @@ import { PrismaModule } from '../../prisma/prisma.module';
 import { CreateLeadHandler } from './commands/create-lead.handler';
 import { UpdateLeadHandler } from './commands/update-lead.handler';
 import { ConvertLeadToDealHandler } from './commands/convert-lead-to-deal.handler';
+import { DeleteLeadHandler } from './commands/delete-lead.handler';
 import { GetAllLeadsHandler } from './queries/get-all-leads.handler';
 import { GetMonthlyCommitmentHandler } from './queries/get-monthly-commitment.handler';
 import { ExportLeadsCsvHandler } from './queries/export-leads-csv.handler';
@@ -17,6 +18,7 @@ const CommandHandlers = [
   CreateLeadHandler,
   UpdateLeadHandler,
   ConvertLeadToDealHandler,
+  DeleteLeadHandler,
 ];
 const QueryHandlers = [
   GetAllLeadsHandler,

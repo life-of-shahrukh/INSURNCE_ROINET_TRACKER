@@ -41,5 +41,6 @@ export const DealStatus = {
   H: 'H',
   W: 'W',
   C: 'C',
+  D: 'D',
 } as const;
 export type DealStatus = (typeof DealStatus)[keyof typeof DealStatus];

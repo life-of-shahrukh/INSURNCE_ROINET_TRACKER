@@ -3,7 +3,9 @@ import type { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { GeoCatalogService } from '../geo/geo-catalog.service';
 import {
+  buildCustomerScopeWhere,
   buildDealScopeWhere,
+  buildLeadScopeWhere,
   buildPospScopeWhere,
   districtIdsForCode,
   scopeDistrictIds,
@@ -26,36 +28,6 @@ export class DashboardRepository {
   ) {}
 
   // ── scope helpers ──────────────────────────────────────────────────────────
-
-  /**
-   * When `pospIds` is set in scope, Lead does not have a pospId column.
-   * Resolve the POSP records' districtIds and use those for Lead scoping.
-   */
-  private async buildLeadScopeWhere(
-    scope: HierarchyScope,
-  ): Promise<Prisma.LeadWhereInput> {
-    if (!scope || Object.keys(scope).length === 0) return {};
-
-    if (scope.pospIds !== undefined) {
-      if (scope.pospIds.length === 0) return { id: 'NO_MATCH' };
-      const posps = await this.prisma.posp.findMany({
-        where: { id: { in: scope.pospIds } },
-        select: { districtId: true },
-      });
-      const districtIds = [
-        ...new Set(
-          posps.map((p) => p.districtId).filter((d): d is string => !!d),
-        ),
-      ];
-      if (districtIds.length === 0) return { id: 'NO_MATCH' };
-      return { districtId: { in: districtIds } };
-    }
-    if (scope.districtIds) return { districtId: { in: scope.districtIds } };
-    if (scope.areaIds) return { areaId: { in: scope.areaIds } };
-    if (scope.regionIds) return { regionId: { in: scope.regionIds } };
-    if (scope.zoneIds) return { zoneId: { in: scope.zoneIds } };
-    return {};
-  }
 
   /**
    * Resolves the effective scope for a drill-down selection (district-based).
@@ -138,11 +110,11 @@ export class DashboardRepository {
     return mergeWhereClauses(...clauses);
   }
 
-  private async buildLeadWhere(
+  private buildLeadWhere(
     filters: DashboardQueryDto,
     scope: HierarchyScope,
-  ): Promise<Prisma.LeadWhereInput> {
-    const scopeWhere = await this.buildLeadScopeWhere(scope);
+  ): Prisma.LeadWhereInput {
+    const scopeWhere = buildLeadScopeWhere(scope) as Prisma.LeadWhereInput;
     const geoWhere = buildGeoFilterWhere(filters);
     const dateBounds = resolveDateRange(filters);
 
@@ -174,18 +146,13 @@ export class DashboardRepository {
     effectiveScope = this.applyGeoNarrowing(effectiveScope, filters);
 
     const dealWhere = this.buildDealWhere(filters, effectiveScope);
-    const leadWhere = await this.buildLeadWhere(filters, effectiveScope);
+    const leadWhere = this.buildLeadWhere(filters, effectiveScope);
     const pospWhere = this.buildPospWhere(effectiveScope);
 
-    const customerScopeWhere =
-      Object.keys(pospWhere).length > 0
-        ? {
-            deals: {
-              some: buildDealScopeWhere(
-                effectiveScope,
-              ) as Prisma.DealWhereInput,
-            },
-          }
+    const customerScopeWhere = buildCustomerScopeWhere(effectiveScope);
+    const customerWhere =
+      Object.keys(customerScopeWhere).length > 0
+        ? customerScopeWhere
         : undefined;
 
     const [
@@ -265,10 +232,10 @@ export class DashboardRepository {
         where: mergeWhereClauses(pospWhere, pospActiveWhere()),
       }),
       // ── customers — scoped via their deals' pospId ──
-      this.prisma.customer.count({ where: customerScopeWhere }),
+      this.prisma.customer.count({ where: customerWhere }),
       this.prisma.customer.groupBy({
         by: ['kycStatus'],
-        where: customerScopeWhere,
+        where: customerWhere,
         _count: { _all: true },
       }),
       // Monthly premium trend — last 12 months of data in scope

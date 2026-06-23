@@ -1,6 +1,7 @@
 import { CRM_SESSION_DATE } from "./constants";
 import type { Deal, Posp } from "./types";
 import { formatPospLabel, pospLabelFromParts } from "./posp-display";
+import { statusLabel } from "./formatters";
 
 export function pospName(posp: Posp[], id: string | null): string {
   if (!id) return "—";
@@ -145,7 +146,7 @@ export function buildDealsCsv(deals: Deal[], posp: Posp[]): string {
     d.premium,
     effectiveCoa(d),
     d.margin,
-    { H: "Hot", W: "Warm", C: "Cold" }[d.status] || "",
+    statusLabel(d.status),
     d.expected,
     d.proposal,
     d.policyNo,

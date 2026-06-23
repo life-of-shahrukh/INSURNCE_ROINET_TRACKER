@@ -46,6 +46,9 @@ model Lead {
   assignedToId      String?   @db.NVarChar(36)
   assignedTo        SalesTeam? @relation(fields: [assignedToId], references: [id])
 
+  pospId            String?   @db.NVarChar(36)
+  posp              Posp?     @relation(fields: [pospId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
   /// LIFE | HEALTH | MOTOR | PROPERTY | MARINE | TRAVEL | COMMERCIAL | CROP | ENGINEERING
   product           String    @db.NVarChar(100)
   /// Term Life | Whole Life | Endowment | ULIP | Group Life | Individual Mediclaim | Family Floater | etc.
@@ -59,11 +62,14 @@ model Lead {
   
   /// NEW | CONTACTED | QUALIFIED | PROPOSAL_SENT | WON | LOST
   status            String    @default("NEW") @db.NVarChar(20)
-  
+  /// H = Hot, W = Warm, C = Cold (pipeline temperature from create/edit popup)
+  heatStatus        String?   @db.NVarChar(1)
+
   source            String?   @db.NVarChar(50)
   remarks           String?   @db.NVarChar(500)
   
   convertedToDealId String?   @unique @db.NVarChar(36)
+  convertedDeal     Deal?     @relation("LeadConversion", fields: [convertedToDealId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   convertedAt       DateTime?
   
   /// Denormalized hierarchy for fast filtering
@@ -145,6 +151,7 @@ model Posp {
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
   deals          Deal[]
+  leads          Lead[]
   user           User?
 }
 
@@ -173,7 +180,7 @@ model Deal {
   /// Computed effective COA in rupees — use this for aggregations
   coaAmount  Float     @default(0)
   margin     Float
-  /// H = Hot, W = Warm, C = Cold
+  /// H = Hot, W = Warm, C = Cold, D = Done (converted from won lead)
   status     String    @db.NVarChar(1)
   expected   DateTime
   proposal   String    @db.NVarChar(100)
@@ -187,6 +194,8 @@ model Deal {
   areaId     String?   @db.NVarChar(50)
   districtId String?   @db.NVarChar(50)
   
+  convertedFromLead Lead? @relation("LeadConversion")
+
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 }

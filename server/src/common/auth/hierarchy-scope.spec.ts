@@ -5,7 +5,9 @@
 
 import {
   resolveHierarchyScope,
+  buildCustomerScopeWhere,
   buildDealScopeWhere,
+  buildLeadScopeWhere,
   buildPospScopeWhere,
   type HierarchyScope,
 } from '../../../src/common/auth/hierarchy-scope.util';
@@ -121,6 +123,35 @@ describe('resolveHierarchyScope', () => {
   });
 });
 
+// ── buildLeadScopeWhere ──────────────────────────────────────────────────────
+
+describe('buildLeadScopeWhere', () => {
+  it('empty scope returns empty where clause', () => {
+    expect(buildLeadScopeWhere({})).toEqual({});
+  });
+
+  it('pospIds scope filters by pospId', () => {
+    const scope: HierarchyScope = { pospIds: ['p1', 'p2'] };
+    expect(buildLeadScopeWhere(scope)).toEqual({
+      pospId: { in: ['p1', 'p2'] },
+    });
+  });
+
+  it('districtIds scope filters by districtId', () => {
+    const scope: HierarchyScope = { districtIds: ['d-1', 'd-2'] };
+    expect(buildLeadScopeWhere(scope)).toEqual({
+      districtId: { in: ['d-1', 'd-2'] },
+    });
+  });
+
+  it('pospIds takes priority over districtIds', () => {
+    const scope: HierarchyScope = { pospIds: ['p1'], districtIds: ['d-1'] };
+    const where = buildLeadScopeWhere(scope);
+    expect(where).toHaveProperty('pospId');
+    expect(where).not.toHaveProperty('districtId');
+  });
+});
+
 // ── buildDealScopeWhere ──────────────────────────────────────────────────────
 
 describe('buildDealScopeWhere', () => {
@@ -157,6 +188,35 @@ describe('buildDealScopeWhere', () => {
   it('empty pospIds array returns empty pospId filter (no access)', () => {
     const scope: HierarchyScope = { pospIds: [] };
     expect(buildDealScopeWhere(scope)).toEqual({ pospId: { in: [] } });
+  });
+});
+
+// ── buildCustomerScopeWhere ──────────────────────────────────────────────────
+
+describe('buildCustomerScopeWhere', () => {
+  it('empty scope returns empty where clause', () => {
+    expect(buildCustomerScopeWhere({})).toEqual({});
+  });
+
+  it('pospIds scope matches deals or leads for those POSPs', () => {
+    const scope: HierarchyScope = { pospIds: ['p1'] };
+    expect(buildCustomerScopeWhere(scope)).toEqual({
+      OR: [
+        { deals: { some: { pospId: { in: ['p1'] } } } },
+        { leads: { some: { pospId: { in: ['p1'] } } } },
+      ],
+    });
+  });
+
+  it('districtIds scope matches deals, leads, or customer districtId', () => {
+    const scope: HierarchyScope = { districtIds: ['d-1'] };
+    expect(buildCustomerScopeWhere(scope)).toEqual({
+      OR: [
+        { deals: { some: { districtId: { in: ['d-1'] } } } },
+        { leads: { some: { districtId: { in: ['d-1'] } } } },
+        { districtId: { in: ['d-1'] } },
+      ],
+    });
   });
 });
 

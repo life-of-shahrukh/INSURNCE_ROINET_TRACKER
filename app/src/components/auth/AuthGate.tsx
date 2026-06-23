@@ -14,10 +14,10 @@ const PUBLIC_PATHS = new Set(["/login", "/signup", "/sso/callback"]);
 const PATH_MIN_ROLE: Array<{ prefix: string; minRole: Parameters<typeof hasMinRole>[1] }> = [
   { prefix: "/sales-team",  minRole: "RH" },
   { prefix: "/commissions", minRole: "ASM" },
-  { prefix: "/reports",     minRole: "ASM" },
-  { prefix: "/leads",       minRole: "DM" },
-  { prefix: "/deals",       minRole: "DM" },
-  { prefix: "/customers",   minRole: "DM" },
+  { prefix: "/leads",       minRole: "POSP" },
+  { prefix: "/deals",       minRole: "POSP" },
+  { prefix: "/customers",   minRole: "POSP" },
+  { prefix: "/reports",     minRole: "POSP" },
   { prefix: "/posp",        minRole: "DM" },
 ];
 

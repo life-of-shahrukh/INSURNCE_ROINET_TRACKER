@@ -8,6 +8,10 @@ import { toCsv, type CsvColumn } from '../../common/utils/csv.util';
 const LEAD_INCLUDE = {
   customer: true,
   assignedTo: true,
+  posp: { select: { id: true, name: true, code: true } },
+  convertedDeal: {
+    select: { id: true, policyNo: true, proposal: true, issued: true },
+  },
 } as const;
 
 const LEAD_SORT_FIELDS: Record<string, keyof Lead> = {
@@ -101,13 +105,16 @@ export class LeadRepository {
     });
   }
 
-  async getMonthlyCommitment(): Promise<{ total: number; count: number }> {
+  async getMonthlyCommitment(
+    where: Prisma.LeadWhereInput = {},
+  ): Promise<{ total: number; count: number }> {
     const result = await this.prisma.lead.aggregate({
       where: {
         closureTimeline: 'THIS_MONTH',
         status: {
           notIn: ['WON', 'LOST'],
         },
+        ...where,
       },
       _sum: {
         estimatedPremium: true,

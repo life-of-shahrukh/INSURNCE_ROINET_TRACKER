@@ -27,15 +27,15 @@ interface NavItem {
 
 const NAV: NavItem[] = [
   { href: "/dashboard",   icon: "⌂", label: "Dashboard" },
-  { href: "/leads",       icon: "◎", label: "Leads Pipeline",  minRole: "DM"  },
-  { href: "/deals",       icon: "▤", label: "Deals Tracker",   minRole: "DM"  },
-  { href: "/customers",   icon: "◈", label: "Customers",       minRole: "DM"  },
+  { href: "/leads",       icon: "◎", label: "Leads Pipeline" },
+  { href: "/deals",       icon: "▤", label: "Deals Tracker" },
+  { href: "/customers",   icon: "◈", label: "Customers" },
   { href: "/posp",        icon: "◉", label: "POSP Roster",     minRole: "DM"  },
-  { href: "/sales-team",  icon: "⊛", label: "Sales Team",      minRole: "RH"  },
+  // { href: "/sales-team",  icon: "⊛", label: "Sales Team",      minRole: "RH"  },
   { href: "/org-chart",   icon: "⬡", label: "Org Chart",       minRole: "RH"  },
   { href: "/renewals",    icon: "↻", label: "Renewals" },
   { href: "/commissions", icon: "₹", label: "Commissions",     minRole: "ASM" },
-  { href: "/reports",     icon: "▦", label: "Reports",         minRole: "ASM" },
+  { href: "/reports",     icon: "▦", label: "Reports" },
   { href: "/announcements", icon: "⚑", label: "Announcements",  minRole: "SUPER_ADMIN" },
   { href: "/profile",     icon: "◎", label: "My Profile" },
 ];

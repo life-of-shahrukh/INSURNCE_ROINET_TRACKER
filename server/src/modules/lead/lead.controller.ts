@@ -1,7 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -13,7 +16,7 @@ import {
 import type { Response } from 'express';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
-import { MinRole, Roles } from '../../common/decorators/roles.decorator';
+import { Roles } from '../../common/decorators/roles.decorator';
 import { Role } from '../../common/constants';
 import { LeadService } from './lead.service';
 import { CreateLeadDto } from './dto/create-lead.dto';
@@ -22,6 +25,16 @@ import { ResolvedScope } from '../../common/decorators/scope.decorator';
 import type { HierarchyScope } from '../../common/auth/hierarchy-scope.util';
 import { HierarchyScopeInterceptor } from '../../common/interceptors/hierarchy-scope.interceptor';
 import { LeadListQueryDto } from './dto/lead-list-query.dto';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import type { AuthUser } from '../../common/auth/auth-user.interface';
+import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+
+class ConvertLeadBodyDto {
+  @IsNotEmpty()
+  @IsString()
+  @MaxLength(100)
+  policyNo: string;
+}
 
 @Controller('leads')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -31,8 +44,8 @@ export class LeadController {
 
   @Post()
   @Roles(Role.POSP)
-  create(@Body() createLeadDto: CreateLeadDto) {
-    return this.leadService.create(createLeadDto);
+  create(@Body() createLeadDto: CreateLeadDto, @CurrentUser() user: AuthUser) {
+    return this.leadService.create(createLeadDto, user);
   }
 
   @Get()
@@ -97,14 +110,46 @@ export class LeadController {
     Role.SUPER_ADMIN,
     Role.POSP,
   )
-  update(@Param('id') id: string, @Body() updateLeadDto: UpdateLeadDto) {
-    return this.leadService.update(id, updateLeadDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateLeadDto: UpdateLeadDto,
+    @CurrentUser() user: AuthUser,
+    @ResolvedScope() scope: HierarchyScope,
+  ) {
+    return this.leadService.update(id, updateLeadDto, user, scope);
   }
 
-  // Converting a lead to deal requires at least ASM sign-off
   @Post(':id/convert')
-  @MinRole(Role.ASM)
-  convertToDeal(@Param('id') id: string) {
-    return this.leadService.convertToDeal(id);
+  @Roles(
+    Role.DM,
+    Role.ASM,
+    Role.RH,
+    Role.ZH,
+    Role.NATIONAL_HEAD,
+    Role.SUPER_ADMIN,
+    Role.POSP,
+  )
+  convertToDeal(
+    @Param('id') id: string,
+    @Body() body: ConvertLeadBodyDto,
+    @CurrentUser() user: AuthUser,
+    @ResolvedScope() scope: HierarchyScope,
+  ) {
+    return this.leadService.convertToDeal(id, user, body.policyNo, scope);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Roles(
+    Role.DM,
+    Role.ASM,
+    Role.RH,
+    Role.ZH,
+    Role.NATIONAL_HEAD,
+    Role.SUPER_ADMIN,
+    Role.POSP,
+  )
+  remove(@Param('id') id: string, @ResolvedScope() scope: HierarchyScope) {
+    return this.leadService.delete(id, scope);
   }
 }

@@ -16,6 +16,11 @@ import {
   type CreateAnnouncementInput,
   type AnnouncementSeverity,
 } from "@/lib/api/announcement-api";
+import {
+  parseAnnouncementBoolean,
+  resolveAnnouncementLifecycleStatus,
+  type AnnouncementLifecycleStatus,
+} from "@/lib/announcement-status";
 
 const ALL_ROLES = [
   "SUPER_ADMIN",
@@ -73,7 +78,7 @@ function announcementToForm(a: Announcement): FormState {
     targetRoles: a.targetRoles.split(",").map((r) => r.trim()).filter(Boolean),
     severity: a.severity as AnnouncementSeverity,
     priority: a.priority,
-    isActive: a.isActive,
+    isActive: parseAnnouncementBoolean(a.isActive),
     startsAt: toLocalDatetimeInput(a.startsAt),
     expiresAt: a.expiresAt ? toLocalDatetimeInput(a.expiresAt) : "",
   };
@@ -277,8 +282,10 @@ function AnnouncementFormModal({
                 <span className="ann-toggle__thumb" />
               </span>
               <span className="ann-toggle__label">
-                Active
-                <span className="ann-toggle__hint">Immediately visible to targeted users</span>
+                Enabled
+                <span className="ann-toggle__hint">
+                  When off, the announcement is hidden regardless of schedule
+                </span>
               </span>
             </label>
           </div>
@@ -317,7 +324,39 @@ function SeverityBadge({ severity }: { severity: string }) {
   );
 }
 
-function StatusBadge({ isActive }: { isActive: boolean }) {
+const LIFECYCLE_STATUS_STYLES: Record<
+  AnnouncementLifecycleStatus,
+  { label: string; background: string; color: string; border: string }
+> = {
+  live: {
+    label: "Live",
+    background: "#2a9d8f22",
+    color: "#2a9d8f",
+    border: "#2a9d8f44",
+  },
+  scheduled: {
+    label: "Scheduled",
+    background: "#3282b822",
+    color: "#3282b8",
+    border: "#3282b844",
+  },
+  expired: {
+    label: "Expired",
+    background: "#6b728022",
+    color: "#6b7280",
+    border: "#6b728044",
+  },
+  inactive: {
+    label: "Inactive",
+    background: "#e6394622",
+    color: "#e63946",
+    border: "#e6394644",
+  },
+};
+
+function StatusBadge({ announcement }: { announcement: Announcement }) {
+  const status = resolveAnnouncementLifecycleStatus(announcement);
+  const style = LIFECYCLE_STATUS_STYLES[status];
   return (
     <span
       style={{
@@ -325,12 +364,12 @@ function StatusBadge({ isActive }: { isActive: boolean }) {
         borderRadius: 12,
         fontSize: 11,
         fontWeight: 600,
-        background: isActive ? "#2a9d8f22" : "#e6394622",
-        color: isActive ? "#2a9d8f" : "#e63946",
-        border: `1px solid ${isActive ? "#2a9d8f44" : "#e6394644"}`,
+        background: style.background,
+        color: style.color,
+        border: `1px solid ${style.border}`,
       }}
     >
-      {isActive ? "Active" : "Inactive"}
+      {style.label}
     </span>
   );
 }
@@ -383,7 +422,8 @@ export default function AnnouncementsPage(): React.ReactElement {
   }
 
   function handleToggleActive(a: Announcement) {
-    toggleActiveMutation.mutate({ id: a.id, isActive: !a.isActive });
+    const isEnabled = parseAnnouncementBoolean(a.isActive);
+    toggleActiveMutation.mutate({ id: a.id, isActive: !isEnabled });
   }
 
   return (
@@ -425,7 +465,9 @@ export default function AnnouncementsPage(): React.ReactElement {
                 </tr>
               </thead>
               <tbody>
-                {announcements.map((a) => (
+                {announcements.map((a) => {
+                  const isEnabled = parseAnnouncementBoolean(a.isActive);
+                  return (
                   <tr key={a.id}>
                     <td style={{ maxWidth: 280 }}>
                       <div className="ann-table-title">{a.title}</div>
@@ -441,7 +483,7 @@ export default function AnnouncementsPage(): React.ReactElement {
                       </div>
                     </td>
                     <td><SeverityBadge severity={a.severity} /></td>
-                    <td><StatusBadge isActive={a.isActive} /></td>
+                    <td><StatusBadge announcement={a} /></td>
                     <td>
                       <div className="ann-table-schedule">
                         <span className="ann-table-date">
@@ -467,16 +509,16 @@ export default function AnnouncementsPage(): React.ReactElement {
                         </button>
                         <button
                           type="button"
-                          className={`ann-action-btn ${a.isActive ? "ann-action-btn--deactivate" : "ann-action-btn--activate"}`}
+                          className={`ann-action-btn ${isEnabled ? "ann-action-btn--deactivate" : "ann-action-btn--activate"}`}
                           onClick={() => handleToggleActive(a)}
-                          title={a.isActive ? "Deactivate" : "Activate"}
+                          title={isEnabled ? "Deactivate" : "Activate"}
                         >
-                          {a.isActive ? (
+                          {isEnabled ? (
                             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7a6 6 0 1112 0A6 6 0 011 7z" stroke="currentColor" strokeWidth="1.3"/><path d="M5 5l4 4M9 5l-4 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
                           ) : (
                             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7a6 6 0 1112 0A6 6 0 011 7z" stroke="currentColor" strokeWidth="1.3"/><path d="M5 7l2 2 2.5-3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
                           )}
-                          {a.isActive ? "Off" : "On"}
+                          {isEnabled ? "Off" : "On"}
                         </button>
                         <button
                           type="button"
@@ -489,7 +531,8 @@ export default function AnnouncementsPage(): React.ReactElement {
                       </div>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>

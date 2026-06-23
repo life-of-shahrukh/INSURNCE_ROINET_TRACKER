@@ -74,7 +74,7 @@ export class CreateDealDto {
   @IsOptional()
   margin?: number;
 
-  @ApiProperty({ enum: ['H', 'W', 'C'], example: 'W' })
+  @ApiProperty({ enum: ['H', 'W', 'C', 'D'], example: 'W' })
   @IsIn(Object.values(DealStatus))
   status: DealStatus;
 

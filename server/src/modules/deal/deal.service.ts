@@ -10,7 +10,7 @@ import { ExportDealsCsvQuery } from './queries/export-deals-csv.query';
 import { Deal } from '@prisma/client';
 import { DealListQueryDto } from './dto/deal-list-query.dto';
 import type { PaginatedResult } from '../../common/interfaces/paginated-result.interface';
-import { ForbiddenException } from '@nestjs/common';
+import { ForbiddenException, BadRequestException } from '@nestjs/common';
 import { AuthUser } from '../../common/auth/auth-user.interface';
 import { resolvePospScope } from '../../common/auth/posp-scope.util';
 import type { HierarchyScope } from '../../common/auth/hierarchy-scope.util';
@@ -50,6 +50,11 @@ export class DealService {
   }
 
   create(dto: CreateDealDto, user: AuthUser): Promise<Deal> {
+    if (user.role === Role.POSP) {
+      throw new BadRequestException(
+        'Create a lead first; add a policy number on edit to convert to a deal.',
+      );
+    }
     const finalDto = { ...dto };
     finalDto.pospId = resolvePospScope(user, dto.pospId);
     if (user.role !== Role.SUPER_ADMIN) {
@@ -60,7 +65,12 @@ export class DealService {
     );
   }
 
-  update(id: string, dto: UpdateDealDto, user: AuthUser): Promise<Deal> {
+  update(
+    id: string,
+    dto: UpdateDealDto,
+    user: AuthUser,
+    scope?: HierarchyScope,
+  ): Promise<Deal> {
     const finalDto = { ...dto };
     // Only re-resolve pospId scope when the client is explicitly changing it.
     if (dto.pospId !== undefined) {
@@ -69,14 +79,19 @@ export class DealService {
     if (user.role !== Role.SUPER_ADMIN) {
       stripFinancials(finalDto);
     }
-    return this.commandBus.execute(new UpdateDealCommand(id, finalDto));
+    return this.commandBus.execute(new UpdateDealCommand(id, finalDto, scope));
   }
 
-  async delete(id: string, user: AuthUser): Promise<void> {
+  async delete(
+    id: string,
+    user: AuthUser,
+    scope?: HierarchyScope,
+  ): Promise<void> {
     if (!user.pospId && !user.userId) {
       throw new ForbiddenException('Unauthorized');
     }
-    return this.commandBus.execute(new DeleteDealCommand(id, user.pospId));
+    const pospId = user.role === Role.POSP ? user.pospId : undefined;
+    return this.commandBus.execute(new DeleteDealCommand(id, pospId, scope));
   }
 
   exportCsv(

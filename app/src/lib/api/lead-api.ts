@@ -2,8 +2,16 @@ import type { PaginatedResponse } from './pagination-types';
 import { fetchPaginated, request } from './fetch-client';
 
 export type LeadStatus = 'NEW' | 'CONTACTED' | 'QUALIFIED' | 'PROPOSAL_SENT' | 'WON' | 'LOST';
-export type LeadProduct = 'LIFE' | 'HEALTH' | 'MOTOR';
+export type LeadProduct = 'LIFE' | 'HEALTH' | 'MOTOR' | 'PROPERTY' | 'MARINE' | 'TRAVEL' | 'COMMERCIAL' | 'CROP' | 'ENGINEERING';
 export type ClosureTimeline = 'THIS_MONTH' | 'T_PLUS_1' | 'T_PLUS_2' | 'LATER';
+export type HeatStatus = 'H' | 'W' | 'C' | 'L';
+
+export interface LeadDealSummary {
+  id: string;
+  policyNo: string;
+  proposal: string;
+  issued?: string;
+}
 
 export interface Lead {
   id: string;
@@ -11,15 +19,19 @@ export interface Lead {
   customer?: { id: string; name: string; mobile: string };
   assignedToId?: string;
   assignedTo?: { id: string; name: string; designation: string };
-  product: LeadProduct;
+  pospId?: string;
+  posp?: { id: string; name: string; code: string };
+  product: LeadProduct | string;
   estimatedPremium: number;
   estimatedSum?: number;
   closureTimeline: ClosureTimeline;
   expectedCloseDate?: string;
   status: LeadStatus;
+  heatStatus?: HeatStatus;
   source?: string;
   remarks?: string;
   convertedToDealId?: string;
+  convertedDeal?: LeadDealSummary;
   convertedAt?: string;
   createdAt: string;
   updatedAt: string;
@@ -28,16 +40,25 @@ export interface Lead {
 export interface CreateLeadInput {
   customerId: string;
   assignedToId?: string;
-  product: LeadProduct;
+  product: LeadProduct | string;
   estimatedPremium: number;
   estimatedSum?: number;
-  closureTimeline: ClosureTimeline;
+  closureTimeline?: ClosureTimeline;
   expectedCloseDate?: string;
+  heatStatus?: HeatStatus;
   source?: string;
   remarks?: string;
 }
 
-export type UpdateLeadInput = Partial<CreateLeadInput> & { status?: LeadStatus };
+export interface UpdateLeadInput extends Partial<CreateLeadInput> {
+  status?: LeadStatus;
+  policyNo?: string;
+  proposal?: string;
+  issued?: string;
+  coa?: number;
+  coaType?: 'PERCENT' | 'AMOUNT';
+  margin?: number;
+}
 
 export const leadApi = {
   getAll(params?: URLSearchParams): Promise<PaginatedResponse<Lead>> {
@@ -56,7 +77,14 @@ export const leadApi = {
     return request<Lead>(`/api/leads/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
   },
 
-  convertToDeal(id: string): Promise<{ dealId: string }> {
-    return request<{ dealId: string }>(`/api/leads/${id}/convert`, { method: 'POST' });
+  convertToDeal(id: string, policyNo: string): Promise<{ dealId: string }> {
+    return request<{ dealId: string }>(`/api/leads/${id}/convert`, {
+      method: 'POST',
+      body: JSON.stringify({ policyNo }),
+    });
+  },
+
+  delete(id: string): Promise<void> {
+    return request<void>(`/api/leads/${id}`, { method: 'DELETE' });
   },
 };

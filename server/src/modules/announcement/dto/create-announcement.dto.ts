@@ -9,6 +9,7 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 const VALID_SEVERITIES = ['info', 'warning', 'success', 'error'] as const;
@@ -48,6 +49,18 @@ export class CreateAnnouncementDto {
 
   @ApiPropertyOptional({ default: true })
   @IsOptional()
+  @Transform(({ value }: { value: unknown }) => {
+    if (value === true || value === 'true' || value === 1 || value === '1') {
+      return true;
+    }
+    if (value === false || value === 'false' || value === 0 || value === '0') {
+      return false;
+    }
+    if (typeof value === 'boolean') {
+      return value;
+    }
+    return undefined;
+  })
   @IsBoolean()
   isActive?: boolean;
 

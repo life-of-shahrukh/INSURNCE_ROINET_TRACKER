@@ -30,12 +30,13 @@ const TARGETS: { customers: number; deals: number; leads: number } = {
 };
 
 async function wipeTransactionalData(): Promise<void> {
-  console.log('\n🗑️  Phase 0: wiping customers, leads, deals…');
-  const deals = await prisma.deal.deleteMany();
+  console.log('\n🗑️  Phase 0: wiping leads, deals, customers…');
+  // Leads reference deals (convertedToDealId) — delete leads before deals.
   const leads = await prisma.lead.deleteMany();
+  const deals = await prisma.deal.deleteMany();
   const customers = await prisma.customer.deleteMany();
   console.log(
-    `  deleted deals=${deals.count} leads=${leads.count} customers=${customers.count}`,
+    `  deleted leads=${leads.count} deals=${deals.count} customers=${customers.count}`,
   );
 }
 

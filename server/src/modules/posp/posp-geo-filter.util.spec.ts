@@ -22,17 +22,15 @@ describe('buildPospGeoFilterWhere', () => {
   });
 
   it('uses direct district selection when district[] is set', () => {
-    expect(
-      buildPospGeoFilterWhere({ district: ['d1'] }, ['d1', 'd2']),
-    ).toEqual({
-      districtId: { in: ['d1'] },
-    });
+    expect(buildPospGeoFilterWhere({ district: ['d1'] }, ['d1', 'd2'])).toEqual(
+      {
+        districtId: { in: ['d1'] },
+      },
+    );
   });
 
   it('falls back to stateId when state is selected and districtId is null', () => {
-    expect(
-      buildPospGeoFilterWhere({ state: ['st1'] }, ['d1', 'd2']),
-    ).toEqual({
+    expect(buildPospGeoFilterWhere({ state: ['st1'] }, ['d1', 'd2'])).toEqual({
       OR: [
         { districtId: { in: ['d1', 'd2'] } },
         { districtId: null, stateId: { in: ['st1'] } },
@@ -47,13 +45,8 @@ describe('buildPospGeoFilterWhere', () => {
   });
 
   it('combines cityId precision with district resolution', () => {
-    expect(
-      buildPospGeoFilterWhere({ city: ['city-a'] }, ['d1']),
-    ).toEqual({
-      AND: [
-        { cityId: { in: ['city-a'] } },
-        { districtId: { in: ['d1'] } },
-      ],
+    expect(buildPospGeoFilterWhere({ city: ['city-a'] }, ['d1'])).toEqual({
+      AND: [{ cityId: { in: ['city-a'] } }, { districtId: { in: ['d1'] } }],
     });
   });
 });

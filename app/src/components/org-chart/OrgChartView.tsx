@@ -7,13 +7,15 @@ import type { OrgChartNode } from "@/lib/api/hierarchy-api";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { OrgChart } = require("d3-org-chart") as { OrgChart: new () => D3OrgChart };
 
+type D3NodeClickArg = string | { id?: string; data?: { id?: string } };
+
 interface D3OrgChart {
   container(el: HTMLDivElement): this;
   data(nodes: OrgChartNode[]): this;
   nodeWidth(_: () => number): this;
   nodeHeight(_: () => number): this;
   nodeContent(fn: (d: { data: OrgChartNode }) => string): this;
-  onNodeClick(fn: (d: any) => void): this;
+  onNodeClick(fn: (d: D3NodeClickArg) => void): this;
   render(): this;
   fit(): void;
   zoomIn(): void;
@@ -155,8 +157,7 @@ export function OrgChartView({
     
     // Set up click handler before rendering
     if (onNodeClick) {
-      chart.onNodeClick((d: any) => {
-        // d3-org-chart passes the full node object, not just the ID string
+      chart.onNodeClick((d: D3NodeClickArg) => {
         const nodeId = typeof d === 'string' ? d : (d.id ?? d.data?.id);
         const node = data.find((n) => n.id === nodeId);
         if (node) {

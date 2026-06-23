@@ -23,12 +23,27 @@ export function fmtDate(d: string | Date | null | undefined): string {
   });
 }
 
+const DEAL_STATUS_LABELS: Record<DealStatus, string> = {
+  H: "Hot",
+  W: "Warm",
+  C: "Cold",
+  L: "Later",
+  D: "Done",
+};
+
 export function statusLabel(s: DealStatus): string {
-  return { H: "Hot", W: "Warm", C: "Cold" }[s] ?? "–";
+  return DEAL_STATUS_LABELS[s] ?? "–";
 }
 
 export function statusBadgeClass(s: DealStatus): string {
-  return { H: "badge-hot", W: "badge-warm", C: "badge-cold" }[s] ?? "badge-muted";
+  const classes: Record<DealStatus, string> = {
+    H: "badge-hot",
+    W: "badge-warm",
+    C: "badge-cold",
+    L: "badge-muted",
+    D: "badge-success",
+  };
+  return classes[s] ?? "badge-muted";
 }
 
 export function uid(): string {

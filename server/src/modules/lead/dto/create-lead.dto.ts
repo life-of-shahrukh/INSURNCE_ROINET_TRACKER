@@ -9,6 +9,18 @@ import {
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 
+const PRODUCT_LINES = [
+  'LIFE',
+  'HEALTH',
+  'MOTOR',
+  'PROPERTY',
+  'MARINE',
+  'TRAVEL',
+  'COMMERCIAL',
+  'CROP',
+  'ENGINEERING',
+] as const;
+
 export class CreateLeadDto {
   @IsNotEmpty()
   @IsString()
@@ -21,8 +33,8 @@ export class CreateLeadDto {
   assignedToId?: string;
 
   @IsNotEmpty()
-  @IsEnum(['LIFE', 'HEALTH', 'MOTOR'])
-  product: 'LIFE' | 'HEALTH' | 'MOTOR';
+  @IsEnum(PRODUCT_LINES)
+  product: (typeof PRODUCT_LINES)[number];
 
   @IsNotEmpty()
   @IsNumber()
@@ -34,9 +46,9 @@ export class CreateLeadDto {
   @Min(0)
   estimatedSum?: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsEnum(['THIS_MONTH', 'T_PLUS_1', 'T_PLUS_2', 'LATER'])
-  closureTimeline: 'THIS_MONTH' | 'T_PLUS_1' | 'T_PLUS_2' | 'LATER';
+  closureTimeline?: 'THIS_MONTH' | 'T_PLUS_1' | 'T_PLUS_2' | 'LATER';
 
   /**
    * Accept both "YYYY-MM-DD" date strings and full ISO datetimes.
@@ -50,6 +62,10 @@ export class CreateLeadDto {
   })
   @Type(() => Date)
   expectedCloseDate?: Date;
+
+  @IsOptional()
+  @IsEnum(['H', 'W', 'C', 'L'])
+  heatStatus?: 'H' | 'W' | 'C' | 'L';
 
   @IsOptional()
   @IsString()

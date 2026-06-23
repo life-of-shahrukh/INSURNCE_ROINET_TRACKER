@@ -19,7 +19,7 @@ export class ExportLeadsCsvHandler implements IQueryHandler<ExportLeadsCsvQuery>
     const scopeWhere = hierarchyScope
       ? buildLeadScopeWhere(hierarchyScope)
       : {};
-    const districtIds = this.geo.districtIdsForQuery(filters);
+    const districtIds = await this.geo.districtIdsForQuery(filters);
     const filterWhere = buildLeadFilterWhere(filters, districtIds);
     const where = mergeWhereClauses(
       scopeWhere,

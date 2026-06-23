@@ -96,10 +96,10 @@ export class DashboardRepository {
    * can only ever reduce what the caller already sees. A POSP-level scope is
    * left untouched (geography is implied by the POSP).
    */
-  private applyGeoNarrowing(
+  private async applyGeoNarrowing(
     scope: HierarchyScope,
     filters: DashboardQueryDto,
-  ): HierarchyScope {
+  ): Promise<HierarchyScope> {
     const { zoneId, regionId, stateId, districtId, cityId } = filters;
     if (!zoneId && !regionId && !stateId && !districtId && !cityId)
       return scope;
@@ -108,7 +108,7 @@ export class DashboardRepository {
     // Resolve any geo selection to a district set via the cached catalog
     // (precedence district > city > region > state > zone). Works for every
     // zone/region, not just the DistrictChain rows seen so far.
-    const geoDistricts = this.geoCatalog.resolveDistrictIds({
+    const geoDistricts = await this.geoCatalog.resolveDistrictIds({
       zoneId,
       regionId,
       stateId,
@@ -171,7 +171,7 @@ export class DashboardRepository {
       filters.subordinateCode,
       filters.pospId,
     );
-    effectiveScope = this.applyGeoNarrowing(effectiveScope, filters);
+    effectiveScope = await this.applyGeoNarrowing(effectiveScope, filters);
 
     const dealWhere = this.buildDealWhere(filters, effectiveScope);
     const leadWhere = await this.buildLeadWhere(filters, effectiveScope);

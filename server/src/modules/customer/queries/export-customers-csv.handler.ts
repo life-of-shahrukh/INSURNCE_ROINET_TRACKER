@@ -11,7 +11,7 @@ export class ExportCustomersCsvHandler implements IQueryHandler<ExportCustomersC
   ) {}
 
   async execute(query: ExportCustomersCsvQuery): Promise<string> {
-    const districtIds = this.geo.districtIdsForQuery(query.filters);
+    const districtIds = await this.geo.districtIdsForQuery(query.filters);
     const where = buildCustomerFilterWhere(query.filters, districtIds);
     return this.repo.exportCsvWhere(where);
   }

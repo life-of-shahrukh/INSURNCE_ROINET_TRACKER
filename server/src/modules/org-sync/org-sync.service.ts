@@ -3,12 +3,13 @@ import { Cron } from '@nestjs/schedule';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ExternalApiService } from '../../common/external-api/external-api.service';
 import { GeoCatalogService } from '../geo/geo-catalog.service';
-import type { ExternalHierarchyUser } from '../../common/external-api/external-api.types';
+import type {
+  ExternalHierarchyUser,
+} from '../../common/external-api/external-api.types';
 import {
   buildOrgGraph,
   type DistrictGeo,
 } from '../../common/org-graph/org-graph-builder';
-import type { ExternalDistrict } from '../../common/external-api/external-api.types';
 import {
   persistOrgGraph,
   type OrgGraphCounts,
@@ -70,44 +71,17 @@ export class OrgSyncService {
   }
 
   private async loadHierarchy(): Promise<ExternalHierarchyUser[]> {
-    try {
-      const live = await this.externalApi.listHierarchyLive();
-      if (live && live.length > 0) {
-        this.logger.log(`Loaded ${live.length} hierarchy rows from live API`);
-        return live;
-      }
-      this.logger.warn('Live hierarchy empty; falling back to snapshot');
-    } catch (err) {
-      this.logger.warn(
-        `Live hierarchy failed (${err instanceof Error ? err.message : String(err)}); falling back to snapshot`,
-      );
-    }
-    const snapshot = this.externalApi.listHierarchy();
-    this.logger.log(`Loaded ${snapshot.length} hierarchy rows from snapshot`);
-    return snapshot;
+    const rows = await this.externalApi.listHierarchy();
+    this.logger.log(`Loaded ${rows.length} hierarchy rows`);
+    return rows;
   }
 
   /**
-   * districtId -> geography (state/zone/region) from ListDistrict. Live first
-   * (carries the expanded zone/region fields), snapshot fallback. Optional
-   * metadata: missing values stay null.
+   * districtId -> geography (state/zone/region) from ListDistrict.
+   * Live is tried first by ExternalApiService; snapshot is the automatic fallback.
    */
   private async loadGeoByDistrict(): Promise<Map<string, DistrictGeo>> {
-    let districts: ExternalDistrict[] = [];
-    try {
-      const live = await this.externalApi.listDistrictsLive('');
-      if (live && live.length > 0) {
-        districts = live;
-        this.logger.log(`Loaded ${live.length} districts from live API`);
-      }
-    } catch (err) {
-      this.logger.warn(
-        `Live districts failed (${err instanceof Error ? err.message : String(err)}); falling back to snapshot`,
-      );
-    }
-    if (districts.length === 0) {
-      districts = this.externalApi.listDistricts('');
-    }
+    const districts = await this.externalApi.listDistricts('');
 
     const map = new Map<string, DistrictGeo>();
     for (const d of districts) {

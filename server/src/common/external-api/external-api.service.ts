@@ -25,13 +25,19 @@ const COGNITENSOR_BASE = 'https://uatserviceapi.roinet.in';
 @Injectable()
 export class ExternalApiService {
   private readonly logger = new Logger(ExternalApiService.name);
-  private readonly useSnapshot: boolean;
+
+  /**
+   * When true the service skips the live API entirely and always uses
+   * snapshots (useful for CI / offline environments).
+   * Default: false — live is tried first and snapshots are the fallback.
+   */
+  private readonly snapshotOnly: boolean;
 
   constructor(private readonly config: ConfigService) {
-    this.useSnapshot =
-      this.config.get<string>('USE_EXTERNAL_API_SNAPSHOT', 'true') !== 'false';
+    this.snapshotOnly =
+      this.config.get<string>('USE_EXTERNAL_API_SNAPSHOT', 'false') === 'true';
     this.logger.log(
-      `External API mode: ${this.useSnapshot ? 'SNAPSHOT' : 'LIVE'}`,
+      `External API mode: ${this.snapshotOnly ? 'SNAPSHOT-ONLY' : 'LIVE (snapshot fallback)'}`,
     );
   }
 
@@ -62,152 +68,158 @@ export class ExternalApiService {
     return wrapper.Data;
   }
 
+  /**
+   * Tries the live Cognitensor API first. If it fails (network error, non-2xx,
+   * timeout) logs a warning and falls back to the local snapshot file.
+   * If snapshotOnly=true the live call is skipped entirely.
+   */
+  private async fetchWithFallback<T>(
+    endpoint: string,
+    snapshotFile: string,
+    body?: Record<string, string | number | null>,
+  ): Promise<T[]> {
+    if (!this.snapshotOnly) {
+      try {
+        const data = await this.fetchLive<T>(endpoint, body);
+        return data;
+      } catch (err) {
+        this.logger.warn(
+          `Live API call to ${endpoint} failed — falling back to snapshot "${snapshotFile}". Reason: ${err instanceof Error ? err.message : String(err)}`,
+        );
+      }
+    }
+    return this.readSnapshot<T>(snapshotFile);
+  }
+
   // ── public methods ──────────────────────────────────────────────────────
 
-  listStates(): ExternalState[] {
-    if (this.useSnapshot)
-      return this.readSnapshot<ExternalState>('states.json');
-    return [];
+  async listStates(): Promise<ExternalState[]> {
+    return this.fetchWithFallback<ExternalState>(
+      '/Cognitensor/ListState',
+      'states.json',
+    );
   }
 
-  async listStatesLive(): Promise<ExternalState[]> {
-    return this.fetchLive<ExternalState>('/Cognitensor/ListState');
+  async listDistricts(stateId: string): Promise<ExternalDistrict[]> {
+    const all = await this.fetchWithFallback<ExternalDistrict>(
+      '/Cognitensor/ListDistrict',
+      'districts-sample.json',
+      { stateid: stateId },
+    );
+    return stateId ? all.filter((d) => d.StateId === stateId) : all;
   }
 
-  listDistricts(stateId: string): ExternalDistrict[] {
-    if (this.useSnapshot) {
-      const all = this.readSnapshot<ExternalDistrict>('districts-sample.json');
-      return stateId ? all.filter((d) => d.StateId === stateId) : all;
-    }
-    return [];
+  async listCities(districtId: string): Promise<ExternalCity[]> {
+    const all = await this.fetchWithFallback<ExternalCity>(
+      '/Cognitensor/ListCity',
+      'cities-sample.json',
+      { districtid: districtId },
+    );
+    return districtId ? all.filter((c) => c.DistrictId === districtId) : all;
   }
 
-  async listDistrictsLive(stateId: string): Promise<ExternalDistrict[]> {
-    return this.fetchLive<ExternalDistrict>('/Cognitensor/ListDistrict', {
-      stateid: stateId,
-    });
+  async listZones(): Promise<ExternalZone[]> {
+    return this.fetchWithFallback<ExternalZone>(
+      '/Cognitensor/ListZone',
+      'zones.json',
+    );
   }
 
-  listCities(districtId: string): ExternalCity[] {
-    if (this.useSnapshot) {
-      const all = this.readSnapshot<ExternalCity>('cities-sample.json');
-      return districtId ? all.filter((c) => c.DistrictId === districtId) : all;
-    }
-    return [];
-  }
-
-  async listCitiesLive(districtId: string): Promise<ExternalCity[]> {
-    return this.fetchLive<ExternalCity>('/Cognitensor/ListCity', {
-      districtid: districtId,
-    });
-  }
-
-  listZones(): ExternalZone[] {
-    if (this.useSnapshot) return this.readSnapshot<ExternalZone>('zones.json');
-    return [];
-  }
-
-  async listZonesLive(): Promise<ExternalZone[]> {
-    return this.fetchLive<ExternalZone>('/Cognitensor/ListZone');
-  }
-
-  listHierarchy(query?: ExternalHierarchyQueryDto): ExternalHierarchyUser[] {
-    if (this.useSnapshot) {
-      let data = this.readSnapshot<ExternalHierarchyUser>('hierarchy.json');
-      if (query?.districtId !== undefined) {
-        data = data.filter((r) => r.DistrictId === String(query.districtId));
-      }
-      if (query?.userCode) {
-        data = data.filter((r) => r.DistrictManagerCode === query.userCode);
-      }
-      if (query?.userId !== undefined) {
-        data = data.filter((r) => r.DistrictManagerId === String(query.userId));
-      }
-      return data;
-    }
-    return [];
-  }
-
-  async listHierarchyLive(
+  async listHierarchy(
     query?: ExternalHierarchyQueryDto,
   ): Promise<ExternalHierarchyUser[]> {
-    // In snapshot mode there is no live endpoint to reach (e.g. local dev with
-    // no UAT/VPN access). Serve the bundled snapshot so callers like the org
-    // chart get real data instead of an empty live response.
-    if (this.useSnapshot) {
-      return this.listHierarchy(query);
-    }
     const body: Record<string, string | number | null> = {
       DistrictId: query?.districtId ?? null,
       UserCode: query?.userCode ?? null,
       UserId: query?.userId ?? null,
     };
-    return this.fetchLive<ExternalHierarchyUser>(
+    let data = await this.fetchWithFallback<ExternalHierarchyUser>(
       '/Cognitensor/ListHierarchyUserData',
+      'hierarchy.json',
       body,
     );
+    // Apply client-side filters for snapshot results (live API filters server-side)
+    if (query?.districtId !== undefined) {
+      data = data.filter((r) => r.DistrictId === String(query.districtId));
+    }
+    if (query?.userCode) {
+      data = data.filter((r) => r.DistrictManagerCode === query.userCode);
+    }
+    if (query?.userId !== undefined) {
+      data = data.filter((r) => r.DistrictManagerId === String(query.userId));
+    }
+    return data;
   }
 
-  listPosps(query: ExternalPospQueryDto): PaginatedResult<ExternalPospData> {
-    const data = this.useSnapshot
-      ? this.readSnapshot<ExternalPospData>('posps.json')
-      : [];
+  /** @deprecated Use listHierarchy() — now always tries live first. */
+  async listHierarchyLive(
+    query?: ExternalHierarchyQueryDto,
+  ): Promise<ExternalHierarchyUser[]> {
+    return this.listHierarchy(query);
+  }
+
+  async listPosps(
+    query: ExternalPospQueryDto,
+  ): Promise<PaginatedResult<ExternalPospData>> {
+    const data = await this.fetchWithFallback<ExternalPospData>(
+      '/Cognitensor/ListPospData',
+      'posps.json',
+      {
+        UserId: query.userId ?? null,
+        UserCode: query.userCode ?? null,
+        stateid: query.stateId ? Number(query.stateId) : null,
+        districtid: query.districtId ? Number(query.districtId) : null,
+        cityid: query.cityId ? Number(query.cityId) : null,
+      },
+    );
     return this.filterAndPagePosps(data, query);
   }
 
-  /** Returns every POSP from the snapshot (unpaged) — used by geography sync. */
-  listAllPosps(): ExternalPospData[] {
-    if (this.useSnapshot)
-      return this.readSnapshot<ExternalPospData>('posps.json');
-    return [];
-  }
-
+  /** @deprecated Use listPosps() — now always tries live first. */
   async listPospsLive(
     query: ExternalPospQueryDto,
   ): Promise<PaginatedResult<ExternalPospData>> {
-    // Pass ID-based filters directly to Cognitensor so the API does the heavy lifting.
-    // Name-based filters (state/city/search) are applied client-side after the response.
-    const apiBody: Record<string, string | number | null> = {
-      UserId: query.userId ?? null,
-      UserCode: query.userCode ?? null,
-      stateid: query.stateId ? Number(query.stateId) : null,
-      districtid: query.districtId ? Number(query.districtId) : null,
-      cityid: query.cityId ? Number(query.cityId) : null,
-    };
-    const data = await this.fetchLive<ExternalPospData>(
+    return this.listPosps(query);
+  }
+
+  /** Returns every POSP (unpaged) — used by geography sync. */
+  async listAllPosps(): Promise<ExternalPospData[]> {
+    return this.fetchWithFallback<ExternalPospData>(
       '/Cognitensor/ListPospData',
-      apiBody,
+      'posps.json',
     );
-    return this.filterAndPagePosps(data, query);
   }
 
   /**
-   * Looks up a single POSP by UserCode from the Cognitensor API.
-   * Used during SSO login when isPosp=true.
-   * Snapshot mode: searches posps.json by UserCode.
-   * Live mode: calls ListPospData with { UserCode } filter.
+   * Looks up a single POSP by UserCode.
+   * Tries the live Cognitensor API first; falls back to the snapshot on failure.
    */
   async getPospByUserCode(userCode: string): Promise<ExternalPospLoginData> {
-    if (this.useSnapshot) {
+    let results: ExternalPospLoginData[] = [];
+
+    if (!this.snapshotOnly) {
+      try {
+        results = await this.fetchLive<ExternalPospLoginData>(
+          '/Cognitensor/ListPospData',
+          { UserCode: userCode },
+        );
+      } catch (err) {
+        this.logger.warn(
+          `Live lookup for POSP "${userCode}" failed — falling back to snapshot. Reason: ${err instanceof Error ? err.message : String(err)}`,
+        );
+      }
+    }
+
+    if (!results || results.length === 0) {
+      // Fallback: search the snapshot
       const all = this.readSnapshot<ExternalPospData>('posps.json');
       const match = all.find((p) => p.UserCode === userCode);
       if (!match) {
         throw new NotFoundException(
-          `POSP with UserCode "${userCode}" not found in snapshot`,
+          `POSP with UserCode "${userCode}" not found`,
         );
       }
       return match;
-    }
-
-    const results = await this.fetchLive<ExternalPospLoginData>(
-      '/Cognitensor/ListPospData',
-      { UserCode: userCode },
-    );
-
-    if (!results || results.length === 0) {
-      throw new NotFoundException(
-        `POSP with UserCode "${userCode}" not found in Cognitensor`,
-      );
     }
 
     return results[0];
@@ -240,10 +252,9 @@ export class ExternalApiService {
       filtered = filtered.filter((p) => p.cityid === query.cityId);
     }
 
-    // Name-based state/city filters map the name to an ID via the snapshots,
-    // since POSP records no longer carry location names.
+    // Name-based state/city filters — resolve name → ID via snapshot lookup
     const stateNameFilter = query.state?.trim().toLowerCase();
-    if (stateNameFilter && this.useSnapshot) {
+    if (stateNameFilter) {
       const states = this.readSnapshot<ExternalState>('states.json');
       const match = states.find(
         (s) => s.StateName.toLowerCase() === stateNameFilter,
@@ -252,7 +263,7 @@ export class ExternalApiService {
       else filtered = [];
     }
     const cityNameFilter = query.city?.trim().toLowerCase();
-    if (cityNameFilter && this.useSnapshot) {
+    if (cityNameFilter) {
       const cities = this.readSnapshot<ExternalCity>('cities-sample.json');
       const ids = new Set(
         cities

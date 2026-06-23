@@ -19,7 +19,7 @@ export class GetAllCustomersHandler implements IQueryHandler<GetAllCustomersQuer
   ): Promise<PaginatedResult<Customer>> {
     const { filters } = query;
     const { skip, take, page, pageSize } = resolvePagination(filters);
-    const districtIds = this.geo.districtIdsForQuery(filters);
+    const districtIds = await this.geo.districtIdsForQuery(filters);
     const where = buildCustomerFilterWhere(filters, districtIds);
 
     return this.repository.findPaginated(

@@ -8,7 +8,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import type { Response } from 'express';
-import * as crypto from 'crypto';
+import * as crypto from 'node:crypto';
 import { UserRepository } from '../auth/user.repository';
 import { Role, UserStatus } from '../../common/constants';
 import { AuthUserPayload } from '../auth/auth.service';
@@ -23,6 +23,17 @@ interface SsoTokenPayload {
   nonce: string;
   iat: number;
   exp: number;
+}
+
+/** Shape of the JSON response from the Xpresso SSO token-info endpoint. */
+interface XpressoTokenInfo {
+  /** The Roinet user code (e.g. "RC123456") returned by Xpresso after authentication. */
+  userCode?: string;
+  /** Alternative field name some Xpresso environments use. */
+  UserCode?: string;
+  /** Xpresso may also return the email or username directly. */
+  email?: string;
+  username?: string;
 }
 
 @Injectable()
@@ -133,7 +144,7 @@ export class SsoService {
 
   private signSsoToken(userCode: string): string {
     const privateKeyPem = this.getSsoPrivateKey();
-    const expirySecs = parseInt(
+    const expirySecs = Number.parseInt(
       this.config.get<string>('SSO_TOKEN_EXPIRY_SECONDS') ?? '300',
       10,
     );
@@ -230,7 +241,7 @@ export class SsoService {
       );
     }
     // Allow newline-escaped keys stored as single-line env vars
-    return key.replace(/\\n/g, '\n');
+    return key.replaceAll(String.raw`\n`, '\n');
   }
 
   private getSsoPublicKey(): string {
@@ -240,6 +251,6 @@ export class SsoService {
         'SSO_RSA_PUBLIC_KEY is not configured',
       );
     }
-    return key.replace(/\\n/g, '\n');
+    return key.replaceAll(String.raw`\n`, '\n');
   }
 }

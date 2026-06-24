@@ -11,7 +11,9 @@ import type {
   ExternalPospLoginData,
   ExternalState,
   ExternalZone,
+  ManagerIdentity,
 } from './external-api.types';
+import { externalUserTypeToRole } from './external-api.types';
 
 /** Alias kept for backward compat with sales-team.service */
 export type HierarchyEntry = ExternalHierarchyUser;
@@ -223,6 +225,64 @@ export class ExternalApiService {
     }
 
     return results[0];
+  }
+
+  /**
+   * Resolves a manager's identity from Cognitensor hierarchy data.
+   * Finds which column position (DM / R1–R7) the userCode occupies, extracts
+   * their usertype, maps it to an internal Role, and collects all districtIds
+   * they appear in.
+   * Throws NotFoundException if the userCode isn't found in any hierarchy row.
+   */
+  async getManagerIdentity(userCode: string): Promise<ManagerIdentity> {
+    const rows = await this.listHierarchy({ userCode });
+
+    if (!rows || rows.length === 0) {
+      throw new NotFoundException(
+        `No hierarchy records found for userCode "${userCode}"`,
+      );
+    }
+
+    const first = rows[0];
+    let userId = '';
+    let userName = '';
+    let usertypeStr = '';
+
+    if (first.DistrictManagerCode === userCode) {
+      userId = first.DistrictManagerId;
+      userName = first.DistrictManagerName;
+      usertypeStr = first.usertype ?? '12';
+    } else {
+      let found = false;
+      for (let i = 1; i <= 7; i++) {
+        const row = first as unknown as Record<string, string | undefined>;
+        if (row[`R${i}_UserCode`] === userCode) {
+          userId = row[`R${i}_UserId`] ?? '';
+          userName = row[`R${i}_UserName`] ?? '';
+          usertypeStr = row[`R${i}_usertype`] ?? '';
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        // Fallback to district manager position
+        userId = first.DistrictManagerId;
+        userName = first.DistrictManagerName;
+        usertypeStr = first.usertype ?? '12';
+      }
+    }
+
+    const usertypeNum = Number.parseInt(usertypeStr, 10);
+    const role = externalUserTypeToRole(usertypeNum);
+    if (!role) {
+      throw new NotFoundException(
+        `UserCode "${userCode}" has unhandled usertype ${usertypeNum} — not a loginable manager role`,
+      );
+    }
+
+    const districtIds = rows.map((r) => r.DistrictId).filter(Boolean);
+
+    return { userId, userCode, userName, usertype: usertypeNum, role, districtIds };
   }
 
   private filterAndPagePosps(

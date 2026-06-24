@@ -1,3 +1,84 @@
+import type { Role } from '../constants';
+
+/**
+ * External usertype values from Cognitensor ListHierarchyUserData.
+ * UserType 1 (CMF) and 2 (CSF) have no login access and are excluded from all
+ * analytics — they must not appear in any role mapping or scope resolution.
+ */
+export const ExternalUserType = {
+  ADMIN: 0,
+  CSP: 3,       // POSP login path (isPosp=true via ListPospData)
+  ASM: 4,       // Manager login (isPosp=false)
+  RH: 6,        // Manager login
+  ZH: 10,       // Manager login
+  ASSISTASM: 11, // Manager login — same scope as ASM
+  CH: 12,       // Manager login — Cluster Head, multiple districts
+  SZH: 14,      // Manager login — Super Zonal Head
+} as const;
+export type ExternalUserType = (typeof ExternalUserType)[keyof typeof ExternalUserType];
+
+/**
+ * Maps a Cognitensor usertype number to the internal Role string constant.
+ * Returns undefined for unhandled types (CMF=1, CSF=2) which should be ignored.
+ */
+export function externalUserTypeToRole(usertype: number): Role | undefined {
+  switch (usertype) {
+    case ExternalUserType.ADMIN:
+      return 'SUPER_ADMIN';
+    case ExternalUserType.SZH:
+      return 'NATIONAL_HEAD';
+    case ExternalUserType.ZH:
+      return 'ZH';
+    case ExternalUserType.RH:
+      return 'RH';
+    case ExternalUserType.ASM:
+    case ExternalUserType.ASSISTASM:
+      return 'ASM';
+    case ExternalUserType.CH:
+      return 'DM';
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * Maps a Cognitensor usertype number to the DistrictHierarchy column
+ * that stores this role's code (used for DB-based scope resolution fallback).
+ */
+export function externalUserTypeToHierarchyColumn(
+  usertype: number,
+): string | undefined {
+  switch (usertype) {
+    case ExternalUserType.SZH:
+      return 'nhCode';
+    case ExternalUserType.ZH:
+      return 'zhCode';
+    case ExternalUserType.RH:
+      return 'rhCode';
+    case ExternalUserType.ASM:
+    case ExternalUserType.ASSISTASM:
+      return 'asmCode';
+    case ExternalUserType.CH:
+      return 'dmCode';
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * Resolved identity for a manager logging in via SSO.
+ * Returned by ExternalApiService.getManagerIdentity().
+ */
+export interface ManagerIdentity {
+  userId: string;
+  userCode: string;
+  userName: string;
+  usertype: number;
+  role: Role;
+  /** All districtIds where this manager appears in the hierarchy chain */
+  districtIds: string[];
+}
+
 /** Raw wrapper returned by every Cognitensor endpoint */
 export interface CognitensorResponse<T> {
   description: string;

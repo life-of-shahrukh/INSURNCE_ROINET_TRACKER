@@ -2,7 +2,6 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
-  NotImplementedException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -15,6 +14,7 @@ import { AuthUserPayload } from '../auth/auth.service';
 import { buildAuthUserPayload } from '../auth/auth-payload.util';
 import { ExternalApiService } from '../../common/external-api/external-api.service';
 import { resolvePospDisplayName } from '../../common/external-api/posp-display.util';
+import type { ExternalHierarchyUser } from '../../common/external-api/external-api.types';
 
 const COOKIE_NAME = 'access_token';
 
@@ -83,9 +83,7 @@ export class SsoService {
     const payload = this.verifySsoToken(token);
 
     if (!isPosp) {
-      throw new NotImplementedException(
-        'Hierarchical manager SSO login is not yet implemented',
-      );
+      return this.loginManager(payload.userCode, res);
     }
 
     // Fetch fresh POSP data from Cognitensor (throws NotFoundException if not found)
@@ -124,14 +122,7 @@ export class SsoService {
       pospId: user.pospId ?? undefined,
     });
 
-    const expiryMs = 8 * 60 * 60 * 1000;
-    res.cookie(COOKIE_NAME, jwtToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: expiryMs,
-    });
+    this.setAuthCookie(res, jwtToken);
 
     this.logger.log(
       `SSO login successful for POSP userCode=${payload.userCode} user=${user.email}`,
@@ -140,7 +131,107 @@ export class SsoService {
     return buildAuthUserPayload({ ...user, salesTeam: null });
   }
 
+  // ─── Manager login path ───────────────────────────────────────────────────
+
+  private async loginManager(
+    userCode: string,
+    res: Response,
+  ): Promise<AuthUserPayload> {
+    const identity = await this.externalApiService.getManagerIdentity(userCode);
+
+    this.logger.log(
+      `SSO manager login: userCode=${userCode} role=${identity.role} districts=${identity.districtIds.length}`,
+    );
+
+    const user = await this.userRepo.upsertManagerFromSso({
+      userCode,
+      role: identity.role,
+      name: identity.userName,
+    });
+
+    if (user.status !== UserStatus.ACTIVE) {
+      throw new UnauthorizedException('Account is not active');
+    }
+
+    // Sync district hierarchy cache asynchronously — does not block login response
+    this.syncHierarchyCache(identity.districtIds, userCode).catch(
+      (err: unknown) =>
+        this.logger.warn(
+          `Failed to sync hierarchy cache for ${userCode}: ${err instanceof Error ? err.message : String(err)}`,
+        ),
+    );
+
+    const jwtToken = this.signAppJwt({
+      id: user.id,
+      email: user.email,
+      role: user.role as Role,
+      status: user.status as UserStatus,
+    });
+
+    this.setAuthCookie(res, jwtToken);
+
+    this.logger.log(
+      `SSO manager login successful for userCode=${userCode} role=${identity.role}`,
+    );
+
+    return {
+      id: user.id,
+      email: user.email,
+      role: user.role as Role,
+      status: user.status as UserStatus,
+      pospId: null,
+    };
+  }
+
+  /**
+   * Fetches full hierarchy rows for the given districtIds and upserts them
+   * into the DistrictHierarchy cache table so scope resolution can fall back
+   * to the DB when the live Cognitensor API is unavailable.
+   */
+  private async syncHierarchyCache(
+    districtIds: string[],
+    userCode: string,
+  ): Promise<void> {
+    const rows = await this.externalApiService.listHierarchy({ userCode });
+    if (!rows || rows.length === 0) return;
+
+    const mapped = rows
+      .filter((r: ExternalHierarchyUser) => districtIds.includes(r.DistrictId))
+      .map((r: ExternalHierarchyUser) => ({
+        districtId: r.DistrictId,
+        districtName: r.DistrictName,
+        dmId: r.DistrictManagerId || undefined,
+        dmCode: r.DistrictManagerCode || undefined,
+        dmName: r.DistrictManagerName || undefined,
+        asmId: r.R1_UserId || undefined,
+        asmCode: r.R1_UserCode || undefined,
+        asmName: r.R1_UserName || undefined,
+        rhId: r.R2_UserId || undefined,
+        rhCode: r.R2_UserCode || undefined,
+        rhName: r.R2_UserName || undefined,
+        zhId: r.R3_UserId || undefined,
+        zhCode: r.R3_UserCode || undefined,
+        zhName: r.R3_UserName || undefined,
+        nhId: r.R4_UserId || undefined,
+        nhCode: r.R4_UserCode || undefined,
+        nhName: r.R4_UserName || undefined,
+      }));
+
+    await this.userRepo.syncManagerDistrictHierarchy(mapped);
+  }
+
   // ─── Private helpers ──────────────────────────────────────────────────────
+
+  private setAuthCookie(res: Response, token: string): void {
+    const expiryMs = 8 * 60 * 60 * 1000;
+    res.cookie(COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: expiryMs,
+    });
+  }
 
   private signSsoToken(userCode: string): string {
     const privateKeyPem = this.getSsoPrivateKey();

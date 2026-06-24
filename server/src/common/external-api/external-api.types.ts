@@ -7,15 +7,16 @@ import type { Role } from '../constants';
  */
 export const ExternalUserType = {
   ADMIN: 0,
-  CSP: 3,       // POSP login path (isPosp=true via ListPospData)
-  ASM: 4,       // Manager login (isPosp=false)
-  RH: 6,        // Manager login
-  ZH: 10,       // Manager login
+  CSP: 3, // POSP login path (isPosp=true via ListPospData)
+  ASM: 4, // Manager login (isPosp=false)
+  RH: 6, // Manager login
+  ZH: 10, // Manager login
   ASSISTASM: 11, // Manager login — same scope as ASM
-  CH: 12,       // Manager login — Cluster Head, multiple districts
-  SZH: 14,      // Manager login — Super Zonal Head
+  CH: 12, // Manager login — Cluster Head, multiple districts
+  SZH: 14, // Manager login — Super Zonal Head
 } as const;
-export type ExternalUserType = (typeof ExternalUserType)[keyof typeof ExternalUserType];
+export type ExternalUserType =
+  (typeof ExternalUserType)[keyof typeof ExternalUserType];
 
 /**
  * Maps a Cognitensor usertype number to the internal Role string constant.

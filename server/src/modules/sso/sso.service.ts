@@ -165,7 +165,7 @@ export class SsoService {
       id: user.id,
       email: user.email,
       role: user.role as Role,
-      status: user.status as UserStatus,
+      status: user.status,
     });
 
     this.setAuthCookie(res, jwtToken);

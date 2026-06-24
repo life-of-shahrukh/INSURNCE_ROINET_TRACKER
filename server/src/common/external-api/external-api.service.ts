@@ -282,7 +282,14 @@ export class ExternalApiService {
 
     const districtIds = rows.map((r) => r.DistrictId).filter(Boolean);
 
-    return { userId, userCode, userName, usertype: usertypeNum, role, districtIds };
+    return {
+      userId,
+      userCode,
+      userName,
+      usertype: usertypeNum,
+      role,
+      districtIds,
+    };
   }
 
   private filterAndPagePosps(

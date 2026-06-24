@@ -3,9 +3,7 @@ import { Cron } from '@nestjs/schedule';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ExternalApiService } from '../../common/external-api/external-api.service';
 import { GeoCatalogService } from '../geo/geo-catalog.service';
-import type {
-  ExternalHierarchyUser,
-} from '../../common/external-api/external-api.types';
+import type { ExternalHierarchyUser } from '../../common/external-api/external-api.types';
 import {
   buildOrgGraph,
   type DistrictGeo,

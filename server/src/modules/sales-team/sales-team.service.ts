@@ -12,6 +12,7 @@ import {
   ExternalApiService,
   type HierarchyEntry,
 } from '../../common/external-api/external-api.service';
+import type { ExternalPospData } from '../../common/external-api/external-api.types';
 import type { SalesTeam } from '@prisma/client';
 import { SalesTeamListQueryDto } from './dto/sales-team-list-query.dto';
 import { buildSalesTeamFilterWhere } from './sales-team-filter.util';
@@ -254,9 +255,9 @@ export class SalesTeamService {
    * SSO login already updates per-POSP; this fills in everyone else on org sync.
    */
   async syncPospGeography(): Promise<number> {
-    let posps;
+    let posps: ExternalPospData[];
     try {
-      posps = this.externalApiService.listAllPosps();
+      posps = await this.externalApiService.listAllPosps();
     } catch (err) {
       this.logger.warn(`Failed to read POSP snapshot for geo sync: ${err}`);
       return 0;

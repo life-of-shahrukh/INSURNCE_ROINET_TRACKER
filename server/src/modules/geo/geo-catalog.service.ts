@@ -122,7 +122,9 @@ export class GeoCatalogService {
     return new Set(ids);
   }
 
-  private async scopedDistrictRows(scope?: HierarchyScope): Promise<DistrictItem[]> {
+  private async scopedDistrictRows(
+    scope?: HierarchyScope,
+  ): Promise<DistrictItem[]> {
     const rows = await this.allDistricts();
     const allowed = this.allowedDistrictIds(scope);
     if (!allowed) return rows;
@@ -205,7 +207,10 @@ export class GeoCatalogService {
   }
 
   /** Resolve ids back to items so the client can label selected chips. */
-  async districtsByIds(ids: string[], scope?: HierarchyScope): Promise<DistrictItem[]> {
+  async districtsByIds(
+    ids: string[],
+    scope?: HierarchyScope,
+  ): Promise<DistrictItem[]> {
     await this.buildAsync();
     const allowed = this.allowedDistrictIds(scope);
     return ids
@@ -217,7 +222,10 @@ export class GeoCatalogService {
       });
   }
 
-  async citiesByIds(ids: string[], scope?: HierarchyScope): Promise<CityItem[]> {
+  async citiesByIds(
+    ids: string[],
+    scope?: HierarchyScope,
+  ): Promise<CityItem[]> {
     await this.buildAsync();
     const allowed = this.allowedDistrictIds(scope);
     return ids

@@ -1,4 +1,10 @@
-import { Controller, Get, Query, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { GeoCatalogService } from './geo-catalog.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -23,7 +29,8 @@ export class GeoController {
 
   @Get('catalog')
   @ApiOperation({
-    summary: 'Small geo reference lists (zones, regions, states) in caller scope',
+    summary:
+      'Small geo reference lists (zones, regions, states) in caller scope',
   })
   getCatalog(@ResolvedScope() scope: HierarchyScope): Promise<GeoCatalog> {
     return this.geo.getCatalog(scope);

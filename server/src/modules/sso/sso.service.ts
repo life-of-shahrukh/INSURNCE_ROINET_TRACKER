@@ -26,7 +26,7 @@ interface SsoTokenPayload {
 }
 
 /** Shape of the JSON response from the Xpresso SSO token-info endpoint. */
-interface XpressoTokenInfo {
+interface _XpressoTokenInfo {
   /** The Roinet user code (e.g. "RC123456") returned by Xpresso after authentication. */
   userCode?: string;
   /** Alternative field name some Xpresso environments use. */

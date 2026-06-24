@@ -1750,6 +1750,52 @@ textarea {
   font-weight: 600;
 }
 
+.auth-sso-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-muted);
+  font-size: 12px;
+  margin: 2px 0;
+}
+
+.auth-sso-divider::before,
+.auth-sso-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.btn-xpresso-sso {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.btn-xpresso-sso:hover:not(:disabled) {
+  border-color: var(--primary-light);
+  background: var(--accent);
+  color: var(--primary);
+  box-shadow: var(--shadow);
+}
+
+.btn-xpresso-sso:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .posp-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));

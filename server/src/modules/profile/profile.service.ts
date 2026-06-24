@@ -74,20 +74,29 @@ export class ProfileService {
     private readonly geoCatalog: GeoCatalogService,
   ) {}
 
-  private geoResolver(): GeoNameResolver {
+  private async geoResolver(): Promise<GeoNameResolver> {
+    // Pre-fetch all geo data once so the resolver methods stay synchronous
+    // (matching the GeoNameResolver interface signature).
+    const [catalog, districts, cities] = await Promise.all([
+      this.geoCatalog.getCatalog(),
+      this.geoCatalog.searchDistricts('', 10000),
+      this.geoCatalog.searchCities('', 10000),
+    ]);
+    const districtMap = new Map(districts.map((d) => [d.id, d]));
+    const cityMap = new Map(cities.map((c) => [c.id, c]));
+    const stateMap = new Map(catalog.states.map((s) => [s.id, s]));
+
     return {
       districtById: (id) => {
-        const d = this.geoCatalog.districtsByIds([id])[0];
+        const d = districtMap.get(id);
         return d ? { name: d.name, stateName: d.stateName ?? null } : undefined;
       },
       cityById: (id) => {
-        const c = this.geoCatalog.citiesByIds([id])[0];
+        const c = cityMap.get(id);
         return c ? { name: c.name } : undefined;
       },
       stateById: (id) => {
-        const s = this.geoCatalog
-          .getCatalog()
-          .states.find((st) => st.id === id);
+        const s = stateMap.get(id);
         return s ? { name: s.name } : undefined;
       },
     };
@@ -172,7 +181,7 @@ export class ProfileService {
       const upline = await buildUplineSummary(
         this.prisma,
         user.posp,
-        this.geoResolver(),
+        await this.geoResolver(),
       );
       if (upline) response.teamSummary = upline;
     } else if (
@@ -183,7 +192,7 @@ export class ProfileService {
       const downline = await buildDownlineSummary(
         this.prisma,
         authUser,
-        this.geoResolver(),
+        await this.geoResolver(),
       );
       if (downline) response.teamSummary = downline;
     }

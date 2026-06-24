@@ -19,7 +19,7 @@ export class ExportPospCsvHandler implements IQueryHandler<ExportPospCsvQuery> {
     const scopeWhere = hierarchyScope
       ? buildPospScopeWhere(hierarchyScope)
       : {};
-    const districtIds = this.geo.districtIdsForQuery(filters);
+    const districtIds = await this.geo.districtIdsForQuery(filters);
     const filterWhere = buildPospFilterWhere(filters, districtIds);
     const where = mergeWhereClauses(
       scopeWhere,

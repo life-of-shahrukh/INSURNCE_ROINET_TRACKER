@@ -50,19 +50,27 @@ export class GeoCatalogService {
 
   private build(): void {
     if (this.districts && this.cities) return;
+    throw new Error(
+      'GeoCatalogService.build() is sync — call buildAsync() instead',
+    );
+  }
+
+  private async buildAsync(): Promise<void> {
+    if (this.districts && this.cities) return;
 
     const stateNameById = new Map<string, string>();
-    this.states = this.externalApi.listStates().map((s) => {
+    this.states = (await this.externalApi.listStates()).map((s) => {
       stateNameById.set(s.StateId, s.StateName);
       return { id: s.StateId, name: s.StateName };
     });
 
-    this.zones = this.externalApi
-      .listZones()
-      .map((z) => ({ id: z.Zoneid, name: z.ZoneName }));
+    this.zones = (await this.externalApi.listZones()).map((z) => ({
+      id: z.Zoneid,
+      name: z.ZoneName,
+    }));
 
     const regionMap = new Map<string, string>();
-    this.districts = this.externalApi.listDistricts('').map((d) => {
+    this.districts = (await this.externalApi.listDistricts('')).map((d) => {
       if (d.regionid) regionMap.set(d.regionid, d.regionname ?? d.regionid);
       return {
         id: d.DistrictId,
@@ -79,7 +87,7 @@ export class GeoCatalogService {
       .map(([id, name]) => ({ id, name }))
       .sort((a, b) => a.name.localeCompare(b.name));
 
-    this.cities = this.externalApi.listCities('').map((c) => ({
+    this.cities = (await this.externalApi.listCities('')).map((c) => ({
       id: c.CityId,
       name: c.CityName,
       districtId: c.DistrictId ?? null,
@@ -96,13 +104,13 @@ export class GeoCatalogService {
     );
   }
 
-  private allDistricts(): DistrictItem[] {
-    this.build();
+  private async allDistricts(): Promise<DistrictItem[]> {
+    await this.buildAsync();
     return this.districts as DistrictItem[];
   }
 
-  private allCities(): CityItem[] {
-    this.build();
+  private async allCities(): Promise<CityItem[]> {
+    await this.buildAsync();
     return this.cities as CityItem[];
   }
 
@@ -114,15 +122,15 @@ export class GeoCatalogService {
     return new Set(ids);
   }
 
-  private scopedDistrictRows(scope?: HierarchyScope): DistrictItem[] {
-    const rows = this.allDistricts();
+  private async scopedDistrictRows(scope?: HierarchyScope): Promise<DistrictItem[]> {
+    const rows = await this.allDistricts();
     const allowed = this.allowedDistrictIds(scope);
     if (!allowed) return rows;
     return rows.filter((d) => allowed.has(d.id));
   }
 
-  private scopedCityRows(scope?: HierarchyScope): CityItem[] {
-    const rows = this.allCities();
+  private async scopedCityRows(scope?: HierarchyScope): Promise<CityItem[]> {
+    const rows = await this.allCities();
     const allowed = this.allowedDistrictIds(scope);
     if (!allowed) return rows;
     return rows.filter(
@@ -133,9 +141,9 @@ export class GeoCatalogService {
   // ── public reads ──────────────────────────────────────────────────────────
 
   /** Small reference lists loaded whole on the client (scoped to territory). */
-  getCatalog(scope?: HierarchyScope): GeoCatalog {
-    this.build();
-    const districts = this.scopedDistrictRows(scope);
+  async getCatalog(scope?: HierarchyScope): Promise<GeoCatalog> {
+    await this.buildAsync();
+    const districts = await this.scopedDistrictRows(scope);
     const zoneIds = new Set(
       districts
         .map((d) => d.zoneId)
@@ -159,7 +167,7 @@ export class GeoCatalogService {
     };
   }
 
-  searchDistricts(
+  async searchDistricts(
     q: string,
     limit = 20,
     opts: {
@@ -168,9 +176,9 @@ export class GeoCatalogService {
       regionId?: string;
       scope?: HierarchyScope;
     } = {},
-  ): DistrictItem[] {
+  ): Promise<DistrictItem[]> {
     const term = q.trim().toLowerCase();
-    let rows = this.scopedDistrictRows(opts.scope);
+    let rows = await this.scopedDistrictRows(opts.scope);
     if (opts.stateId) rows = rows.filter((d) => d.stateId === opts.stateId);
     if (opts.zoneId) rows = rows.filter((d) => d.zoneId === opts.zoneId);
     if (opts.regionId) rows = rows.filter((d) => d.regionId === opts.regionId);
@@ -178,7 +186,7 @@ export class GeoCatalogService {
     return rows.slice(0, limit);
   }
 
-  searchCities(
+  async searchCities(
     q: string,
     limit = 20,
     opts: {
@@ -186,9 +194,9 @@ export class GeoCatalogService {
       stateId?: string;
       scope?: HierarchyScope;
     } = {},
-  ): CityItem[] {
+  ): Promise<CityItem[]> {
     const term = q.trim().toLowerCase();
-    let rows = this.scopedCityRows(opts.scope);
+    let rows = await this.scopedCityRows(opts.scope);
     if (opts.districtId)
       rows = rows.filter((c) => c.districtId === opts.districtId);
     if (opts.stateId) rows = rows.filter((c) => c.stateId === opts.stateId);
@@ -197,8 +205,8 @@ export class GeoCatalogService {
   }
 
   /** Resolve ids back to items so the client can label selected chips. */
-  districtsByIds(ids: string[], scope?: HierarchyScope): DistrictItem[] {
-    this.build();
+  async districtsByIds(ids: string[], scope?: HierarchyScope): Promise<DistrictItem[]> {
+    await this.buildAsync();
     const allowed = this.allowedDistrictIds(scope);
     return ids
       .map((id) => this.districtsById.get(id))
@@ -209,8 +217,8 @@ export class GeoCatalogService {
       });
   }
 
-  citiesByIds(ids: string[], scope?: HierarchyScope): CityItem[] {
-    this.build();
+  async citiesByIds(ids: string[], scope?: HierarchyScope): Promise<CityItem[]> {
+    await this.buildAsync();
     const allowed = this.allowedDistrictIds(scope);
     return ids
       .map((id) => this.citiesById.get(id))
@@ -224,23 +232,23 @@ export class GeoCatalogService {
   // ── resolution to districtIds (for scoped filtering) ──────────────────────
 
   /** A single geo selection -> the set of Cognitensor districtIds it covers. */
-  resolveDistrictIds(sel: GeoSelection): string[] {
-    this.build();
+  async resolveDistrictIds(sel: GeoSelection): Promise<string[]> {
+    await this.buildAsync();
     if (sel.districtId) return [sel.districtId];
     if (sel.cityId) {
       const city = this.citiesById.get(sel.cityId);
       return city?.districtId ? [city.districtId] : [];
     }
     if (sel.regionId)
-      return this.allDistricts()
+      return (await this.allDistricts())
         .filter((d) => d.regionId === sel.regionId)
         .map((d) => d.id);
     if (sel.stateId)
-      return this.allDistricts()
+      return (await this.allDistricts())
         .filter((d) => d.stateId === sel.stateId)
         .map((d) => d.id);
     if (sel.zoneId)
-      return this.allDistricts()
+      return (await this.allDistricts())
         .filter((d) => d.zoneId === sel.zoneId)
         .map((d) => d.id);
     return [];
@@ -251,7 +259,7 @@ export class GeoCatalogService {
    * intersect across dimensions. Returns null when nothing geo is selected
    * (so the caller leaves the query unfiltered).
    */
-  districtIdsForQuery(q: GeoFilterSelection): string[] | null {
+  async districtIdsForQuery(q: GeoFilterSelection): Promise<string[] | null> {
     const dimensions: Array<{ key: keyof GeoSelection; values?: string[] }> = [
       { key: 'zoneId', values: q.zone },
       { key: 'regionId', values: q.region },
@@ -265,7 +273,7 @@ export class GeoCatalogService {
       if (!dim.values?.length) continue;
       const union = new Set<string>();
       for (const value of dim.values) {
-        for (const id of this.resolveDistrictIds({ [dim.key]: value })) {
+        for (const id of await this.resolveDistrictIds({ [dim.key]: value })) {
           union.add(id);
         }
       }

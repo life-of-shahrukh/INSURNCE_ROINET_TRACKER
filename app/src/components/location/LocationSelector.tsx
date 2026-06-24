@@ -7,6 +7,7 @@
 
 'use client';
 
+import React from 'react';
 import { useLocationCascade } from '@/hooks/useExternalApi';
 import { useUIStore } from '@/store/ui-store';
 
@@ -20,11 +21,17 @@ interface LocationSelectorProps {
     cityName: string | null;
   }) => void;
   className?: string;
+  initialStateId?: string | null;
+  initialDistrictId?: string | null;
+  initialCityId?: string | null;
 }
 
 export function LocationSelector({
   onLocationChange,
   className = '',
+  initialStateId,
+  initialDistrictId,
+  initialCityId,
 }: LocationSelectorProps) {
   const {
     selectedState,
@@ -35,6 +42,20 @@ export function LocationSelector({
     setSelectedCity,
     resetLocationSelection,
   } = useUIStore();
+
+  // Initialize with provided values on mount
+  React.useEffect(() => {
+    if (initialStateId && initialStateId !== selectedState) {
+      setSelectedState(initialStateId);
+    }
+    if (initialDistrictId && initialDistrictId !== selectedDistrict) {
+      setSelectedDistrict(initialDistrictId);
+    }
+    if (initialCityId && initialCityId !== selectedCity) {
+      setSelectedCity(initialCityId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialStateId, initialDistrictId, initialCityId]);
 
   const { states, districts, cities } = useLocationCascade(
     selectedState,

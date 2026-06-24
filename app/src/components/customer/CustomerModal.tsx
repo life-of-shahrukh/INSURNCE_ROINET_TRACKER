@@ -12,6 +12,10 @@ interface CustomerModalProps {
   onClose: () => void;
   /** Name pre-filled (new-customer mode only) from the list search box. */
   prefillName?: string;
+  /** Optional callback when customer is created/updated successfully */
+  onSaved?: (customer: Customer) => void;
+  /** Optional z-index for the modal overlay (default: undefined, uses CSS default) */
+  zIndex?: number;
 }
 
 const emptyForm = {
@@ -38,6 +42,8 @@ export function CustomerModal({
   customer,
   onClose,
   prefillName,
+  onSaved,
+  zIndex,
 }: CustomerModalProps) {
   const createCustomer = useCreateCustomer();
   const updateCustomer = useUpdateCustomer();
@@ -88,14 +94,25 @@ export function CustomerModal({
       return;
     }
     setErrors({});
+    
+    // Clean the data: remove empty strings to avoid validation errors
+    const cleanData: Record<string, string> = {};
+    for (const [key, value] of Object.entries(formData)) {
+      if (value !== "" && value !== null) {
+        cleanData[key] = value as string;
+      }
+    }
+    
     try {
+      let savedCustomer: Customer;
       if (customer) {
-        await updateCustomer.mutateAsync({ id: customer.id, data: formData });
+        savedCustomer = await updateCustomer.mutateAsync({ id: customer.id, data: cleanData as never });
       } else {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { kycStatus, ...createPayload } = formData;
-        await createCustomer.mutateAsync(createPayload);
+        const { kycStatus, ...createPayload } = cleanData;
+        savedCustomer = await createCustomer.mutateAsync(createPayload as never);
       }
+      onSaved?.(savedCustomer);
       onClose();
     } catch (error) {
       console.error("Failed to save customer:", error);
@@ -125,17 +142,23 @@ export function CustomerModal({
   if (!open) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+    <div 
+      className="modal-overlay show" 
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      style={zIndex ? { zIndex } : undefined}
+    >
+      <div className="modal modal--wide" role="dialog" aria-modal="true">
         <div className="modal-header">
-          <h2>{customer ? "Edit Customer" : "New Customer"}</h2>
-          <button type="button" onClick={onClose} className="close-btn">
+          <div className="modal-title">{customer ? "Edit Customer" : "New Customer"}</div>
+          <button type="button" onClick={onClose} className="close-btn" aria-label="Close">
             ×
           </button>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="modal-body">
+        <div className="modal-body">
+          <form id="customer-form" onSubmit={handleSubmit}>
             <div className="form-grid">
               <div className="form-group">
                 <label htmlFor="name">Name *</label>
@@ -276,7 +299,12 @@ export function CustomerModal({
               <h3 style={{ marginBottom: "10px", fontSize: "14px", fontWeight: 600 }}>
                 Location
               </h3>
-              <LocationSelector onLocationChange={handleLocationChange} />
+              <LocationSelector 
+                onLocationChange={handleLocationChange}
+                initialStateId={formData.stateId || null}
+                initialDistrictId={formData.districtId || null}
+                initialCityId={formData.cityId || null}
+              />
             </div>
 
             <div className="form-group" style={{ marginTop: "20px" }}>
@@ -306,25 +334,26 @@ export function CustomerModal({
                 <span className="field-error">{errors.pincode}</span>
               )}
             </div>
-          </div>
+          </form>
+        </div>
 
-          <div className="modal-footer">
-            <button type="button" onClick={onClose} className="btn-secondary">
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="btn-primary"
-              disabled={createCustomer.isPending || updateCustomer.isPending}
-            >
-              {createCustomer.isPending || updateCustomer.isPending
-                ? "Saving..."
-                : customer
-                  ? "Update"
-                  : "Create"}
-            </button>
-          </div>
-        </form>
+        <div className="modal-footer">
+          <button type="button" onClick={onClose} className="btn-secondary">
+            Cancel
+          </button>
+          <button
+            type="submit"
+            form="customer-form"
+            className="btn-primary"
+            disabled={createCustomer.isPending || updateCustomer.isPending}
+          >
+            {createCustomer.isPending || updateCustomer.isPending
+              ? "Saving..."
+              : customer
+                ? "Update"
+                : "Create"}
+          </button>
+        </div>
       </div>
     </div>
   );

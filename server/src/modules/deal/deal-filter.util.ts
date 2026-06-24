@@ -50,10 +50,7 @@ export function buildDealFilterWhere(
   }
 
   if (query.wonOnly === 'true') {
-    clauses.push({
-      policyNo: { not: '' },
-      convertedFromLead: { status: 'WON' },
-    });
+    clauses.push({ policyNo: { not: '' } });
   }
 
   if (query.search?.trim()) {

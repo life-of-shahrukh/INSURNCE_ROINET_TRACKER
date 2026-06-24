@@ -122,7 +122,7 @@ export class SalesTeamService {
 
     let hierarchyData: HierarchyEntry[];
     try {
-      hierarchyData = this.externalApiService.listHierarchy();
+      hierarchyData = await this.externalApiService.listHierarchy();
     } catch (err) {
       this.logger.error('Failed to fetch hierarchy data', err);
       throw new BadRequestException(

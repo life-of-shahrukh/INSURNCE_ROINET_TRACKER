@@ -19,7 +19,7 @@ export class ExportCustomersCsvHandler implements IQueryHandler<ExportCustomersC
     const scopeWhere = hierarchyScope
       ? buildCustomerScopeWhere(hierarchyScope)
       : {};
-    const districtIds = this.geo.districtIdsForQuery(filters);
+    const districtIds = await this.geo.districtIdsForQuery(filters);
     const filterWhere = buildCustomerFilterWhere(filters, districtIds);
     const where = mergeWhereClauses(
       scopeWhere,

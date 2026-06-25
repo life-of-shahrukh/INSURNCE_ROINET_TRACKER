@@ -123,15 +123,13 @@ const POLICIES = [
 const DEAL_STATUSES = ['H', 'W', 'C'] as const;
 
 const LEAD_PRODUCTS = [
-  'LIFE',
   'HEALTH',
   'MOTOR',
-  'PROPERTY',
-  'MARINE',
+  'LIFE',
   'TRAVEL',
-  'COMMERCIAL',
-  'CROP',
-  'ENGINEERING',
+  'COMMERCIAL_LINES',
+  'RURAL',
+  'HOME',
 ] as const;
 
 const LEAD_TIMELINES = ['THIS_MONTH', 'T_PLUS_1', 'T_PLUS_2', 'LATER'] as const;

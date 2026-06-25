@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useCreateLead, useUpdateLead } from "@/hooks/useLeads";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
+import { ProductCategorySelect } from "@/components/ui/ProductCategorySelect";
 import { CustomerSearchSelect } from "@/components/customer/CustomerSearchSelect";
 import { leadFormSchema, type LeadFormValues } from "@/lib/schemas";
 import { otpApi } from "@/lib/api/otp-api";
@@ -13,7 +14,6 @@ import type {
   Lead,
   CreateLeadInput,
   ClosureTimeline,
-  LeadProduct,
   LeadStatus,
 } from "@/lib/api/lead-api";
 
@@ -32,7 +32,8 @@ type OtpState =
 
 const empty: CreateLeadInput & { status: LeadStatus } = {
   customerId: "",
-  product: "LIFE",
+  product: "HEALTH",
+  productSubType: "",
   estimatedPremium: 0,
   estimatedSum: 0,
   closureTimeline: "THIS_MONTH",
@@ -86,6 +87,7 @@ export function LeadModal({ open, lead, onClose }: LeadModalProps) {
       setForm({
         customerId: lead.customerId,
         product: lead.product,
+        productSubType: lead.productSubType || "",
         estimatedPremium: lead.estimatedPremium,
         estimatedSum: lead.estimatedSum || 0,
         closureTimeline: lead.closureTimeline,
@@ -300,24 +302,26 @@ export function LeadModal({ open, lead, onClose }: LeadModalProps) {
             </div>
           )}
 
-          <div className="form-group">
-            <label htmlFor="l-product">Product *</label>
-            <select
-              id="l-product"
-              required
-              value={form.product}
-              onChange={(e) =>
-                setForm({ ...form, product: e.target.value as LeadProduct })
-              }
-            >
-              <option value="LIFE">Life</option>
-              <option value="HEALTH">Health</option>
-              <option value="MOTOR">Motor</option>
-            </select>
-            {errors.product && (
-              <span className="field-error">{errors.product}</span>
-            )}
-          </div>
+          {/* Client Code & Proposal Code display */}
+          {selectedCustomer?.clientCode && (
+            <div className="form-group full">
+              <div style={{ fontSize: 12, color: "#6b7280", display: "flex", gap: 16, flexWrap: "wrap" }}>
+                <span>Client ID: <strong style={{ color: "#1f2937" }}>{selectedCustomer.clientCode}</strong></span>
+                {lead?.proposalCode && (
+                  <span>Proposal ID: <strong style={{ color: "#1f2937" }}>{lead.proposalCode}</strong></span>
+                )}
+              </div>
+            </div>
+          )}
+
+          <ProductCategorySelect
+            productLine={form.product}
+            productSubType={form.productSubType}
+            onProductLineChange={(val) => setForm({ ...form, product: val })}
+            onSubTypeChange={(val) => setForm({ ...form, productSubType: val })}
+            required
+            error={errors.product}
+          />
 
           <div className="form-group">
             <label htmlFor="l-timeline">Closure Timeline *</label>

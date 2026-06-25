@@ -9,6 +9,8 @@ datasource db {
 
 model Customer {
   id              String    @id @default(cuid()) @db.NVarChar(36)
+  /// Human-readable client code: ROI-CUST-YYYY-NNNNN (auto-generated on creation)
+  clientCode      String?   @unique @db.NVarChar(30)
   name            String    @db.NVarChar(200)
   email           String?   @db.NVarChar(200)
   mobile          String    @unique @db.NVarChar(20)
@@ -16,7 +18,7 @@ model Customer {
   dateOfBirth     DateTime?
   panNumber       String?   @db.NVarChar(20)
   aadharNumber    String?   @db.NVarChar(20)
-  
+
   stateId         String?   @db.NVarChar(20)
   stateName       String?   @db.NVarChar(100)
   districtId      String?   @db.NVarChar(20)
@@ -25,15 +27,15 @@ model Customer {
   cityName        String?   @db.NVarChar(100)
   address         String?   @db.NVarChar(500)
   pincode         String?   @db.NVarChar(10)
-  
+
   /// PENDING | VERIFIED | REJECTED
   kycStatus       String    @default("PENDING") @db.NVarChar(20)
   source          String?   @db.NVarChar(50)
   mobileVerified  Boolean   @default(false)
-  
+
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
-  
+
   leads           Lead[]
   deals           Deal[]
   policies        Policy[]
@@ -65,6 +67,8 @@ model Lead {
   status            String    @default("NEW") @db.NVarChar(20)
   /// H = Hot, W = Warm, C = Cold (pipeline temperature from create/edit popup)
   heatStatus        String?   @db.NVarChar(1)
+  /// Auto-generated proposal code: PROP-YYYY-NNNNN (populated on PROPOSAL_SENT)
+  proposalCode      String?   @unique @db.NVarChar(30)
 
   source            String?   @db.NVarChar(50)
   remarks           String?   @db.NVarChar(500)
@@ -400,4 +404,14 @@ model OtpRequest {
   createdAt DateTime @default(now())
 
   @@index([mobile])
+}
+
+/// Auto-incrementing sequence counters for human-readable IDs (clientCode, proposalCode).
+model Sequence {
+  id        String @id @db.NVarChar(50)
+  year      Int
+  lastValue Int    @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@unique([id, year])
 }

@@ -3,12 +3,14 @@ import { CreateCustomerCommand } from './create-customer.command';
 import { CustomerRepository } from '../customer.repository';
 import { Customer } from '@prisma/client';
 import { CustomerCreatedEvent } from '../events/customer-created.event';
+import { SequenceService } from '../../../common/sequence/sequence.service';
 
 @CommandHandler(CreateCustomerCommand)
 export class CreateCustomerHandler implements ICommandHandler<CreateCustomerCommand> {
   constructor(
     private readonly repository: CustomerRepository,
     private readonly eventBus: EventBus,
+    private readonly sequenceService: SequenceService,
   ) {}
 
   async execute(command: CreateCustomerCommand): Promise<Customer> {
@@ -44,7 +46,10 @@ export class CreateCustomerHandler implements ICommandHandler<CreateCustomerComm
       });
     }
 
+    const clientCode = await this.sequenceService.nextCode('CUSTOMER');
+
     const customer = await this.repository.create({
+      clientCode,
       name: dto.name,
       email: dto.email,
       mobile: dto.mobile,

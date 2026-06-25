@@ -47,12 +47,15 @@ export interface Lead {
   customerId: string;
   customer?: Customer;
   assignedToId?: string;
-  product: 'LIFE' | 'HEALTH' | 'MOTOR';
+  product: 'HEALTH' | 'MOTOR' | 'LIFE' | 'TRAVEL' | 'COMMERCIAL_LINES' | 'RURAL' | 'HOME';
+  productSubType?: string;
   estimatedPremium: number;
   estimatedSum?: number;
   closureTimeline: 'THIS_MONTH' | 'T_PLUS_1' | 'T_PLUS_2' | 'LATER';
   expectedCloseDate?: string;
   status: 'NEW' | 'CONTACTED' | 'QUALIFIED' | 'PROPOSAL_SENT' | 'WON' | 'LOST';
+  heatStatus?: string;
+  proposalCode?: string;
   source?: string;
   remarks?: string;
   convertedToDealId?: string;

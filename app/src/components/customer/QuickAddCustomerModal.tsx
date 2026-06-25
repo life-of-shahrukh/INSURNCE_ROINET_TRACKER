@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/Button";
 import { useCreateCustomer } from "@/hooks/useCustomers";
 import type { Customer } from "@/lib/api/customer-api";
-import { POLICY_TYPES } from "@/lib/constants";
+import { INSURANCE_PRODUCTS } from "@/lib/filters/insurance-products";
 
 interface QuickAddCustomerModalProps {
   open: boolean;
@@ -28,7 +28,7 @@ export function QuickAddCustomerModal({
 }: QuickAddCustomerModalProps): React.ReactElement | null {
   const [name, setName] = useState(prefillName);
   const [mobile, setMobile] = useState("");
-  const [policyType, setPolicyType] = useState<string>(POLICY_TYPES[0]);
+  const [policyType, setPolicyType] = useState<string>(INSURANCE_PRODUCTS[0].value);
   const [mobileError, setMobileError] = useState("");
 
   const { mutateAsync: createCustomer, isPending } = useCreateCustomer();
@@ -38,7 +38,7 @@ export function QuickAddCustomerModal({
     if (open) {
       setName(prefillName);
       setMobile("");
-      setPolicyType(POLICY_TYPES[0]);
+      setPolicyType(INSURANCE_PRODUCTS[0].value);
       setMobileError("");
     }
   }, [open, prefillName]);
@@ -183,9 +183,9 @@ export function QuickAddCustomerModal({
               onChange={(e) => setPolicyType(e.target.value)}
               disabled={isPending}
             >
-              {POLICY_TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {t}
+              {INSURANCE_PRODUCTS.map((p) => (
+                <option key={p.value} value={p.value}>
+                  {p.label}
                 </option>
               ))}
             </select>

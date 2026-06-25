@@ -4,6 +4,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CqrsModule } from '@nestjs/cqrs';
 import { PrismaModule } from './prisma/prisma.module';
+import { SequenceModule } from './common/sequence/sequence.module';
 import { PospModule } from './modules/posp/posp.module';
 import { DealModule } from './modules/deal/deal.module';
 import { AuthModule } from './modules/auth/auth.module';
@@ -27,6 +28,7 @@ import { OtpModule } from './modules/otp/otp.module';
     ScheduleModule.forRoot(),
     CqrsModule.forRoot(),
     PrismaModule,
+    SequenceModule,
     AuthModule,
     SsoModule,
     PospModule,

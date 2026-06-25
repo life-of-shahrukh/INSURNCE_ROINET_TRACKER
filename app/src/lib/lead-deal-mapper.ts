@@ -1,4 +1,4 @@
-import type { HeatStatus, CreateLeadInput, LeadProduct, UpdateLeadInput } from "@/lib/api/lead-api";
+import type { HeatStatus, CreateLeadInput, UpdateLeadInput } from "@/lib/api/lead-api";
 import type { DealStatus } from "@/lib/types";
 import {
   closureTimelineToHeatStatus,
@@ -6,18 +6,22 @@ import {
   suggestedExpectedCloseDateForTimeline,
 } from "@/lib/closure-timeline";
 
-const POLICY_TO_PRODUCT: Record<string, LeadProduct | string> = {
+/**
+ * Maps legacy display-name policy strings to product codes.
+ * Used for backward compatibility with older deal data.
+ */
+const POLICY_TO_PRODUCT: Record<string, string> = {
   Life: "LIFE",
   Health: "HEALTH",
   Motor: "MOTOR",
   Travel: "TRAVEL",
-  Home: "PROPERTY",
-  Marine: "MARINE",
+  Home: "HOME",
+  Marine: "COMMERCIAL_LINES",
   Term: "LIFE",
   ULIP: "LIFE",
-  "Personal Loan": "COMMERCIAL",
-  "Home Loan": "COMMERCIAL",
-  "Business Loan": "COMMERCIAL",
+  "Personal Loan": "COMMERCIAL_LINES",
+  "Home Loan": "COMMERCIAL_LINES",
+  "Business Loan": "COMMERCIAL_LINES",
 };
 
 const PRODUCT_TO_POLICY: Record<string, string> = {
@@ -25,19 +29,19 @@ const PRODUCT_TO_POLICY: Record<string, string> = {
   HEALTH: "Health",
   MOTOR: "Motor",
   TRAVEL: "Travel",
-  PROPERTY: "Home",
-  MARINE: "Marine",
-  COMMERCIAL: "Business Loan",
-  CROP: "Life",
-  ENGINEERING: "Life",
+  HOME: "Home",
+  COMMERCIAL_LINES: "Commercial Lines",
+  RURAL: "Rural",
 };
 
 export function mapPolicyToProduct(policy: string): string {
-  return POLICY_TO_PRODUCT[policy] ?? policy.toUpperCase().replace(/\s+/g, "_");
+  if (POLICY_TO_PRODUCT[policy]) return POLICY_TO_PRODUCT[policy];
+  return policy;
 }
 
 export function mapProductToPolicy(product: string): string {
-  return PRODUCT_TO_POLICY[product] ?? product;
+  if (PRODUCT_TO_POLICY[product]) return PRODUCT_TO_POLICY[product];
+  return product;
 }
 
 export interface LeadFormPayload {
@@ -61,7 +65,7 @@ export function formToCreateLeadInput(form: LeadFormPayload): CreateLeadInput {
 
   return {
     customerId: form.customerId,
-    product: mapPolicyToProduct(form.policy) as LeadProduct,
+    product: mapPolicyToProduct(form.policy),
     estimatedPremium: +form.premium || 0,
     estimatedSum: +form.sum || 0,
     expectedCloseDate,
@@ -91,7 +95,7 @@ export function formToUpdateLeadInput(
 
   return {
     customerId: form.customerId,
-    product: mapPolicyToProduct(form.policy) as LeadProduct,
+    product: mapPolicyToProduct(form.policy),
     estimatedPremium: +form.premium || 0,
     estimatedSum: +form.sum || 0,
     expectedCloseDate,

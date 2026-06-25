@@ -10,15 +10,13 @@ import {
 import { Transform, Type } from 'class-transformer';
 
 const PRODUCT_LINES = [
-  'LIFE',
   'HEALTH',
   'MOTOR',
-  'PROPERTY',
-  'MARINE',
+  'LIFE',
   'TRAVEL',
-  'COMMERCIAL',
-  'CROP',
-  'ENGINEERING',
+  'COMMERCIAL_LINES',
+  'RURAL',
+  'HOME',
 ] as const;
 
 export class CreateLeadDto {
@@ -35,6 +33,11 @@ export class CreateLeadDto {
   @IsNotEmpty()
   @IsEnum(PRODUCT_LINES)
   product: (typeof PRODUCT_LINES)[number];
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  productSubType?: string;
 
   @IsNotEmpty()
   @IsNumber()

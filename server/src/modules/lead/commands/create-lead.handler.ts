@@ -47,6 +47,7 @@ export class CreateLeadHandler implements ICommandHandler<CreateLeadCommand> {
       }),
       ...(pospId && { posp: { connect: { id: pospId } } }),
       product: dto.product,
+      productSubType: dto.productSubType ?? null,
       estimatedPremium: dto.estimatedPremium,
       estimatedSum: dto.estimatedSum,
       closureTimeline,

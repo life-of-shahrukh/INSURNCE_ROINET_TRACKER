@@ -3,6 +3,7 @@ import { fetchPaginated, request } from './fetch-client';
 
 export interface Customer {
   id: string;
+  clientCode?: string;
   name: string;
   email?: string;
   mobile: string;

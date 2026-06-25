@@ -22,15 +22,13 @@ import { fetchAndDownloadCsv } from "@/lib/crm-calculations";
 import { toast } from "sonner";
 
 const PRODUCT_ICON: Record<string, string> = {
-  LIFE:        "♥",
-  HEALTH:      "✚",
-  MOTOR:       "◈",
-  PROPERTY:    "⌂",
-  MARINE:      "⚓",
-  TRAVEL:      "✈",
-  COMMERCIAL:  "⚙",
-  CROP:        "🌾",
-  ENGINEERING: "🔧",
+  HEALTH:          "✚",
+  MOTOR:           "◈",
+  LIFE:            "♥",
+  TRAVEL:          "✈",
+  COMMERCIAL_LINES: "⚙",
+  RURAL:           "🌾",
+  HOME:            "⌂",
 };
 
 function TimelineStatusBadge({

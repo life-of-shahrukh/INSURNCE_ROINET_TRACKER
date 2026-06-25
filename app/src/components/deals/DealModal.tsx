@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/Button";
 import { TrashIconButton } from "@/components/ui/TrashIconButton";
 import { Modal } from "@/components/ui/Modal";
-import { POLICY_TYPES } from "@/lib/constants";
 import { useCrm } from "@/providers/crm-provider";
 import { useAuth } from "@/providers/auth-provider";
 import { useProfile } from "@/hooks/useProfile";
@@ -13,6 +12,7 @@ import { useCreateLead, useUpdateLead, useDeleteLead } from "@/hooks/useLeads";
 import { useUpdateDeal } from "@/hooks/useUpdateDeal";
 import { CustomerSearchSelect } from "@/components/customer/CustomerSearchSelect";
 import { QuickAddCustomerModal } from "@/components/customer/QuickAddCustomerModal";
+import { ProductCategorySelect } from "@/components/ui/ProductCategorySelect";
 import { dealFormSchema, type DealFormValues } from "@/lib/schemas";
 import type { Deal, DealInput, DealStatus } from "@/lib/types";
 import type { Lead } from "@/lib/api/lead-api";
@@ -27,7 +27,6 @@ import {
 import {
   formToCreateLeadInput,
   formToUpdateLeadInput,
-  mapProductToPolicy,
 } from "@/lib/lead-deal-mapper";
 
 interface DealModalProps {
@@ -43,7 +42,7 @@ const emptyForm = {
   pospId: "",
   customerId: "",
   customer: "",
-  policy: "Life",
+  policy: "HEALTH",
   sum: "",
   premium: "",
   coa: "0",
@@ -102,7 +101,7 @@ export function DealModal({ open, lead, deal, onClose }: DealModalProps) {
         pospId: lead.pospId ?? "",
         customerId: lead.customerId,
         customer: lead.customer?.name ?? "",
-        policy: mapProductToPolicy(lead.product),
+        policy: lead.product,
         sum: String(lead.estimatedSum ?? ""),
         premium: String(lead.estimatedPremium ?? ""),
         coa: "0",
@@ -126,7 +125,7 @@ export function DealModal({ open, lead, deal, onClose }: DealModalProps) {
         pospId: deal.pospId ?? "",
         customerId: deal.customerId ?? "",
         customer: deal.customer,
-        policy: mapProductToPolicy(deal.policy),
+        policy: deal.policy,
         sum: String(deal.sum ?? ""),
         premium: String(deal.premium ?? ""),
         coa: String(deal.coa ?? 0),
@@ -359,21 +358,13 @@ export function DealModal({ open, lead, deal, onClose }: DealModalProps) {
               </span>
             )}
 
-            <div className="form-group">
-              <label htmlFor="d-policy">Policy Type</label>
-              <select
-                id="d-policy"
-                required
-                value={form.policy}
-                onChange={(e) => setForm({ ...form, policy: e.target.value })}
-              >
-                {POLICY_TYPES.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <ProductCategorySelect
+              productLine={form.policy}
+              productSubType=""
+              onProductLineChange={(val) => setForm({ ...form, policy: val })}
+              onSubTypeChange={() => {}}
+              required
+            />
 
             <div className="form-group">
               <label htmlFor="d-sum">Sum Assured (₹)</label>

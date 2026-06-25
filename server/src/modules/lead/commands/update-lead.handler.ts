@@ -2,7 +2,7 @@ import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { UpdateLeadCommand } from './update-lead.command';
 import { LeadRepository } from '../lead.repository';
 import { Lead } from '@prisma/client';
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { LeadStatusChangedEvent } from '../events/lead-status-changed.event';
 import { LeadConvertedEvent } from '../events/lead-converted.event';
 import { PrismaService } from '../../../prisma/prisma.service';
@@ -14,6 +14,7 @@ import {
 import { convertLeadToDeal } from '../lead-conversion.util';
 import { Role } from '../../../common/constants';
 import { assertLeadInScope } from '../../../common/auth/scope-assert.util';
+import { SequenceService } from '../../../common/sequence/sequence.service';
 
 function toDate(val: Date | string | undefined | null): Date | undefined {
   if (!val) return undefined;
@@ -28,6 +29,7 @@ export class UpdateLeadHandler implements ICommandHandler<UpdateLeadCommand> {
     private readonly repository: LeadRepository,
     private readonly eventBus: EventBus,
     private readonly prisma: PrismaService,
+    private readonly sequenceService: SequenceService,
   ) {}
 
   async execute(command: UpdateLeadCommand): Promise<Lead> {
@@ -88,7 +90,23 @@ export class UpdateLeadHandler implements ICommandHandler<UpdateLeadCommand> {
     const hasLeadUpdates = Object.keys(updateData).length > 0;
     let workingLead = existing;
 
-    if (hasLeadUpdates) {
+    // Auto-generate proposalCode when transitioning to PROPOSAL_SENT
+    if (
+      dto.status === 'PROPOSAL_SENT' &&
+      existing.status !== 'PROPOSAL_SENT' &&
+      !existing.proposalCode
+    ) {
+      updateData.proposalCode = await this.sequenceService.nextCode('PROPOSAL');
+    }
+
+    // Enforce policyNo when transitioning to WON
+    if (dto.status === 'WON' && existing.status !== 'WON' && !policyNo?.trim()) {
+      throw new BadRequestException(
+        'Policy number is required when closing a lead as WON',
+      );
+    }
+
+    if (hasLeadUpdates || updateData.proposalCode) {
       workingLead = await this.repository.update(id, updateData);
       if (dto.status && dto.status !== existing.status) {
         this.eventBus.publish(

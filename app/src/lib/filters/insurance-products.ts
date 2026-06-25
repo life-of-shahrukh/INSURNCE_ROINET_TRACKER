@@ -16,6 +16,39 @@ export interface ProductLine {
 
 export const INSURANCE_PRODUCTS: ProductLine[] = [
   {
+    value: "HEALTH",
+    label: "Health Insurance",
+    subTypes: [
+      { value: "INDIVIDUAL_MEDICLAIM", label: "Individual Mediclaim" },
+      { value: "FAMILY_FLOATER", label: "Family Floater" },
+      { value: "GROUP_MEDICLAIM", label: "Group Mediclaim (GMC)" },
+      { value: "GROUP_PERSONAL_ACCIDENT", label: "Group Personal Accident (GPA)" },
+      { value: "PERSONAL_ACCIDENT", label: "Personal Accident (PA)" },
+      { value: "HOSPI_SHIELD_CASH", label: "Hospi Shield / Cash" },
+      { value: "CRITICAL_ILLNESS", label: "Critical Illness" },
+      { value: "TOP_UP", label: "Top-Up / Super Top-Up" },
+      { value: "SENIOR_CITIZEN", label: "Senior Citizen" },
+      { value: "MATERNITY", label: "Maternity Cover" },
+    ],
+  },
+  {
+    value: "MOTOR",
+    label: "Motor Insurance",
+    subTypes: [
+      { value: "PRIVATE_CAR", label: "Private Car" },
+      { value: "FLEET", label: "Fleet" },
+      { value: "PCV", label: "PCV (Passenger Carrying Vehicle)" },
+      { value: "COMMERCIAL_VEHICLE", label: "Commercial Vehicle" },
+      { value: "SCHOOL_BUSES", label: "School Buses" },
+      { value: "MISC_D_TRACTOR", label: "Misc-D — Tractor" },
+      { value: "MISC_D_CRANES", label: "Misc-D — Cranes" },
+      { value: "MISC_D_JCB_RTO", label: "Misc-D — JCB (RTO Registration)" },
+      { value: "THREE_WHEELER_AUTO", label: "Three Wheeler — Auto Rickshaw" },
+      { value: "THREE_WHEELER_E_RICKSHAW", label: "Three Wheeler — E-Rickshaw" },
+      { value: "TWO_WHEELER", label: "Two Wheeler" },
+    ],
+  },
+  {
     value: "LIFE",
     label: "Life Insurance",
     subTypes: [
@@ -30,89 +63,43 @@ export const INSURANCE_PRODUCTS: ProductLine[] = [
     ],
   },
   {
-    value: "HEALTH",
-    label: "Health Insurance",
-    subTypes: [
-      { value: "INDIVIDUAL_MEDICLAIM", label: "Individual Mediclaim" },
-      { value: "FAMILY_FLOATER", label: "Family Floater" },
-      { value: "CRITICAL_ILLNESS", label: "Critical Illness" },
-      { value: "PERSONAL_ACCIDENT", label: "Personal Accident" },
-      { value: "GROUP_HEALTH", label: "Group Health (GMC)" },
-      { value: "TOP_UP", label: "Top-Up / Super Top-Up" },
-      { value: "SENIOR_CITIZEN", label: "Senior Citizen" },
-      { value: "MATERNITY", label: "Maternity Cover" },
-    ],
-  },
-  {
-    value: "MOTOR",
-    label: "Motor Insurance",
-    subTypes: [
-      { value: "PRIVATE_CAR_COMP", label: "Private Car — Comprehensive" },
-      { value: "PRIVATE_CAR_TP", label: "Private Car — Third Party" },
-      { value: "TWO_WHEELER_COMP", label: "Two Wheeler — Comprehensive" },
-      { value: "TWO_WHEELER_TP", label: "Two Wheeler — Third Party" },
-      { value: "COMMERCIAL_VEHICLE", label: "Commercial Vehicle" },
-      { value: "GOODS_VEHICLE", label: "Goods Carrying Vehicle" },
-      { value: "PASSENGER_VEHICLE", label: "Passenger Vehicle" },
-    ],
-  },
-  {
-    value: "PROPERTY",
-    label: "Property / Fire Insurance",
-    subTypes: [
-      { value: "HOME_INSURANCE", label: "Home Insurance" },
-      { value: "FIRE_ALLIED", label: "Fire & Allied Perils" },
-      { value: "BURGLARY", label: "Burglary" },
-      { value: "SHOP_INSURANCE", label: "Shop / Office Insurance" },
-    ],
-  },
-  {
-    value: "MARINE",
-    label: "Marine Insurance",
-    subTypes: [
-      { value: "MARINE_CARGO", label: "Marine Cargo" },
-      { value: "MARINE_HULL", label: "Marine Hull" },
-      { value: "TRANSIT", label: "Transit Insurance" },
-    ],
-  },
-  {
     value: "TRAVEL",
     label: "Travel Insurance",
     subTypes: [
-      { value: "DOMESTIC_TRAVEL", label: "Domestic Travel" },
-      { value: "INTERNATIONAL_TRAVEL", label: "International Travel" },
-      { value: "STUDENT_TRAVEL", label: "Student Travel Abroad" },
+      { value: "DOMESTIC_TRAVEL", label: "Domestic" },
+      { value: "INTERNATIONAL_TRAVEL", label: "International" },
     ],
   },
   {
-    value: "COMMERCIAL",
-    label: "Commercial / Corporate",
+    value: "COMMERCIAL_LINES",
+    label: "Commercial Lines",
     subTypes: [
-      { value: "GROUP_TERM_LIFE", label: "Group Term Life" },
-      { value: "WORKERS_COMP", label: "Workers' Compensation" },
-      { value: "DIRECTORS_OFFICERS", label: "Directors & Officers" },
-      { value: "PUBLIC_LIABILITY", label: "Public Liability" },
+      { value: "ENGINEERING", label: "Engineering" },
+      { value: "AVIATION", label: "Aviation" },
+      { value: "CREDIT_INSURANCE", label: "Credit Insurance" },
+      { value: "LIABILITY_INSURANCE", label: "Liability Insurance" },
+      { value: "MARINE", label: "Marine" },
+      { value: "FIRE", label: "Fire" },
+      { value: "CYBER_INSURANCE", label: "Cyber Insurance" },
       { value: "PROFESSIONAL_INDEMNITY", label: "Professional Indemnity" },
-      { value: "PRODUCT_LIABILITY", label: "Product Liability" },
     ],
   },
   {
-    value: "CROP",
-    label: "Crop / Agriculture Insurance",
+    value: "RURAL",
+    label: "Rural Insurance",
     subTypes: [
-      { value: "PM_FASAL_BIMA", label: "PM Fasal Bima Yojana" },
-      { value: "WEATHER_INDEX", label: "Weather Index Insurance" },
-      { value: "HORTICULTURE", label: "Horticulture Insurance" },
+      { value: "CROP_PMFBY", label: "Crop — PM Fasal Bima Yojana" },
+      { value: "CROP_WEATHER_INDEX", label: "Crop — Weather Index" },
+      { value: "CROP_HORTICULTURE", label: "Crop — Horticulture" },
     ],
   },
   {
-    value: "ENGINEERING",
-    label: "Engineering Insurance",
+    value: "HOME",
+    label: "Home Insurance",
     subTypes: [
-      { value: "CONTRACTORS_ALL_RISK", label: "Contractor's All Risk" },
-      { value: "MACHINERY_BREAKDOWN", label: "Machinery Breakdown" },
-      { value: "ERECTION_ALL_RISK", label: "Erection All Risk" },
-      { value: "ELECTRONIC_EQUIPMENT", label: "Electronic Equipment" },
+      { value: "HOME_STRUCTURE", label: "Home Structure" },
+      { value: "HOME_CONTENTS", label: "Home Contents" },
+      { value: "HOME_COMPREHENSIVE", label: "Home Comprehensive" },
     ],
   },
 ];
@@ -132,6 +119,9 @@ export function getSubTypes(productLine: string): ProductSubType[] {
 export const ALL_SUB_TYPES = INSURANCE_PRODUCTS.flatMap((p) =>
   p.subTypes.map((s) => ({ ...s, productLine: p.value }))
 );
+
+/** All valid product line values */
+export const ALL_PRODUCT_LINE_VALUES = INSURANCE_PRODUCTS.map((p) => p.value);
 
 /** Indian insurance companies / insurers */
 export const INSURER_OPTIONS = [

@@ -16,7 +16,7 @@ interface Props {
   leads: Lead[];
 }
 
-const PRODUCTS = ["LIFE", "HEALTH", "MOTOR"] as const;
+const PRODUCTS = ["HEALTH", "MOTOR", "LIFE", "TRAVEL", "COMMERCIAL_LINES", "RURAL", "HOME"] as const;
 
 export function LeadConversionChart({ leads }: Props): React.ReactElement {
   const data = PRODUCTS.map((product) => {

@@ -2,7 +2,7 @@ import type { PaginatedResponse } from './pagination-types';
 import { fetchPaginated, request } from './fetch-client';
 
 export type LeadStatus = 'NEW' | 'CONTACTED' | 'QUALIFIED' | 'PROPOSAL_SENT' | 'WON' | 'LOST';
-export type LeadProduct = 'LIFE' | 'HEALTH' | 'MOTOR' | 'PROPERTY' | 'MARINE' | 'TRAVEL' | 'COMMERCIAL' | 'CROP' | 'ENGINEERING';
+export type LeadProduct = 'HEALTH' | 'MOTOR' | 'LIFE' | 'TRAVEL' | 'COMMERCIAL_LINES' | 'RURAL' | 'HOME';
 export type ClosureTimeline = 'THIS_MONTH' | 'T_PLUS_1' | 'T_PLUS_2' | 'LATER';
 export type HeatStatus = 'H' | 'W' | 'C' | 'L';
 
@@ -16,18 +16,20 @@ export interface LeadDealSummary {
 export interface Lead {
   id: string;
   customerId: string;
-  customer?: { id: string; name: string; mobile: string };
+  customer?: { id: string; name: string; mobile: string; clientCode?: string };
   assignedToId?: string;
   assignedTo?: { id: string; name: string; designation: string };
   pospId?: string;
   posp?: { id: string; name: string; code: string };
   product: LeadProduct | string;
+  productSubType?: string;
   estimatedPremium: number;
   estimatedSum?: number;
   closureTimeline: ClosureTimeline;
   expectedCloseDate?: string;
   status: LeadStatus;
   heatStatus?: HeatStatus;
+  proposalCode?: string;
   source?: string;
   remarks?: string;
   convertedToDealId?: string;
@@ -41,6 +43,7 @@ export interface CreateLeadInput {
   customerId: string;
   assignedToId?: string;
   product: LeadProduct | string;
+  productSubType?: string;
   estimatedPremium: number;
   estimatedSum?: number;
   closureTimeline?: ClosureTimeline;

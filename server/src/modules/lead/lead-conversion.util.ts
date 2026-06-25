@@ -90,6 +90,7 @@ export async function convertLeadToDeal(
       customerName: customer?.name ?? '',
       policy: lead.product,
       productLine: lead.product,
+      productSubType: lead.productSubType,
       sum: lead.estimatedSum ?? 0,
       premium,
       coa,

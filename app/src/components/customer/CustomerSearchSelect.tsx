@@ -198,7 +198,14 @@ export function CustomerSearchSelect({
                         value === customer.id ? '#f0f0f0' : 'transparent';
                     }}
                   >
-                    <div style={{ fontWeight: 600 }}>{customer.name}</div>
+                    <div style={{ fontWeight: 600, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span>{customer.name}</span>
+                      {customer.clientCode && (
+                        <span style={{ fontSize: 11, color: '#6b7280', fontWeight: 500 }}>
+                          {customer.clientCode}
+                        </span>
+                      )}
+                    </div>
                     <div style={{ fontSize: '12px', color: '#666' }}>
                       {customer.mobile}
                       {customer.email && ` • ${customer.email}`}

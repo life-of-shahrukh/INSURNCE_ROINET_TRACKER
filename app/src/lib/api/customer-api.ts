@@ -20,6 +20,7 @@ export interface Customer {
   pincode?: string;
   kycStatus: 'PENDING' | 'VERIFIED' | 'REJECTED';
   source?: string;
+  mobileVerified: boolean;
   createdAt: string;
   updatedAt: string;
 }

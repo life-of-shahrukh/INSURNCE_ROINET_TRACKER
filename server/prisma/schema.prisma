@@ -29,6 +29,7 @@ model Customer {
   /// PENDING | VERIFIED | REJECTED
   kycStatus       String    @default("PENDING") @db.NVarChar(20)
   source          String?   @db.NVarChar(50)
+  mobileVerified  Boolean   @default(false)
   
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -388,4 +389,15 @@ model DistrictChain {
   @@index([stateId])
   @@index([zoneId])
   @@index([regionId])
+}
+
+model OtpRequest {
+  id        String   @id @default(cuid()) @db.NVarChar(36)
+  mobile    String   @db.NVarChar(20)
+  codeHash  String   @db.NVarChar(255)
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([mobile])
 }

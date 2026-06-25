@@ -18,6 +18,7 @@ import { SsoModule } from './modules/sso/sso.module';
 import { OrgSyncModule } from './modules/org-sync/org-sync.module';
 import { GeoModule } from './modules/geo/geo.module';
 import { AnnouncementModule } from './modules/announcement/announcement.module';
+import { OtpModule } from './modules/otp/otp.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { AnnouncementModule } from './modules/announcement/announcement.module';
     OrgSyncModule,
     GeoModule,
     AnnouncementModule,
+    OtpModule,
   ],
 })
 export class AppModule {}

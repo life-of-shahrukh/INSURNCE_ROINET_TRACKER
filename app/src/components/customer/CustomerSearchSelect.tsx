@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useSearchCustomers } from '@/hooks/useCustomers';
+import type { Customer } from '@/lib/api/customer-api';
 
 interface CustomerSearchSelectProps {
   value: string | null;
@@ -22,6 +23,11 @@ interface CustomerSearchSelectProps {
    * current search text pre-filled as the customer name.
    */
   onAddNew?: (prefillName: string) => void;
+  /**
+   * Called whenever search results are loaded. Provides full Customer objects
+   * so callers can build a local lookup cache.
+   */
+  onResultsLoaded?: (customers: Customer[]) => void;
 }
 
 export function CustomerSearchSelect({
@@ -32,6 +38,7 @@ export function CustomerSearchSelect({
   required = false,
   allowFreeText = false,
   onAddNew,
+  onResultsLoaded,
 }: CustomerSearchSelectProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
@@ -43,6 +50,15 @@ export function CustomerSearchSelect({
   );
 
   const selectedCustomer = searchResults?.find((c) => c.id === value);
+
+  // Notify parent when results change so it can build a cache
+  useEffect(() => {
+    if (searchResults && onResultsLoaded) {
+      onResultsLoaded(searchResults);
+    }
+  // onResultsLoaded intentionally excluded — parent ref should be stable
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchResults]);
 
   // Sync display text: prefer the matched customer name, fall back to displayValue.
   useEffect(() => {

@@ -1,11 +1,12 @@
 import type { PaginatedResponse } from "./pagination-types";
 
-// Browser: use relative URL so requests go through ALB (/api/* → backend).
-// Server-side (SSR/build): use NEXT_PUBLIC_API_URL or localhost fallback.
+// Browser: use relative URL so requests go through Nginx (/api/* → backend).
+// Server-side (SSR): call the NestJS backend directly via BACKEND_URL to avoid
+// a loopback through Nginx. Falls back to NEXT_PUBLIC_API_URL then localhost.
 const base = () =>
   typeof window !== "undefined"
     ? ""
-    : (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000");
+    : (process.env.BACKEND_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000");
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let res: Response;

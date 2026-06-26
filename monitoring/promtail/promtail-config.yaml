@@ -23,58 +23,46 @@ scrape_configs:
           __path__: /var/log/roinet/app-*.log
 
     pipeline_stages:
-      # Parse each line as JSON (Winston file format)
+      # Parse each line as JSON (Winston structured output)
       - json:
           expressions:
-            level:     level
-            message:   message
-            context:   context
-            timestamp: timestamp
-            # HTTP fields
-            method:    method
-            path:      path
+            level:      level
+            message:    message
+            context:    context
+            timestamp:  timestamp
+            method:     method
             statusCode: statusCode
-            durationMs: durationMs
-            slow:      slow
-            userId:    userId
-            role:      role
-            ip:        ip
-            # DB fields
-            query:     query
-            # Error
-            trace:     trace
-            # Security
-            security:  security
+            slow:       slow
+            security:   security
 
-      # Promote level, context, method, statusCode as Loki labels for fast filtering
+      # Promote key fields as Loki labels for efficient filtering
       - labels:
           level:
           context:
           method:
           statusCode:
 
-      # Add a slow label to make slow requests easy to query
+      # slow label
       - template:
           source: slow
           template: '{{ if eq .Value "true" }}true{{ else }}false{{ end }}'
       - labels:
           slow:
 
-      # Add a security label for 401/403 events
+      # security label (401/403 events)
       - template:
           source: security
           template: '{{ if eq .Value "true" }}true{{ else }}false{{ end }}'
       - labels:
           security:
 
-      # Use the log's own timestamp (not ingestion time)
+      # Use the log timestamp, not ingestion time
       - timestamp:
           source: timestamp
           format: RFC3339
 
-      # Final log line = full JSON (keep everything for Grafana explore)
-      - output:
-          source: message
+      # Keep the FULL raw JSON line as the log content (not just message)
+      # This lets Grafana Explore show all fields in the log panel
 
   # ── Roinet API: error-only log file ────────────────────────────────────────
   - job_name: roinet-api-errors
@@ -95,17 +83,14 @@ scrape_configs:
             message:   message
             context:   context
             timestamp: timestamp
-            trace:     trace
       - labels:
           level:
           context:
       - timestamp:
           source: timestamp
           format: RFC3339
-      - output:
-          source: message
 
-  # ── OS-level syslog (system errors, OOM, disk full, etc.) ─────────────────
+  # ── OS-level syslog (OOM, disk full, system errors) ──────────────────────
   - job_name: syslog
     static_configs:
       - targets:
@@ -122,5 +107,3 @@ scrape_configs:
       - labels:
           host:
           process:
-      - output:
-          source: message

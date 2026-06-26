@@ -5,16 +5,16 @@
   "timezone": "browser",
   "schemaVersion": 38,
   "refresh": "30s",
-  "time": { "from": "now-3h", "to": "now" },
+  "time": { "from": "now-6h", "to": "now" },
   "panels": [
     {
       "id": 1,
       "type": "stat",
-      "title": "Total Requests (last 3h)",
+      "title": "Total Requests (last 6h)",
       "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 },
       "datasource": "Loki",
       "targets": [{
-        "expr": "sum(count_over_time({job=\"roinet-api\", context=\"HTTP\"}[3h]))",
+        "expr": "sum(count_over_time({job=\"roinet-api\"}[6h]))",
         "legendFormat": "Requests"
       }],
       "options": { "colorMode": "background", "graphMode": "none" }
@@ -22,177 +22,307 @@
     {
       "id": 2,
       "type": "stat",
-      "title": "5xx Errors (last 3h)",
+      "title": "Errors & Warnings (last 6h)",
       "gridPos": { "x": 4, "y": 0, "w": 4, "h": 4 },
       "datasource": "Loki",
       "targets": [{
-        "expr": "sum(count_over_time({job=\"roinet-api-errors\"}[3h]))",
-        "legendFormat": "Errors"
+        "expr": "sum(count_over_time({job=~\"roinet-api.*\", level=~\"error|warn\"}[6h]))",
+        "legendFormat": "Errors/Warnings"
       }],
-      "options": { "colorMode": "background", "graphMode": "none",
-        "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 1 }] }
+      "options": {
+        "colorMode": "background", "graphMode": "none",
+        "thresholds": {
+          "steps": [
+            { "color": "green", "value": null },
+            { "color": "orange", "value": 1 },
+            { "color": "red", "value": 10 }
+          ]
+        }
       }
     },
     {
       "id": 3,
       "type": "stat",
-      "title": "Security Events (last 3h)",
+      "title": "Security Events 401/403 (last 6h)",
       "gridPos": { "x": 8, "y": 0, "w": 4, "h": 4 },
       "datasource": "Loki",
       "targets": [{
-        "expr": "sum(count_over_time({job=\"roinet-api\", security=\"true\"}[3h]))",
+        "expr": "sum(count_over_time({job=\"roinet-api\", security=\"true\"}[6h]))",
         "legendFormat": "401/403"
       }],
-      "options": { "colorMode": "background", "graphMode": "none",
-        "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "orange", "value": 1 }] }
+      "options": {
+        "colorMode": "background", "graphMode": "none",
+        "thresholds": {
+          "steps": [
+            { "color": "green", "value": null },
+            { "color": "orange", "value": 1 }
+          ]
+        }
       }
     },
     {
       "id": 4,
       "type": "stat",
-      "title": "Slow Requests >1s (last 3h)",
+      "title": "Slow Requests >1s (last 6h)",
       "gridPos": { "x": 12, "y": 0, "w": 4, "h": 4 },
       "datasource": "Loki",
       "targets": [{
-        "expr": "sum(count_over_time({job=\"roinet-api\", slow=\"true\"}[3h]))",
+        "expr": "sum(count_over_time({job=\"roinet-api\", slow=\"true\"}[6h]))",
         "legendFormat": "Slow"
       }],
-      "options": { "colorMode": "background", "graphMode": "none",
-        "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }] }
+      "options": {
+        "colorMode": "background", "graphMode": "none",
+        "thresholds": {
+          "steps": [
+            { "color": "green", "value": null },
+            { "color": "yellow", "value": 1 },
+            { "color": "red", "value": 5 }
+          ]
+        }
       }
     },
     {
       "id": 5,
+      "type": "stat",
+      "title": "DB Errors (last 6h)",
+      "gridPos": { "x": 16, "y": 0, "w": 4, "h": 4 },
+      "datasource": "Loki",
+      "targets": [{
+        "expr": "sum(count_over_time({job=\"roinet-api\", context=\"PrismaService\", level=\"error\"}[6h]))",
+        "legendFormat": "DB Errors"
+      }],
+      "options": {
+        "colorMode": "background", "graphMode": "none",
+        "thresholds": {
+          "steps": [
+            { "color": "green", "value": null },
+            { "color": "red", "value": 1 }
+          ]
+        }
+      }
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "OTP Requests (last 6h)",
+      "gridPos": { "x": 20, "y": 0, "w": 4, "h": 4 },
+      "datasource": "Loki",
+      "targets": [{
+        "expr": "sum(count_over_time({job=\"roinet-api\"} |= \"OtpService\" [6h]))",
+        "legendFormat": "OTP"
+      }],
+      "options": { "colorMode": "background", "graphMode": "none" }
+    },
+
+    {
+      "id": 7,
       "type": "timeseries",
       "title": "Request Rate (per minute)",
       "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
       "datasource": "Loki",
       "targets": [
         {
-          "expr": "sum(rate({job=\"roinet-api\", context=\"HTTP\"}[1m]))",
-          "legendFormat": "Total req/s"
+          "expr": "sum(rate({job=\"roinet-api\"}[1m]))",
+          "legendFormat": "All Requests"
         },
         {
-          "expr": "sum(rate({job=\"roinet-api-errors\"}[1m]))",
-          "legendFormat": "Errors/s"
-        },
-        {
-          "expr": "sum(rate({job=\"roinet-api\", slow=\"true\"}[1m]))",
-          "legendFormat": "Slow req/s"
+          "expr": "sum(rate({job=\"roinet-api\", level=~\"error|warn\"}[1m]))",
+          "legendFormat": "Errors/Warnings"
         }
       ],
       "fieldConfig": {
-        "defaults": { "unit": "reqps", "custom": { "lineWidth": 2 } }
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 2 }
+        }
       }
     },
     {
-      "id": 6,
+      "id": 8,
       "type": "timeseries",
-      "title": "Requests by HTTP Method",
+      "title": "HTTP Status Code Distribution",
       "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
       "datasource": "Loki",
       "targets": [
         {
-          "expr": "sum by (method) (rate({job=\"roinet-api\", context=\"HTTP\"}[1m]))",
-          "legendFormat": "{{method}}"
+          "expr": "sum by (statusCode) (rate({job=\"roinet-api\", statusCode!=\"\"}[1m]))",
+          "legendFormat": "{{statusCode}}"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 2 }
+        }
+      }
     },
-    {
-      "id": 7,
-      "type": "logs",
-      "title": "Live API Logs",
-      "gridPos": { "x": 0, "y": 12, "w": 24, "h": 10 },
-      "datasource": "Loki",
-      "targets": [{
-        "expr": "{job=\"roinet-api\"}",
-        "legendFormat": ""
-      }],
-      "options": { "showTime": true, "showLabels": true, "sortOrder": "Descending", "wrapLogMessage": true }
-    },
-    {
-      "id": 8,
-      "type": "logs",
-      "title": "Errors Only",
-      "gridPos": { "x": 0, "y": 22, "w": 24, "h": 8 },
-      "datasource": "Loki",
-      "targets": [{
-        "expr": "{job=\"roinet-api-errors\"}",
-        "legendFormat": ""
-      }],
-      "options": { "showTime": true, "showLabels": true, "sortOrder": "Descending", "wrapLogMessage": true }
-    },
+
     {
       "id": 9,
       "type": "logs",
-      "title": "Security Events (401 / 403)",
-      "gridPos": { "x": 0, "y": 30, "w": 24, "h": 8 },
+      "title": "All Errors & Warnings",
+      "gridPos": { "x": 0, "y": 12, "w": 24, "h": 8 },
       "datasource": "Loki",
       "targets": [{
-        "expr": "{job=\"roinet-api\", security=\"true\"}",
+        "expr": "{job=~\"roinet-api.*\", level=~\"error|warn\"} | json | line_format \"[{{.level}}] {{.context}} | {{.method}} {{.path}} | status={{.statusCode}} | {{.message}}\"",
         "legendFormat": ""
       }],
-      "options": { "showTime": true, "showLabels": false, "sortOrder": "Descending", "wrapLogMessage": true }
+      "options": {
+        "showTime": true,
+        "showLabels": false,
+        "showCommonLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": false,
+        "enableLogDetails": true,
+        "sortOrder": "Descending",
+        "dedupStrategy": "none"
+      }
     },
     {
       "id": 10,
       "type": "logs",
-      "title": "Slow Requests (>1 second)",
-      "gridPos": { "x": 0, "y": 38, "w": 24, "h": 8 },
+      "title": "DB Errors (Prisma P2021 / P2022 — Missing Tables/Columns)",
+      "gridPos": { "x": 0, "y": 20, "w": 24, "h": 7 },
       "datasource": "Loki",
       "targets": [{
-        "expr": "{job=\"roinet-api\", slow=\"true\"}",
+        "expr": "{job=\"roinet-api\", context=\"PrismaService\", level=\"error\"} | json | line_format \"[DB ERROR] {{.message}}\"",
         "legendFormat": ""
       }],
-      "options": { "showTime": true, "showLabels": false, "sortOrder": "Descending", "wrapLogMessage": true }
+      "options": {
+        "showTime": true,
+        "showLabels": false,
+        "wrapLogMessage": true,
+        "enableLogDetails": true,
+        "sortOrder": "Descending"
+      }
     },
     {
       "id": 11,
       "type": "logs",
-      "title": "Auth Events (login / logout / SSO)",
-      "gridPos": { "x": 0, "y": 46, "w": 24, "h": 8 },
+      "title": "Security Events (401 / 403)",
+      "gridPos": { "x": 0, "y": 27, "w": 12, "h": 7 },
       "datasource": "Loki",
       "targets": [{
-        "expr": "{job=\"roinet-api\", context=~\"AuthService|SsoService\"}",
+        "expr": "{job=\"roinet-api\", security=\"true\"} | json | line_format \"[SECURITY] {{.method}} {{.path}} | ip={{.ip}} | user={{.userId}}\"",
         "legendFormat": ""
       }],
-      "options": { "showTime": true, "showLabels": false, "sortOrder": "Descending", "wrapLogMessage": true }
+      "options": {
+        "showTime": true,
+        "showLabels": false,
+        "wrapLogMessage": true,
+        "enableLogDetails": true,
+        "sortOrder": "Descending"
+      }
     },
     {
       "id": 12,
       "type": "logs",
-      "title": "Audit Trail (mutating operations)",
-      "gridPos": { "x": 0, "y": 54, "w": 24, "h": 8 },
+      "title": "Slow Requests (>1s)",
+      "gridPos": { "x": 12, "y": 27, "w": 12, "h": 7 },
       "datasource": "Loki",
       "targets": [{
-        "expr": "{job=\"roinet-api\", context=\"Audit\"}",
+        "expr": "{job=\"roinet-api\", slow=\"true\"} | json | line_format \"[SLOW] {{.method}} {{.path}} | {{.durationMs}}ms | user={{.userId}}\"",
         "legendFormat": ""
       }],
-      "options": { "showTime": true, "showLabels": false, "sortOrder": "Descending", "wrapLogMessage": true }
+      "options": {
+        "showTime": true,
+        "showLabels": false,
+        "wrapLogMessage": true,
+        "enableLogDetails": true,
+        "sortOrder": "Descending"
+      }
     },
     {
       "id": 13,
       "type": "logs",
-      "title": "Slow DB Queries (>500ms)",
-      "gridPos": { "x": 0, "y": 62, "w": 24, "h": 8 },
+      "title": "Auth Events (Login / Logout)",
+      "gridPos": { "x": 0, "y": 34, "w": 12, "h": 7 },
       "datasource": "Loki",
       "targets": [{
-        "expr": "{job=\"roinet-api\", context=\"PrismaService\"} |= \"Slow DB query\"",
+        "expr": "{job=\"roinet-api\", context=\"AuthService\"} | json | line_format \"[AUTH] {{.message}} | user={{.email}} role={{.role}}\"",
         "legendFormat": ""
       }],
-      "options": { "showTime": true, "showLabels": false, "sortOrder": "Descending", "wrapLogMessage": true }
+      "options": {
+        "showTime": true,
+        "showLabels": false,
+        "wrapLogMessage": true,
+        "enableLogDetails": true,
+        "sortOrder": "Descending"
+      }
     },
     {
       "id": 14,
       "type": "logs",
-      "title": "OTP Events",
-      "gridPos": { "x": 0, "y": 70, "w": 24, "h": 8 },
+      "title": "Audit Trail (POST / PATCH / DELETE)",
+      "gridPos": { "x": 12, "y": 34, "w": 12, "h": 7 },
       "datasource": "Loki",
       "targets": [{
-        "expr": "{job=\"roinet-api\", context=\"OtpService\"}",
+        "expr": "{job=\"roinet-api\", context=\"Audit\"} | json | line_format \"[AUDIT] {{.method}} {{.path}} | user={{.userId}} role={{.role}} | {{.result}} {{.durationMs}}ms\"",
         "legendFormat": ""
       }],
-      "options": { "showTime": true, "showLabels": false, "sortOrder": "Descending", "wrapLogMessage": true }
+      "options": {
+        "showTime": true,
+        "showLabels": false,
+        "wrapLogMessage": true,
+        "enableLogDetails": true,
+        "sortOrder": "Descending"
+      }
+    },
+    {
+      "id": 15,
+      "type": "logs",
+      "title": "OTP Events",
+      "gridPos": { "x": 0, "y": 41, "w": 12, "h": 7 },
+      "datasource": "Loki",
+      "targets": [{
+        "expr": "{job=\"roinet-api\"} |= \"OtpService\" | json | line_format \"[OTP] {{.message}} | mobile={{.mobile}}\"",
+        "legendFormat": ""
+      }],
+      "options": {
+        "showTime": true,
+        "showLabels": false,
+        "wrapLogMessage": true,
+        "enableLogDetails": true,
+        "sortOrder": "Descending"
+      }
+    },
+    {
+      "id": 16,
+      "type": "logs",
+      "title": "Slow DB Queries (>500ms)",
+      "gridPos": { "x": 12, "y": 41, "w": 12, "h": 7 },
+      "datasource": "Loki",
+      "targets": [{
+        "expr": "{job=\"roinet-api\", context=\"PrismaService\", level=\"warn\"} | json | line_format \"[SLOW DB] {{.durationMs}}ms | {{.query}}\"",
+        "legendFormat": ""
+      }],
+      "options": {
+        "showTime": true,
+        "showLabels": false,
+        "wrapLogMessage": true,
+        "enableLogDetails": true,
+        "sortOrder": "Descending"
+      }
+    },
+    {
+      "id": 17,
+      "type": "logs",
+      "title": "Raw Logs — Full JSON (Explore)",
+      "gridPos": { "x": 0, "y": 48, "w": 24, "h": 10 },
+      "datasource": "Loki",
+      "targets": [{
+        "expr": "{job=~\"roinet-api.*\"}",
+        "legendFormat": ""
+      }],
+      "options": {
+        "showTime": true,
+        "showLabels": true,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": true,
+        "enableLogDetails": true,
+        "sortOrder": "Descending",
+        "dedupStrategy": "none"
+      }
     }
   ]
 }

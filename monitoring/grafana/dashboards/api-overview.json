@@ -6,323 +6,197 @@
   "schemaVersion": 38,
   "refresh": "30s",
   "time": { "from": "now-6h", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "hide": 0,
+        "name": "DS_LOKI",
+        "type": "datasource",
+        "pluginId": "loki",
+        "query": "loki",
+        "current": { "text": "Loki", "value": "roinet-loki" }
+      }
+    ]
+  },
   "panels": [
     {
-      "id": 1,
-      "type": "stat",
+      "id": 1, "type": "stat",
       "title": "Total Requests (last 6h)",
       "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 },
-      "datasource": "Loki",
-      "targets": [{
-        "expr": "sum(count_over_time({job=\"roinet-api\"}[6h]))",
-        "legendFormat": "Requests"
-      }],
+      "datasource": { "type": "loki", "uid": "roinet-loki" },
+      "targets": [{ "expr": "sum(count_over_time({job=\"roinet-api\"}[6h]))", "legendFormat": "Requests" }],
       "options": { "colorMode": "background", "graphMode": "none" }
     },
     {
-      "id": 2,
-      "type": "stat",
+      "id": 2, "type": "stat",
       "title": "Errors & Warnings (last 6h)",
       "gridPos": { "x": 4, "y": 0, "w": 4, "h": 4 },
-      "datasource": "Loki",
-      "targets": [{
-        "expr": "sum(count_over_time({job=~\"roinet-api.*\", level=~\"error|warn\"}[6h]))",
-        "legendFormat": "Errors/Warnings"
-      }],
+      "datasource": { "type": "loki", "uid": "roinet-loki" },
+      "targets": [{ "expr": "sum(count_over_time({job=~\"roinet-api.*\", level=~\"error|warn\"}[6h]))", "legendFormat": "Errors/Warnings" }],
       "options": {
         "colorMode": "background", "graphMode": "none",
-        "thresholds": {
-          "steps": [
-            { "color": "green", "value": null },
-            { "color": "orange", "value": 1 },
-            { "color": "red", "value": 10 }
-          ]
-        }
+        "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "orange", "value": 1 }, { "color": "red", "value": 10 }] }
       }
     },
     {
-      "id": 3,
-      "type": "stat",
+      "id": 3, "type": "stat",
       "title": "Security Events 401/403 (last 6h)",
       "gridPos": { "x": 8, "y": 0, "w": 4, "h": 4 },
-      "datasource": "Loki",
-      "targets": [{
-        "expr": "sum(count_over_time({job=\"roinet-api\", security=\"true\"}[6h]))",
-        "legendFormat": "401/403"
-      }],
+      "datasource": { "type": "loki", "uid": "roinet-loki" },
+      "targets": [{ "expr": "sum(count_over_time({job=\"roinet-api\", security=\"true\"}[6h]))", "legendFormat": "401/403" }],
       "options": {
         "colorMode": "background", "graphMode": "none",
-        "thresholds": {
-          "steps": [
-            { "color": "green", "value": null },
-            { "color": "orange", "value": 1 }
-          ]
-        }
+        "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "orange", "value": 1 }] }
       }
     },
     {
-      "id": 4,
-      "type": "stat",
+      "id": 4, "type": "stat",
       "title": "Slow Requests >1s (last 6h)",
       "gridPos": { "x": 12, "y": 0, "w": 4, "h": 4 },
-      "datasource": "Loki",
-      "targets": [{
-        "expr": "sum(count_over_time({job=\"roinet-api\", slow=\"true\"}[6h]))",
-        "legendFormat": "Slow"
-      }],
+      "datasource": { "type": "loki", "uid": "roinet-loki" },
+      "targets": [{ "expr": "sum(count_over_time({job=\"roinet-api\", slow=\"true\"}[6h]))", "legendFormat": "Slow" }],
       "options": {
         "colorMode": "background", "graphMode": "none",
-        "thresholds": {
-          "steps": [
-            { "color": "green", "value": null },
-            { "color": "yellow", "value": 1 },
-            { "color": "red", "value": 5 }
-          ]
-        }
+        "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }, { "color": "red", "value": 5 }] }
       }
     },
     {
-      "id": 5,
-      "type": "stat",
+      "id": 5, "type": "stat",
       "title": "DB Errors (last 6h)",
       "gridPos": { "x": 16, "y": 0, "w": 4, "h": 4 },
-      "datasource": "Loki",
-      "targets": [{
-        "expr": "sum(count_over_time({job=\"roinet-api\", context=\"PrismaService\", level=\"error\"}[6h]))",
-        "legendFormat": "DB Errors"
-      }],
+      "datasource": { "type": "loki", "uid": "roinet-loki" },
+      "targets": [{ "expr": "sum(count_over_time({job=\"roinet-api\", context=\"PrismaService\", level=\"error\"}[6h]))", "legendFormat": "DB Errors" }],
       "options": {
         "colorMode": "background", "graphMode": "none",
-        "thresholds": {
-          "steps": [
-            { "color": "green", "value": null },
-            { "color": "red", "value": 1 }
-          ]
-        }
+        "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 1 }] }
       }
     },
     {
-      "id": 6,
-      "type": "stat",
+      "id": 6, "type": "stat",
       "title": "OTP Requests (last 6h)",
       "gridPos": { "x": 20, "y": 0, "w": 4, "h": 4 },
-      "datasource": "Loki",
-      "targets": [{
-        "expr": "sum(count_over_time({job=\"roinet-api\"} |= \"OtpService\" [6h]))",
-        "legendFormat": "OTP"
-      }],
+      "datasource": { "type": "loki", "uid": "roinet-loki" },
+      "targets": [{ "expr": "sum(count_over_time({job=\"roinet-api\", context=\"OtpService\"}[6h]))", "legendFormat": "OTP" }],
       "options": { "colorMode": "background", "graphMode": "none" }
     },
 
     {
-      "id": 7,
-      "type": "timeseries",
+      "id": 7, "type": "timeseries",
       "title": "Request Rate (per minute)",
       "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
-      "datasource": "Loki",
+      "datasource": { "type": "loki", "uid": "roinet-loki" },
       "targets": [
-        {
-          "expr": "sum(rate({job=\"roinet-api\"}[1m]))",
-          "legendFormat": "All Requests"
-        },
-        {
-          "expr": "sum(rate({job=\"roinet-api\", level=~\"error|warn\"}[1m]))",
-          "legendFormat": "Errors/Warnings"
-        }
+        { "expr": "sum(rate({job=\"roinet-api\"}[1m]))", "legendFormat": "All Requests" },
+        { "expr": "sum(rate({job=\"roinet-api\", level=~\"error|warn\"}[1m]))", "legendFormat": "Errors/Warnings" }
       ],
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 2 }
-        }
-      }
+      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" }, "custom": { "lineWidth": 2 } } }
     },
     {
-      "id": 8,
-      "type": "timeseries",
+      "id": 8, "type": "timeseries",
       "title": "HTTP Status Code Distribution",
       "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
-      "datasource": "Loki",
+      "datasource": { "type": "loki", "uid": "roinet-loki" },
       "targets": [
-        {
-          "expr": "sum by (statusCode) (rate({job=\"roinet-api\", statusCode!=\"\"}[1m]))",
-          "legendFormat": "{{statusCode}}"
-        }
+        { "expr": "sum by (statusCode) (rate({job=\"roinet-api\", statusCode!=\"\"}[1m]))", "legendFormat": "{{statusCode}}" }
       ],
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 2 }
-        }
-      }
+      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" }, "custom": { "lineWidth": 2 } } }
     },
 
     {
-      "id": 9,
-      "type": "logs",
+      "id": 9, "type": "logs",
       "title": "All Errors & Warnings",
       "gridPos": { "x": 0, "y": 12, "w": 24, "h": 8 },
-      "datasource": "Loki",
+      "datasource": { "type": "loki", "uid": "roinet-loki" },
       "targets": [{
         "expr": "{job=~\"roinet-api.*\", level=~\"error|warn\"} | json | line_format \"[{{.level}}] {{.context}} | {{.method}} {{.path}} | status={{.statusCode}} | {{.message}}\"",
         "legendFormat": ""
       }],
-      "options": {
-        "showTime": true,
-        "showLabels": false,
-        "showCommonLabels": false,
-        "wrapLogMessage": true,
-        "prettifyLogMessage": false,
-        "enableLogDetails": true,
-        "sortOrder": "Descending",
-        "dedupStrategy": "none"
-      }
+      "options": { "showTime": true, "showLabels": false, "wrapLogMessage": true, "enableLogDetails": true, "sortOrder": "Descending" }
     },
     {
-      "id": 10,
-      "type": "logs",
-      "title": "DB Errors (Prisma P2021 / P2022 — Missing Tables/Columns)",
+      "id": 10, "type": "logs",
+      "title": "DB Errors (Prisma — Missing Tables/Columns)",
       "gridPos": { "x": 0, "y": 20, "w": 24, "h": 7 },
-      "datasource": "Loki",
+      "datasource": { "type": "loki", "uid": "roinet-loki" },
       "targets": [{
         "expr": "{job=\"roinet-api\", context=\"PrismaService\", level=\"error\"} | json | line_format \"[DB ERROR] {{.message}}\"",
         "legendFormat": ""
       }],
-      "options": {
-        "showTime": true,
-        "showLabels": false,
-        "wrapLogMessage": true,
-        "enableLogDetails": true,
-        "sortOrder": "Descending"
-      }
+      "options": { "showTime": true, "showLabels": false, "wrapLogMessage": true, "enableLogDetails": true, "sortOrder": "Descending" }
     },
     {
-      "id": 11,
-      "type": "logs",
+      "id": 11, "type": "logs",
       "title": "Security Events (401 / 403)",
       "gridPos": { "x": 0, "y": 27, "w": 12, "h": 7 },
-      "datasource": "Loki",
+      "datasource": { "type": "loki", "uid": "roinet-loki" },
       "targets": [{
         "expr": "{job=\"roinet-api\", security=\"true\"} | json | line_format \"[SECURITY] {{.method}} {{.path}} | ip={{.ip}} | user={{.userId}}\"",
         "legendFormat": ""
       }],
-      "options": {
-        "showTime": true,
-        "showLabels": false,
-        "wrapLogMessage": true,
-        "enableLogDetails": true,
-        "sortOrder": "Descending"
-      }
+      "options": { "showTime": true, "showLabels": false, "wrapLogMessage": true, "enableLogDetails": true, "sortOrder": "Descending" }
     },
     {
-      "id": 12,
-      "type": "logs",
+      "id": 12, "type": "logs",
       "title": "Slow Requests (>1s)",
       "gridPos": { "x": 12, "y": 27, "w": 12, "h": 7 },
-      "datasource": "Loki",
+      "datasource": { "type": "loki", "uid": "roinet-loki" },
       "targets": [{
         "expr": "{job=\"roinet-api\", slow=\"true\"} | json | line_format \"[SLOW] {{.method}} {{.path}} | {{.durationMs}}ms | user={{.userId}}\"",
         "legendFormat": ""
       }],
-      "options": {
-        "showTime": true,
-        "showLabels": false,
-        "wrapLogMessage": true,
-        "enableLogDetails": true,
-        "sortOrder": "Descending"
-      }
+      "options": { "showTime": true, "showLabels": false, "wrapLogMessage": true, "enableLogDetails": true, "sortOrder": "Descending" }
     },
     {
-      "id": 13,
-      "type": "logs",
+      "id": 13, "type": "logs",
       "title": "Auth Events (Login / Logout)",
       "gridPos": { "x": 0, "y": 34, "w": 12, "h": 7 },
-      "datasource": "Loki",
+      "datasource": { "type": "loki", "uid": "roinet-loki" },
       "targets": [{
         "expr": "{job=\"roinet-api\", context=\"AuthService\"} | json | line_format \"[AUTH] {{.message}} | user={{.email}} role={{.role}}\"",
         "legendFormat": ""
       }],
-      "options": {
-        "showTime": true,
-        "showLabels": false,
-        "wrapLogMessage": true,
-        "enableLogDetails": true,
-        "sortOrder": "Descending"
-      }
+      "options": { "showTime": true, "showLabels": false, "wrapLogMessage": true, "enableLogDetails": true, "sortOrder": "Descending" }
     },
     {
-      "id": 14,
-      "type": "logs",
+      "id": 14, "type": "logs",
       "title": "Audit Trail (POST / PATCH / DELETE)",
       "gridPos": { "x": 12, "y": 34, "w": 12, "h": 7 },
-      "datasource": "Loki",
+      "datasource": { "type": "loki", "uid": "roinet-loki" },
       "targets": [{
         "expr": "{job=\"roinet-api\", context=\"Audit\"} | json | line_format \"[AUDIT] {{.method}} {{.path}} | user={{.userId}} role={{.role}} | {{.result}} {{.durationMs}}ms\"",
         "legendFormat": ""
       }],
-      "options": {
-        "showTime": true,
-        "showLabels": false,
-        "wrapLogMessage": true,
-        "enableLogDetails": true,
-        "sortOrder": "Descending"
-      }
+      "options": { "showTime": true, "showLabels": false, "wrapLogMessage": true, "enableLogDetails": true, "sortOrder": "Descending" }
     },
     {
-      "id": 15,
-      "type": "logs",
+      "id": 15, "type": "logs",
       "title": "OTP Events",
       "gridPos": { "x": 0, "y": 41, "w": 12, "h": 7 },
-      "datasource": "Loki",
+      "datasource": { "type": "loki", "uid": "roinet-loki" },
       "targets": [{
-        "expr": "{job=\"roinet-api\"} |= \"OtpService\" | json | line_format \"[OTP] {{.message}} | mobile={{.mobile}}\"",
+        "expr": "{job=\"roinet-api\", context=\"OtpService\"} | json | line_format \"[OTP] {{.message}} | mobile={{.mobileMasked}}\"",
         "legendFormat": ""
       }],
-      "options": {
-        "showTime": true,
-        "showLabels": false,
-        "wrapLogMessage": true,
-        "enableLogDetails": true,
-        "sortOrder": "Descending"
-      }
+      "options": { "showTime": true, "showLabels": false, "wrapLogMessage": true, "enableLogDetails": true, "sortOrder": "Descending" }
     },
     {
-      "id": 16,
-      "type": "logs",
+      "id": 16, "type": "logs",
       "title": "Slow DB Queries (>500ms)",
       "gridPos": { "x": 12, "y": 41, "w": 12, "h": 7 },
-      "datasource": "Loki",
+      "datasource": { "type": "loki", "uid": "roinet-loki" },
       "targets": [{
         "expr": "{job=\"roinet-api\", context=\"PrismaService\", level=\"warn\"} | json | line_format \"[SLOW DB] {{.durationMs}}ms | {{.query}}\"",
         "legendFormat": ""
       }],
-      "options": {
-        "showTime": true,
-        "showLabels": false,
-        "wrapLogMessage": true,
-        "enableLogDetails": true,
-        "sortOrder": "Descending"
-      }
+      "options": { "showTime": true, "showLabels": false, "wrapLogMessage": true, "enableLogDetails": true, "sortOrder": "Descending" }
     },
     {
-      "id": 17,
-      "type": "logs",
-      "title": "Raw Logs — Full JSON (Explore)",
+      "id": 17, "type": "logs",
+      "title": "Raw Logs — Full JSON",
       "gridPos": { "x": 0, "y": 48, "w": 24, "h": 10 },
-      "datasource": "Loki",
-      "targets": [{
-        "expr": "{job=~\"roinet-api.*\"}",
-        "legendFormat": ""
-      }],
-      "options": {
-        "showTime": true,
-        "showLabels": true,
-        "wrapLogMessage": true,
-        "prettifyLogMessage": true,
-        "enableLogDetails": true,
-        "sortOrder": "Descending",
-        "dedupStrategy": "none"
-      }
+      "datasource": { "type": "loki", "uid": "roinet-loki" },
+      "targets": [{ "expr": "{job=~\"roinet-api.*\"}", "legendFormat": "" }],
+      "options": { "showTime": true, "showLabels": true, "wrapLogMessage": true, "prettifyLogMessage": true, "enableLogDetails": true, "sortOrder": "Descending" }
     }
   ]
 }

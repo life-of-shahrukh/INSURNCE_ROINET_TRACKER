@@ -56,13 +56,9 @@ scrape_configs:
       - labels:
           security:
 
-      # Use the log timestamp, not ingestion time
-      - timestamp:
-          source: timestamp
-          format: RFC3339
-
-      # Keep the FULL raw JSON line as the log content (not just message)
-      # This lets Grafana Explore show all fields in the log panel
+      # NOTE: timestamp stage intentionally removed.
+      # Loki uses ingestion time (server NTP-synced UTC) so Grafana
+      # time-range queries always align with the server clock.
 
   # ── Roinet API: error-only log file ────────────────────────────────────────
   - job_name: roinet-api-errors
@@ -86,9 +82,6 @@ scrape_configs:
       - labels:
           level:
           context:
-      - timestamp:
-          source: timestamp
-          format: RFC3339
 
   # ── OS-level syslog (OOM, disk full, system errors) ──────────────────────
   - job_name: syslog

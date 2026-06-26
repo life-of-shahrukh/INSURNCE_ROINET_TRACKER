@@ -48,10 +48,16 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     // Log 4xx as warn, 5xx+ as error
     const logLevel = status >= 500 ? 'error' : 'warn';
-    (this.logger ?? console)[logLevel](`HttpException: ${String(message)}`, {
-      ...errorMeta(req, status),
-      trace: status >= 500 ? exception.stack : undefined,
-    });
+    const isSecurity = status === 401 || status === 403;
+    (this.logger ?? console)[logLevel](
+      isSecurity ? 'SECURITY' : `HttpException: ${String(message)}`,
+      {
+        ...errorMeta(req, status),
+        message: String(message),
+        security: isSecurity,
+        trace: status >= 500 ? exception.stack : undefined,
+      },
+    );
 
     res.status(status).json({
       statusCode: status,

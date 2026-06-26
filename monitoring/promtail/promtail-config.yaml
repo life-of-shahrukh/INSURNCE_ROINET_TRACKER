@@ -1,0 +1,126 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+  log_level: warn
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+
+  # ── Roinet API: all logs (info + above) ────────────────────────────────────
+  - job_name: roinet-api
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: roinet-api
+          app: roinet-crm
+          env: production
+          __path__: /var/log/roinet/app-*.log
+
+    pipeline_stages:
+      # Parse each line as JSON (Winston file format)
+      - json:
+          expressions:
+            level:     level
+            message:   message
+            context:   context
+            timestamp: timestamp
+            # HTTP fields
+            method:    method
+            path:      path
+            statusCode: statusCode
+            durationMs: durationMs
+            slow:      slow
+            userId:    userId
+            role:      role
+            ip:        ip
+            # DB fields
+            query:     query
+            # Error
+            trace:     trace
+            # Security
+            security:  security
+
+      # Promote level, context, method, statusCode as Loki labels for fast filtering
+      - labels:
+          level:
+          context:
+          method:
+          statusCode:
+
+      # Add a slow label to make slow requests easy to query
+      - template:
+          source: slow
+          template: '{{ if eq .Value "true" }}true{{ else }}false{{ end }}'
+      - labels:
+          slow:
+
+      # Add a security label for 401/403 events
+      - template:
+          source: security
+          template: '{{ if eq .Value "true" }}true{{ else }}false{{ end }}'
+      - labels:
+          security:
+
+      # Use the log's own timestamp (not ingestion time)
+      - timestamp:
+          source: timestamp
+          format: RFC3339
+
+      # Final log line = full JSON (keep everything for Grafana explore)
+      - output:
+          source: message
+
+  # ── Roinet API: error-only log file ────────────────────────────────────────
+  - job_name: roinet-api-errors
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: roinet-api-errors
+          app: roinet-crm
+          env: production
+          level: error
+          __path__: /var/log/roinet/error-*.log
+
+    pipeline_stages:
+      - json:
+          expressions:
+            level:     level
+            message:   message
+            context:   context
+            timestamp: timestamp
+            trace:     trace
+      - labels:
+          level:
+          context:
+      - timestamp:
+          source: timestamp
+          format: RFC3339
+      - output:
+          source: message
+
+  # ── OS-level syslog (system errors, OOM, disk full, etc.) ─────────────────
+  - job_name: syslog
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: syslog
+          app: host
+          env: production
+          __path__: /var/log/host/messages
+
+    pipeline_stages:
+      - regex:
+          expression: '^(?P<timestamp>\w+\s+\d+\s+\d+:\d+:\d+)\s+(?P<host>\S+)\s+(?P<process>[^:]+):\s+(?P<message>.+)$'
+      - labels:
+          host:
+          process:
+      - output:
+          source: message

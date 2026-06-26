@@ -1,11 +1,13 @@
 import {
   Injectable,
+  Inject,
   InternalServerErrorException,
-  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import type { Logger } from 'winston';
 import type { Response } from 'express';
 import * as crypto from 'node:crypto';
 import { UserRepository } from '../auth/user.repository';
@@ -38,13 +40,12 @@ interface _XpressoTokenInfo {
 
 @Injectable()
 export class SsoService {
-  private readonly logger = new Logger(SsoService.name);
-
   constructor(
     private readonly config: ConfigService,
     private readonly userRepo: UserRepository,
     private readonly jwtService: JwtService,
     private readonly externalApiService: ExternalApiService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
   ) {}
 
   /**
@@ -59,9 +60,11 @@ export class SsoService {
       this.config.get<string>('SSO_REDIRECT_BASE_URL') ??
       'https://insuranceroinet.xyz';
     const redirectUri = `${base}/sso/callback?token=${encodeURIComponent(token)}&isPosp=${isPosp}`;
-    this.logger.log(
-      `SSO redirect URI generated for userCode=${userCode} isPosp=${isPosp}`,
-    );
+    this.logger.info('SSO redirect URI generated', {
+      context: 'SsoService',
+      userCode,
+      isPosp,
+    });
     return { redirectUri };
   }
 
@@ -105,12 +108,23 @@ export class SsoService {
 
     const user = await this.userRepo.findUserByPospCode(payload.userCode);
     if (!user) {
+      this.logger.warn('SSO login failed: no CRM account for POSP code', {
+        context: 'SsoService',
+        userCode: payload.userCode,
+        isPosp,
+      });
       throw new UnauthorizedException(
         `No CRM account linked to POSP code "${payload.userCode}"`,
       );
     }
 
     if (user.status !== UserStatus.ACTIVE) {
+      this.logger.warn('SSO login failed: account inactive', {
+        context: 'SsoService',
+        userCode: payload.userCode,
+        userId: user.id,
+        status: user.status,
+      });
       throw new UnauthorizedException('Account is not active');
     }
 
@@ -124,9 +138,12 @@ export class SsoService {
 
     this.setAuthCookie(res, jwtToken);
 
-    this.logger.log(
-      `SSO login successful for POSP userCode=${payload.userCode} user=${user.email}`,
-    );
+    this.logger.info('SSO POSP login successful', {
+      context: 'SsoService',
+      userCode: payload.userCode,
+      userId: user.id,
+      email: user.email,
+    });
 
     return buildAuthUserPayload({ ...user, salesTeam: null });
   }
@@ -139,9 +156,12 @@ export class SsoService {
   ): Promise<AuthUserPayload> {
     const identity = await this.externalApiService.getManagerIdentity(userCode);
 
-    this.logger.log(
-      `SSO manager login: userCode=${userCode} role=${identity.role} districts=${identity.districtIds.length}`,
-    );
+    this.logger.info('SSO manager login attempt', {
+      context: 'SsoService',
+      userCode,
+      role: identity.role,
+      districtCount: identity.districtIds.length,
+    });
 
     const user = await this.userRepo.upsertManagerFromSso({
       userCode,
@@ -150,15 +170,23 @@ export class SsoService {
     });
 
     if (user.status !== UserStatus.ACTIVE) {
+      this.logger.warn('SSO manager login failed: account inactive', {
+        context: 'SsoService',
+        userCode,
+        userId: user.id,
+        status: user.status,
+      });
       throw new UnauthorizedException('Account is not active');
     }
 
     // Sync district hierarchy cache asynchronously — does not block login response
     this.syncHierarchyCache(identity.districtIds, userCode).catch(
       (err: unknown) =>
-        this.logger.warn(
-          `Failed to sync hierarchy cache for ${userCode}: ${err instanceof Error ? err.message : String(err)}`,
-        ),
+        this.logger.warn('Failed to sync hierarchy cache', {
+          context: 'SsoService',
+          userCode,
+          error: err instanceof Error ? err.message : String(err),
+        }),
     );
 
     const jwtToken = this.signAppJwt({
@@ -170,9 +198,12 @@ export class SsoService {
 
     this.setAuthCookie(res, jwtToken);
 
-    this.logger.log(
-      `SSO manager login successful for userCode=${userCode} role=${identity.role}`,
-    );
+    this.logger.info('SSO manager login successful', {
+      context: 'SsoService',
+      userCode,
+      userId: user.id,
+      role: identity.role,
+    });
 
     return {
       id: user.id,

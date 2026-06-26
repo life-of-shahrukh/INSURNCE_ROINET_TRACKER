@@ -1,5 +1,7 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import type { Logger } from 'winston';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ExternalApiService } from '../../common/external-api/external-api.service';
 import { GeoCatalogService } from '../geo/geo-catalog.service';
@@ -18,28 +20,35 @@ const REBUILD_TX_OPTIONS = { maxWait: 15_000, timeout: 120_000 };
 
 @Injectable()
 export class OrgSyncService {
-  private readonly logger = new Logger(OrgSyncService.name);
-
   constructor(
     private readonly prisma: PrismaService,
     private readonly externalApi: ExternalApiService,
     private readonly geoCatalog: GeoCatalogService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
   ) {}
 
   /** Weekly rebuild — Sunday 02:00 server time. */
   @Cron('0 2 * * 0', { name: 'org-graph-weekly-rebuild' })
   async scheduledRebuild(): Promise<void> {
-    this.logger.log('Weekly org graph rebuild starting...');
+    const start = Date.now();
+    this.logger.info('Scheduled org graph rebuild starting', {
+      context: 'OrgSyncService',
+      trigger: 'cron',
+    });
     try {
       const counts = await this.rebuild();
-      this.logger.log(
-        `Weekly org graph rebuild done: members=${counts.members} edges=${counts.edges} closures=${counts.closures} districtChains=${counts.districtChains}`,
-      );
+      this.logger.info('Scheduled org graph rebuild complete', {
+        context: 'OrgSyncService',
+        durationMs: Date.now() - start,
+        ...counts,
+      });
     } catch (err) {
-      this.logger.error(
-        `Weekly org graph rebuild failed: ${err instanceof Error ? err.message : String(err)}`,
-        err instanceof Error ? err.stack : undefined,
-      );
+      this.logger.error('Scheduled org graph rebuild failed', {
+        context: 'OrgSyncService',
+        durationMs: Date.now() - start,
+        error: err instanceof Error ? err.message : String(err),
+        trace: err instanceof Error ? err.stack : undefined,
+      });
     }
   }
 
@@ -48,18 +57,29 @@ export class OrgSyncService {
    * Live API first, snapshot fallback so a rebuild never fails closed.
    */
   async rebuild(): Promise<OrgGraphCounts> {
+    const t0 = Date.now();
     const hierarchy = await this.loadHierarchy();
     const geoByDistrict = await this.loadGeoByDistrict();
 
     const seed = buildOrgGraph(hierarchy, geoByDistrict);
-    this.logger.log(
-      `Built graph in memory: ${seed.members.length} members, ${seed.edges.length} edges, ${seed.closures.length} closure rows, ${seed.districtChains.length} district links`,
-    );
+    this.logger.info('Org graph built in memory', {
+      context: 'OrgSyncService',
+      members: seed.members.length,
+      edges: seed.edges.length,
+      closures: seed.closures.length,
+      districtChains: seed.districtChains.length,
+    });
 
     const counts = await this.prisma.$transaction(
       (tx) => persistOrgGraph(tx, seed),
       REBUILD_TX_OPTIONS,
     );
+
+    this.logger.info('Org graph persisted to DB', {
+      context: 'OrgSyncService',
+      durationMs: Date.now() - t0,
+      ...counts,
+    });
 
     // Geo reference data may have changed; drop the cached catalog so the next
     // read rebuilds from the freshly synced source.
@@ -70,14 +90,13 @@ export class OrgSyncService {
 
   private async loadHierarchy(): Promise<ExternalHierarchyUser[]> {
     const rows = await this.externalApi.listHierarchy();
-    this.logger.log(`Loaded ${rows.length} hierarchy rows`);
+    this.logger.info('Hierarchy rows loaded from Cognitensor', {
+      context: 'OrgSyncService',
+      count: rows.length,
+    });
     return rows;
   }
 
-  /**
-   * districtId -> geography (state/zone/region) from ListDistrict.
-   * Live is tried first by ExternalApiService; snapshot is the automatic fallback.
-   */
   private async loadGeoByDistrict(): Promise<Map<string, DistrictGeo>> {
     const districts = await this.externalApi.listDistricts('');
 
@@ -91,6 +110,10 @@ export class OrgSyncService {
         regionName: d.regionname ?? null,
       });
     }
+    this.logger.info('Geo district map built', {
+      context: 'OrgSyncService',
+      districtCount: map.size,
+    });
     return map;
   }
 }

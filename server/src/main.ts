@@ -9,6 +9,7 @@ import {
   AllExceptionsFilter,
 } from './common/filters/http-exception.filter';
 import { HttpLoggerInterceptor } from './common/interceptors/http-logger.interceptor';
+import { AuditLogInterceptor } from './common/interceptors/audit-log.interceptor';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const cookieParser = require('cookie-parser') as typeof import('cookie-parser');
@@ -66,8 +67,8 @@ async function bootstrap() {
     }),
   );
 
-  // Global interceptor: logs every HTTP request + response with timing
-  app.useGlobalInterceptors(app.get(HttpLoggerInterceptor));
+  // Global interceptors: logs every HTTP request + response with timing, and audit trail for mutations
+  app.useGlobalInterceptors(app.get(HttpLoggerInterceptor), app.get(AuditLogInterceptor));
 
   // Global filters: structured error logging
   app.useGlobalFilters(

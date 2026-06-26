@@ -1,0 +1,71 @@
+version: "3.8"
+
+# ─── Roinet CRM Observability Stack ─────────────────────────────────────────
+# Loki   : log aggregation (port 3100)
+# Promtail: log shipper — tails /home/Tracker/server/logs/*.log
+# Grafana : dashboards (port 3001 to avoid clash with Next.js on 3000)
+
+networks:
+  monitoring:
+    driver: bridge
+
+volumes:
+  loki-data:
+  grafana-data:
+
+services:
+  # ── Loki ────────────────────────────────────────────────────────────────────
+  loki:
+    image: grafana/loki:2.9.4
+    container_name: roinet-loki
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3100:3100"   # Only localhost — Promtail talks to it internally
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/local-config.yaml:ro
+      - loki-data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - monitoring
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:3100/ready || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ── Promtail ─────────────────────────────────────────────────────────────────
+  promtail:
+    image: grafana/promtail:2.9.4
+    container_name: roinet-promtail
+    restart: unless-stopped
+    volumes:
+      - ./promtail/promtail-config.yaml:/etc/promtail/config.yaml:ro
+      - /home/Tracker/server/logs:/var/log/roinet:ro   # read Winston log files
+      - /var/log:/var/log/host:ro                      # optional: OS-level logs
+    command: -config.file=/etc/promtail/config.yaml
+    depends_on:
+      loki:
+        condition: service_healthy
+    networks:
+      - monitoring
+
+  # ── Grafana ────────────────────────────────────────────────────────────────
+  grafana:
+    image: grafana/grafana:10.4.2
+    container_name: roinet-grafana
+    restart: unless-stopped
+    ports:
+      - "5050:3000"              # Access Grafana at http://SERVER_IP:5050
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=RoinetGrafana@123
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+      - GF_SERVER_ROOT_URL=http://192.168.1.177:5050
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - loki
+    networks:
+      - monitoring

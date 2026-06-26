@@ -1,5 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import type { Logger } from 'winston';
 import { CreateDealDto } from './dto/create-deal.dto';
 import { UpdateDealDto } from './dto/update-deal.dto';
 import { CreateDealCommand } from './commands/create-deal.command';
@@ -16,12 +18,6 @@ import { resolvePospScope } from '../../common/auth/posp-scope.util';
 import type { HierarchyScope } from '../../common/auth/hierarchy-scope.util';
 import { Role } from '../../common/constants';
 
-/**
- * COA, COA mode, and Retained Margin are financial fields only SUPER_ADMIN may set.
- * Stripping them server-side is the real gate — the UI lock alone is insufficient.
- * On create the omitted fields fall back to repository defaults; on update the
- * existing persisted values are preserved (repository only writes provided keys).
- */
 function stripFinancials(dto: {
   coa?: number;
   coaType?: string;
@@ -37,6 +33,7 @@ export class DealService {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
   ) {}
 
   getAll(
@@ -51,6 +48,10 @@ export class DealService {
 
   create(dto: CreateDealDto, user: AuthUser): Promise<Deal> {
     if (user.role === Role.POSP) {
+      this.logger.warn('Deal create blocked: POSP attempted direct creation', {
+        context: 'DealService',
+        userId: user.userId,
+      });
       throw new BadRequestException(
         'Create a lead first; add a policy number on edit to convert to a deal.',
       );
@@ -60,26 +61,44 @@ export class DealService {
     if (user.role !== Role.SUPER_ADMIN) {
       stripFinancials(finalDto);
     }
-    return this.commandBus.execute(
-      new CreateDealCommand(finalDto, user.userId),
-    );
+    this.logger.info('Creating deal', {
+      context: 'DealService',
+      userId: user.userId,
+      role: user.role,
+      pospId: finalDto.pospId,
+    });
+    return this.commandBus.execute(new CreateDealCommand(finalDto, user.userId));
   }
 
-  update(
+  async update(
     id: string,
     dto: UpdateDealDto,
     user: AuthUser,
     scope?: HierarchyScope,
   ): Promise<Deal> {
     const finalDto = { ...dto };
-    // Only re-resolve pospId scope when the client is explicitly changing it.
     if (dto.pospId !== undefined) {
       finalDto.pospId = resolvePospScope(user, dto.pospId);
     }
     if (user.role !== Role.SUPER_ADMIN) {
       stripFinancials(finalDto);
     }
-    return this.commandBus.execute(new UpdateDealCommand(id, finalDto, scope));
+    this.logger.info('Updating deal', {
+      context: 'DealService',
+      dealId: id,
+      userId: user.userId,
+      role: user.role,
+      fields: Object.keys(dto),
+    });
+    const deal = await this.commandBus.execute<UpdateDealCommand, Deal>(
+      new UpdateDealCommand(id, finalDto, scope),
+    );
+    this.logger.info('Deal updated', {
+      context: 'DealService',
+      dealId: id,
+      status: (deal as Deal & { status?: string }).status,
+    });
+    return deal;
   }
 
   async delete(
@@ -88,10 +107,21 @@ export class DealService {
     scope?: HierarchyScope,
   ): Promise<void> {
     if (!user.pospId && !user.userId) {
+      this.logger.warn('Deal delete blocked: missing identity', {
+        context: 'DealService',
+        dealId: id,
+      });
       throw new ForbiddenException('Unauthorized');
     }
+    this.logger.warn('Deleting deal', {
+      context: 'DealService',
+      dealId: id,
+      userId: user.userId,
+      role: user.role,
+    });
     const pospId = user.role === Role.POSP ? user.pospId : undefined;
-    return this.commandBus.execute(new DeleteDealCommand(id, pospId, scope));
+    await this.commandBus.execute(new DeleteDealCommand(id, pospId, scope));
+    this.logger.info('Deal deleted', { context: 'DealService', dealId: id });
   }
 
   exportCsv(
@@ -99,6 +129,10 @@ export class DealService {
     filters: DealListQueryDto,
     scope?: HierarchyScope,
   ): Promise<string> {
+    this.logger.info('Exporting deals CSV', {
+      context: 'DealService',
+      userId: user.userId,
+    });
     return this.queryBus.execute(
       new ExportDealsCsvQuery(filters, scope, user.pospId ?? undefined),
     );

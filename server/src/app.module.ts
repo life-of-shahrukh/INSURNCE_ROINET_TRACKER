@@ -7,6 +7,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { SequenceModule } from './common/sequence/sequence.module';
 import { LoggerModule } from './common/logger/logger.module';
 import { HttpLoggerInterceptor } from './common/interceptors/http-logger.interceptor';
+import { AuditLogInterceptor } from './common/interceptors/audit-log.interceptor';
 import { PospModule } from './modules/posp/posp.module';
 import { DealModule } from './modules/deal/deal.module';
 import { AuthModule } from './modules/auth/auth.module';
@@ -48,6 +49,6 @@ import { OtpModule } from './modules/otp/otp.module';
     AnnouncementModule,
     OtpModule,
   ],
-  providers: [HttpLoggerInterceptor],
+  providers: [HttpLoggerInterceptor, AuditLogInterceptor],
 })
 export class AppModule {}

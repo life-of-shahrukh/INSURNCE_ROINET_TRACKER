@@ -95,15 +95,23 @@ export class OtpService {
   }
 
   private async enforceRateLimit(mobile: string): Promise<void> {
-    const since = new Date(Date.now() - OTP_RATE_LIMIT_SECONDS * 1000);
+    const now = Date.now();
+    const since = new Date(now - OTP_RATE_LIMIT_SECONDS * 1000);
     const recent = await this.prisma.otpRequest.findFirst({
-      where: { mobile, createdAt: { gte: since } },
+      where: {
+        mobile,
+        // Only consider records created in the past (ignore future-dated
+        // stale records that can result from server clock drift)
+        createdAt: { gte: since, lte: new Date(now + 5000) },
+      },
       orderBy: { createdAt: 'desc' },
     });
     if (recent) {
-      const waitSeconds = Math.ceil(
-        (recent.createdAt.getTime() + OTP_RATE_LIMIT_SECONDS * 1000 - Date.now()) / 1000,
+      const rawWait = Math.ceil(
+        (recent.createdAt.getTime() + OTP_RATE_LIMIT_SECONDS * 1000 - now) / 1000,
       );
+      // Cap wait at the rate limit window — never show absurdly large values
+      const waitSeconds = Math.min(rawWait, OTP_RATE_LIMIT_SECONDS);
       throw new BadRequestException(
         `Please wait ${waitSeconds}s before requesting another OTP`,
       );

@@ -136,20 +136,55 @@ export class OtpService {
       `&entityid=${entityId}` +
       `&templateid=${templateId}`;
 
-    const resp = await fetch(url);
+    let resp: Response;
+    try {
+      resp = await fetch(url, { signal: AbortSignal.timeout(10_000) });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      this.logger.error('Telsp SMS network error', {
+        context: 'OtpService',
+        error: msg,
+        mobileMasked: `***${mobile.slice(-4)}`,
+      });
+      throw new ServiceUnavailableException('SMS service unreachable. Please try again.');
+    }
+
+    const body = await resp.text();
+
     if (!resp.ok) {
-      this.logger.error('Telsp SMS dispatch failed', {
+      this.logger.error('Telsp SMS HTTP error', {
         context: 'OtpService',
         httpStatus: resp.status,
+        body,
         mobileMasked: `***${mobile.slice(-4)}`,
       });
       throw new ServiceUnavailableException('Failed to send OTP SMS');
     }
-    const body = await resp.text();
+
+    // Telsp returns JSON: {"code":"01","desc":"SUCCESS"} on success,
+    // or {"code":"118","desc":"INVALID_USER"} on failure
+    let telspCode = '';
+    try {
+      const json = JSON.parse(body) as { code?: string; desc?: string };
+      telspCode = json.code ?? '';
+      if (telspCode !== '01') {
+        this.logger.error('Telsp SMS rejected', {
+          context: 'OtpService',
+          telspCode,
+          telspDesc: json.desc,
+          mobileMasked: `***${mobile.slice(-4)}`,
+        });
+        throw new ServiceUnavailableException('Failed to send OTP SMS');
+      }
+    } catch (err: unknown) {
+      if (err instanceof ServiceUnavailableException) throw err;
+      // Non-JSON response — treat as success if HTTP 200
+    }
+
     this.logger.info('Telsp SMS dispatched', {
       context: 'OtpService',
       mobileMasked: `***${mobile.slice(-4)}`,
-      telspResponse: body,
+      telspCode,
     });
   }
 }

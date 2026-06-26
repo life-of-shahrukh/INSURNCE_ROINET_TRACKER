@@ -120,6 +120,27 @@ export class ExternalApiService {
     return districtId ? all.filter((c) => c.DistrictId === districtId) : all;
   }
 
+  /**
+   * Looks up a single district row by districtId (snapshot search).
+   * Returns stateId + districtName so the frontend can resolve the cascading
+   * location selector for a POSP's territory.
+   */
+  async getDistrictById(
+    districtId: string,
+  ): Promise<{ districtId: string; districtName: string; stateId: string } | null> {
+    const all = await this.fetchWithFallback<ExternalDistrict>(
+      '/Cognitensor/ListDistrict',
+      'districts-sample.json',
+    );
+    const found = all.find((d) => d.DistrictId === districtId);
+    if (!found) return null;
+    return {
+      districtId: found.DistrictId,
+      districtName: found.DistrictName,
+      stateId: found.StateId,
+    };
+  }
+
   async listZones(): Promise<ExternalZone[]> {
     return this.fetchWithFallback<ExternalZone>(
       '/Cognitensor/ListZone',

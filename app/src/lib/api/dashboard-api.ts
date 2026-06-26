@@ -12,6 +12,8 @@ export interface DashboardStats {
     hotCount: number;
     warmCount: number;
     coldCount: number;
+    /** Raw deal status breakdown — actual DB status values */
+    byStatus: Array<{ status: string; count: number }>;
     issuedCount: number;
     /** 0-100 */
     conversionRate: number;
@@ -56,6 +58,7 @@ export const EMPTY_STATS: DashboardStats = {
     hotCount: 0,
     warmCount: 0,
     coldCount: 0,
+    byStatus: [],
     issuedCount: 0,
     conversionRate: 0,
     costPerIssuedPolicy: null,

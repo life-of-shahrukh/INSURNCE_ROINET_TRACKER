@@ -20,19 +20,15 @@ export class SequenceService {
     const year = new Date().getFullYear();
     const prefix = PREFIX_MAP[type];
 
-    const row = await this.prisma.$queryRaw<{ lastValue: number }[]>`
-      MERGE INTO [Sequence] WITH (HOLDLOCK) AS target
-      USING (SELECT ${type} AS id, ${year} AS year) AS source
-        ON target.id = source.id AND target.year = source.year
-      WHEN MATCHED THEN
-        UPDATE SET lastValue = target.lastValue + 1, updatedAt = GETDATE()
-      WHEN NOT MATCHED THEN
-        INSERT (id, year, lastValue, updatedAt)
-        VALUES (source.id, source.year, 1, GETDATE())
-      OUTPUT inserted.lastValue;
+    const row = await this.prisma.$queryRaw<{ lastvalue: number }[]>`
+      INSERT INTO "Sequence" (id, year, "lastValue", "updatedAt")
+      VALUES (${type}, ${year}, 1, NOW())
+      ON CONFLICT (id, year)
+      DO UPDATE SET "lastValue" = "Sequence"."lastValue" + 1, "updatedAt" = NOW()
+      RETURNING "lastValue"
     `;
 
-    const seq = row[0]?.lastValue ?? 1;
+    const seq = row[0]?.lastvalue ?? 1;
     const padded = String(seq).padStart(5, '0');
     return `${prefix}-${year}-${padded}`;
   }

@@ -314,6 +314,7 @@ export class DashboardRepository {
           dealsByStatus.find((s) => s.status === 'W')?._count._all ?? 0,
         coldCount:
           dealsByStatus.find((s) => s.status === 'C')?._count._all ?? 0,
+        byStatus: dealsByStatus.map((s) => ({ status: s.status, count: s._count._all })),
         issuedCount,
         conversionRate,
         costPerIssuedPolicy:

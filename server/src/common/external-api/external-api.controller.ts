@@ -60,6 +60,25 @@ export class ExternalApiController {
     return this.externalApiService.listCities(districtId ?? '');
   }
 
+  @Get('district-by-id')
+  @Roles(
+    Role.POSP,
+    Role.DM,
+    Role.ASM,
+    Role.RH,
+    Role.ZH,
+    Role.NATIONAL_HEAD,
+    Role.SUPER_ADMIN,
+  )
+  @ApiOperation({ summary: 'Look up a single district (with its stateId) by districtId' })
+  async getDistrictById(@Query('districtId') districtId: string) {
+    const result = await this.externalApiService.getDistrictById(districtId ?? '');
+    if (!result) {
+      return {};
+    }
+    return result;
+  }
+
   @Get('zones')
   @Roles(
     Role.POSP,

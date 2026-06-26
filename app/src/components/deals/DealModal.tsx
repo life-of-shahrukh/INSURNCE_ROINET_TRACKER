@@ -43,12 +43,14 @@ const emptyForm = {
   customerId: "",
   customer: "",
   policy: "HEALTH",
+  productSubType: "",
   sum: "",
   premium: "",
   coa: "0",
   coaType: "AMOUNT" as "PERCENT" | "AMOUNT",
   margin: "0",
   status: "W" as DealStatus,
+  pipelineStatus: "NEW" as string,
   expected: "",
   proposal: "",
   policyNo: "",
@@ -102,6 +104,7 @@ export function DealModal({ open, lead, deal, onClose }: DealModalProps) {
         customerId: lead.customerId,
         customer: lead.customer?.name ?? "",
         policy: lead.product,
+        productSubType: lead.productSubType ?? "",
         sum: String(lead.estimatedSum ?? ""),
         premium: String(lead.estimatedPremium ?? ""),
         coa: "0",
@@ -110,6 +113,7 @@ export function DealModal({ open, lead, deal, onClose }: DealModalProps) {
         status: lead.convertedToDealId
           ? "D"
           : closureTimelineToHeatStatus(lead.closureTimeline),
+        pipelineStatus: lead.status ?? "NEW",
         expected: lead.expectedCloseDate
           ? new Date(lead.expectedCloseDate).toISOString().slice(0, 10)
           : "",
@@ -126,12 +130,14 @@ export function DealModal({ open, lead, deal, onClose }: DealModalProps) {
         customerId: deal.customerId ?? "",
         customer: deal.customer,
         policy: deal.policy,
+        productSubType: "",
         sum: String(deal.sum ?? ""),
         premium: String(deal.premium ?? ""),
         coa: String(deal.coa ?? 0),
         coaType: deal.coaType ?? "AMOUNT",
         margin: String(deal.margin ?? 0),
         status: "D",
+        pipelineStatus: "WON",
         expected: deal.expected
           ? new Date(deal.expected).toISOString().slice(0, 10)
           : "",
@@ -213,6 +219,24 @@ export function DealModal({ open, lead, deal, onClose }: DealModalProps) {
       }
 
       if (lead) {
+        // Guard: transitioning to PROPOSAL_SENT generates an irreversible Proposal ID
+        const isNewProposalSentTransition =
+          form.pipelineStatus === "PROPOSAL_SENT" &&
+          lead.status !== "PROPOSAL_SENT" &&
+          !lead.proposalCode;
+
+        if (
+          isNewProposalSentTransition &&
+          !window.confirm(
+            'Moving to "Proposal Sent" will auto-generate a Proposal ID (e.g. PROP-2026-00001).\n\n' +
+            "This action cannot be undone — the Proposal ID is permanent once created.\n\n" +
+            "Continue?",
+          )
+        ) {
+          setSaving(false);
+          return;
+        }
+
         await updateLead.mutateAsync({
           id: lead.id,
           data: formToUpdateLeadInput(form),
@@ -221,7 +245,9 @@ export function DealModal({ open, lead, deal, onClose }: DealModalProps) {
         toast.success(
           converted
             ? "Lead converted to deal successfully"
-            : "Lead updated successfully",
+            : isNewProposalSentTransition
+              ? "Pipeline status updated — Proposal ID generated"
+              : "Lead updated successfully",
         );
         onClose();
         return;
@@ -360,9 +386,9 @@ export function DealModal({ open, lead, deal, onClose }: DealModalProps) {
 
             <ProductCategorySelect
               productLine={form.policy}
-              productSubType=""
-              onProductLineChange={(val) => setForm({ ...form, policy: val })}
-              onSubTypeChange={() => {}}
+              productSubType={form.productSubType}
+              onProductLineChange={(val) => setForm({ ...form, policy: val, productSubType: "" })}
+              onSubTypeChange={(val) => setForm({ ...form, productSubType: val })}
               required
             />
 
@@ -445,7 +471,7 @@ export function DealModal({ open, lead, deal, onClose }: DealModalProps) {
             )}
 
             <div className="form-group">
-              <label htmlFor="d-status">Status</label>
+              <label htmlFor="d-status">Temperature</label>
               {isDoneDeal ? (
                 <input
                   id="d-status"
@@ -475,6 +501,33 @@ export function DealModal({ open, lead, deal, onClose }: DealModalProps) {
                 </select>
               )}
             </div>
+
+            {/* Pipeline status — only shown when editing a lead (not a standalone deal) */}
+            {!!lead && !isDealEdit && (
+              <div className="form-group">
+                <label htmlFor="d-pipeline-status">
+                  Pipeline Status
+                  {lead.proposalCode && (
+                    <span style={{ marginLeft: 8, fontSize: 11, color: "#d97706", fontWeight: 400 }}>
+                      🔒 cannot go below this stage
+                    </span>
+                  )}
+                </label>
+                <select
+                  id="d-pipeline-status"
+                  value={form.pipelineStatus}
+                  onChange={(e) => setForm({ ...form, pipelineStatus: e.target.value })}
+                  disabled={isConvertedLead}
+                >
+                  {!lead.proposalCode && <option value="NEW">New</option>}
+                  {!lead.proposalCode && <option value="CONTACTED">Contacted</option>}
+                  {!lead.proposalCode && <option value="QUALIFIED">Qualified</option>}
+                  <option value="PROPOSAL_SENT">Proposal Sent</option>
+                  <option value="WON">Won</option>
+                  <option value="LOST">Lost</option>
+                </select>
+              </div>
+            )}
             <div className="form-group">
               <label htmlFor="d-expected">Expected Closure Date</label>
               <input
@@ -502,16 +555,32 @@ export function DealModal({ open, lead, deal, onClose }: DealModalProps) {
                 <div className="form-group">
                   <label htmlFor="d-proposal">
                     Proposal Number
-                    <span style={{ fontWeight: 400, color: "#888", marginLeft: 6, fontSize: 12 }}>
-                      (assigned by insurer)
-                    </span>
+                    {lead?.proposalCode ? (
+                      <span style={{ fontWeight: 400, color: "#d97706", marginLeft: 6, fontSize: 12 }}>
+                        🔒 auto-generated · permanent
+                      </span>
+                    ) : (
+                      <span style={{ fontWeight: 400, color: "#888", marginLeft: 6, fontSize: 12 }}>
+                        (assigned by insurer)
+                      </span>
+                    )}
                   </label>
-                  <input
-                    id="d-proposal"
-                    value={form.proposal}
-                    placeholder="e.g. PRP-2024-123456"
-                    onChange={(e) => setForm({ ...form, proposal: e.target.value })}
-                  />
+                  {lead?.proposalCode ? (
+                    <input
+                      id="d-proposal"
+                      value={lead.proposalCode}
+                      readOnly
+                      disabled
+                      style={{ background: "#fffbeb", color: "#78350f", fontWeight: 700, cursor: "not-allowed", letterSpacing: "0.04em" }}
+                    />
+                  ) : (
+                    <input
+                      id="d-proposal"
+                      value={form.proposal}
+                      placeholder="e.g. PRP-2024-123456"
+                      onChange={(e) => setForm({ ...form, proposal: e.target.value })}
+                    />
+                  )}
                 </div>
                 <div className="form-group">
                   <label htmlFor="d-policyno">

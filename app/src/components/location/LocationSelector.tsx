@@ -1,216 +1,114 @@
-/**
- * Location Selector Component
- * 
- * Cascading select for State -> District -> City
- * Uses external RoiNet Cognitensor API
- */
+"use client";
 
-'use client';
+import { useEffect, useState } from "react";
+import { useLocationCascade } from "@/hooks/useExternalApi";
 
-import { useLocationCascade } from '@/hooks/useExternalApi';
-import { useUIStore } from '@/store/ui-store';
-
-interface LocationSelectorProps {
-  onLocationChange?: (location: {
-    stateId: string | null;
-    stateName: string | null;
-    districtId: string | null;
-    districtName: string | null;
-    cityId: string | null;
-    cityName: string | null;
-  }) => void;
-  className?: string;
+interface LocationValue {
+  stateId: string;
+  stateName: string;
+  districtId: string;
+  districtName: string;
+  cityId: string;
+  cityName: string;
 }
 
-export function LocationSelector({
-  onLocationChange,
-  className = '',
-}: LocationSelectorProps) {
-  const {
-    selectedState,
-    selectedDistrict,
-    selectedCity,
-    setSelectedState,
-    setSelectedDistrict,
-    setSelectedCity,
-    resetLocationSelection,
-  } = useUIStore();
+interface LocationSelectorProps {
+  /** Current values — drives the dropdowns (controlled). */
+  value: LocationValue;
+  onChange: (location: LocationValue) => void;
+}
+
+export function LocationSelector({ value, onChange }: LocationSelectorProps) {
+  // Local "selected" IDs for cascading — initialised from value prop.
+  const [stateId, setStateId] = useState(value.stateId);
+  const [districtId, setDistrictId] = useState(value.districtId);
+
+  // Re-sync when the parent value changes (e.g. modal opens for a new customer)
+  useEffect(() => {
+    setStateId(value.stateId);
+    setDistrictId(value.districtId);
+  }, [value.stateId, value.districtId]);
 
   const { states, districts, cities } = useLocationCascade(
-    selectedState,
-    selectedDistrict,
+    stateId || null,
+    districtId || null,
   );
 
-  const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value || null;
-    setSelectedState(value);
-    const state = states.data.find((s) => s.StateId === value);
-    onLocationChange?.({
-      stateId: value,
-      stateName: state?.StateName ?? null,
-      districtId: null,
-      districtName: null,
-      cityId: null,
-      cityName: null,
-    });
+  const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
+    const id = e.target.value;
+    const name = states.data.find((s) => s.StateId === id)?.StateName ?? "";
+    setStateId(id);
+    setDistrictId("");
+    onChange({ stateId: id, stateName: name, districtId: "", districtName: "", cityId: "", cityName: "" });
   };
 
-  const handleDistrictChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value || null;
-    setSelectedDistrict(value);
-    const district = districts.data.find((d) => d.DistrictId === value);
-    const state = states.data.find((s) => s.StateId === selectedState);
-    onLocationChange?.({
-      stateId: selectedState,
-      stateName: state?.StateName ?? null,
-      districtId: value,
-      districtName: district?.DistrictName ?? null,
-      cityId: null,
-      cityName: null,
-    });
+  const handleDistrictChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
+    const id = e.target.value;
+    const name = districts.data.find((d) => d.DistrictId === id)?.DistrictName ?? "";
+    setDistrictId(id);
+    onChange({ ...value, stateId, districtId: id, districtName: name, cityId: "", cityName: "" });
   };
 
-  const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value || null;
-    setSelectedCity(value);
-    const city = cities.data.find((c) => c.CityId === value);
-    const district = districts.data.find((d) => d.DistrictId === selectedDistrict);
-    const state = states.data.find((s) => s.StateId === selectedState);
-    onLocationChange?.({
-      stateId: selectedState,
-      stateName: state?.StateName ?? null,
-      districtId: selectedDistrict,
-      districtName: district?.DistrictName ?? null,
-      cityId: value,
-      cityName: city?.CityName ?? null,
-    });
-  };
-
-  const handleReset = () => {
-    resetLocationSelection();
-    onLocationChange?.({
-      stateId: null,
-      stateName: null,
-      districtId: null,
-      districtName: null,
-      cityId: null,
-      cityName: null,
-    });
+  const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
+    const id = e.target.value;
+    const name = cities.data.find((c) => c.CityId === id)?.CityName ?? "";
+    onChange({ ...value, stateId, districtId, cityId: id, cityName: name });
   };
 
   return (
-    <div className={`space-y-4 ${className}`}>
-      {/* State Selector */}
-      <div>
-        <label
-          htmlFor="state"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          State
-        </label>
+    <div className="form-grid">
+      <div className="form-group">
+        <label htmlFor="loc-state">State</label>
         <select
-          id="state"
-          value={selectedState ?? ''}
+          id="loc-state"
+          value={stateId}
           onChange={handleStateChange}
           disabled={states.isLoading}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
         >
-          <option value="">
-            {states.isLoading ? 'Loading states...' : 'Select a state'}
-          </option>
-          {states.data.map((state) => (
-            <option key={state.StateId} value={state.StateId}>
-              {state.StateName}
-            </option>
+          <option value="">{states.isLoading ? "Loading…" : "— Select state —"}</option>
+          {states.data.map((s) => (
+            <option key={s.StateId} value={s.StateId}>{s.StateName}</option>
           ))}
         </select>
-        {states.error && (
-          <p className="mt-1 text-sm text-red-600">
-            Error loading states: {states.error.message}
-          </p>
-        )}
       </div>
 
-      {/* District Selector */}
-      <div>
-        <label
-          htmlFor="district"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          District
-        </label>
+      <div className="form-group">
+        <label htmlFor="loc-district">District</label>
         <select
-          id="district"
-          value={selectedDistrict ?? ''}
+          id="loc-district"
+          value={districtId}
           onChange={handleDistrictChange}
-          disabled={!selectedState || districts.isLoading}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+          disabled={!stateId || districts.isLoading}
         >
           <option value="">
-            {!selectedState
-              ? 'Select a state first'
-              : districts.isLoading
-                ? 'Loading districts...'
-                : 'Select a district'}
+            {stateId
+              ? districts.isLoading ? "Loading…" : "— Select district —"
+              : "Select state first"}
           </option>
-          {districts.data.map((district) => (
-            <option key={district.DistrictId} value={district.DistrictId}>
-              {district.DistrictName}
-            </option>
+          {districts.data.map((d) => (
+            <option key={d.DistrictId} value={d.DistrictId}>{d.DistrictName}</option>
           ))}
         </select>
-        {districts.error && (
-          <p className="mt-1 text-sm text-red-600">
-            Error loading districts: {districts.error.message}
-          </p>
-        )}
       </div>
 
-      {/* City Selector */}
-      <div>
-        <label
-          htmlFor="city"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          City
-        </label>
+      <div className="form-group">
+        <label htmlFor="loc-city">City</label>
         <select
-          id="city"
-          value={selectedCity ?? ''}
+          id="loc-city"
+          value={value.cityId}
           onChange={handleCityChange}
-          disabled={!selectedDistrict || cities.isLoading}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+          disabled={!districtId || cities.isLoading}
         >
           <option value="">
-            {!selectedDistrict
-              ? 'Select a district first'
-              : cities.isLoading
-                ? 'Loading cities...'
-                : 'Select a city'}
+            {districtId
+              ? cities.isLoading ? "Loading…" : "— Select city —"
+              : "Select district first"}
           </option>
-          {cities.data.map((city) => (
-            <option key={city.CityId} value={city.CityId}>
-              {city.CityName}
-            </option>
+          {cities.data.map((c) => (
+            <option key={c.CityId} value={c.CityId}>{c.CityName}</option>
           ))}
         </select>
-        {cities.error && (
-          <p className="mt-1 text-sm text-red-600">
-            Error loading cities: {cities.error.message}
-          </p>
-        )}
       </div>
-
-      {/* Reset Button */}
-      {(selectedState || selectedDistrict || selectedCity) && (
-        <button
-          type="button"
-          onClick={handleReset}
-          className="text-sm text-blue-600 hover:text-blue-800 underline"
-        >
-          Reset selection
-        </button>
-      )}
     </div>
   );
 }

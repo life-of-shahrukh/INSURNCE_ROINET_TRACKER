@@ -20,6 +20,7 @@ import { fetchAndDownloadCsv } from "@/lib/crm-calculations";
 import { toast } from "sonner";
 
 const CUSTOMERS_COLUMNS: ColumnConfig[] = [
+  { key: "clientCode", label: "Client ID" },
   { key: "name", label: "Name" },
   { key: "mobile", label: "Mobile" },
   { key: "email", label: "Email" },
@@ -36,6 +37,14 @@ function renderCustomerCell(
   onEdit: (c: Customer) => void,
 ): React.ReactNode {
   switch (col.key) {
+    case "clientCode":
+      return (
+        <td key={col.key}>
+          {customer.clientCode
+            ? <span style={{ fontSize: 11, fontFamily: "monospace", color: "#166534", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 4, padding: "1px 6px", whiteSpace: "nowrap" }}>{customer.clientCode}</span>
+            : <span style={{ color: "#aaa" }}>–</span>}
+        </td>
+      );
     case "name":
       return <td key={col.key}><strong>{customer.name}</strong></td>;
     case "mobile":

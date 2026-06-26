@@ -94,6 +94,20 @@ export function useExternalPosps(
 }
 
 /**
+ * Reverse-lookup: given a districtId, returns its stateId + districtName.
+ * Used to resolve POSP territory for location pre-fill.
+ */
+export function useDistrictById(districtId: string | null | undefined) {
+  return useQuery({
+    queryKey: [...externalApiKeys.all, 'district-by-id', districtId ?? ''] as const,
+    queryFn: () => externalApi.getDistrictById(districtId!),
+    enabled: !!districtId,
+    staleTime: 1000 * 60 * 60, // 1 hour — district data is static
+    gcTime: 1000 * 60 * 60 * 24,
+  });
+}
+
+/**
  * Hook for cascading location selection (State -> District -> City)
  * Returns states, districts, and cities based on current selection
  */

@@ -64,7 +64,9 @@ export function CustomerSearchSelect({
   useEffect(() => {
     if (selectedCustomer) {
       setSearchQuery(selectedCustomer.name);
-    } else if (!value && displayValue && !searchQuery) {
+    } else if (!selectedCustomer && displayValue && !searchQuery) {
+      // customerId is set but the customer isn't in the current search results yet
+      // (e.g. editing a lead where the user hasn't re-searched) — show the known name
       setSearchQuery(displayValue);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps

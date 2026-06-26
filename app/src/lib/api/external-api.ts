@@ -36,6 +36,16 @@ export const externalApi = {
     );
   },
 
+  /** Reverse-lookup: given a districtId, returns its stateId + name */
+  async getDistrictById(districtId: string): Promise<{ districtId: string; districtName: string; stateId: string } | null> {
+    if (!districtId) return null;
+    const result = await request<{ districtId?: string; districtName?: string; stateId?: string }>(
+      `/api/external/district-by-id?districtId=${encodeURIComponent(districtId)}`,
+    );
+    if (!result.stateId) return null;
+    return result as { districtId: string; districtName: string; stateId: string };
+  },
+
   /** Full district → DM → ASM → ZH → NH hierarchy */
   async getHierarchyUserData(): Promise<HierarchyUser[]> {
     return request<HierarchyUser[]>('/api/external/hierarchy');

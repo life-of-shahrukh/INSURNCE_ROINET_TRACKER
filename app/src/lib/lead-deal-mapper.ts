@@ -1,4 +1,4 @@
-import type { HeatStatus, CreateLeadInput, UpdateLeadInput } from "@/lib/api/lead-api";
+import type { HeatStatus, CreateLeadInput, UpdateLeadInput, LeadStatus } from "@/lib/api/lead-api";
 import type { DealStatus } from "@/lib/types";
 import {
   closureTimelineToHeatStatus,
@@ -47,6 +47,7 @@ export function mapProductToPolicy(product: string): string {
 export interface LeadFormPayload {
   customerId: string;
   policy: string;
+  productSubType?: string;
   sum: string;
   premium: string;
   status: DealStatus;
@@ -66,6 +67,7 @@ export function formToCreateLeadInput(form: LeadFormPayload): CreateLeadInput {
   return {
     customerId: form.customerId,
     product: mapPolicyToProduct(form.policy),
+    productSubType: form.productSubType || undefined,
     estimatedPremium: +form.premium || 0,
     estimatedSum: +form.sum || 0,
     expectedCloseDate,
@@ -82,6 +84,7 @@ export interface LeadUpdateFormPayload extends LeadFormPayload {
   coa?: string;
   coaType?: "PERCENT" | "AMOUNT";
   margin?: string;
+  pipelineStatus?: string;
 }
 
 export function formToUpdateLeadInput(
@@ -96,10 +99,12 @@ export function formToUpdateLeadInput(
   return {
     customerId: form.customerId,
     product: mapPolicyToProduct(form.policy),
+    productSubType: form.productSubType || undefined,
     estimatedPremium: +form.premium || 0,
     estimatedSum: +form.sum || 0,
     expectedCloseDate,
     remarks: form.remarks.trim() || undefined,
+    ...(form.pipelineStatus ? { status: form.pipelineStatus as LeadStatus } : {}),
     ...(!converting
       ? {
           heatStatus: closureTimelineToHeatStatus(closureTimeline),

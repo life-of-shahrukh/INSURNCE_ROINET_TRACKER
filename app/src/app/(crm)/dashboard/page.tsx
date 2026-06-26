@@ -5,6 +5,7 @@ import { DealsByStatusChart } from "@/components/charts/DealsByStatusChart";
 import { KycStatusChart } from "@/components/charts/KycStatusChart";
 import { MonthlyPremiumChart } from "@/components/charts/MonthlyPremiumChart";
 import { LeadSourceChart } from "@/components/charts/LeadSourceChart";
+import { LeadStatusChart } from "@/components/charts/LeadStatusChart";
 import { PremiumByPolicyChart } from "@/components/charts/PremiumByPolicyChart";
 import { TopPospChart } from "@/components/charts/TopPospChart";
 import {
@@ -297,6 +298,7 @@ export default function DashboardPage(): React.ReactElement {
               hot: stats?.deals.hotCount ?? 0,
               warm: stats?.deals.warmCount ?? 0,
               cold: stats?.deals.coldCount ?? 0,
+              byStatus: stats?.deals.byStatus,
             }}
           />
         </Card>
@@ -324,12 +326,7 @@ export default function DashboardPage(): React.ReactElement {
         )}
         {!showKycChart && (
           <Card title="Lead Status Breakdown">
-            <ClosureTimelineChart
-              data={(stats?.leads.byStatus ?? []).map((s) => ({
-                timeline: s.status,
-                count: s.count,
-              }))}
-            />
+            <LeadStatusChart data={stats?.leads.byStatus ?? []} />
           </Card>
         )}
       </div>

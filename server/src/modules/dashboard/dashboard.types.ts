@@ -11,6 +11,8 @@ export interface DashboardStats {
     hotCount: number;
     warmCount: number;
     coldCount: number;
+    /** Raw deal status breakdown — actual DB values (e.g. ACTIVE, H, W, C, D) */
+    byStatus: Array<{ status: string; count: number }>;
     issuedCount: number;
     /** 0-100 percentage */
     conversionRate: number;

@@ -1,4 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import type { Logger } from 'winston';
 import { PrismaService } from '../../prisma/prisma.service';
 
 export type SequenceType = 'CUSTOMER' | 'PROPOSAL';
@@ -10,7 +12,10 @@ const PREFIX_MAP: Record<SequenceType, string> = {
 
 @Injectable()
 export class SequenceService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
+  ) {}
 
   /**
    * Atomically increments the counter for a given sequence type and year,
@@ -29,6 +34,14 @@ export class SequenceService {
     });
 
     const padded = String(result.lastValue).padStart(5, '0');
-    return `${prefix}-${year}-${padded}`;
+    const code = `${prefix}-${year}-${padded}`;
+
+    this.logger.debug('Sequence code generated', {
+      context: 'SequenceService',
+      type,
+      code,
+    });
+
+    return code;
   }
 }

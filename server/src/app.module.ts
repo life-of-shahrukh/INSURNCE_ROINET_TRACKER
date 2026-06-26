@@ -5,6 +5,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { CqrsModule } from '@nestjs/cqrs';
 import { PrismaModule } from './prisma/prisma.module';
 import { SequenceModule } from './common/sequence/sequence.module';
+import { LoggerModule } from './common/logger/logger.module';
+import { HttpLoggerInterceptor } from './common/interceptors/http-logger.interceptor';
 import { PospModule } from './modules/posp/posp.module';
 import { DealModule } from './modules/deal/deal.module';
 import { AuthModule } from './modules/auth/auth.module';
@@ -27,6 +29,7 @@ import { OtpModule } from './modules/otp/otp.module';
     EventEmitterModule.forRoot(),
     ScheduleModule.forRoot(),
     CqrsModule.forRoot(),
+    LoggerModule,
     PrismaModule,
     SequenceModule,
     AuthModule,
@@ -45,5 +48,6 @@ import { OtpModule } from './modules/otp/otp.module';
     AnnouncementModule,
     OtpModule,
   ],
+  providers: [HttpLoggerInterceptor],
 })
 export class AppModule {}

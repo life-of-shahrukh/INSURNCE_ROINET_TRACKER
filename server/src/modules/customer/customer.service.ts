@@ -1,5 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import type { Logger } from 'winston';
 import type { HierarchyScope } from '../../common/auth/hierarchy-scope.util';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
@@ -17,10 +19,23 @@ export class CustomerService {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
   ) {}
 
   async create(dto: CreateCustomerDto): Promise<Customer> {
-    return this.commandBus.execute(new CreateCustomerCommand(dto));
+    this.logger.info('Creating customer', {
+      context: 'CustomerService',
+      mobile: dto.mobile,
+    });
+    const customer = await this.commandBus.execute<CreateCustomerCommand, Customer>(
+      new CreateCustomerCommand(dto),
+    );
+    this.logger.info('Customer created', {
+      context: 'CustomerService',
+      customerId: customer.id,
+      clientCode: customer.clientCode,
+    });
+    return customer;
   }
 
   async findAll(
@@ -46,15 +61,26 @@ export class CustomerService {
     dto: UpdateCustomerDto,
     hierarchyScope?: HierarchyScope,
   ): Promise<Customer> {
-    return this.commandBus.execute(
+    this.logger.info('Updating customer', {
+      context: 'CustomerService',
+      customerId: id,
+      fields: Object.keys(dto),
+    });
+    const customer = await this.commandBus.execute<UpdateCustomerCommand, Customer>(
       new UpdateCustomerCommand(id, dto, hierarchyScope),
     );
+    this.logger.info('Customer updated', {
+      context: 'CustomerService',
+      customerId: id,
+    });
+    return customer;
   }
 
   exportCsv(
     filters: CustomerListQueryDto,
     hierarchyScope?: HierarchyScope,
   ): Promise<string> {
+    this.logger.info('Exporting customers CSV', { context: 'CustomerService' });
     return this.queryBus.execute(
       new ExportCustomersCsvQuery(filters, hierarchyScope),
     );

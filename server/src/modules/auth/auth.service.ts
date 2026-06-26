@@ -2,8 +2,11 @@ import {
   BadRequestException,
   Injectable,
   UnauthorizedException,
+  Inject,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import type { Logger } from 'winston';
 import type { Response } from 'express';
 import { LoginDto } from './dto/login.dto';
 import { SignupPospDto } from './dto/signup-posp.dto';
@@ -42,17 +45,37 @@ export class AuthService {
   constructor(
     private readonly userRepo: UserRepository,
     private readonly jwtService: JwtService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
   ) {}
 
   async login(dto: LoginDto, res: Response): Promise<AuthUserPayload> {
     const user = await this.userRepo.findByEmail(dto.email);
 
-    if (!user) throw new UnauthorizedException('Invalid credentials');
+    if (!user) {
+      this.logger.warn('Login failed: user not found', {
+        context: 'AuthService',
+        email: dto.email,
+      });
+      throw new UnauthorizedException('Invalid credentials');
+    }
 
     const ok = await bcrypt.compare(dto.password, user.passwordHash);
-    if (!ok) throw new UnauthorizedException('Invalid credentials');
+    if (!ok) {
+      this.logger.warn('Login failed: wrong password', {
+        context: 'AuthService',
+        email: dto.email,
+        userId: user.id,
+      });
+      throw new UnauthorizedException('Invalid credentials');
+    }
 
     if (user.status !== UserStatus.ACTIVE) {
+      this.logger.warn('Login failed: account inactive', {
+        context: 'AuthService',
+        email: dto.email,
+        userId: user.id,
+        status: user.status,
+      });
       throw new UnauthorizedException('Account is not active yet');
     }
 
@@ -64,11 +87,19 @@ export class AuthService {
 
     res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS);
 
+    this.logger.info('User logged in', {
+      context: 'AuthService',
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+    });
+
     return buildAuthUserPayload(user);
   }
 
   logout(res: Response): void {
     res.clearCookie(COOKIE_NAME, { path: '/' });
+    this.logger.info('User logged out', { context: 'AuthService' });
   }
 
   async signupPosp(
@@ -134,6 +165,12 @@ export class AuthService {
       status: user.status as UserStatus,
     });
     res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS);
+
+    this.logger.info('POSP signup successful', {
+      context: 'AuthService',
+      userId: user.id,
+      email: normalizedEmail,
+    });
 
     return {
       ...buildAuthUserPayload({ ...user, salesTeam: null }),

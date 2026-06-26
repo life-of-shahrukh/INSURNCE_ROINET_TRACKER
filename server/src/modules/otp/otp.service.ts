@@ -1,10 +1,12 @@
 import {
   BadRequestException,
   Injectable,
-  Logger,
+  Inject,
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import type { Logger } from 'winston';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../../prisma/prisma.service';
 
@@ -14,11 +16,10 @@ const BCRYPT_ROUNDS = 10;
 
 @Injectable()
 export class OtpService {
-  private readonly logger = new Logger(OtpService.name);
-
   constructor(
     private readonly prisma: PrismaService,
     private readonly config: ConfigService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
   ) {}
 
   async sendOtp(mobile: string): Promise<{ requestId: string }> {
@@ -34,7 +35,12 @@ export class OtpService {
 
     await this.dispatchSms(mobile, code);
 
-    this.logger.log(`OTP sent to mobile ending ***${mobile.slice(-4)}`);
+    this.logger.info('OTP sent', {
+      context: 'OtpService',
+      mobileMasked: `***${mobile.slice(-4)}`,
+      requestId: record.id,
+      expiresAt,
+    });
     return { requestId: record.id };
   }
 
@@ -59,6 +65,10 @@ export class OtpService {
 
     const match = await bcrypt.compare(code, record.codeHash);
     if (!match) {
+      this.logger.warn('OTP verification failed: incorrect code', {
+        context: 'OtpService',
+        requestId,
+      });
       throw new BadRequestException('Incorrect OTP');
     }
 
@@ -72,7 +82,13 @@ export class OtpService {
         where: { id: customerId },
         data: { mobileVerified: true },
       });
-      this.logger.log(`Customer ${customerId} mobile verified via OTP`);
+      this.logger.info('Customer mobile verified via OTP', {
+        context: 'OtpService',
+        customerId,
+        requestId,
+      });
+    } else {
+      this.logger.info('OTP verified', { context: 'OtpService', requestId });
     }
 
     return { verified: true };
@@ -122,10 +138,18 @@ export class OtpService {
 
     const resp = await fetch(url);
     if (!resp.ok) {
-      this.logger.error(`Telsp SMS failed: HTTP ${resp.status}`);
+      this.logger.error('Telsp SMS dispatch failed', {
+        context: 'OtpService',
+        httpStatus: resp.status,
+        mobileMasked: `***${mobile.slice(-4)}`,
+      });
       throw new ServiceUnavailableException('Failed to send OTP SMS');
     }
     const body = await resp.text();
-    this.logger.log(`Telsp response: ${body}`);
+    this.logger.info('Telsp SMS dispatched', {
+      context: 'OtpService',
+      mobileMasked: `***${mobile.slice(-4)}`,
+      telspResponse: body,
+    });
   }
 }

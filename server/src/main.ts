@@ -1,12 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import type { Application, Request, Response } from 'express';
 import { AppModule } from './app.module';
 import {
   HttpExceptionFilter,
   AllExceptionsFilter,
 } from './common/filters/http-exception.filter';
+import { HttpLoggerInterceptor } from './common/interceptors/http-logger.interceptor';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const cookieParser = require('cookie-parser') as typeof import('cookie-parser');
@@ -24,12 +26,13 @@ async function bootstrap() {
   const allowedOrigins = ALLOWED_ORIGINS;
 
   const app = await NestFactory.create(AppModule, {
+    // Suppress NestJS built-in logger; Winston takes over after init
+    bufferLogs: true,
     cors: {
       origin: (
         origin: string | undefined,
         callback: (err: Error | null, allow?: boolean) => void,
       ) => {
-        // Allow server-to-server / Postman / Swagger (no Origin header)
         if (!origin || allowedOrigins.includes(origin)) {
           callback(null, true);
         } else {
@@ -38,16 +41,18 @@ async function bootstrap() {
       },
       methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization'],
-      credentials: true, // required for HttpOnly cookie to be sent cross-origin
-      optionsSuccessStatus: 200, // IE11 compatibility
+      credentials: true,
+      optionsSuccessStatus: 200,
     },
   });
+
+  // Replace NestJS's default logger with Winston globally
+  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
   app.setGlobalPrefix('api');
   app.use(cookieParser());
 
-  // Lightweight health endpoint — outside the /api prefix so ECS and ALB
-  // health checks can reach it without authentication.
+  // Lightweight health endpoint
   const expressApp = app.getHttpAdapter().getInstance() as Application;
   expressApp.get('/health', (_req: Request, res: Response) => {
     res.status(200).json({ status: 'ok' });
@@ -61,9 +66,13 @@ async function bootstrap() {
     }),
   );
 
+  // Global interceptor: logs every HTTP request + response with timing
+  app.useGlobalInterceptors(app.get(HttpLoggerInterceptor));
+
+  // Global filters: structured error logging
   app.useGlobalFilters(
-    new AllExceptionsFilter(), // outermost — catches everything not caught below
-    new HttpExceptionFilter(), // innermost — handles NestJS HttpExceptions specifically
+    new AllExceptionsFilter(app.get(WINSTON_MODULE_NEST_PROVIDER) as never),
+    new HttpExceptionFilter(app.get(WINSTON_MODULE_NEST_PROVIDER) as never),
   );
 
   const swaggerConfig = new DocumentBuilder()
@@ -84,9 +93,12 @@ async function bootstrap() {
 
   const port = process.env.PORT ?? 8000;
   await app.listen(port);
-  console.log(`Server running on  http://localhost:${port}`);
-  console.log(`Swagger docs at    http://localhost:${port}/api/docs`);
-  console.log(`Allowed origins:   ${allowedOrigins.join(', ')}`);
+
+  const logger = app.get(WINSTON_MODULE_NEST_PROVIDER);
+  logger.log(`Server running on  http://localhost:${port}`, 'Bootstrap');
+  logger.log(`Swagger docs at    http://localhost:${port}/api/docs`, 'Bootstrap');
+  logger.log(`Allowed origins:   ${allowedOrigins.join(', ')}`, 'Bootstrap');
+  logger.log(`Log dir:           ${process.env.LOG_DIR ?? 'logs'}`, 'Bootstrap');
 }
 
 bootstrap().catch(console.error);

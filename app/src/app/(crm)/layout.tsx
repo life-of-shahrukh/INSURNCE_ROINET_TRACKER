@@ -5,23 +5,26 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { CrmProvider } from "@/providers/crm-provider";
 import { ReactQueryProvider } from "@/providers/react-query-provider";
 import { PrimeProvider } from "@/providers/prime-provider";
+import { TrackingProvider } from "@/providers/tracking-provider";
 import { useAuth } from "@/providers/auth-provider";
 import { AnnouncementBanner } from "@/components/announcement/AnnouncementBanner";
 
-function CrmShell({ children }: { children: React.ReactNode }) {
+function CrmShell({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <PrimeProvider>
       <ReactQueryProvider>
         <CrmProvider>
-          <div className="crm-shell">
-            <Sidebar />
-            <main className="main">
-              <AnnouncementBanner />
-              <Suspense fallback={null}>
-                {children}
-              </Suspense>
-            </main>
-          </div>
+          <TrackingProvider>
+            <div className="crm-shell">
+              <Sidebar />
+              <main className="main">
+                <AnnouncementBanner />
+                <Suspense fallback={null}>
+                  {children}
+                </Suspense>
+              </main>
+            </div>
+          </TrackingProvider>
         </CrmProvider>
       </ReactQueryProvider>
     </PrimeProvider>

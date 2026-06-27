@@ -100,3 +100,30 @@ scrape_configs:
       - labels:
           host:
           process:
+
+  # ── Frontend UX telemetry events ────────────────────────────────────────
+  - job_name: roinet-ux
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: roinet-ux
+          app: roinet-crm
+          env: production
+          __path__: /var/log/roinet/ux-events-*.log
+
+    pipeline_stages:
+      - json:
+          expressions:
+            event_type: event_type
+            userId:     userId
+            role:       role
+            page:       page
+            target:     target
+            timestamp:  timestamp
+
+      - labels:
+          event_type:
+          userId:
+          role:
+          page:

@@ -23,6 +23,7 @@ import { OrgSyncModule } from './modules/org-sync/org-sync.module';
 import { GeoModule } from './modules/geo/geo.module';
 import { AnnouncementModule } from './modules/announcement/announcement.module';
 import { OtpModule } from './modules/otp/otp.module';
+import { TelemetryModule } from './modules/telemetry/telemetry.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { OtpModule } from './modules/otp/otp.module';
     GeoModule,
     AnnouncementModule,
     OtpModule,
+    TelemetryModule,
   ],
   providers: [HttpLoggerInterceptor, AuditLogInterceptor],
 })

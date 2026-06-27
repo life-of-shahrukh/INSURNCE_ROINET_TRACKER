@@ -17,6 +17,9 @@ const cookieParser = require('cookie-parser') as typeof import('cookie-parser');
 const ALLOWED_ORIGINS = [
   'http://localhost:3000',
   'http://localhost:3001',
+  // Xpresso / Cognitensor SSO portal (makes browser-level requests during SSO handshake)
+  'https://uat.xpresso.roinet.in',
+  'https://xpresso.roinet.in',
   // Accept one or more comma-separated origins from env (set in ECS/docker-compose)
   ...(process.env.FRONTEND_URL
     ? process.env.FRONTEND_URL.split(',').map((o) => o.trim())

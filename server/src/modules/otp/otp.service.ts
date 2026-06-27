@@ -169,13 +169,15 @@ export class OtpService {
       throw new ServiceUnavailableException('Failed to send OTP SMS');
     }
 
-    // Telsp returns JSON: {"code":"01","desc":"SUCCESS"} on success,
-    // or {"code":"118","desc":"INVALID_USER"} on failure
+    // Telsp success codes:
+    //   "01"   — standard success
+    //   "6001" — "Message received by platform" (template/enterprise route)
+    const TELSP_SUCCESS_CODES = new Set(['01', '6001']);
     let telspCode = '';
     try {
       const json = JSON.parse(body) as { code?: string; desc?: string };
       telspCode = json.code ?? '';
-      if (telspCode !== '01') {
+      if (!TELSP_SUCCESS_CODES.has(telspCode)) {
         this.logger.error('Telsp SMS rejected', {
           context: 'OtpService',
           telspCode,

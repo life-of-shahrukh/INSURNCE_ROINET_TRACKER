@@ -44,14 +44,17 @@ export class TelemetryService {
     const { identity, events } = batch;
 
     for (const event of events) {
-      this.uxLogger.info({
+      // Log with a string message so Winston does NOT nest fields inside "message".
+      // All metadata fields are promoted to top-level JSON keys — required so
+      // Promtail can extract event_type / userId / role / page as Loki labels.
+      this.uxLogger.info('ux_event', {
         event_type: event.type,
         userId: identity.userId,
         role: identity.role,
         pospId: identity.pospId,
         page: event.page,
-        target: event.target,
-        targetText: event.targetText,
+        target: event.target ?? null,
+        targetText: event.targetText ?? null,
         clientTimestamp: event.timestamp,
         ...event.meta,
       });

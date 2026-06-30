@@ -113,14 +113,14 @@ scrape_configs:
           __path__: /var/log/roinet/ux-events-*.log
 
     pipeline_stages:
+      # Winston flat-JSON format: {"level":"info","message":"ux_event","event_type":"...","userId":"..."}
       - json:
           expressions:
+            level:      level
             event_type: event_type
             userId:     userId
             role:       role
             page:       page
-            target:     target
-            timestamp:  timestamp
 
       - labels:
           event_type:

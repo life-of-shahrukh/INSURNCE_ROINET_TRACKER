@@ -15,25 +15,6 @@
         "pluginId": "loki",
         "query": "loki",
         "current": { "text": "Loki", "value": "roinet-loki" }
-      },
-      {
-        "hide": 0,
-        "name": "event_type",
-        "type": "custom",
-        "query": "pageview,click,hover_dwell,scroll_depth,rage_click,dead_click,form_focus,form_blur",
-        "multi": true,
-        "includeAll": true,
-        "current": { "text": "All", "value": "$__all" }
-      },
-      {
-        "hide": 0,
-        "name": "userId",
-        "type": "query",
-        "datasource": { "type": "loki", "uid": "roinet-loki" },
-        "query": "label_values({job=\"roinet-ux\"}, userId)",
-        "multi": false,
-        "includeAll": true,
-        "current": { "text": "All", "value": "$__all" }
       }
     ]
   },
@@ -44,7 +25,7 @@
       "title": "Total UX Events (period)",
       "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 },
       "datasource": { "type": "loki", "uid": "roinet-loki" },
-      "targets": [{ "expr": "sum(count_over_time({job=\"roinet-ux\", userId=~\"$userId\"}[$__range]))", "legendFormat": "Events" }],
+      "targets": [{ "expr": "sum(count_over_time({job=\"roinet-ux\"}[$__range]))", "legendFormat": "Events" }],
       "options": { "colorMode": "background", "graphMode": "none" }
     },
     {
@@ -53,7 +34,7 @@
       "title": "Rage Clicks",
       "gridPos": { "x": 4, "y": 0, "w": 4, "h": 4 },
       "datasource": { "type": "loki", "uid": "roinet-loki" },
-      "targets": [{ "expr": "sum(count_over_time({job=\"roinet-ux\", event_type=\"rage_click\", userId=~\"$userId\"}[$__range]))", "legendFormat": "Rage Clicks" }],
+      "targets": [{ "expr": "sum(count_over_time({job=\"roinet-ux\"} |= `\"rage_click\"` [$__range]))", "legendFormat": "Rage Clicks" }],
       "options": {
         "colorMode": "background",
         "graphMode": "none",
@@ -66,7 +47,7 @@
       "title": "Dead Clicks",
       "gridPos": { "x": 8, "y": 0, "w": 4, "h": 4 },
       "datasource": { "type": "loki", "uid": "roinet-loki" },
-      "targets": [{ "expr": "sum(count_over_time({job=\"roinet-ux\", event_type=\"dead_click\", userId=~\"$userId\"}[$__range]))", "legendFormat": "Dead Clicks" }],
+      "targets": [{ "expr": "sum(count_over_time({job=\"roinet-ux\"} |= `\"dead_click\"` [$__range]))", "legendFormat": "Dead Clicks" }],
       "options": {
         "colorMode": "background",
         "graphMode": "none",
@@ -79,7 +60,7 @@
       "title": "Hover Dwells (>1.5s)",
       "gridPos": { "x": 12, "y": 0, "w": 4, "h": 4 },
       "datasource": { "type": "loki", "uid": "roinet-loki" },
-      "targets": [{ "expr": "sum(count_over_time({job=\"roinet-ux\", event_type=\"hover_dwell\", userId=~\"$userId\"}[$__range]))", "legendFormat": "Hover Dwells" }],
+      "targets": [{ "expr": "sum(count_over_time({job=\"roinet-ux\"} |= `\"hover_dwell\"` [$__range]))", "legendFormat": "Hover Dwells" }],
       "options": { "colorMode": "background", "graphMode": "none" }
     },
     {
@@ -88,7 +69,7 @@
       "title": "Unique Users",
       "gridPos": { "x": 16, "y": 0, "w": 4, "h": 4 },
       "datasource": { "type": "loki", "uid": "roinet-loki" },
-      "targets": [{ "expr": "count(count by (userId) (count_over_time({job=\"roinet-ux\"}[$__range])))", "legendFormat": "Users" }],
+      "targets": [{ "expr": "count(count by (userId) (count_over_time({job=\"roinet-ux\", userId!=\"\"}[$__range])) or count by (message_userId) (count_over_time({job=\"roinet-ux\"} | json | message_userId!=\"\" [$__range])))", "legendFormat": "Users" }],
       "options": { "colorMode": "background", "graphMode": "none" }
     },
     {
@@ -98,7 +79,12 @@
       "gridPos": { "x": 0, "y": 4, "w": 24, "h": 8 },
       "datasource": { "type": "loki", "uid": "roinet-loki" },
       "targets": [
-        { "expr": "sum by (event_type) (count_over_time({job=\"roinet-ux\", event_type=~\"$event_type\", userId=~\"$userId\"}[1m]))", "legendFormat": "{{event_type}}" }
+        { "expr": "sum(rate({job=\"roinet-ux\"} |= `\"pageview\"` [2m]))", "legendFormat": "pageview" },
+        { "expr": "sum(rate({job=\"roinet-ux\"} |= `\"click\"` !~ `\"rage_click|dead_click\"` [2m]))", "legendFormat": "click" },
+        { "expr": "sum(rate({job=\"roinet-ux\"} |= `\"rage_click\"` [2m]))", "legendFormat": "rage_click" },
+        { "expr": "sum(rate({job=\"roinet-ux\"} |= `\"dead_click\"` [2m]))", "legendFormat": "dead_click" },
+        { "expr": "sum(rate({job=\"roinet-ux\"} |= `\"hover_dwell\"` [2m]))", "legendFormat": "hover_dwell" },
+        { "expr": "sum(rate({job=\"roinet-ux\"} |= `\"scroll_depth\"` [2m]))", "legendFormat": "scroll_depth" }
       ],
       "fieldConfig": {
         "defaults": { "custom": { "fillOpacity": 20, "stacking": { "mode": "normal" } } }
@@ -110,10 +96,16 @@
       "title": "Top Rage-Click Targets",
       "gridPos": { "x": 0, "y": 12, "w": 12, "h": 8 },
       "datasource": { "type": "loki", "uid": "roinet-loki" },
-      "targets": [{
-        "expr": "topk(20, sum by (target, page) (count_over_time({job=\"roinet-ux\", event_type=\"rage_click\", userId=~\"$userId\"}[$__range])))",
-        "legendFormat": "{{page}} — {{target}}"
-      }],
+      "targets": [
+        {
+          "expr": "topk(20, sum by (target, page) (count_over_time({job=\"roinet-ux\"} |= `\"rage_click\"` | json [$__range])))",
+          "legendFormat": "{{page}} — {{target}}"
+        },
+        {
+          "expr": "topk(20, sum by (message_target, message_page) (count_over_time({job=\"roinet-ux\"} |= `\"rage_click\"` | json [$__range])))",
+          "legendFormat": "{{message_page}} — {{message_target}}"
+        }
+      ],
       "options": { "sortBy": [{ "displayName": "Value", "desc": true }] }
     },
     {
@@ -122,10 +114,16 @@
       "title": "Top Dead-Click Hotspots",
       "gridPos": { "x": 12, "y": 12, "w": 12, "h": 8 },
       "datasource": { "type": "loki", "uid": "roinet-loki" },
-      "targets": [{
-        "expr": "topk(20, sum by (target, page) (count_over_time({job=\"roinet-ux\", event_type=\"dead_click\", userId=~\"$userId\"}[$__range])))",
-        "legendFormat": "{{page}} — {{target}}"
-      }],
+      "targets": [
+        {
+          "expr": "topk(20, sum by (target, page) (count_over_time({job=\"roinet-ux\"} |= `\"dead_click\"` | json [$__range])))",
+          "legendFormat": "{{page}} — {{target}}"
+        },
+        {
+          "expr": "topk(20, sum by (message_target, message_page) (count_over_time({job=\"roinet-ux\"} |= `\"dead_click\"` | json [$__range])))",
+          "legendFormat": "{{message_page}} — {{message_target}}"
+        }
+      ],
       "options": { "sortBy": [{ "displayName": "Value", "desc": true }] }
     },
     {
@@ -134,10 +132,16 @@
       "title": "Highest Hover-Dwell Targets (users stuck)",
       "gridPos": { "x": 0, "y": 20, "w": 12, "h": 8 },
       "datasource": { "type": "loki", "uid": "roinet-loki" },
-      "targets": [{
-        "expr": "topk(20, sum by (target, page) (count_over_time({job=\"roinet-ux\", event_type=\"hover_dwell\", userId=~\"$userId\"}[$__range])))",
-        "legendFormat": "{{page}} — {{target}}"
-      }],
+      "targets": [
+        {
+          "expr": "topk(20, sum by (target, page) (count_over_time({job=\"roinet-ux\"} |= `\"hover_dwell\"` | json [$__range])))",
+          "legendFormat": "{{page}} — {{target}}"
+        },
+        {
+          "expr": "topk(20, sum by (message_target, message_page) (count_over_time({job=\"roinet-ux\"} |= `\"hover_dwell\"` | json [$__range])))",
+          "legendFormat": "{{message_page}} — {{message_target}}"
+        }
+      ],
       "options": { "sortBy": [{ "displayName": "Value", "desc": true }] }
     },
     {
@@ -146,21 +150,25 @@
       "title": "Page Views by Page",
       "gridPos": { "x": 12, "y": 20, "w": 12, "h": 8 },
       "datasource": { "type": "loki", "uid": "roinet-loki" },
-      "targets": [{
-        "expr": "topk(15, sum by (page) (count_over_time({job=\"roinet-ux\", event_type=\"pageview\", userId=~\"$userId\"}[$__range])))",
-        "legendFormat": "{{page}}"
-      }],
+      "targets": [
+        {
+          "expr": "topk(15, sum by (page) (count_over_time({job=\"roinet-ux\"} |= `\"pageview\"` | json [$__range])))",
+          "legendFormat": "{{page}}"
+        },
+        {
+          "expr": "topk(15, sum by (message_page) (count_over_time({job=\"roinet-ux\"} |= `\"pageview\"` | json [$__range])))",
+          "legendFormat": "{{message_page}}"
+        }
+      ],
       "options": { "orientation": "horizontal" }
     },
     {
       "id": 11,
       "type": "logs",
-      "title": "UX Event Stream (filtered)",
+      "title": "UX Event Stream",
       "gridPos": { "x": 0, "y": 28, "w": 24, "h": 10 },
       "datasource": { "type": "loki", "uid": "roinet-loki" },
-      "targets": [{
-        "expr": "{job=\"roinet-ux\", event_type=~\"$event_type\", userId=~\"$userId\"}"
-      }],
+      "targets": [{ "expr": "{job=\"roinet-ux\"}" }],
       "options": { "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true }
     }
   ]

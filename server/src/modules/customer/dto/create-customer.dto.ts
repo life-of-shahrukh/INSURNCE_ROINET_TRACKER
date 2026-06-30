@@ -1,10 +1,12 @@
 import {
+  IsDate,
   IsEmail,
   IsNotEmpty,
   IsOptional,
   IsString,
   MaxLength,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateCustomerDto {
   @IsNotEmpty()
@@ -28,6 +30,8 @@ export class CreateCustomerDto {
   alternateMobile?: string;
 
   @IsOptional()
+  @Type(() => Date)
+  @IsDate()
   dateOfBirth?: Date;
 
   @IsOptional()

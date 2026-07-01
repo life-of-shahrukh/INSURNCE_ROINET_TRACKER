@@ -83,9 +83,36 @@ function renderCustomerCell(
           <button
             type="button"
             className="icon-btn"
-            onClick={() => onEdit(customer)}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onEdit(customer);
+            }}
+            title="Edit customer"
+            aria-label="Edit customer"
+            style={{ 
+              display: 'inline-flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              gap: '4px'
+            }}
           >
-            Edit
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ pointerEvents: 'none' }}
+            >
+              <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+              <path d="m15 5 4 4" />
+            </svg>
+            <span>Edit</span>
           </button>
         </td>
       );
@@ -212,7 +239,10 @@ export default function CustomersPage(): React.ReactElement {
         open={modalOpen}
         customer={editCustomer}
         prefillName={editCustomer ? undefined : search}
-        onClose={() => setModalOpen(false)}
+        onClose={() => {
+          setModalOpen(false);
+          setEditCustomer(null);
+        }}
       />
     </>
   );

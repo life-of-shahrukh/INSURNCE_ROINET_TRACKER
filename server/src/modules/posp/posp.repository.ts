@@ -12,7 +12,7 @@ import {
   fetchDealStatsByPospId,
   type PospWithComputedActivity,
 } from '../../common/business-rules/posp-activity.prisma';
-import type { ExternalApiService } from '../../common/external-api/external-api.service';
+import { ExternalApiService } from '../../common/external-api/external-api.service';
 import { resolvePospDisplayName } from '../../common/external-api/posp-display.util';
 
 const POSP_SORT_FIELDS: Record<string, keyof Posp> = {

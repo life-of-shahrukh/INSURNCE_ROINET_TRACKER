@@ -1,0 +1,882 @@
+{
+  "insurer": "iffco ",
+  "insurerSlug": "iffco",
+  "lastUpdated": "2026-07-01T10:15:24.412Z",
+  "vehicleCategories": [],
+  "states": [],
+  "policyTypes": [],
+  "columns": [
+    "1. Motor Scheme Payouts (FY 2026-27)",
+    "__EMPTY",
+    "__EMPTY_1",
+    "__EMPTY_2",
+    "__EMPTY_3",
+    "__EMPTY_4"
+  ],
+  "rows": [
+    {
+      "id": "iffco-0",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "Commercial Vehicles (CVE + CVT Combined Slab)"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-1",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "Slabs are calculated on a combined basis for Commercial Vehicle Comprehensive (CVE) and Commercial Vehicle Third-Party (CVT)."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-2",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "Slab (CVE+CVT)",
+        "__EMPTY": "Comp - Green",
+        "__EMPTY_1": "Comp - Red",
+        "__EMPTY_2": "SATP - Green",
+        "__EMPTY_3": "SATP - Red"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-3",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "0 - 50K",
+        "__EMPTY": 0.1,
+        "__EMPTY_1": "—",
+        "__EMPTY_2": 0.1,
+        "__EMPTY_3": "—"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-4",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "50 - 1 Lakhs",
+        "__EMPTY": 0.14,
+        "__EMPTY_1": "—",
+        "__EMPTY_2": 0.14,
+        "__EMPTY_3": "—"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-5",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "1 - 3 Lakhs",
+        "__EMPTY": 0.155,
+        "__EMPTY_1": "Base only",
+        "__EMPTY_2": 0.155,
+        "__EMPTY_3": 0
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-6",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "3 - 6 Lakhs",
+        "__EMPTY": 0.175,
+        "__EMPTY_1": "—",
+        "__EMPTY_2": 0.175,
+        "__EMPTY_3": "—"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-7",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "6 Lakhs & above",
+        "__EMPTY": 0.2,
+        "__EMPTY_1": "—",
+        "__EMPTY_2": 0.2,
+        "__EMPTY_3": "—"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-8",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "Restrictions: Bharat Benz is restricted to IRDA payouts in all states/segments. 12k to 20k GVW vehicles in Rajasthan RTO are capped at a maximum of 17.5%."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-9",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "Heatmap Modifications: For all states other than Gujarat, C2 for the Red segment will be 10% for NCB cases. In Gujarat, C2 is 10% across all green and red segments."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-10",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "Private Car (PCP) & Standalone OD (SAOD)"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-11",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "Applicable to all states."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-12",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "Slab",
+        "__EMPTY": "Comp - OD",
+        "__EMPTY_1": "SATP Green",
+        "__EMPTY_2": "SATP Red",
+        "__EMPTY_3": "Standalone OD Only"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-13",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "0 - 20 K",
+        "__EMPTY": 0.2,
+        "__EMPTY_1": 0.025,
+        "__EMPTY_2": 0,
+        "__EMPTY_3": 0.15
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-14",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "20K and Above",
+        "__EMPTY": 0.25,
+        "__EMPTY_1": "—",
+        "__EMPTY_2": "—",
+        "__EMPTY_3": "—"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-15",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "Two Wheeler (TWP)"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-16",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "Applicable to all states with no slab criteria."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-17",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "Product",
+        "__EMPTY": "Comp - OD",
+        "__EMPTY_1": "Comp - TP",
+        "__EMPTY_2": "SATP Green",
+        "__EMPTY_3": "SATP Red",
+        "__EMPTY_4": "OD Only"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-18",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "Two Wheeler - All",
+        "__EMPTY": "Base only",
+        "__EMPTY_1": "Base only",
+        "__EMPTY_2": "Base only",
+        "__EMPTY_3": 0,
+        "__EMPTY_4": "Base only"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-19",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "Motor Underwriting Rules: All payout in Motor SATP (CVE, PCP, TWP) follows the heat map guidelines. Code change cases are eligible for base commission only."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-20",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "2. RTO & Region Mapping"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-21",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "NCR RTOs Covered Under Delhi State"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-22",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "The following Haryana and Uttar Pradesh RTO codes are mapped under Delhi:"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-23",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "Location / Region",
+        "__EMPTY": "RTO Codes"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-24",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "Faridabad",
+        "__EMPTY": "HR38, HR87, HR98, HR51, HR29"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-25",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "Gurgaon",
+        "__EMPTY": "HR55, HR72, HR26, HR98"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-26",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "Noida",
+        "__EMPTY": "UP16"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-27",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "Ghaziabad",
+        "__EMPTY": "UP14"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-28",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "Mumbai RTOs (Maharashtra) & Nearest SBUs"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-29",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "Mapping of Mumbai RTOs to their respective office/SBU alignment:"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-30",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "RTO",
+        "__EMPTY": "Location",
+        "__EMPTY_1": "Nearest SBU"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-31",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "MH01",
+        "__EMPTY": "MH-01 Tardeo RTO Office - South Mumbai",
+        "__EMPTY_1": "Fort"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-32",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "MH02",
+        "__EMPTY": "MH-02 Andheri RTO Office - Western Suburb Mumbai",
+        "__EMPTY_1": "Andheri"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-33",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "MH03",
+        "__EMPTY": "MH-03 Wadala RTO Office - South Mumbai",
+        "__EMPTY_1": "Chembur"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-34",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "MH04",
+        "__EMPTY": "Thane",
+        "__EMPTY_1": "Thane"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-35",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "MH05",
+        "__EMPTY": "Kalyan",
+        "__EMPTY_1": "Kalyan EBK"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-36",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "MH06",
+        "__EMPTY": "Pen, Raigad",
+        "__EMPTY_1": "Panvel EBK"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-37",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "MH43",
+        "__EMPTY": "Vashi, Navi Mumbai",
+        "__EMPTY_1": "Vashi"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-38",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "MH46",
+        "__EMPTY": "Panvel, Navi Mumbai",
+        "__EMPTY_1": "Panvel EBK"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-39",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "MH47",
+        "__EMPTY": "Borivali, Mumbai",
+        "__EMPTY_1": "Borivali"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-40",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "MH48",
+        "__EMPTY": "Vasai-Virar",
+        "__EMPTY_1": "Vasai -EBK"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-41",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "MH-56",
+        "__EMPTY": "Thane Rural",
+        "__EMPTY_1": "Thane"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-42",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "MH-58",
+        "__EMPTY": "Mira Bhayandar",
+        "__EMPTY_1": "Thane"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-43",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "Declined RTOs of Rajasthan (Entire A1 and A2 for CVE & CVT)"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-44",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "Only Base Payout is allowed on CVE and CVT business for these RTOs, except for the specific SBUs they genuinely belong to:"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-45",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "Location",
+        "__EMPTY": "RTO Code",
+        "__EMPTY_1": "Location",
+        "__EMPTY_2": "RTO Code"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-46",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "ALWAR",
+        "__EMPTY": "RJ02",
+        "__EMPTY_1": "BHARATPUR",
+        "__EMPTY_2": "RJ05"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-47",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "BHIWADI",
+        "__EMPTY": "RJ40",
+        "__EMPTY_1": "DAUSA",
+        "__EMPTY_2": "RJ29"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-48",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "KARAULI",
+        "__EMPTY": "RJ11",
+        "__EMPTY_1": "SHAHAPURA",
+        "__EMPTY_2": "RJ34"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-49",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "KOTPUTLI",
+        "__EMPTY": "RJ52",
+        "__EMPTY_1": "DHOLPUR",
+        "__EMPTY_2": "RJ32"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-50",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "3. Non-Motor Campaign Schemes (FY 2026-27)"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-51",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "Volume Grids"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-52",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "Slab",
+        "__EMPTY": "GPA / GMC",
+        "__EMPTY_1": "Non-Motor (Other than KSN)",
+        "__EMPTY_2": "Red / Declined"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-53",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "0 - 50K",
+        "__EMPTY": "Base only",
+        "__EMPTY_1": 0.2,
+        "__EMPTY_2": "Base only"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-54",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "50 - 1 Lakhs",
+        "__EMPTY": "Base only",
+        "__EMPTY_1": 0.225,
+        "__EMPTY_2": "Base only"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-55",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "1 - 3 Lakhs",
+        "__EMPTY": "Base only",
+        "__EMPTY_1": 0.25,
+        "__EMPTY_2": "Base only"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-56",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "3 - 5 Lakhs",
+        "__EMPTY": "Base only",
+        "__EMPTY_1": 0.265,
+        "__EMPTY_2": "Base only"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "iffco-57",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Scheme Payouts (FY 2026-27)": "5 & above",
+        "__EMPTY": "Base only",
+        "__EMPTY_1": "—",
+        "__EMPTY_2": "—"
+      },
+      "remarks": ""
+    }
+  ]
+}

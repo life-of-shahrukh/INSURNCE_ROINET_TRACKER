@@ -1,0 +1,808 @@
+{
+  "insurer": "HDFC PVT CAR GRIDS  ",
+  "insurerSlug": "hdfc-pvt-car-grids",
+  "lastUpdated": "2026-07-01T10:15:24.394Z",
+  "vehicleCategories": [],
+  "states": [],
+  "policyTypes": [],
+  "columns": [
+    "Zone and State Mapping",
+    "__EMPTY",
+    "__EMPTY_1",
+    "__EMPTY_2",
+    "__EMPTY_3",
+    "__EMPTY_4",
+    "__EMPTY_5"
+  ],
+  "rows": [
+    {
+      "id": "hdfc-pvt-car-grids-0",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Zone and State Mapping": "This table details how various states and specific regions are classified into Zone-1 or Zone-2."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-1",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Zone and State Mapping": "Zone",
+        "__EMPTY": "State Name",
+        "__EMPTY_1": "Zone-1",
+        "__EMPTY_2": "Zone-2"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-2",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Zone and State Mapping": "EAST",
+        "__EMPTY": "ASSAM",
+        "__EMPTY_1": "Kamrup",
+        "__EMPTY_2": "Nagaon, Rest of Assam"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-3",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "BIHAR",
+        "__EMPTY_1": "Bihar",
+        "__EMPTY_2": "—"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-4",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "JHARKHAND",
+        "__EMPTY_1": "Jharkhand",
+        "__EMPTY_2": "—"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-5",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "WEST BENGAL",
+        "__EMPTY_1": "West Bengal",
+        "__EMPTY_2": "—"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-6",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "Arunachal Pradesh",
+        "__EMPTY_1": "Arunachal Pradesh",
+        "__EMPTY_2": "—"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-7",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "Chhattisgarh",
+        "__EMPTY_1": "—",
+        "__EMPTY_2": "Chhattisgarh"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-8",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "Manipur",
+        "__EMPTY_1": "Manipur",
+        "__EMPTY_2": "—"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-9",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "Meghalaya",
+        "__EMPTY_1": "Meghalaya",
+        "__EMPTY_2": "—"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-10",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "Mizoram",
+        "__EMPTY_1": "—",
+        "__EMPTY_2": "Mizoram"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-11",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "Nagaland",
+        "__EMPTY_1": "Nagaland",
+        "__EMPTY_2": "—"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-12",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "Odisha",
+        "__EMPTY_1": "Odisha",
+        "__EMPTY_2": "—"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-13",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "Sikkim",
+        "__EMPTY_1": "Sikkim",
+        "__EMPTY_2": "—"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-14",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "Tripura",
+        "__EMPTY_1": "Tripura",
+        "__EMPTY_2": "—"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-15",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Zone and State Mapping": "SOUTH",
+        "__EMPTY": "ANDHRA PRADESH",
+        "__EMPTY_1": "ANDHRA PRADESH",
+        "__EMPTY_2": "—"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-16",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "KARNATAKA",
+        "__EMPTY_1": "BANGALORE",
+        "__EMPTY_2": "Rest of Karnataka"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-17",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "TAMIL NADU",
+        "__EMPTY_1": "ANDAMANS",
+        "__EMPTY_2": "Rest of Tamil Nadu"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-18",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "Kerala",
+        "__EMPTY_1": "—",
+        "__EMPTY_2": "Kerala"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-19",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "Telangana",
+        "__EMPTY_1": "Telangana",
+        "__EMPTY_2": "—"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-20",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Zone and State Mapping": "WEST",
+        "__EMPTY": "GOA",
+        "__EMPTY_1": "GOA",
+        "__EMPTY_2": "—"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-21",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "GUJARAT",
+        "__EMPTY_1": "AHMEDABAD, Dadra & Nagar Haveli, Daman, Vadodara",
+        "__EMPTY_2": "Rest of Gujarat"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-22",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "MAHARASHTRA",
+        "__EMPTY_1": "Maharashtra",
+        "__EMPTY_2": "—"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-23",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Zone and State Mapping": "NORTH",
+        "__EMPTY": "Delhi / NCR",
+        "__EMPTY_1": "Delhi",
+        "__EMPTY_2": "—"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-24",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "Haryana",
+        "__EMPTY_1": "—",
+        "__EMPTY_2": "Haryana"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-25",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "Himachal Pradesh",
+        "__EMPTY_1": "—",
+        "__EMPTY_2": "Himachal Pradesh"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-26",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "Punjab",
+        "__EMPTY_1": "—",
+        "__EMPTY_2": "Punjab"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-27",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "Uttar Pradesh",
+        "__EMPTY_1": "—",
+        "__EMPTY_2": "Uttar Pradesh"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-28",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "Uttarakhand",
+        "__EMPTY_1": "—",
+        "__EMPTY_2": "Uttarakhand"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-29",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "J&K",
+        "__EMPTY_1": "—",
+        "__EMPTY_2": "J&K"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-30",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "Chandigarh",
+        "__EMPTY_1": "—",
+        "__EMPTY_2": "Chandigarh"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-31",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Zone and State Mapping": "CENTRAL",
+        "__EMPTY": "Madhya Pradesh",
+        "__EMPTY_1": "—",
+        "__EMPTY_2": "Madhya Pradesh"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-32",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "Rajasthan",
+        "__EMPTY_1": "—",
+        "__EMPTY_2": "Rajasthan"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-33",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Zone and State Mapping": "2. Commission Grids (Effective from 1st Jan '26)"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-34",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Zone and State Mapping": "Zone 1 Commission Grid"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-35",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Zone and State Mapping": "Applicable to areas listed under Zone-1."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-36",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Zone and State Mapping": "Category* (Slab)",
+        "__EMPTY": "Package: Petrol (NCB & N-NCB)",
+        "__EMPTY_1": "Package: Non-Petrol (NCB)",
+        "__EMPTY_2": "Package: Non-Petrol (N-NCB)",
+        "__EMPTY_3": "SAOD: Petrol (NCB & N-NCB)",
+        "__EMPTY_4": "SAOD: Non-Petrol (NCB)",
+        "__EMPTY_5": "SAOD: Non-Petrol (N-NCB)"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-37",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Zone and State Mapping": "<10k",
+        "__EMPTY": 0.175,
+        "__EMPTY_1": 0.175,
+        "__EMPTY_2": 0.11,
+        "__EMPTY_3": 0.175,
+        "__EMPTY_4": 0.11,
+        "__EMPTY_5": 0.15
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-38",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Zone and State Mapping": ">10-50k",
+        "__EMPTY": 0.195,
+        "__EMPTY_1": 0.195,
+        "__EMPTY_2": 0.12,
+        "__EMPTY_3": 0.195,
+        "__EMPTY_4": 0.12,
+        "__EMPTY_5": 0.16
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-39",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Zone and State Mapping": ">50k-1L",
+        "__EMPTY": 0.21,
+        "__EMPTY_1": 0.21,
+        "__EMPTY_2": 0.13,
+        "__EMPTY_3": 0.21,
+        "__EMPTY_4": 0.13,
+        "__EMPTY_5": 0.17
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-40",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Zone and State Mapping": ">1L-2L",
+        "__EMPTY": 0.23,
+        "__EMPTY_1": 0.23,
+        "__EMPTY_2": 0.14,
+        "__EMPTY_3": 0.23,
+        "__EMPTY_4": 0.14,
+        "__EMPTY_5": 0.18
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-41",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Zone and State Mapping": ">2L",
+        "__EMPTY": 0.25,
+        "__EMPTY_1": 0.25,
+        "__EMPTY_2": 0.15,
+        "__EMPTY_3": 0.25,
+        "__EMPTY_4": 0.15,
+        "__EMPTY_5": 0.2
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-42",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Zone and State Mapping": "Zone 2 Commission Grid"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-43",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Zone and State Mapping": "Applicable to areas listed under Zone-2."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-44",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Zone and State Mapping": "Category* (Slab)",
+        "__EMPTY": "Package: Petrol (NCB & N-NCB)",
+        "__EMPTY_1": "Package: Non-Petrol (NCB)",
+        "__EMPTY_2": "Package: Non-Petrol (N-NCB)",
+        "__EMPTY_3": "SAOD: Petrol (NCB & N-NCB)",
+        "__EMPTY_4": "SAOD: Non-Petrol (NCB)",
+        "__EMPTY_5": "SAOD: Non-Petrol (N-NCB)"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-45",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Zone and State Mapping": "<10k",
+        "__EMPTY": 0.15,
+        "__EMPTY_1": 0.1,
+        "__EMPTY_2": 0.15,
+        "__EMPTY_3": 0.15,
+        "__EMPTY_4": 0.11,
+        "__EMPTY_5": 0.1
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-46",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Zone and State Mapping": ">10-50k",
+        "__EMPTY": 0.175,
+        "__EMPTY_1": 0.1,
+        "__EMPTY_2": 0.175,
+        "__EMPTY_3": 0.175,
+        "__EMPTY_4": 0.12,
+        "__EMPTY_5": 0.1
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-47",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Zone and State Mapping": ">50k-1L",
+        "__EMPTY": 0.2,
+        "__EMPTY_1": 0.12,
+        "__EMPTY_2": 0.2,
+        "__EMPTY_3": 0.2,
+        "__EMPTY_4": 0.13,
+        "__EMPTY_5": 0.1
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-48",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Zone and State Mapping": ">1-2L",
+        "__EMPTY": 0.22,
+        "__EMPTY_1": 0.12,
+        "__EMPTY_2": 0.22,
+        "__EMPTY_3": 0.22,
+        "__EMPTY_4": 0.14,
+        "__EMPTY_5": 0.105
+      },
+      "remarks": ""
+    },
+    {
+      "id": "hdfc-pvt-car-grids-49",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Zone and State Mapping": ">2L",
+        "__EMPTY": 0.23,
+        "__EMPTY_1": 0.125,
+        "__EMPTY_2": 0.23
+      },
+      "remarks": ""
+    }
+  ]
+}

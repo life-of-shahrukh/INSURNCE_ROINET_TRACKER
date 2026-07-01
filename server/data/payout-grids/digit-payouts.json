@@ -1,0 +1,120 @@
+{
+  "insurer": "Digit Payouts",
+  "insurerSlug": "digit-payouts",
+  "lastUpdated": "2026-07-01T10:15:24.393Z",
+  "vehicleCategories": [],
+  "states": [],
+  "policyTypes": [],
+  "columns": [
+    "Digit Payouts",
+    "__EMPTY",
+    "__EMPTY_1"
+  ],
+  "rows": [
+    {
+      "id": "digit-payouts-0",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Digit Payouts": "Vehicle Type",
+        "__EMPTY": "Plan / Category",
+        "__EMPTY_1": "Payout"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "digit-payouts-1",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Digit Payouts": "CV",
+        "__EMPTY": "All",
+        "__EMPTY_1": "2.5% on Net"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "digit-payouts-2",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Digit Payouts": "Private Car (4W)",
+        "__EMPTY": "Comp / SAOD",
+        "__EMPTY_1": "19.5% on OD + Add-On"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "digit-payouts-3",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Digit Payouts": "Private Car (4W)",
+        "__EMPTY": "SATP",
+        "__EMPTY_1": "15% on Net"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "digit-payouts-4",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Digit Payouts": "Two Wheeler (2W)",
+        "__EMPTY": "Comp / SATP",
+        "__EMPTY_1": "20% on Net"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "digit-payouts-5",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Digit Payouts": "Two Wheeler (2W)",
+        "__EMPTY": "SAOD",
+        "__EMPTY_1": "22.5% on OD + Add-On"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "digit-payouts-6",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Digit Payouts": "SCPA (20107)",
+        "__EMPTY": "SCPA",
+        "__EMPTY_1": "20% on Net"
+      },
+      "remarks": ""
+    }
+  ]
+}

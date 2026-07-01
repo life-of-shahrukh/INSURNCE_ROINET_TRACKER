@@ -1,0 +1,464 @@
+{
+  "insurer": "HDFC PVT CAR GRIDS",
+  "insurerSlug": "hdfc",
+  "lastUpdated": "2026-07-01T09:42:33.089Z",
+  "vehicleCategories": [],
+  "states": [
+    "ASSAM",
+    "BIHAR",
+    "JHARKHAND",
+    "WEST BENGAL",
+    "Arunachal Pradesh",
+    "Chhattisgarh",
+    "Manipur",
+    "Meghalaya",
+    "Mizoram",
+    "Nagaland",
+    "Odisha",
+    "Sikkim",
+    "Tripura",
+    "ANDHRA PRADESH",
+    "KARNATAKA",
+    "TAMIL NADU",
+    "Kerala",
+    "Telangana",
+    "GOA",
+    "GUJARAT",
+    "MAHARASHTRA",
+    "Delhi / NCR",
+    "Haryana",
+    "Himachal Pradesh",
+    "Punjab",
+    "Uttar Pradesh",
+    "Uttarakhand",
+    "J&K",
+    "Chandigarh",
+    "Madhya Pradesh",
+    "Rajasthan",
+    "2. Commission Grids (Effective from 1st Jan '26)",
+    "Zone 1 Commission Grid",
+    "Applicable to areas listed under Zone-1.",
+    "Package: Petrol (NCB & N-NCB)",
+    "0.175",
+    "0.195",
+    "0.21",
+    "0.23",
+    "0.25",
+    "Zone 2 Commission Grid",
+    "Applicable to areas listed under Zone-2.",
+    "0.15",
+    "0.2",
+    "0.22"
+  ],
+  "policyTypes": [],
+  "columns": [
+    "State",
+    "Zone",
+    "Zone-1",
+    "Zone-2"
+  ],
+  "rows": [
+    {
+      "id": "3e1237f83a05",
+      "state": "ASSAM",
+      "rates": {
+        "Zone-1": "Kamrup",
+        "Zone-2": "Nagaon, Rest of Assam"
+      }
+    },
+    {
+      "id": "4b2b7a84011b",
+      "state": "BIHAR",
+      "rates": {
+        "Zone-1": "Bihar",
+        "Zone-2": "—"
+      }
+    },
+    {
+      "id": "c41ded51709d",
+      "state": "JHARKHAND",
+      "rates": {
+        "Zone-1": "Jharkhand",
+        "Zone-2": "—"
+      }
+    },
+    {
+      "id": "4086c1fcc3ca",
+      "state": "WEST BENGAL",
+      "rates": {
+        "Zone-1": "West Bengal",
+        "Zone-2": "—"
+      }
+    },
+    {
+      "id": "790ffef2f7ca",
+      "state": "Arunachal Pradesh",
+      "rates": {
+        "Zone-1": "Arunachal Pradesh",
+        "Zone-2": "—"
+      }
+    },
+    {
+      "id": "da012131f804",
+      "state": "Chhattisgarh",
+      "rates": {
+        "Zone-1": "—",
+        "Zone-2": "Chhattisgarh"
+      }
+    },
+    {
+      "id": "2b32b8f3a04d",
+      "state": "Manipur",
+      "rates": {
+        "Zone-1": "Manipur",
+        "Zone-2": "—"
+      }
+    },
+    {
+      "id": "e566cbca9e8e",
+      "state": "Meghalaya",
+      "rates": {
+        "Zone-1": "Meghalaya",
+        "Zone-2": "—"
+      }
+    },
+    {
+      "id": "481fe3d3ba00",
+      "state": "Mizoram",
+      "rates": {
+        "Zone-1": "—",
+        "Zone-2": "Mizoram"
+      }
+    },
+    {
+      "id": "f105458b7427",
+      "state": "Nagaland",
+      "rates": {
+        "Zone-1": "Nagaland",
+        "Zone-2": "—"
+      }
+    },
+    {
+      "id": "f9d4b4c41c9c",
+      "state": "Odisha",
+      "rates": {
+        "Zone-1": "Odisha",
+        "Zone-2": "—"
+      }
+    },
+    {
+      "id": "4e347cb9bc54",
+      "state": "Sikkim",
+      "rates": {
+        "Zone-1": "Sikkim",
+        "Zone-2": "—"
+      }
+    },
+    {
+      "id": "a4a45464b6cf",
+      "state": "Tripura",
+      "rates": {
+        "Zone-1": "Tripura",
+        "Zone-2": "—"
+      }
+    },
+    {
+      "id": "a04b487b4bbe",
+      "state": "ANDHRA PRADESH",
+      "rates": {
+        "Zone-1": "ANDHRA PRADESH",
+        "Zone-2": "—"
+      }
+    },
+    {
+      "id": "36d963aaf39a",
+      "state": "KARNATAKA",
+      "rates": {
+        "Zone-1": "BANGALORE",
+        "Zone-2": "Rest of Karnataka"
+      }
+    },
+    {
+      "id": "47cca08daa1c",
+      "state": "TAMIL NADU",
+      "rates": {
+        "Zone-1": "ANDAMANS",
+        "Zone-2": "Rest of Tamil Nadu"
+      }
+    },
+    {
+      "id": "0f05f72eeaf3",
+      "state": "Kerala",
+      "rates": {
+        "Zone-1": "—",
+        "Zone-2": "Kerala"
+      }
+    },
+    {
+      "id": "01c79e742e8e",
+      "state": "Telangana",
+      "rates": {
+        "Zone-1": "Telangana",
+        "Zone-2": "—"
+      }
+    },
+    {
+      "id": "41bad5321f26",
+      "state": "GOA",
+      "rates": {
+        "Zone-1": "GOA",
+        "Zone-2": "—"
+      }
+    },
+    {
+      "id": "6efbd8f69e74",
+      "state": "GUJARAT",
+      "rates": {
+        "Zone-1": "AHMEDABAD, Dadra & Nagar Haveli, Daman, Vadodara",
+        "Zone-2": "Rest of Gujarat"
+      }
+    },
+    {
+      "id": "5698c20e2506",
+      "state": "MAHARASHTRA",
+      "rates": {
+        "Zone-1": "Maharashtra",
+        "Zone-2": "—"
+      }
+    },
+    {
+      "id": "1208c680027b",
+      "state": "Delhi / NCR",
+      "rates": {
+        "Zone-1": "Delhi",
+        "Zone-2": "—"
+      }
+    },
+    {
+      "id": "af89092e497e",
+      "state": "Haryana",
+      "rates": {
+        "Zone-1": "—",
+        "Zone-2": "Haryana"
+      }
+    },
+    {
+      "id": "56d5141b89ee",
+      "state": "Himachal Pradesh",
+      "rates": {
+        "Zone-1": "—",
+        "Zone-2": "Himachal Pradesh"
+      }
+    },
+    {
+      "id": "8a0bf1aa8653",
+      "state": "Punjab",
+      "rates": {
+        "Zone-1": "—",
+        "Zone-2": "Punjab"
+      }
+    },
+    {
+      "id": "66b7974e6ff6",
+      "state": "Uttar Pradesh",
+      "rates": {
+        "Zone-1": "—",
+        "Zone-2": "Uttar Pradesh"
+      }
+    },
+    {
+      "id": "24c3b941ebac",
+      "state": "Uttarakhand",
+      "rates": {
+        "Zone-1": "—",
+        "Zone-2": "Uttarakhand"
+      }
+    },
+    {
+      "id": "fedfdc66a9a3",
+      "state": "J&K",
+      "rates": {
+        "Zone-1": "—",
+        "Zone-2": "J&K"
+      }
+    },
+    {
+      "id": "6d03fe3c4d5c",
+      "state": "Chandigarh",
+      "rates": {
+        "Zone-1": "—",
+        "Zone-2": "Chandigarh"
+      }
+    },
+    {
+      "id": "05a8a0e6f5c4",
+      "state": "Madhya Pradesh",
+      "rates": {
+        "Zone-1": "—",
+        "Zone-2": "Madhya Pradesh"
+      }
+    },
+    {
+      "id": "d631720d5293",
+      "state": "Rajasthan",
+      "rates": {
+        "Zone-1": "—",
+        "Zone-2": "Rajasthan"
+      }
+    },
+    {
+      "id": "6c8cd9d965c1",
+      "state": "2. Commission Grids (Effective from 1st Jan '26)",
+      "rates": {}
+    },
+    {
+      "id": "2dc1ee3e51eb",
+      "state": "Zone 1 Commission Grid",
+      "rates": {}
+    },
+    {
+      "id": "9d9ad4a1775f",
+      "state": "Applicable to areas listed under Zone-1.",
+      "rates": {}
+    },
+    {
+      "id": "5c29df02faf9",
+      "state": "Package: Petrol (NCB & N-NCB)",
+      "rates": {
+        "Zone-1": "Package: Non-Petrol (NCB)",
+        "Zone-2": "Package: Non-Petrol (N-NCB)",
+        "col4": "SAOD: Petrol (NCB & N-NCB)",
+        "col5": "SAOD: Non-Petrol (NCB)",
+        "col6": "SAOD: Non-Petrol (N-NCB)"
+      }
+    },
+    {
+      "id": "7354d18a2549",
+      "state": "0.175",
+      "rates": {
+        "Zone-1": "0.175",
+        "Zone-2": "0.11",
+        "col4": "0.175",
+        "col5": "0.11",
+        "col6": "0.15"
+      }
+    },
+    {
+      "id": "bc797f5d7af0",
+      "state": "0.195",
+      "rates": {
+        "Zone-1": "0.195",
+        "Zone-2": "0.12",
+        "col4": "0.195",
+        "col5": "0.12",
+        "col6": "0.16"
+      }
+    },
+    {
+      "id": "191148b80342",
+      "state": "0.21",
+      "rates": {
+        "Zone-1": "0.21",
+        "Zone-2": "0.13",
+        "col4": "0.21",
+        "col5": "0.13",
+        "col6": "0.17"
+      }
+    },
+    {
+      "id": "a88d25b8e388",
+      "state": "0.23",
+      "rates": {
+        "Zone-1": "0.23",
+        "Zone-2": "0.14",
+        "col4": "0.23",
+        "col5": "0.14",
+        "col6": "0.18"
+      }
+    },
+    {
+      "id": "15a9710fc6be",
+      "state": "0.25",
+      "rates": {
+        "Zone-1": "0.25",
+        "Zone-2": "0.15",
+        "col4": "0.25",
+        "col5": "0.15",
+        "col6": "0.2"
+      }
+    },
+    {
+      "id": "766aeba1e9f2",
+      "state": "Zone 2 Commission Grid",
+      "rates": {}
+    },
+    {
+      "id": "7c79be23283a",
+      "state": "Applicable to areas listed under Zone-2.",
+      "rates": {}
+    },
+    {
+      "id": "b91ba033c6ff",
+      "state": "Package: Petrol (NCB & N-NCB)",
+      "rates": {
+        "Zone-1": "Package: Non-Petrol (NCB)",
+        "Zone-2": "Package: Non-Petrol (N-NCB)",
+        "col4": "SAOD: Petrol (NCB & N-NCB)",
+        "col5": "SAOD: Non-Petrol (NCB)",
+        "col6": "SAOD: Non-Petrol (N-NCB)"
+      }
+    },
+    {
+      "id": "625fecf0ddab",
+      "state": "0.15",
+      "rates": {
+        "Zone-1": "0.1",
+        "Zone-2": "0.15",
+        "col4": "0.15",
+        "col5": "0.11",
+        "col6": "0.1"
+      }
+    },
+    {
+      "id": "52156d85faf2",
+      "state": "0.175",
+      "rates": {
+        "Zone-1": "0.1",
+        "Zone-2": "0.175",
+        "col4": "0.175",
+        "col5": "0.12",
+        "col6": "0.1"
+      }
+    },
+    {
+      "id": "6a0101cdd7f6",
+      "state": "0.2",
+      "rates": {
+        "Zone-1": "0.12",
+        "Zone-2": "0.2",
+        "col4": "0.2",
+        "col5": "0.13",
+        "col6": "0.1"
+      }
+    },
+    {
+      "id": "caf7c738831f",
+      "state": "0.22",
+      "rates": {
+        "Zone-1": "0.12",
+        "Zone-2": "0.22",
+        "col4": "0.22",
+        "col5": "0.14",
+        "col6": "0.105"
+      }
+    },
+    {
+      "id": "7a6947493f5a",
+      "state": "0.23",
+      "rates": {
+        "Zone-1": "0.125",
+        "Zone-2": "0.23"
+      }
+    }
+  ]
+}

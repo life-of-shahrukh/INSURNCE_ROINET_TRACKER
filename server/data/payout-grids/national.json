@@ -1,0 +1,740 @@
+{
+  "insurer": "National",
+  "insurerSlug": "national",
+  "lastUpdated": "2026-07-01T10:15:24.753Z",
+  "vehicleCategories": [],
+  "states": [],
+  "policyTypes": [],
+  "columns": [
+    "1. Motor Private Car (PCP) Payout Grid",
+    "__EMPTY",
+    "__EMPTY_1",
+    "__EMPTY_2",
+    "__EMPTY_3"
+  ],
+  "rows": [
+    {
+      "id": "national-0",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "Comprehensive (OD + TP) & Standalone Own Damage (SAOD) Grids"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-1",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "The commission structure is based on the final premium slab achieved (excluding Third-Party Premium for slab calculations)."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-2",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "Slab (GWP Basis)",
+        "__EMPTY": "Petrol / EV / Hybrid (NCB & Non-NCB)",
+        "__EMPTY_1": "Non-Petrol: Diesel/CNG (NCB)",
+        "__EMPTY_2": "Non-Petrol: Diesel/CNG (Non-NCB)"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-3",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "0 - 10k",
+        "__EMPTY": 0.175,
+        "__EMPTY_1": 0.175,
+        "__EMPTY_2": 0.11
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-4",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": ">10k - 50k",
+        "__EMPTY": 0.195,
+        "__EMPTY_1": 0.195,
+        "__EMPTY_2": 0.12
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-5",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": ">50k - 1 Lac",
+        "__EMPTY": 0.21,
+        "__EMPTY_1": 0.21,
+        "__EMPTY_2": 0.13
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-6",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": ">1 Lac - 2 Lac",
+        "__EMPTY": 0.23,
+        "__EMPTY_1": 0.23,
+        "__EMPTY_2": 0.14
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-7",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": ">2 Lac and above",
+        "__EMPTY": 0.25,
+        "__EMPTY_1": 0.25,
+        "__EMPTY_2": 0.15
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-8",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "Private Car Standalone Third-Party (SATP) Only Policy"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-9",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "SATP commission is evaluated based on monthly premium volumes and vehicle fuel types."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-10",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "Monthly Premium Volume",
+        "__EMPTY": "Commission - Petrol / EV",
+        "__EMPTY_1": "Commission - Diesel / CNG / LPG"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-11",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "0 - 2 Lacs",
+        "__EMPTY": 0.25,
+        "__EMPTY_1": 0.2
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-12",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "> 2 Lacs",
+        "__EMPTY": 0.3,
+        "__EMPTY_1": 0.25
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-13",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "Key Rules for Private Cars:"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-14",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "Electric Vehicles (EV) and Hybrid segments follow the Petrol grid setup."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-15",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "All New Business policies are processed under the NCB tier."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-16",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "2. Two-Wheeler (TWP) Payout Grid"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-17",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "Two-wheeler policies are rewarded at a flat rate with no slab requirements."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-18",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "Policy Type",
+        "__EMPTY": "Own Damage (OD) Component",
+        "__EMPTY_1": "Third Party (TP) Component"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-19",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "Comprehensive Policy",
+        "__EMPTY": "Base Commission Only",
+        "__EMPTY_1": "Base Commission Only"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-20",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "SATP Only (Green Segment)",
+        "__EMPTY": "—",
+        "__EMPTY_1": "Base Commission Only"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-21",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "SATP Only (Red Segment)",
+        "__EMPTY": "—",
+        "__EMPTY_1": 0
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-22",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "Standalone OD Only",
+        "__EMPTY": "Base Commission Only",
+        "__EMPTY_1": "—"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-23",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "3. Commercial Vehicle (CV) Payout Grid"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-24",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "Slabs are determined using the combined total of Commercial Vehicle Comprehensive (CVE) and Commercial Vehicle Third-Party (CVT) Gross Written Premium."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-25",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "Combined Slab (CVE + CVT)",
+        "__EMPTY": "Comprehensive (Green Segment)",
+        "__EMPTY_1": "Comprehensive (Red Segment)",
+        "__EMPTY_2": "SATP (Green Segment)",
+        "__EMPTY_3": "SATP (Red Segment)"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-26",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "0 - 50K",
+        "__EMPTY": 0.1,
+        "__EMPTY_1": "Base Only",
+        "__EMPTY_2": 0.1,
+        "__EMPTY_3": "Base Only"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-27",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "50K - 1 Lakh",
+        "__EMPTY": 0.14,
+        "__EMPTY_1": "Base Only",
+        "__EMPTY_2": 0.14,
+        "__EMPTY_3": "Base Only"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-28",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "1 Lakh - 3 Lakhs",
+        "__EMPTY": 0.155,
+        "__EMPTY_1": "Base Only",
+        "__EMPTY_2": 0.155,
+        "__EMPTY_3": 0
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-29",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "3 Lakhs - 6 Lakhs",
+        "__EMPTY": 0.175,
+        "__EMPTY_1": "Base Only",
+        "__EMPTY_2": 0.175,
+        "__EMPTY_3": 0
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-30",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "6 Lakhs & above",
+        "__EMPTY": 0.2,
+        "__EMPTY_1": "Base Only",
+        "__EMPTY_2": 0.2,
+        "__EMPTY_3": 0
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-31",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "Underwriting Prohibitions:"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-32",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "Bharat Benz: Restricted strictly to standard IRDA base across all states and model variations."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-33",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "Code Changes: Inter-agency code changes qualify for base commission parameters only."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-34",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "4. Health & Non-Motor Payout Schemes"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-35",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "Retail Health Scheme"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-36",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "Payout schedules follow structural lines determined by the single-policy Sum Insured (SI)."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-37",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "Policy Category",
+        "__EMPTY": "Condition / Criteria",
+        "__EMPTY_1": "Payout Commission"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-38",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "Fresh Health Policy",
+        "__EMPTY": "Single Policy SI $\\ge$ 3 Lacs",
+        "__EMPTY_1": 0.3
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-39",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "Fresh Health Policy",
+        "__EMPTY": "Single Policy SI < 3 Lacs",
+        "__EMPTY_1": "Standard IRDA Base Only"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-40",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "Own Renewal Policy",
+        "__EMPTY": "Flat across all active renewals",
+        "__EMPTY_1": 0.15
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-41",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "Renewal with SI Upgrade",
+        "__EMPTY": "Incremental SI Upgrade $\\ge$ 5 Lacs (min. 1 Lac jump)",
+        "__EMPTY_1": "10.00% Extra (Total 25.00%)"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-42",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "Non-Motor Segment (Fire, Engineering & Miscellaneous)"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-43",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "Cumulative Monthly Slab",
+        "__EMPTY": "Standard / Preferred Segments",
+        "__EMPTY_1": "Declined / Red Segments",
+        "__EMPTY_2": "GPA & GMC (Group Products)"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-44",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "0 - 50K",
+        "__EMPTY": 0.2,
+        "__EMPTY_1": "Base Only",
+        "__EMPTY_2": "Base Only"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-45",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "50K - 1 Lakh",
+        "__EMPTY": 0.225,
+        "__EMPTY_1": "Base Only",
+        "__EMPTY_2": "Base Only"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-46",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "1 Lakh - 3 Lakhs",
+        "__EMPTY": 0.25,
+        "__EMPTY_1": "Base Only",
+        "__EMPTY_2": "Base Only"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-47",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "3 Lakhs - 5 Lakhs",
+        "__EMPTY": 0.265,
+        "__EMPTY_1": "Base Only",
+        "__EMPTY_2": "Base Only"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "national-48",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor Private Car (PCP) Payout Grid": "5 Lakhs & above",
+        "__EMPTY": 0.265,
+        "__EMPTY_1": "Base Only",
+        "__EMPTY_2": "Base Only"
+      },
+      "remarks": ""
+    }
+  ]
+}

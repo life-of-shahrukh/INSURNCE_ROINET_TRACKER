@@ -33,11 +33,12 @@ const NAV: NavItem[] = [
   { href: "/posp",        icon: "◉", label: "POSP Roster",     minRole: "DM"  },
   // { href: "/sales-team",  icon: "⊛", label: "Sales Team",      minRole: "RH"  },
   { href: "/org-chart",   icon: "⬡", label: "Org Chart",       minRole: "RH"  },
+  { href: "/payout-grids", icon: "▥", label: "Payout Grids" },
   { href: "/renewals",    icon: "↻", label: "Renewals" },
   { href: "/commissions", icon: "₹", label: "Commissions",     minRole: "ASM" },
   { href: "/reports",     icon: "▦", label: "Reports" },
   { href: "/announcements", icon: "⚑", label: "Announcements",  minRole: "SUPER_ADMIN" },
-  { href: "/profile",     icon: "◎", label: "My Profile" },
+  { href: "/settings",    icon: "⚙", label: "Settings" },
 ];
 
 export function Sidebar() {

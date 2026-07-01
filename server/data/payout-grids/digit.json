@@ -1,0 +1,80 @@
+{
+  "insurer": "Digit Payouts",
+  "insurerSlug": "digit",
+  "lastUpdated": "2026-07-01T09:42:33.088Z",
+  "vehicleCategories": [
+    "CV",
+    "Private Car (4W)",
+    "Two Wheeler (2W)",
+    "SCPA (20107)"
+  ],
+  "states": [
+    "CV",
+    "Private Car (4W)",
+    "Two Wheeler (2W)",
+    "SCPA (20107)"
+  ],
+  "policyTypes": [],
+  "columns": [
+    "State",
+    "Vehicle Type",
+    "Plan / Category",
+    "Payout"
+  ],
+  "rows": [
+    {
+      "id": "06e56148a146",
+      "state": "CV",
+      "vehicleType": "CV",
+      "rates": {
+        "Plan / Category": "All",
+        "Payout": "2.5"
+      }
+    },
+    {
+      "id": "1dd7b7736062",
+      "state": "Private Car (4W)",
+      "vehicleType": "Private Car (4W)",
+      "rates": {
+        "Plan / Category": "Comp / SAOD",
+        "Payout": "19.5"
+      }
+    },
+    {
+      "id": "04ee2b3b6831",
+      "state": "Private Car (4W)",
+      "vehicleType": "Private Car (4W)",
+      "rates": {
+        "Plan / Category": "SATP",
+        "Payout": "15"
+      }
+    },
+    {
+      "id": "a4f6ed6fcac3",
+      "state": "Two Wheeler (2W)",
+      "vehicleType": "Two Wheeler (2W)",
+      "rates": {
+        "Plan / Category": "Comp / SATP",
+        "Payout": "20"
+      }
+    },
+    {
+      "id": "7a53ded347b6",
+      "state": "Two Wheeler (2W)",
+      "vehicleType": "Two Wheeler (2W)",
+      "rates": {
+        "Plan / Category": "SAOD",
+        "Payout": "22.5"
+      }
+    },
+    {
+      "id": "dee21c2a7553",
+      "state": "SCPA (20107)",
+      "vehicleType": "SCPA (20107)",
+      "rates": {
+        "Plan / Category": "SCPA",
+        "Payout": "20"
+      }
+    }
+  ]
+}

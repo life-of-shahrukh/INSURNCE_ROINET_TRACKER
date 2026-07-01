@@ -1,0 +1,120 @@
+{
+  "insurer": "ICICI ",
+  "insurerSlug": "icici",
+  "lastUpdated": "2026-07-01T10:15:24.412Z",
+  "vehicleCategories": [],
+  "states": [],
+  "policyTypes": [],
+  "columns": [
+    "Product Division Payout Details",
+    "__EMPTY",
+    "__EMPTY_1"
+  ],
+  "rows": [
+    {
+      "id": "icici-0",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Product Division Payout Details": "Product Division",
+        "__EMPTY": "Pay On (NET / OD)",
+        "__EMPTY_1": "PO%"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "icici-1",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Product Division Payout Details": "Pvt Car",
+        "__EMPTY": "OD",
+        "__EMPTY_1": 25
+      },
+      "remarks": ""
+    },
+    {
+      "id": "icici-2",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Product Division Payout Details": "Pvt Car (TP Only)",
+        "__EMPTY": "Net",
+        "__EMPTY_1": 10
+      },
+      "remarks": ""
+    },
+    {
+      "id": "icici-3",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Product Division Payout Details": "Two Wheeler",
+        "__EMPTY": "Net",
+        "__EMPTY_1": 25
+      },
+      "remarks": ""
+    },
+    {
+      "id": "icici-4",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Product Division Payout Details": "Two Wheeler (TP Only)",
+        "__EMPTY": "Net",
+        "__EMPTY_1": 10
+      },
+      "remarks": ""
+    },
+    {
+      "id": "icici-5",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Product Division Payout Details": "Goods Carrying Vehicle",
+        "__EMPTY": "Net",
+        "__EMPTY_1": 25
+      },
+      "remarks": ""
+    },
+    {
+      "id": "icici-6",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Product Division Payout Details": "Passenger Carrying Vehicle",
+        "__EMPTY": "Net",
+        "__EMPTY_1": 25
+      },
+      "remarks": ""
+    }
+  ]
+}

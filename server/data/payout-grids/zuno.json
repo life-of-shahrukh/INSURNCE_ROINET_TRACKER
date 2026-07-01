@@ -1,0 +1,168 @@
+{
+  "insurer": "ZUNO ",
+  "insurerSlug": "zuno",
+  "lastUpdated": "2026-07-01T10:15:24.412Z",
+  "vehicleCategories": [],
+  "states": [],
+  "policyTypes": [],
+  "columns": [
+    "Product Name",
+    "Payout"
+  ],
+  "rows": [
+    {
+      "id": "zuno-0",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Product Name": "Private Motor Car",
+        "Payout": 0.225
+      },
+      "remarks": ""
+    },
+    {
+      "id": "zuno-1",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Product Name": "Zuno Health Insurance",
+        "Payout": 0.35
+      },
+      "remarks": ""
+    },
+    {
+      "id": "zuno-2",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Product Name": "Bharat Griha Suraksha",
+        "Payout": 0.25
+      },
+      "remarks": ""
+    },
+    {
+      "id": "zuno-3",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Product Name": "Fire Commercial",
+        "Payout": 0.175
+      },
+      "remarks": ""
+    },
+    {
+      "id": "zuno-4",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Product Name": "Bharat Laghu Udyam Suraksha",
+        "Payout": 0.25
+      },
+      "remarks": ""
+    },
+    {
+      "id": "zuno-5",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Product Name": "Group Health Insurance",
+        "Payout": 0.075
+      },
+      "remarks": ""
+    },
+    {
+      "id": "zuno-6",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Product Name": "Zuno Bharat Sooksham Udyam Suraksha",
+        "Payout": 0.25
+      },
+      "remarks": ""
+    },
+    {
+      "id": "zuno-7",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Product Name": "Zuno Bharat Laghu Udyam Suraksha",
+        "Payout": 0.25
+      },
+      "remarks": ""
+    },
+    {
+      "id": "zuno-8",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Product Name": "PA Group - Non Credit",
+        "Payout": 0.075
+      },
+      "remarks": ""
+    },
+    {
+      "id": "zuno-9",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Product Name": "Surety Bonds",
+        "Payout": 0.15
+      },
+      "remarks": ""
+    },
+    {
+      "id": "zuno-10",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "Product Name": "Retention on Motor & health",
+        "Payout": 0.15
+      },
+      "remarks": ""
+    }
+  ]
+}

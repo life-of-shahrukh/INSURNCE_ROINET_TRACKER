@@ -1,0 +1,1585 @@
+{
+  "insurer": "UNITED INDIA ",
+  "insurerSlug": "united-india",
+  "lastUpdated": "2026-07-01T10:15:24.412Z",
+  "vehicleCategories": [],
+  "states": [],
+  "policyTypes": [],
+  "columns": [
+    "1. General & Core Structural Guidelines",
+    "__EMPTY",
+    "__EMPTY_1",
+    "__EMPTY_2",
+    "__EMPTY_3"
+  ],
+  "rows": [
+    {
+      "id": "united-india-0",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Financial Horizon: Commissions are evaluated against premiums accounted for during the FY 2026-27 window."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-1",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Co-Insurance Limitations: In scenarios featuring incoming co-insurance, payout variances outside this master grid require separate Head Office validation. Rewards and incentives will strictly process only against United India’s precise risk share."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-2",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Policy Issuance Portal Processing Fees"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-3",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Portal handling charges are disbursed under the specialized incentive framework criteria:"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-4",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Premium Slab Criteria",
+        "__EMPTY": "Disbursed Portal Fee per Policy"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-5",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "From ₹201 to ₹500",
+        "__EMPTY": "₹20"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-6",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Exceeding ₹500",
+        "__EMPTY": "₹50"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-7",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "2. Private Car (PCP) Commission Grid"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-8",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Calculation Parameter: Commission math is computed directly against the policy's Net Premium (OD + TP)."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-9",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Exclusions: Excludes OEM corporate tie-up structures."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-10",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Special Rule: Private cars registered under designated city RTOs (Sub-Annexure 3) qualify for an upgraded 40% commission rate (excluding Diesel $\\le$ 1500 cc)."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-11",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Policy Type",
+        "__EMPTY": "Segment Specification",
+        "__EMPTY_1": "Business Type",
+        "__EMPTY_2": "Fuel Configuration",
+        "__EMPTY_3": "Proposed Commission % (w.e.f. 01/04/2026)"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-12",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Bundled (1+3)",
+        "__EMPTY": "Diesel vehicles up to 1500 cc",
+        "__EMPTY_1": "New",
+        "__EMPTY_2": "Non-Electric",
+        "__EMPTY_3": 0.1
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-13",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Bundled (1+3)",
+        "__EMPTY": "All vehicles above 2500 cc * (Excluding Tata, Maruti, Mahindra, Toyota, Hyundai, Honda, Kia)*",
+        "__EMPTY_1": "New",
+        "__EMPTY_2": "Non-Electric",
+        "__EMPTY_3": 0.1
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-14",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Bundled (1+3)",
+        "__EMPTY": "Other than above two segments",
+        "__EMPTY_1": "New",
+        "__EMPTY_2": "Non-Electric",
+        "__EMPTY_3": 0.275
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-15",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Package / SAOD / SATP",
+        "__EMPTY": "Diesel vehicles up to 1500 cc",
+        "__EMPTY_1": "Renewal / Roll over",
+        "__EMPTY_2": "Non-Electric",
+        "__EMPTY_3": 0.05
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-16",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Package / SAOD / SATP",
+        "__EMPTY": "All vehicles above 2500 cc * (Excluding Tata, Maruti, Mahindra, Toyota, Hyundai, Honda, Kia)*",
+        "__EMPTY_1": "Renewal / Roll over",
+        "__EMPTY_2": "Non-Electric",
+        "__EMPTY_3": 0.05
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-17",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Package / SAOD / SATP",
+        "__EMPTY": "Other than above two segments",
+        "__EMPTY_1": "Renewal / Roll over",
+        "__EMPTY_2": "Non-Electric",
+        "__EMPTY_3": 0.2
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-18",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Package / SAOD / SATP",
+        "__EMPTY": "All vehicles",
+        "__EMPTY_1": "All Business Types",
+        "__EMPTY_2": "Non-Electric",
+        "__EMPTY_3": 0.12
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-19",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Bundled (1+3)",
+        "__EMPTY": "All vehicles",
+        "__EMPTY_1": "New",
+        "__EMPTY_2": "Electric",
+        "__EMPTY_3": 0.275
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-20",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Brand New SAOD / SATP",
+        "__EMPTY": "All vehicles",
+        "__EMPTY_1": "New",
+        "__EMPTY_2": "Electric",
+        "__EMPTY_3": 0.225
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-21",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Package / SAOD / SATP",
+        "__EMPTY": "All vehicles",
+        "__EMPTY_1": "Renewal / Roll over",
+        "__EMPTY_2": "Electric",
+        "__EMPTY_3": 0.17
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-22",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Additional Per-Policy Incentives (Private Car LOB Only)"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-23",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Applicable strictly to Individual Agents, Direct POSP, MISP (Direct), and IMFs:"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-24",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Private Car CC Bands & Types",
+        "__EMPTY": "OD Incentive",
+        "__EMPTY_1": "TP Incentive",
+        "__EMPTY_2": "Location Limits"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-25",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "1000 CC up to 1200 CC",
+        "__EMPTY": 0.025,
+        "__EMPTY_1": 0.15,
+        "__EMPTY_2": "Excludes KA, HR, MP, TN, RJ, and UP"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-26",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "1500 CC up to 2000 CC",
+        "__EMPTY": 0.025,
+        "__EMPTY_1": 0.15,
+        "__EMPTY_2": "All States"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-27",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "> 2000 CC",
+        "__EMPTY": 0.1,
+        "__EMPTY_1": 0.1,
+        "__EMPTY_2": "Excludes KA, HR, MP, TN, RJ, and UP"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-28",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Note: No additional incentives apply to Private Cars below 1000 CC or between 1200 CC and 1500 CC."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-29",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "3. Two-Wheeler (TW) Commission Grid"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-30",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Valid across all policy formats (Bundled, Package, and Standalone Third Party)."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-31",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Class / Product Type",
+        "__EMPTY": "Cubic Capacity (CC) / Band",
+        "__EMPTY_1": "Preferred States Payout(TN, KL, KA, MP, Assam)",
+        "__EMPTY_2": "Rest of India States Payout"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-32",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Bundled / Package / SATP",
+        "__EMPTY": "Up to 150 CC",
+        "__EMPTY_1": 0.05,
+        "__EMPTY_2": 0.275
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-33",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Bundled / Package / SATP",
+        "__EMPTY": "Above 150 CC to Less than 350 CC",
+        "__EMPTY_1": 0.05,
+        "__EMPTY_2": 0.225
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-34",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Bundled / Package / SATP",
+        "__EMPTY": "Above 350 CC",
+        "__EMPTY_1": 0.05,
+        "__EMPTY_2": 0.175
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-35",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Bundled / Package / SATP",
+        "__EMPTY": "Electric Vehicles (EV)",
+        "__EMPTY_1": 0.05,
+        "__EMPTY_2": 0.225
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-36",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Standalone OD (SAOD)",
+        "__EMPTY": "All Bands (Including Electric)",
+        "__EMPTY_1": "20.00% (All States)",
+        "__EMPTY_2": "20.00% (All States)"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-37",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "4. Goods Carrying Vehicle (GCV) Grid"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-38",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Gross Vehicle Weight (GVW) Slabs",
+        "__EMPTY": "Restricted States & Matrix Rules",
+        "__EMPTY_1": "Proposed Commission % (w.e.f. 01/04/2026)"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-39",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "GVW < 2000 Kgs",
+        "__EMPTY": "Uttar Pradesh (Except preferred RTOs in Sub-Annexure 2)",
+        "__EMPTY_1": 0.2
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-40",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "All Other States (Including preferred UP RTOs)",
+        "__EMPTY_1": 0.575
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-41",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "2000 Kgs < GVW $\\le$ 3500 Kgs",
+        "__EMPTY": "HR, MP, RJ, TN, UP (Except Sub-Annexure 2 RTOs)",
+        "__EMPTY_1": 0.15
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-42",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "All Other States",
+        "__EMPTY_1": 0.5
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-43",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "3500 Kgs < GVW $\\le$ 7500 Kgs",
+        "__EMPTY": "HR, MP, RJ, TN, UP (Except Sub-Annexure 2 RTOs)",
+        "__EMPTY_1": 0.1
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-44",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "All Other States",
+        "__EMPTY_1": 0.275
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-45",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "7500 Kgs < GVW $\\le$ 10000 Kgs",
+        "__EMPTY": "MP, RJ, TN",
+        "__EMPTY_1": 0.1
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-46",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "All Other States",
+        "__EMPTY_1": 0.175
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-47",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "10000 Kgs < GVW $\\le$ 12000 Kgs",
+        "__EMPTY": "All States",
+        "__EMPTY_1": 0.025
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-48",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "12000 Kgs < GVW $\\le$ 20000 Kgs",
+        "__EMPTY": "HR, MP, RJ, TN, UP, KA, KL",
+        "__EMPTY_1": 0.05
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-49",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "All Other States",
+        "__EMPTY_1": 0.15
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-50",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "20000 Kgs < GVW $\\le$ 25000 Kgs",
+        "__EMPTY": "HR, MP, RJ, TN, UP, KA, KL",
+        "__EMPTY_1": 0.05
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-51",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "All Other States",
+        "__EMPTY_1": 0.15
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-52",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "25000 Kgs < GVW $\\le$ 32000 Kgs",
+        "__EMPTY": "HR, MP, RJ, TN, UP, KA, KL",
+        "__EMPTY_1": 0.025
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-53",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "All Other States",
+        "__EMPTY_1": 0.125
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-54",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "32000 Kgs < GVW $\\le$ 40000 Kgs",
+        "__EMPTY": "All States",
+        "__EMPTY_1": 0.05
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-55",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "GVW > 40000 Kgs",
+        "__EMPTY": "HR, MP, RJ, TN, UP, KA, KL",
+        "__EMPTY_1": 0
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-56",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "All Other States",
+        "__EMPTY_1": 0.05
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-57",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "E-Cart",
+        "__EMPTY": "All States",
+        "__EMPTY_1": 0.5
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-58",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "5. Passenger Carrying Vehicle (PCV) Grid"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-59",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Class of Vehicle",
+        "__EMPTY": "Passenger Carrying Capacity (PCC)",
+        "__EMPTY_1": "Regional Mapping / State Criteria",
+        "__EMPTY_2": "Proposed Commission %"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-60",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Four-Wheeler PCV",
+        "__EMPTY": "PCC $\\le$ 10 (All Fuel Types)",
+        "__EMPTY_1": "Haryana, Rajasthan",
+        "__EMPTY_2": 0.1
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-61",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY_1": "All Other States",
+        "__EMPTY_2": 0.2
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-62",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "10 < PCC < 20 (All Fuel Types)",
+        "__EMPTY_1": "Tamil Nadu, Karnataka",
+        "__EMPTY_2": 0.1
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-63",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY_1": "All Other States",
+        "__EMPTY_2": 0.2
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-64",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Four-Wheeler PCV > 6 Pass.",
+        "__EMPTY": "20 < PCC $\\le$ 30 (Except EV)",
+        "__EMPTY_1": "Tamil Nadu, Madhya Pradesh, Uttar Pradesh",
+        "__EMPTY_2": 0.075
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-65",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY_1": "All Other States",
+        "__EMPTY_2": 0.1
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-66",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "30 < PCC $\\le$ 40 (Except EV)",
+        "__EMPTY_1": "All States",
+        "__EMPTY_2": 0.05
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-67",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "40 < PCC $\\le$ 50 (Except EV)",
+        "__EMPTY_1": "All States",
+        "__EMPTY_2": 0.05
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-68",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "50 < PCC $\\le$ 60 (Except EV)",
+        "__EMPTY_1": "All States",
+        "__EMPTY_2": 0.05
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-69",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "PCC > 60 (Except EV)",
+        "__EMPTY_1": "All States",
+        "__EMPTY_2": 0.05
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-70",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY": "PCC > 20 (Electric Vehicles Only)",
+        "__EMPTY_1": "All States",
+        "__EMPTY_2": 0.1
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-71",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Two-Wheeled PCV",
+        "__EMPTY": "All CC Bands & Electric",
+        "__EMPTY_1": "All States",
+        "__EMPTY_2": 0.1
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-72",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Three-Wheeled PCV",
+        "__EMPTY": "All Capacity Bands (Inc. EV)",
+        "__EMPTY_1": "Madhya Pradesh",
+        "__EMPTY_2": 0.25
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-73",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY_1": "All Other States",
+        "__EMPTY_2": 0.4
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-74",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Buses",
+        "__EMPTY": "Educational Institution & Staff Buses",
+        "__EMPTY_1": "All States",
+        "__EMPTY_2": 0.625
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-75",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Taxis",
+        "__EMPTY": "All CC Bands (Including Electric)",
+        "__EMPTY_1": "HR, KA, RJ, TN, UP, MP",
+        "__EMPTY_2": 0.15
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-76",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "__EMPTY_1": "All Other States",
+        "__EMPTY_2": 0.25
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-77",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "6. Miscellaneous, Motor Trade & Commercial Departments"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-78",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Miscellaneous Motor Vehicles (All Policy Types)"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-79",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Rates are applicable across New, Renewal, Roll-over, and SATP businesses."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-80",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Class / Risk Line",
+        "__EMPTY": "Sub-segment Specification",
+        "__EMPTY_1": "Commission % (w.e.f. 01/04/2026)"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-81",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Ambulances",
+        "__EMPTY": "All Variants",
+        "__EMPTY_1": 0.2
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-82",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Agricultural Tractors",
+        "__EMPTY": "Standard National Rate",
+        "__EMPTY_1": 0.4
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-83",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Other Misc. Vehicles",
+        "__EMPTY": "Special Construction / Leftover Classes",
+        "__EMPTY_1": 0.1
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-84",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Motor Trade Policies",
+        "__EMPTY": "Road Risk, Transit & Internal Risk parameters",
+        "__EMPTY_1": 0.05
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-85",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Standalone CPA",
+        "__EMPTY": "Compulsory Personal Accident",
+        "__EMPTY_1": 0.15
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-86",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Non-Motor Fire Department (Annexure A1)"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-87",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Line of Business / Occupancy Segment",
+        "__EMPTY": "Proposed Payout %"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-88",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Bharat Griha Raksha / UVGR",
+        "__EMPTY": 0.35
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-89",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "BSUS / BLUS / UVUS (Standard Occupancies)",
+        "__EMPTY": 0.28
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-90",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Standard Fire Products (SI $\\le$ ₹2500 Crores)",
+        "__EMPTY": 0.28
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-91",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Large Scale Risks (Single location SI > ₹2500 Crores)",
+        "__EMPTY": 0.14
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-92",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Standalone Storage of Coal & Cotton / Risks in Bhiwandi",
+        "__EMPTY": 0.115
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-93",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "High Hazard Manufacturing (Foamed Plastics/Foam Rubber)",
+        "__EMPTY": 0.1
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-94",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Disposable Diaper Manufacturing",
+        "__EMPTY": 0.065
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-95",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Terrorism Cover (SAT)",
+        "__EMPTY": 0.05
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-96",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Engineering Department (Annexure A1)"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-97",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Line of Business Engineering Products",
+        "__EMPTY": "Proposed Payout %"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-98",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Contractors All Risks Policy (Standard)",
+        "__EMPTY": 0.28
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-99",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Marine Cum Erection / Storage Cum Erection Insurance",
+        "__EMPTY": 0.28
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-100",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Deterioration of Stock (DOS)",
+        "__EMPTY": 0.25
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-101",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Boiler & Pressure Plant Insurance",
+        "__EMPTY": 0.2
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-102",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Contractors Plant Machinery (CPM)",
+        "__EMPTY": 0.2
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-103",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Petrochemical Plants & Refineries",
+        "__EMPTY": 0.2
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-104",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Electronic Equipment Insurance (EEI) / Machinery Breakdown",
+        "__EMPTY": 0.15
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-105",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Mega Risk Engineering Covers (SI > ₹2500 Crores)",
+        "__EMPTY": 0.14
+      },
+      "remarks": ""
+    },
+    {
+      "id": "united-india-106",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. General & Core Structural Guidelines": "Roads Construction Project (J&K, Uttarakhand, Himachal Pradesh)"
+      },
+      "remarks": ""
+    }
+  ]
+}

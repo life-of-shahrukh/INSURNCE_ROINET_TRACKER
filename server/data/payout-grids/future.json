@@ -1,0 +1,197 @@
+{
+  "insurer": "FUTURE",
+  "insurerSlug": "future",
+  "lastUpdated": "2026-07-01T10:15:24.393Z",
+  "vehicleCategories": [],
+  "states": [],
+  "policyTypes": [],
+  "columns": [
+    "1. Motor - PV (CO, SAOD)",
+    "__EMPTY",
+    "__EMPTY_1"
+  ],
+  "rows": [
+    {
+      "id": "future-0",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor - PV (CO, SAOD)": "This table shows the commission structure based on different slabs for Own Damage (OD) only."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "future-1",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor - PV (CO, SAOD)": "Slab",
+        "__EMPTY": "Commission on OD only"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "future-2",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor - PV (CO, SAOD)": "0 - 50k",
+        "__EMPTY": 0.195
+      },
+      "remarks": ""
+    },
+    {
+      "id": "future-3",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor - PV (CO, SAOD)": ">50k - 1 Lac",
+        "__EMPTY": 0.21
+      },
+      "remarks": ""
+    },
+    {
+      "id": "future-4",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor - PV (CO, SAOD)": ">1 Lac - 2.5 Lac",
+        "__EMPTY": 0.225
+      },
+      "remarks": ""
+    },
+    {
+      "id": "future-5",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor - PV (CO, SAOD)": ">2.5 Lac - 5 Lac",
+        "__EMPTY": 0.25
+      },
+      "remarks": ""
+    },
+    {
+      "id": "future-6",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor - PV (CO, SAOD)": ">5 Lac - 10 Lac",
+        "__EMPTY": 0.275
+      },
+      "remarks": ""
+    },
+    {
+      "id": "future-7",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor - PV (CO, SAOD)": "10 L and above",
+        "__EMPTY": 0.3
+      },
+      "remarks": ""
+    },
+    {
+      "id": "future-8",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor - PV (CO, SAOD)": "2. Private Car TP only policy"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "future-9",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor - PV (CO, SAOD)": "This table outlines the commission percentages for Third Party (TP) only policies based on fuel type."
+      },
+      "remarks": ""
+    },
+    {
+      "id": "future-10",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor - PV (CO, SAOD)": "Premium Per Month",
+        "__EMPTY": "Commission - Petrol",
+        "__EMPTY_1": "Commission - Diesel"
+      },
+      "remarks": ""
+    },
+    {
+      "id": "future-11",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor - PV (CO, SAOD)": "0 - 2 Lacs",
+        "__EMPTY": 0.25,
+        "__EMPTY_1": 0.2
+      },
+      "remarks": ""
+    },
+    {
+      "id": "future-12",
+      "state": "",
+      "vehicleType": "",
+      "policyType": "",
+      "oem": "",
+      "fuelType": "",
+      "segment": "",
+      "rates": {
+        "1. Motor - PV (CO, SAOD)": "> 2 Lacs",
+        "__EMPTY": 0.3,
+        "__EMPTY_1": 0.25
+      },
+      "remarks": ""
+    }
+  ]
+}

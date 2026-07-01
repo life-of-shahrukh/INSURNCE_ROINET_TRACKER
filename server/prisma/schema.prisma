@@ -415,3 +415,28 @@ model Sequence {
 
   @@unique([id, year])
 }
+
+/// Controls payout grid visibility per role or per specific POSP.
+model PayoutGridConfig {
+  id             String   @id @default(cuid()) @db.NVarChar(36)
+
+  /// Scope: "ROLE" or "POSP"
+  scopeType      String   @db.NVarChar(10)
+  /// The role name (e.g. "POSP", "DM") or a specific POSP id
+  scopeValue     String   @db.NVarChar(100)
+
+  /// Which insurer slug this config applies to (null = applies to all insurers)
+  insurerSlug    String?  @db.NVarChar(50)
+
+  /// Toggle: is this insurer/section visible to this scope?
+  visible        Boolean  @default(true)
+
+  /// Optional JSON restrictions: {"vehicleTypes": [...], "policyTypes": [...]}
+  restrictions   String?  @db.NVarChar(Max)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([scopeType, scopeValue, insurerSlug])
+  @@index([scopeType, scopeValue])
+}

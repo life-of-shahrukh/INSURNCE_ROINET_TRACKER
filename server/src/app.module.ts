@@ -24,6 +24,7 @@ import { GeoModule } from './modules/geo/geo.module';
 import { AnnouncementModule } from './modules/announcement/announcement.module';
 import { OtpModule } from './modules/otp/otp.module';
 import { TelemetryModule } from './modules/telemetry/telemetry.module';
+import { PayoutGridModule } from './modules/payout-grid/payout-grid.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { TelemetryModule } from './modules/telemetry/telemetry.module';
     AnnouncementModule,
     OtpModule,
     TelemetryModule,
+    PayoutGridModule,
   ],
   providers: [HttpLoggerInterceptor, AuditLogInterceptor],
 })

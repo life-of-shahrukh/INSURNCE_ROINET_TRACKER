@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreatePospDto } from './dto/create-posp.dto';
 import { UpdatePospDto } from './dto/update-posp.dto';
@@ -12,6 +12,8 @@ import {
   fetchDealStatsByPospId,
   type PospWithComputedActivity,
 } from '../../common/business-rules/posp-activity.prisma';
+import type { ExternalApiService } from '../../common/external-api/external-api.service';
+import { resolvePospDisplayName } from '../../common/external-api/posp-display.util';
 
 const POSP_SORT_FIELDS: Record<string, keyof Posp> = {
   createdAt: 'createdAt',
@@ -22,7 +24,12 @@ const POSP_SORT_FIELDS: Record<string, keyof Posp> = {
 
 @Injectable()
 export class PospRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(PospRepository.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly externalApi: ExternalApiService,
+  ) {}
 
   private resolveOrderBy(
     sortBy?: string,
@@ -110,10 +117,32 @@ export class PospRepository {
     }
 
     const orderBy = this.resolveOrderBy(sortBy, sortOrder);
-    const [rows, total] = await Promise.all([
+    let [rows, total] = await Promise.all([
       this.prisma.posp.findMany({ where, skip, take, orderBy }),
       this.prisma.posp.count({ where }),
     ]);
+
+    // ── Lazy upsert: if a single exact code/externalId filter returns nothing,
+    //    try to fetch from Cognitensor and auto-add to DB, then re-query.
+    if (total === 0) {
+      const codeFilter =
+        (where as Prisma.PospWhereInput & { code?: { equals?: string } })
+          ?.code?.equals ??
+        (where as Prisma.PospWhereInput & { externalId?: { equals?: string } })
+          ?.externalId?.equals;
+
+      if (codeFilter) {
+        this.logger.log(
+          `[LazyUpsert] POSP code "${codeFilter}" not in DB — attempting live fetch from Cognitensor.`,
+        );
+        const upserted = await this.upsertFromExternal(codeFilter);
+        if (upserted) {
+          rows = await this.prisma.posp.findMany({ where, skip, take, orderBy });
+          total = rows.length;
+        }
+      }
+    }
+
     const enriched = await enrichPospsWithActivity(this.prisma, rows);
     const data = await this.attachDealStats(enriched);
     return buildPaginatedResult(data, total, page, pageSize);
@@ -137,8 +166,56 @@ export class PospRepository {
     return enriched;
   }
 
+  async findByCode(code: string): Promise<Posp | null> {
+    return this.prisma.posp.findUnique({ where: { code } });
+  }
+
   async findByEmail(email: string): Promise<Posp | null> {
     return this.prisma.posp.findUnique({ where: { email } });
+  }
+
+  /**
+   * Fetches a single POSP from Cognitensor live API and upserts into the DB.
+   * Returns the upserted DB record, or null if the POSP is not found upstream.
+   */
+  async upsertFromExternal(code: string): Promise<Posp | null> {
+    try {
+      const ext = await this.externalApi.getPospByUserCode(code);
+      const email = ext.EmailId?.toLowerCase() || `${code.toLowerCase()}@roinet.in`;
+      const posp = await this.prisma.posp.upsert({
+        where: { code },
+        create: {
+          code,
+          externalId: ext.UserId,
+          name: resolvePospDisplayName(ext),
+          mobile: ext.MobileNo,
+          email,
+          gcdCode: ext.HephGcdCode ?? null,
+          stateId: ext.stateid ?? null,
+          districtId: ext.districtid ?? null,
+          cityId: ext.cityid ?? null,
+          joined: new Date(),
+          active: true,
+        },
+        update: {
+          externalId: ext.UserId,
+          name: resolvePospDisplayName(ext),
+          mobile: ext.MobileNo,
+          email,
+          gcdCode: ext.HephGcdCode ?? null,
+          stateId: ext.stateid ?? null,
+          districtId: ext.districtid ?? null,
+          cityId: ext.cityid ?? null,
+        },
+      });
+      this.logger.log(
+        `[LazyUpsert] POSP "${code}" upserted from Cognitensor (id: ${posp.id})`,
+      );
+      return posp;
+    } catch {
+      // NotFoundException or network error — POSP genuinely doesn't exist upstream
+      return null;
+    }
   }
 
   create(dto: CreatePospDto): Promise<Posp> {

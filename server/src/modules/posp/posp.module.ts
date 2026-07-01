@@ -11,6 +11,7 @@ import { GetPospByIdHandler } from './queries/get-posp-by-id.handler';
 import { ExportPospCsvHandler } from './queries/export-posp-csv.handler';
 import { PospCreatedListener } from './listeners/posp-created.listener';
 import { GeoModule } from '../geo/geo.module';
+import { ExternalApiModule } from '../../common/external-api/external-api.module';
 
 const CommandHandlers = [CreatePospHandler, UpdatePospHandler];
 const QueryHandlers = [
@@ -21,7 +22,7 @@ const QueryHandlers = [
 const EventListeners = [PospCreatedListener];
 
 @Module({
-  imports: [CqrsModule, PrismaModule, GeoModule],
+  imports: [CqrsModule, PrismaModule, GeoModule, ExternalApiModule],
   controllers: [PospController],
   providers: [
     PospService,

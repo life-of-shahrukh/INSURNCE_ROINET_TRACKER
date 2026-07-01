@@ -72,7 +72,8 @@ export class ExternalApiService {
 
   /**
    * Tries the live Cognitensor API first. If it fails (network error, non-2xx,
-   * timeout) logs a warning and falls back to the local snapshot file.
+   * timeout, or empty response) logs the error with full context and falls back
+   * to the local snapshot file.
    * If snapshotOnly=true the live call is skipped entirely.
    */
   private async fetchWithFallback<T>(
@@ -83,14 +84,33 @@ export class ExternalApiService {
     if (!this.snapshotOnly) {
       try {
         const data = await this.fetchLive<T>(endpoint, body);
-        return data;
+        if (data && data.length > 0) {
+          return data;
+        }
+        // Live API returned an empty array — log as error and fall back
+        this.logger.error(
+          `[ExternalAPI] Live API "${endpoint}" returned empty data array. ` +
+            `Body: ${JSON.stringify(body ?? {})}. ` +
+            `Falling back to local snapshot "${snapshotFile}".`,
+          undefined,
+          'ExternalApiService',
+        );
       } catch (err) {
-        this.logger.warn(
-          `Live API call to ${endpoint} failed — falling back to snapshot "${snapshotFile}". Reason: ${err instanceof Error ? err.message : String(err)}`,
+        this.logger.error(
+          `[ExternalAPI] Live API call to "${endpoint}" FAILED — falling back to local snapshot "${snapshotFile}". ` +
+            `Body: ${JSON.stringify(body ?? {})}. ` +
+            `Reason: ${err instanceof Error ? err.message : String(err)}`,
+          err instanceof Error ? err.stack : undefined,
+          'ExternalApiService',
         );
       }
     }
-    return this.readSnapshot<T>(snapshotFile);
+    const snapshot = this.readSnapshot<T>(snapshotFile);
+    this.logger.warn(
+      `[ExternalAPI] Using local snapshot "${snapshotFile}" (${snapshot.length} records) for endpoint "${endpoint}".`,
+      'ExternalApiService',
+    );
+    return snapshot;
   }
 
   // ── public methods ──────────────────────────────────────────────────────
@@ -215,10 +235,12 @@ export class ExternalApiService {
 
   /**
    * Looks up a single POSP by UserCode.
-   * Tries the live Cognitensor API first; falls back to the snapshot on failure.
+   * Tries the live Cognitensor API first; falls back to the snapshot on failure
+   * or when the live API returns an empty result. Both cases are logged as errors.
    */
   async getPospByUserCode(userCode: string): Promise<ExternalPospLoginData> {
     let results: ExternalPospLoginData[] = [];
+    let liveFailReason: string | undefined;
 
     if (!this.snapshotOnly) {
       try {
@@ -226,18 +248,38 @@ export class ExternalApiService {
           '/Cognitensor/ListPospData',
           { UserCode: userCode },
         );
+        if (!results || results.length === 0) {
+          liveFailReason = `Live API returned empty result for UserCode "${userCode}"`;
+          this.logger.error(
+            `[ExternalAPI] ${liveFailReason}. Falling back to local snapshot.`,
+            undefined,
+            'ExternalApiService',
+          );
+        }
       } catch (err) {
-        this.logger.warn(
-          `Live lookup for POSP "${userCode}" failed — falling back to snapshot. Reason: ${err instanceof Error ? err.message : String(err)}`,
+        liveFailReason = err instanceof Error ? err.message : String(err);
+        this.logger.error(
+          `[ExternalAPI] Live lookup for POSP "${userCode}" FAILED — falling back to local snapshot. Reason: ${liveFailReason}`,
+          err instanceof Error ? err.stack : undefined,
+          'ExternalApiService',
         );
       }
     }
 
     if (!results || results.length === 0) {
       // Fallback: search the snapshot
+      this.logger.warn(
+        `[ExternalAPI] Searching local snapshot for POSP "${userCode}"${liveFailReason ? ` (live failed: ${liveFailReason})` : ''}.`,
+        'ExternalApiService',
+      );
       const all = this.readSnapshot<ExternalPospData>('posps.json');
       const match = all.find((p) => p.UserCode === userCode);
       if (!match) {
+        this.logger.error(
+          `[ExternalAPI] POSP "${userCode}" NOT FOUND in live API or local snapshot (${all.length} records).`,
+          undefined,
+          'ExternalApiService',
+        );
         throw new NotFoundException(
           `POSP with UserCode "${userCode}" not found`,
         );
